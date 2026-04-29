@@ -595,10 +595,13 @@
                 本文档讨论包网程序本身的体系设计：平台、商户、品牌、账号身份、来源归因、代理关系、业绩归集、渠道入口、四端入口和核心权限边界。
               </p>
               <p>
+                当前阶段先理清包网主骨架，不展开完整经营功能。主骨架只回答平台、商户、品牌、市场模板、域名、渠道、玩家、代理关系、商户团队权限、四端入口和配置继承之间的关系。
+              </p>
+              <p>
                 公司 OA 系统负责公司侧审批与合规流程，包括商户资质、合同、线下身份核验、内部审批和制度性留痕。包网系统只消费 OA 的审批结果、开通指令、停用指令和必要的审计编号，不在本文档展开 OA 流程。
               </p>
               <p>
-                字段名、数据库表、API、状态机细枝、支付通道接入和 UI 细节不纳入本文范围。
+                游戏厂商、支付账务、注单结算、活动优惠、返水佣金、客服工单、KYC / AML、消息通知、内容 CMS、平台商户计费和运维监控等经营功能后续补充，但必须挂在当前主骨架下，不另起业务层级。
               </p>
               <p>
                 平台端和商户端定位为桌面管理工作台，只提供电脑版，不设计手机版。会员端和代理端属于面向外部用户的访问入口，是否需要移动端或响应式体验，应按对应使用场景单独设计。
@@ -643,25 +646,31 @@
             <div class="diagram">
               <div class="diagram-title">流程图 1：核心层级与四端入口</div>
               <pre class="mermaid">
-flowchart TD
+flowchart LR
   Platform["平台<br/>SaaS 最高控制方"] --> Merchant["商户<br/>合同、计费、团队边界"]
-  Merchant --> BrandA["品牌 A<br/>独立经营单元"]
-  Merchant --> BrandB["品牌 B<br/>独立经营单元"]
-  BrandA --> Domain["域名<br/>品牌级入口资产"]
+  Merchant --> MarketTemplate["市场模板<br/>国家市场 + 币种属性"]
+  Merchant --> StaffTeam["商户团队<br/>角色配置 + brand_access"]
+  Merchant --> Brand["品牌 1..N<br/>独立经营单元"]
+  MarketTemplate -.默认继承.-> Brand
+  StaffTeam -.按授权经营.-> Brand
+  Brand --> Domain["域名<br/>品牌级入口资产"]
   Domain --> Source["来源入口 / 渠道<br/>自然、广告、官方直推、邀请"]
-  BrandA --> Player["玩家<br/>钱包、投注、活动、VIP"]
+  Brand --> Player["玩家<br/>品牌内严格隔离"]
   Player --> AgentTree["玩家邀请关系 / 代理树"]
 
   PlatformPortal["平台端"] -.身份入口.-> Platform
-  MerchantPortal["商户端"] -.身份入口.-> Merchant
+  MerchantPortal["商户端"] -.身份入口.-> StaffTeam
   MemberPortal["会员端"] -.身份入口.-> Player
   AgentPortal["代理端"] -.只读查看入口.-> AgentTree
 
   classDef core fill:#e8f3f1,stroke:#13756f,color:#152b28,stroke-width:1px;
   classDef entry fill:#fff8ec,stroke:#9b6518,color:#3d2b12,stroke-width:1px;
-  class Platform,Merchant,BrandA,BrandB,Domain,Source,Player,AgentTree core;
+  class Platform,Merchant,MarketTemplate,StaffTeam,Brand,Domain,Source,Player,AgentTree core;
   class PlatformPortal,MerchantPortal,MemberPortal,AgentPortal entry;
               </pre>
+            </div>
+            <div class="callout">
+              主骨架口径：平台开商户，商户启用市场模板，平台开通品牌，品牌继承市场模板；域名确定品牌上下文，渠道解释来源归因；玩家归属于品牌，邀请关系进入代理体系；商户团队通过角色配置、<code>brand_access</code> 和动作边界经营授权品牌。
             </div>
             <div class="grid two">
               <article class="card">
@@ -1254,6 +1263,7 @@ flowchart TD
               <li>异常状态需要明确展示，例如市场模板停用、品牌停用、域名过期、支付通道关闭、渠道关闭注册、品牌无可用域名、员工无可访问品牌。</li>
               <li>当前不设计旧商户通用模板迁移场景，也暂不设计配置版本、发布单和回滚单。</li>
               <li>非会员开户全部人工交接。平台端与商户端使用账号密码、TOTP 和 IP 白名单；代理端使用账号密码和 TOTP，并通过只读边界控制风险。</li>
+              <li>当前阶段先锁定主骨架。游戏厂商、支付账务、注单结算、活动优惠、返水佣金、客服工单、KYC / AML、消息通知、内容 CMS、平台商户计费和运维监控等功能后续补充，但必须挂在当前主骨架下。</li>
               <li>本文档聚焦主线体系设计，不包含字段表、详细状态机、权限矩阵、报表字段表和接口设计。</li>
             </ol>
           </section>
