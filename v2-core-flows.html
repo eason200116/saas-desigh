@@ -288,6 +288,94 @@
         min-width: 720px;
       }
 
+      .lifecycle-diagram {
+        display: grid;
+        gap: 18px;
+        min-width: 880px;
+      }
+
+      .lifecycle-main {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(5, minmax(130px, 1fr));
+      }
+
+      .lifecycle-step {
+        background: #f7fbfa;
+        border: 1px solid var(--line-strong);
+        border-radius: 7px;
+        color: var(--ink);
+        display: grid;
+        gap: 7px;
+        min-height: 118px;
+        padding: 14px;
+        position: relative;
+      }
+
+      .lifecycle-step:not(:last-child)::after {
+        color: var(--line-strong);
+        content: "->";
+        font-weight: 800;
+        position: absolute;
+        right: -11px;
+        top: 45%;
+      }
+
+      .lifecycle-step b {
+        align-items: center;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 5px;
+        color: var(--teal);
+        display: inline-flex;
+        font-size: 12px;
+        font-weight: 800;
+        height: 26px;
+        justify-content: center;
+        width: 34px;
+      }
+
+      .lifecycle-step strong,
+      .lifecycle-rule strong {
+        color: var(--ink);
+      }
+
+      .lifecycle-step span,
+      .lifecycle-rule span {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .lifecycle-step.stop {
+        background: #fff3f0;
+        border-color: #efcbc4;
+      }
+
+      .lifecycle-rules {
+        border-top: 1px solid var(--line);
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        padding-top: 16px;
+      }
+
+      .lifecycle-rule {
+        background: #fffdf8;
+        border: 1px solid #ead4ab;
+        border-left: 4px solid var(--amber);
+        border-radius: 7px;
+        display: grid;
+        gap: 6px;
+        padding: 13px 14px;
+      }
+
+      .lifecycle-rule.stop {
+        background: #fff3f0;
+        border-color: #efcbc4;
+        border-left-color: var(--red);
+      }
+
       .decision-list {
         counter-reset: decision;
         list-style: none;
@@ -390,8 +478,18 @@
         }
 
         .grid.two,
-        .grid.three {
+        .grid.three,
+        .lifecycle-main,
+        .lifecycle-rules {
           grid-template-columns: 1fr;
+        }
+
+        .lifecycle-step:not(:last-child)::after {
+          bottom: -20px;
+          content: "↓";
+          left: 50%;
+          right: auto;
+          top: auto;
         }
       }
 
@@ -1002,20 +1100,49 @@ flowchart TD
             </div>
             <div class="diagram">
               <div class="diagram-title">流程图 7：非会员账号生命周期</div>
-              <pre class="mermaid">
-stateDiagram-v2
-  [*] --> PendingFirstLogin: 创建账号并人工交接
-  PendingFirstLogin --> Active: 首次登录<br/>改密码 + 绑定 TOTP
-  PendingFirstLogin --> FirstLoginExpired: 7 天未完成首登
-  FirstLoginExpired --> Resetting: 上级重置
-  Resetting --> PendingFirstLogin: 重新交接
-  Active --> Locked: 登录失败 / 风险触发
-  Locked --> Active: 复核解锁
-  Active --> Resetting: 密码或 TOTP 重置
-  Active --> Disabled: 停用 / 离职 / 撤销入口
-  Locked --> Disabled: 停用
-  Disabled --> [*]
-            </pre>
+              <div class="lifecycle-diagram" role="img" aria-label="非会员账号生命周期：创建账号、人工交接、待首登、正常使用、停用、审计留存；异常包括首登过期、密码或 TOTP 重置、锁定。">
+                <div class="lifecycle-main">
+                  <div class="lifecycle-step">
+                    <b>01</b>
+                    <strong>创建账号</strong>
+                    <span>按权限创建账号。</span>
+                  </div>
+                  <div class="lifecycle-step">
+                    <b>02</b>
+                    <strong>人工交接</strong>
+                    <span>线下交接初始凭据。</span>
+                  </div>
+                  <div class="lifecycle-step">
+                    <b>03</b>
+                    <strong>待首登</strong>
+                    <span>7 天内完成首次登录。</span>
+                  </div>
+                  <div class="lifecycle-step">
+                    <b>04</b>
+                    <strong>正常使用</strong>
+                    <span>改密并绑定 TOTP 后启用。</span>
+                  </div>
+                  <div class="lifecycle-step stop">
+                    <b>05</b>
+                    <strong>停用 / 留痕</strong>
+                    <span>停用后保留审计记录。</span>
+                  </div>
+                </div>
+                <div class="lifecycle-rules">
+                  <div class="lifecycle-rule">
+                    <strong>首登过期</strong>
+                    <span>7 天未首登 -> 上级重置 -> 重新交接 -> 回到待首登。</span>
+                  </div>
+                  <div class="lifecycle-rule">
+                    <strong>密码或 TOTP 重置</strong>
+                    <span>正常账号进入重置中 -> 重新交接 -> 回到待首登。</span>
+                  </div>
+                  <div class="lifecycle-rule stop">
+                    <strong>锁定与停用</strong>
+                    <span>登录失败或风险触发进入锁定；复核后解锁，或直接停用并留痕。</span>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="plain-panel">
               <p>非会员账号包括平台账号、商户初始最高权限账号、商户员工账号和代理端账号。非会员账号全部采用人工交接，不发邀请邮件，不发激活链接，不绑定个人邮箱或手机号，不走找回密码邮件，不发短信 OTP。</p>
