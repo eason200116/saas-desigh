@@ -1206,7 +1206,7 @@
               <button class="scope-tab active" data-scope="brands" type="button">指定品牌</button>
             </div>
             <div class="scope-meta">
-              <span class="chip"><i data-lucide="building-2" size="13"></i><span id="scopeText">市场模板集合</span></span>
+              <span class="chip"><i data-lucide="building-2" size="13"></i><span id="scopeText">当前市场模板</span></span>
               <span class="chip"><i data-lucide="globe-2" size="13"></i><span id="currencyText">泰国 / 越南 / 菲律宾</span></span>
               <span class="chip warning"><i data-lucide="triangle-alert" size="13"></i><span id="mixedText">6 个字段存在多个值</span></span>
             </div>
@@ -1608,6 +1608,7 @@
       const state = {
         scope: "merchant",
         selected: new Set(["aurora", "metro", "nova", "tiger", "river"]),
+        activeMarket: "THB",
         edits: {},
         openEditor: null,
         query: ""
@@ -1627,6 +1628,12 @@
         if (isSingleBrandMerchant()) {
           state.scope = "merchant";
           state.selected = new Set([brands[0].id]);
+          state.activeMarket = brands[0].currency;
+          return;
+        }
+        const currencies = visibleMarketCurrencies();
+        if (!currencies.includes(state.activeMarket)) {
+          state.activeMarket = currencies[0] || allMerchantCurrencies()[0];
         }
       }
 
@@ -1655,9 +1662,22 @@
         return [...new Set(brands.map((brand) => brand.currency))];
       }
 
-      function activeMarketCurrencies() {
+      function visibleMarketCurrencies() {
         const currencies = selectedCurrencies();
         return currencies.length ? currencies : allMerchantCurrencies();
+      }
+
+      function activeMarketCurrency() {
+        const currencies = visibleMarketCurrencies();
+        if (!currencies.includes(state.activeMarket)) {
+          state.activeMarket = currencies[0] || allMerchantCurrencies()[0];
+        }
+        return state.activeMarket;
+      }
+
+      function activeMarketCurrencies() {
+        const currency = activeMarketCurrency();
+        return currency ? [currency] : [];
       }
 
       function marketLabel(currency) {
@@ -1684,10 +1704,13 @@
       }
 
       function selectMarket(currency) {
-        state.selected = new Set(marketBrands(currency).map((brand) => brand.id));
+        state.activeMarket = currency;
+        if (state.scope !== "merchant") {
+          state.selected = new Set(marketBrands(currency).map((brand) => brand.id));
+        }
         state.edits = {};
         state.openEditor = null;
-        showToast(`已选择 ${marketLabel(currency)} 市场`);
+        showToast(`已选择 ${marketLabel(currency)} 市场模板，本次只编辑该市场`);
         render();
       }
 
@@ -1752,18 +1775,21 @@
         if (key === "multiCurrency") {
           state.scope = "merchant";
           state.selected = new Set(brands.map((brand) => brand.id));
-          showToast("已切换到多品牌多市场基准场景");
+          state.activeMarket = allMerchantCurrencies()[0];
+          showToast("已切换到多品牌多市场基准场景，请单独选择市场模板编辑");
         }
         if (key === "singleCurrency") {
           const currency = allMerchantCurrencies().find((item) => brands.filter((brand) => brand.currency === item && brand.status !== "pause").length > 1) || allMerchantCurrencies()[0];
           state.scope = "merchant";
           state.selected = new Set(brands.filter((brand) => brand.currency === currency && brand.status !== "pause").map((brand) => brand.id));
+          state.activeMarket = currency;
           showToast(`已切换到 ${marketLabel(currency)} 多品牌单一市场样例`);
         }
         if (key === "singleBrand") {
           const brand = brands.find((item) => item.status === "live") || brands[0];
           state.scope = "merchant";
           state.selected = new Set([brand.id]);
+          state.activeMarket = brand.currency;
           showToast("已切换到单一品牌单一市场样例");
         }
         render();
@@ -1775,7 +1801,7 @@
 
       function templateValue(field, brandOrCurrency) {
         const currency = typeof brandOrCurrency === "string" ? brandOrCurrency : brandOrCurrency?.currency;
-        if (isCurrencySensitive(field)) return currencyDefaults[currency]?.[field.key] ?? merchantDefaults[field.key];
+        if (currency && Object.prototype.hasOwnProperty.call(currencyDefaults[currency] || {}, field.key)) return currencyDefaults[currency][field.key];
         return merchantDefaults[field.key];
       }
 
@@ -1784,11 +1810,13 @@
       }
 
       function canEditField(field) {
+        if (state.scope === "merchant") return true;
         if (!isCurrencySensitive(field)) return true;
         return selectedCurrencies().length === 1;
       }
 
       function fieldLockReason(field) {
+        if (state.scope === "merchant") return "";
         if (!isCurrencySensitive(field)) return "";
         return `当前选中 ${selectedCurrencies().map(marketLabel).join(" / ")}，金额字段需按单一市场分组编辑。`;
       }
@@ -1820,11 +1848,11 @@
               values: currencies.map((currency) => templateValue(field, currency))
             };
           }
-          const value = merchantDefaults[key];
+          const value = templateValue(field, activeMarketCurrency());
           return {
             kind: "same",
             title: formatValue(key, value),
-            sub: "跨市场批量默认值",
+            sub: `${marketLabel(activeMarketCurrency())} 市场模板`,
             source: "default",
             values: [value]
           };
@@ -1876,7 +1904,7 @@
           if (isCurrencySensitive(field)) {
             return activeMarketCurrencies().map((currency) => `${marketLabel(currency)} 市场模板：${formatValue(key, templateValue(field, currency), currency)}`);
           }
-          return activeMarketCurrencies().map((currency) => `${marketLabel(currency)} 市场模板：${formatValue(key, merchantDefaults[key])}`);
+          return activeMarketCurrencies().map((currency) => `${marketLabel(currency)} 市场模板：${formatValue(key, templateValue(field, currency))}`);
         }
         const counts = new Map();
         selectedBrands().forEach((brand) => {
@@ -1919,12 +1947,13 @@
 
       function renderTemplateMap() {
         const map = document.getElementById("templateMap");
-        const activeCurrencies = activeMarketCurrencies();
+        const visibleCurrencies = visibleMarketCurrencies();
+        const activeCurrency = activeMarketCurrency();
         map.innerHTML = `
-          ${activeCurrencies
+          ${visibleCurrencies
             .map(
               (currency) => `
-                <div class="template-card active" role="button" tabindex="0" data-market-select="${currency}">
+                <div class="template-card ${currency === activeCurrency ? "active" : ""}" role="button" tabindex="0" data-market-select="${currency}">
                   <strong>${marketTemplateName(currency)} <span class="currency-tag">${currency}</span></strong>
                   <p>${marketTemplates[currency].defaultSource}，${marketMetaText(currency)}；${marketBrandCount(currency)} 个品牌继承。这里只做选择和关系展示。</p>
                   ${renderMarketSelectorContent(currency)}
@@ -1939,12 +1968,13 @@
         const brandChips = marketBrands(currency)
           .map((brand) => `<span>${brand.name} · ${statusLabel[brand.status]}</span>`)
           .join("");
+        const isActive = state.scope === "merchant" && currency === activeMarketCurrency();
         return `
           <div class="market-brand-list">
             <strong>继承品牌</strong>
             <div>${brandChips}</div>
           </div>
-          <span class="market-select-hint"><i data-lucide="mouse-pointer-2" size="13"></i>选择此市场</span>
+          <span class="market-select-hint"><i data-lucide="${isActive ? "check-circle-2" : "mouse-pointer-2"}" size="13"></i>${isActive ? "当前编辑市场" : "选择此市场"}</span>
         `;
       }
 
@@ -2021,7 +2051,7 @@
 
       function renderEditor(field) {
         const edit = state.edits[field.key] || { mode: "set", value: defaultDraftValue(field) };
-        const currency = isCurrencySensitive(field) ? selectedCurrencies()[0] : null;
+        const currency = isCurrencySensitive(field) ? activeMarketCurrency() : null;
         const valueControl =
           field.type === "select"
             ? `<select data-draft-value="${field.key}">
@@ -2036,7 +2066,7 @@
           <div class="editor-warning">
             ${isCurrencySensitive(field)
               ? state.scope === "merchant" ? `当前编辑 ${currencyLabel[currency]} 市场模板。金额字段不做跨市场统一设置，也不做汇率折算。` : `当前仅编辑 ${currencyLabel[currency]} 品牌。金额字段不做跨市场统一设置，也不做汇率折算。`
-              : state.scope === "merchant" ? "当前是跨市场批量同步工具，不是统一继承层；发布后写入每个市场模板。" : "先确认原配置明细，再加入变更。本页面只提交主动加入变更的字段，未修改字段会保留各品牌原值。"}
+              : state.scope === "merchant" ? `当前只编辑 ${marketLabel(activeMarketCurrency())} 市场模板；不会同步到其他市场模板。` : "先确认原配置明细，再加入变更。本页面只提交主动加入变更的字段，未修改字段会保留各品牌原值。"}
           </div>
           <div class="editor-grid">
             <label>
@@ -2065,9 +2095,9 @@
             ? activeMarketCurrencies().map((currency) => ({
                 name: `${marketLabel(currency)} 市场模板`,
                 currency,
-                current: isCurrencySensitive(field) ? templateValue(field, currency) : merchantDefaults[field.key],
+                current: templateValue(field, currency),
                 source: marketTemplates[currency].defaultSource,
-                next: previewNextValue(field, edit, { currency, values: merchantDefaults })
+                next: previewNextValue(field, edit, { currency, values: currencyDefaults[currency] })
               }))
             : selectedBrands().map((brand) => ({
                 name: brand.name,
@@ -2128,8 +2158,7 @@
         const agg = aggregate(field.key);
         if (agg.kind === "same") return agg.values[0];
         if (field.type === "select") return field.options[0];
-        if (isCurrencySensitive(field)) return templateValue(field, selectedCurrencies()[0]);
-        return merchantDefaults[field.key];
+        return templateValue(field, activeMarketCurrency());
       }
 
       function sourceText(source) {
@@ -2142,12 +2171,12 @@
       function draftSubtitle(edit, field) {
         if (edit.mode === "default") return "恢复为市场模板值";
         if (edit.mode === "keep") return "不修改该字段";
-        if (state.scope === "merchant") return "发布后写入选中市场模板";
+        if (state.scope === "merchant") return "发布后写入当前市场模板";
         return field && isCurrencySensitive(field) ? "发布后写入同市场选中品牌" : "发布后统一写入选中品牌";
       }
 
       function formatDraft(field, edit) {
-        const currency = isCurrencySensitive(field) ? selectedCurrencies()[0] : null;
+        const currency = isCurrencySensitive(field) ? activeMarketCurrency() : null;
         if (edit.mode === "default") return formatValue(field.key, templateValue(field, currency), currency);
         if (edit.mode === "keep") return "不修改";
         return formatValue(field.key, edit.value, currency);
@@ -2169,10 +2198,10 @@
         document.getElementById("scopeText").textContent = isSingleBrandMerchant()
           ? "单品牌商户：唯一市场模板"
           : state.scope === "merchant"
-            ? "市场模板集合"
+            ? `市场模板：${marketLabel(activeMarketCurrency())}`
             : `已选 ${selected.length} 个品牌`;
         document.getElementById("currencyText").textContent = state.scope === "merchant"
-          ? `启用市场：${allMerchantCurrencies().map(marketLabel).join(" / ")}`
+          ? `当前编辑：${marketLabel(activeMarketCurrency())}`
           : `市场：${currencies.length ? currencies.map(marketLabel).join(" / ") : "未选择"}`;
         document.getElementById("mixedText").textContent = lockedCurrencyFields
           ? `${lockedCurrencyFields} 个金额字段需按市场编辑`
@@ -2180,7 +2209,7 @@
         document.getElementById("summarySubtitle").textContent = isSingleBrandMerchant()
           ? "单品牌商户仅维护唯一市场模板"
           : state.scope === "merchant"
-            ? "保存为市场模板参数"
+            ? "保存为当前市场模板参数"
             : `本次发布影响 ${selected.length} 个品牌`;
         document.getElementById("statBrands").textContent = state.scope === "merchant" ? activeMarketCurrencies().length : selected.length;
         document.getElementById("statScopeLabel").textContent = state.scope === "merchant" ? "影响市场" : "影响品牌";
@@ -2217,7 +2246,7 @@
       function renderDiff() {
         const rows = [];
         const selected = state.scope === "merchant"
-          ? activeMarketCurrencies().map((currency) => ({ name: `${marketLabel(currency)} 市场模板`, currency, values: merchantDefaults }))
+          ? activeMarketCurrencies().map((currency) => ({ name: `${marketLabel(currency)} 市场模板`, currency, values: currencyDefaults[currency] }))
           : selectedBrands();
         Object.entries(state.edits).forEach(([key, edit]) => {
           if (edit.mode === "keep") return;
@@ -2231,7 +2260,7 @@
               field: field.name,
               source: edit.mode === "default"
                 ? `${marketLabel(brand.currency)} 市场模板`
-                : state.scope === "merchant" ? "市场模板批量同步" : isCurrencySensitive(field) ? "品牌金额覆盖" : "品牌覆盖",
+                : state.scope === "merchant" ? "市场模板字段更新" : isCurrencySensitive(field) ? "品牌金额覆盖" : "品牌覆盖",
               current: formatValue(key, current, isCurrencySensitive(field) ? brand.currency : null),
               next: formatValue(key, next, isCurrencySensitive(field) ? brand.currency : null),
               status: field.risk ? "需复核" : "可发布"
@@ -2271,13 +2300,9 @@
           if (edit.mode === "keep") return;
           const field = getField(key);
           if (state.scope === "merchant") {
-            if (isCurrencySensitive(field)) {
-              activeMarketCurrencies().forEach((currency) => {
-                currencyDefaults[currency][key] = edit.mode === "default" ? templateValue(field, currency) : edit.value;
-              });
-            } else if (edit.mode !== "default") {
-              merchantDefaults[key] = edit.value;
-            }
+            activeMarketCurrencies().forEach((currency) => {
+              if (edit.mode !== "default") currencyDefaults[currency][key] = edit.value;
+            });
           } else {
             selectedBrands().forEach((brand) => {
               const next = edit.mode === "default" ? templateValue(field, brand) : edit.value;
