@@ -1,0 +1,1158 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>V2 核心体系设计 - 主线版</title>
+    <style>
+      :root {
+        --bg: #f6f7f9;
+        --surface: #ffffff;
+        --surface-soft: #f1f5f4;
+        --line: #d9e1df;
+        --line-strong: #b8c7c3;
+        --text: #202625;
+        --muted: #65716e;
+        --teal: #13756f;
+        --green: #31723f;
+        --amber: #9b6518;
+        --red: #a83c32;
+        --ink: #162321;
+        --shadow: 0 16px 45px rgba(31, 42, 39, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        color: var(--text);
+        background: var(--bg);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+          sans-serif;
+        line-height: 1.72;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 280px minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        border-right: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.92);
+        padding: 28px 22px;
+      }
+
+      .brand-mark {
+        display: grid;
+        gap: 4px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .brand-mark strong {
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.35;
+      }
+
+      .brand-mark span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .nav {
+        display: grid;
+        gap: 4px;
+        margin-top: 18px;
+      }
+
+      .nav a {
+        border-radius: 6px;
+        color: #384541;
+        font-size: 13px;
+        line-height: 1.35;
+        padding: 8px 10px;
+      }
+
+      .nav a:hover {
+        background: var(--surface-soft);
+        color: var(--teal);
+      }
+
+      main {
+        min-width: 0;
+      }
+
+      .hero {
+        border-bottom: 1px solid var(--line);
+        background:
+          linear-gradient(120deg, rgba(19, 117, 111, 0.12), transparent 52%),
+          linear-gradient(90deg, rgba(49, 114, 63, 0.10), transparent 65%),
+          var(--surface);
+        padding: 48px min(6vw, 72px) 32px;
+      }
+
+      .eyebrow {
+        color: var(--teal);
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0;
+        margin: 0 0 12px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        color: var(--ink);
+        line-height: 1.28;
+        margin: 0;
+      }
+
+      h1 {
+        max-width: 980px;
+        font-size: clamp(32px, 4.3vw, 58px);
+        font-weight: 800;
+      }
+
+      .hero .summary {
+        max-width: 980px;
+        color: #44514e;
+        font-size: 17px;
+        margin: 18px 0 0;
+      }
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .tag,
+      .print-button {
+        align-items: center;
+        border: 1px solid var(--line-strong);
+        border-radius: 6px;
+        color: #30403c;
+        display: inline-flex;
+        font-size: 13px;
+        min-height: 34px;
+        padding: 6px 10px;
+      }
+
+      .print-button {
+        background: var(--ink);
+        border-color: var(--ink);
+        color: #ffffff;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .content {
+        max-width: 1120px;
+        padding: 34px min(6vw, 72px) 80px;
+      }
+
+      section {
+        scroll-margin-top: 24px;
+        margin-top: 34px;
+      }
+
+      section:first-child {
+        margin-top: 0;
+      }
+
+      .section-head {
+        align-items: start;
+        display: grid;
+        gap: 10px;
+        grid-template-columns: minmax(0, 1fr);
+        margin-bottom: 16px;
+      }
+
+      h2 {
+        border-left: 4px solid var(--teal);
+        font-size: 25px;
+        padding-left: 12px;
+      }
+
+      h3 {
+        font-size: 17px;
+        margin: 22px 0 10px;
+      }
+
+      p {
+        margin: 10px 0;
+      }
+
+      ul,
+      ol {
+        margin: 10px 0 0;
+        padding-left: 22px;
+      }
+
+      li + li {
+        margin-top: 7px;
+      }
+
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        padding: 22px;
+      }
+
+      .plain-panel {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 20px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .grid.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+      }
+
+      .card strong {
+        color: var(--ink);
+      }
+
+      .callout {
+        background: #fff8ec;
+        border: 1px solid #ead4ab;
+        border-left: 4px solid var(--amber);
+        border-radius: 8px;
+        color: #4d3a20;
+        padding: 16px 18px;
+      }
+
+      .danger {
+        background: #fff3f0;
+        border-color: #efcbc4;
+        border-left-color: var(--red);
+      }
+
+      .diagram {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        margin: 18px 0 22px;
+        overflow: auto;
+        padding: 18px;
+      }
+
+      .diagram-title {
+        color: var(--ink);
+        font-size: 15px;
+        font-weight: 800;
+        margin-bottom: 12px;
+      }
+
+      .mermaid {
+        min-width: 720px;
+      }
+
+      .decision-list {
+        counter-reset: decision;
+        list-style: none;
+        padding: 0;
+      }
+
+      .decision-list li {
+        border-bottom: 1px solid var(--line);
+        counter-increment: decision;
+        margin: 0;
+        min-height: 57px;
+        padding: 12px 0 12px 52px;
+        position: relative;
+      }
+
+      .decision-list li:last-child {
+        border-bottom: 0;
+      }
+
+      .decision-list li::before {
+        align-items: center;
+        background: var(--surface-soft);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        color: var(--teal);
+        content: counter(decision, decimal-leading-zero);
+        display: inline-flex;
+        font-size: 12px;
+        font-weight: 800;
+        height: 32px;
+        justify-content: center;
+        left: 0;
+        position: absolute;
+        top: 12px;
+        width: 34px;
+      }
+
+      code {
+        background: #eef3f2;
+        border: 1px solid #d7e1df;
+        border-radius: 5px;
+        color: #173d39;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", monospace;
+        font-size: 0.93em;
+        line-height: 1.35;
+        padding: 1px 5px;
+        white-space: nowrap;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      table {
+        border-collapse: collapse;
+        min-width: 760px;
+        width: 100%;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid var(--line);
+        padding: 11px 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: var(--surface-soft);
+        color: var(--ink);
+        font-size: 13px;
+      }
+
+      td {
+        color: #394642;
+        font-size: 14px;
+      }
+
+      .footer-note {
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 13px;
+        margin-top: 44px;
+        padding-top: 18px;
+      }
+
+      @media (max-width: 980px) {
+        .layout {
+          display: block;
+        }
+
+        .sidebar {
+          height: auto;
+          position: static;
+        }
+
+        .nav {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .grid.two,
+        .grid.three {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .hero,
+        .content {
+          padding-left: 18px;
+          padding-right: 18px;
+        }
+
+        .nav {
+          grid-template-columns: 1fr;
+        }
+
+        .panel,
+        .plain-panel,
+        .card,
+        .diagram {
+          padding: 16px;
+        }
+
+      }
+
+      @media print {
+        body {
+          background: #ffffff;
+        }
+
+        .layout {
+          display: block;
+        }
+
+        .sidebar,
+        .print-button {
+          display: none;
+        }
+
+        .hero,
+        .content {
+          padding: 24px 0;
+        }
+
+        .panel,
+        .plain-panel,
+        .card,
+        .diagram {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar" aria-label="章节目录">
+        <div class="brand-mark">
+          <strong>V2 核心体系设计</strong>
+          <span>主线版</span>
+        </div>
+        <nav class="nav">
+          <a href="#scope">§0 文档定位</a>
+          <a href="#goals">§1 设计目标</a>
+          <a href="#model">§2 核心模型</a>
+          <a href="#brand-isolation">§3 品牌隔离</a>
+          <a href="#account">§4 身份账号</a>
+          <a href="#team">§5 团队权限</a>
+          <a href="#identity">§6 身份隔离</a>
+          <a href="#workspace">§7 Workspace</a>
+          <a href="#attribution">§8 来源归因</a>
+          <a href="#performance">§9 业绩划拨</a>
+          <a href="#agent">§10 代理体系</a>
+          <a href="#channel">§11 渠道入口</a>
+          <a href="#security">§12 账号安全</a>
+          <a href="#flows">§13 主线流程</a>
+          <a href="#principles">§14 已拍板原则</a>
+        </nav>
+      </aside>
+
+      <main>
+        <header class="hero">
+          <p class="eyebrow">体系设计稿 · 2026-04-29</p>
+          <h1>V2 核心体系设计 - 主线版</h1>
+          <p class="summary">
+            本文形成包网 SaaS 的主线体系设计。本文只讨论包网程序本身，
+            不展开 OA 合规流程、具体字段、接口、表结构和异常状态机。
+          </p>
+          <div class="toolbar" aria-label="文档标签">
+            <span class="tag">平台 / 商户 / 品牌</span>
+            <span class="tag">来源归因 / 代理体系 / 业绩归集分离</span>
+            <span class="tag">不提供转代功能</span>
+            <a class="tag" href="vip-config-center.html">VIP 配置中心原型</a>
+            <button class="print-button" type="button" onclick="window.print()">打印</button>
+          </div>
+        </header>
+
+        <div class="content">
+          <section id="scope">
+            <div class="section-head">
+              <h2>§0 文档定位与系统边界</h2>
+            </div>
+            <div class="panel">
+              <p>
+                本文档讨论包网程序本身的体系设计：平台、商户、品牌、账号身份、来源归因、代理关系、业绩归集、渠道入口、四端入口和核心权限边界。
+              </p>
+              <p>
+                公司 OA 系统负责公司侧审批与合规流程，包括商户资质、合同、线下身份核验、内部审批和制度性留痕。包网系统只消费 OA 的审批结果、开通指令、停用指令和必要的审计编号，不在本文档展开 OA 流程。
+              </p>
+              <p>
+                字段名、数据库表、API、状态机细枝、支付通道接入和 UI 细节不纳入本文范围。
+              </p>
+              <p>
+                平台端和商户端定位为桌面管理工作台，只提供电脑版，不设计手机版。会员端和代理端属于面向外部用户的访问入口，是否需要移动端或响应式体验，应按对应使用场景单独设计。
+              </p>
+              <div class="callout">
+                最重要的前置原则：端是访问入口，不是业务层级。平台端、商户端、代理端、会员端只是不同身份进入同一套业务体系的窗口。
+              </div>
+            </div>
+          </section>
+
+          <section id="goals">
+            <div class="section-head">
+              <h2>§1 设计目标</h2>
+            </div>
+            <div class="grid two">
+              <article class="card">
+                <strong>同商户多品牌</strong>
+                <p>一家公司客户可以开多个白标品牌。商户是合同、计费和团队归属边界，品牌是真正面向玩家经营的独立单元。</p>
+              </article>
+              <article class="card">
+                <strong>一支团队管多品牌</strong>
+                <p>商户用一支职能团队服务旗下多个品牌。账号能力由权限角色配置决定，品牌范围由 <code>brand_access</code> 决定。</p>
+              </article>
+              <article class="card">
+                <strong>品牌级数据隔离</strong>
+                <p>玩家、钱包、订单、注单、活动参与、风控配置、渠道和报表以品牌为边界，不跨品牌混用。</p>
+              </article>
+              <article class="card">
+                <strong>单后台多上下文</strong>
+                <p>商户端不拆成“商户后台 / 品牌后台”两套系统，而是在一套后台里区分全部品牌视图、品牌上下文和配置中心的明确作用范围。</p>
+              </article>
+            </div>
+            <div class="callout">
+              关系拆分清楚：来源归因解释入口，代理体系解释玩家推广关系，业绩归集解释当前员工经营责任，三者同时存在但不能混成一个字段或一个动作。
+            </div>
+          </section>
+
+          <section id="model">
+            <div class="section-head">
+              <h2>§2 核心业务模型</h2>
+            </div>
+            <div class="diagram">
+              <div class="diagram-title">流程图 1：核心层级与四端入口</div>
+              <pre class="mermaid">
+flowchart TD
+  Platform["平台<br/>SaaS 最高控制方"] --> Merchant["商户<br/>合同、计费、团队边界"]
+  Merchant --> BrandA["品牌 A<br/>独立经营单元"]
+  Merchant --> BrandB["品牌 B<br/>独立经营单元"]
+  BrandA --> Domain["域名<br/>品牌级入口资产"]
+  Domain --> Source["来源入口 / 渠道<br/>自然、广告、官方直推、邀请"]
+  BrandA --> Player["玩家<br/>钱包、投注、活动、VIP"]
+  Player --> AgentTree["玩家邀请关系 / 代理树"]
+
+  PlatformPortal["平台端"] -.身份入口.-> Platform
+  MerchantPortal["商户端"] -.身份入口.-> Merchant
+  MemberPortal["会员端"] -.身份入口.-> Player
+  AgentPortal["代理端"] -.只读查看入口.-> AgentTree
+
+  classDef core fill:#e8f3f1,stroke:#13756f,color:#152b28,stroke-width:1px;
+  classDef entry fill:#fff8ec,stroke:#9b6518,color:#3d2b12,stroke-width:1px;
+  class Platform,Merchant,BrandA,BrandB,Domain,Source,Player,AgentTree core;
+  class PlatformPortal,MerchantPortal,MemberPortal,AgentPortal entry;
+              </pre>
+            </div>
+            <div class="grid two">
+              <article class="card">
+                <strong>平台</strong>
+                <p>包网 SaaS 的最高控制方，负责商户开通、品牌开通、通道池、模板能力、平台级配置、计费和全局审计。</p>
+              </article>
+              <article class="card">
+                <strong>商户</strong>
+                <p>购买包网服务的运营主体，可以拥有多个品牌，负责团队、品牌运营、玩家运营、渠道投放、资金运营和日常配置。</p>
+              </article>
+              <article class="card">
+                <strong>品牌</strong>
+                <p>真正面向玩家经营的独立单元，拥有独立域名、会员端、固定经营币种、渠道配置、玩家、钱包、订单、活动、VIP、风控和报表边界。</p>
+              </article>
+              <article class="card">
+                <strong>玩家与代理体系</strong>
+                <p>玩家是投注、钱包、活动、VIP、邀请关系和代理关系的主体。代理体系描述玩家之间的推广关系，不是渠道体系。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="brand-isolation">
+            <div class="section-head">
+              <h2>§3 品牌与数据隔离</h2>
+            </div>
+            <div class="plain-panel">
+              <p>五层业务关系是：平台拥有商户，商户拥有品牌，品牌拥有域名、来源入口和玩家，玩家之间形成邀请关系或代理树。</p>
+              <p>品牌是核心数据隔离边界。一个品牌固定一套会员端、一个经营币种、配置、渠道、玩家、钱包、订单和报表口径。</p>
+              <p>一个品牌在整个生命周期只经营一个币种。多币种能力体现在同一商户可以经营多个不同币种的品牌；如果需要多币种，就开多个品牌，并可在品牌上设计为同一系列。</p>
+              <p>商户端跨品牌视图必须保留品牌、市场和币种维度。不同币种品牌的充值、提款、流水、优惠、佣金和余额不能直接混加，也不做汇率折算；非金额指标也按配置规则分开，不默认跨市场混合。</p>
+              <p>配置继承上，商户模板不再保留独立通用模板，而是由多个市场模板组成。市场模板唯一键以国家为单位，例如泰国市场、越南市场、菲律宾市场；币种是市场模板属性，不作为模板唯一键。</p>
+              <p>每个市场模板由平台提供默认配置参数，商户启用后可调整；平台默认模板后续变更不自动覆盖已启用的商户市场模板。品牌必须基于某一个市场模板创建，并默认继承该市场模板。</p>
+              <p>市场模板承载金额、支付、风控阈值、VIP 奖励、活动档位、货币单位格式和本地化配置。货币单位格式包括币种、小数位、最小金额单位、千分位和展示格式；本地化配置包括语言、时区、日期格式、手机号格式、银行信息格式、节假日和本地活动日历。</p>
+              <p>配置中心和经营工作台的设计顺序先按多品牌多市场优先建立，再收敛到多品牌单一市场，最后收敛到单一品牌单一市场。后两种不是独立产品形态，而是同一套多品牌多市场能力的简化态和锁定态。</p>
+              <p>域名从属于品牌，是品牌级入口资产。一个品牌可以拥有主站域名、推广域名、落地域名和备用域名；域名负责把访问请求落到确定的品牌上下文。</p>
+              <p>渠道可以绑定同品牌下的可用域名来生成推广入口，但域名不归属于渠道。渠道启停、关闭注册或软删除，不改变域名归属，也不改写历史玩家来源。</p>
+              <p>同商户下不同品牌也不共享玩家身份。玩家在 BrandA 注册后，进入 BrandB 应视为 BrandB 的新玩家；玩家、钱包、订单、投注、活动参与、VIP、佣金和客服记录都按品牌严格隔离。</p>
+              <p>商户层承载合同、计费、团队、跨品牌聚合视图和多品牌经营管理。品牌层承载玩家经营和品牌配置。</p>
+              <p>平台级风险名单或平台级模板能力可以跨商户复用，但这不代表玩家身份、钱包、订单或品牌配置可以跨品牌共享。</p>
+              <p>玩家注册、订单、活动参与、VIP 奖励和佣金结算等关键事实需要保存当时的品牌、市场、币种、配置、渠道和域名快照；后续配置调整不反向改写历史事实。</p>
+            </div>
+          </section>
+
+          <section id="account">
+            <div class="section-head">
+              <h2>§4 身份、账号与入口</h2>
+            </div>
+            <div class="diagram">
+              <div class="diagram-title">流程图 2：身份、账号与当前权限上下文</div>
+              <pre class="mermaid">
+flowchart LR
+  Person["自然人"] --> Identity["系统身份"]
+  Identity --> PlatformAccount["平台账号"]
+  Identity --> OwnerAccount["商户初始最高权限账号<br/>默认 owner 模板"]
+  Identity --> StaffAccount["商户员工账号"]
+  Identity --> MemberAccount["会员账号"]
+  Identity --> AgentAccount["代理端账号"]
+
+  PlatformAccount --> PlatformContext["平台端<br/>平台级上下文"]
+  OwnerAccount --> MerchantContext["商户端<br/>商户 + 品牌上下文"]
+  StaffAccount --> MerchantContext
+  MemberAccount --> BrandContext["会员端<br/>单个品牌玩家上下文"]
+  AgentAccount --> AgentContext["代理端<br/>玩家绑定 + 只读代理线"]
+
+  classDef identity fill:#eef3f2,stroke:#8ca7a0,color:#172522;
+  classDef portal fill:#e9f4ff,stroke:#517c9b,color:#183147;
+  classDef context fill:#fff8ec,stroke:#9b6518,color:#3d2b12;
+  class Person,Identity identity;
+  class PlatformAccount,OwnerAccount,StaffAccount,MemberAccount,AgentAccount portal;
+  class PlatformContext,MerchantContext,BrandContext,AgentContext context;
+              </pre>
+            </div>
+            <div class="grid two">
+              <article class="card">
+                <strong>账号体系要区分四件事</strong>
+                <p>自然人是谁，系统身份是什么，登录账号属于哪个入口，当前权限上下文落在哪个商户和品牌。</p>
+              </article>
+              <article class="card">
+                <strong>平台账号</strong>
+                <p>平台员工使用，进入平台端。服务于商户管理、品牌开通、通道池、平台模板、平台计费、审计和支持。</p>
+              </article>
+              <article class="card">
+                <strong>商户初始最高权限账号</strong>
+                <p>商户开通时创建的初始最高权限账号，进入商户端。默认绑定 owner 角色模板，但仍属于权限角色配置体系。</p>
+              </article>
+              <article class="card">
+                <strong>商户员工账号</strong>
+                <p>商户团队成员使用，进入商户端。员工能力由权限角色配置、<code>brand_access</code> 和动作授权边界共同决定。</p>
+              </article>
+              <article class="card">
+                <strong>会员账号</strong>
+                <p>玩家使用，进入会员端。会员账号按品牌隔离，负责注册、登录、钱包、投注、活动、VIP、邀请好友、客服和个人资料。</p>
+              </article>
+              <article class="card">
+                <strong>代理端账号</strong>
+                <p>外部代理使用，进入代理端。代理端账号绑定到一个玩家身份，只增加代理线查看能力，不改变玩家端身份。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="team">
+            <div class="section-head">
+              <h2>§5 商户团队与权限模型</h2>
+            </div>
+            <div class="callout">
+              商户端团队不应写死为组织层级或固定岗位，而应设计成一套权限角色配置。包括业主在内，所有职能岗位都通过角色配置规范；系统只向商户端预置几种默认角色模板。账号权限 = 角色配置 × <code>brand_access</code> × 动作边界。
+            </div>
+            <div class="plain-panel">
+              <p>权限角色配置至少应覆盖：菜单可见性、页面访问、动作权限、数据范围、品牌范围、高风险动作确认、账号管理能力和报表可见范围。</p>
+              <p>默认角色模板用于开箱即用，不代表岗位不可调整。商户可以在平台允许的边界内复制、调整或新增角色，但不能绕过系统级安全约束和品牌数据隔离。</p>
+              <p>账号硬约束仍然存在：1 个商户端账号仅属于 1 个商户；是否只能属于 1 个团队，可以作为组织管理规则处理，但权限能力以角色配置为准。</p>
+            </div>
+            <div class="table-wrap panel">
+              <table>
+                <thead>
+                  <tr>
+                    <th>默认角色模板</th>
+                    <th>默认覆盖范围</th>
+                    <th>配置边界</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>owner</td>
+                    <td>商户初始最高权限模板，默认覆盖商户级配置、团队授权、品牌经营责任、合同与计费查看、关键高风险动作确认。</td>
+                    <td>owner 不是硬编码特权身份，也应通过权限角色配置表达；最高风险动作可要求 owner 或具备最高确认权限的角色复核。</td>
+                  </tr>
+                  <tr>
+                    <td>admin</td>
+                    <td>商户管理模板，默认处理日常后台管理、账号协助、配置协助和跨品牌运营协调。</td>
+                    <td>合同、计费和最高风险动作不应默认完全放开，需要按角色配置单独授权或要求复核。</td>
+                  </tr>
+                  <tr>
+                    <td>promotion</td>
+                    <td>推广模板，默认负责来源、渠道、推广链接、广告投放、官方直推、外部代理升级入口和推广报表。</td>
+                    <td>不直接拥有玩家资金和核心资料修改权。</td>
+                  </tr>
+                  <tr>
+                    <td>operation</td>
+                    <td>运营模板，默认负责活动、内容、VIP、Banner、Push、素材、玩家留存和部分运营报表。</td>
+                    <td>不能替代财务、风控或渠道归因管理。</td>
+                  </tr>
+                  <tr>
+                    <td>finance</td>
+                    <td>财务模板，默认负责充值、提款、调账、通道水位、账单核对、月度对账和资金类报表。</td>
+                    <td>能处理资金，但不能改活动和渠道。</td>
+                  </tr>
+                  <tr>
+                    <td>customer_service</td>
+                    <td>客服模板，默认负责工单、IM、玩家问题处理、基础资料协助、申诉流转和玩家投诉升级。</td>
+                    <td>能处理玩家问题，但不能改风控规则。</td>
+                  </tr>
+                  <tr>
+                    <td>risk_control</td>
+                    <td>风控模板，默认负责风控规则、黑名单、异常账号处置、冻结、封禁、申诉终审和高级别复核。</td>
+                    <td>能处理风险，但不能替代财务出款。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="identity">
+            <div class="section-head">
+              <h2>§6 身份隔离原则</h2>
+            </div>
+            <div class="grid two">
+              <article class="card">
+                <strong>平台运营</strong>
+                <p>不可在任何商户旗下品牌注册玩家。</p>
+              </article>
+              <article class="card">
+                <strong>商户初始最高权限账号持有人</strong>
+                <p>不可在自己所属商户旗下品牌注册玩家，但可在其它商户品牌中作为普通玩家注册。</p>
+              </article>
+              <article class="card">
+                <strong>商户员工</strong>
+                <p>不可在自己所属商户旗下品牌注册玩家，但可在其它商户品牌中作为普通玩家注册。</p>
+              </article>
+              <article class="card">
+                <strong>离职后员工</strong>
+                <p>员工账号停用后，该自然人不再以该商户员工身份存在，可作为普通玩家注册，但历史员工账号和审计记录保留。</p>
+              </article>
+            </div>
+            <div class="callout">
+              身份隔离是业务边界，不要求包网系统处理公司合规审批，但包网系统需要在账号注册、登录和后台操作上下文里执行该边界。
+            </div>
+          </section>
+
+          <section id="workspace">
+            <div class="section-head">
+              <h2>§7 Workspace 与操作上下文</h2>
+            </div>
+            <div class="diagram">
+              <div class="diagram-title">流程图 3：商户端 Workspace 操作上下文</div>
+              <pre class="mermaid">
+flowchart TD
+  Login["商户端登录"] --> ResolveAccess["解析员工权限<br/>role permissions + brand_access"]
+  ResolveAccess --> BrandScope["生成可访问品牌集合<br/>1 个或多个品牌"]
+  BrandScope --> Workbench["多品牌能力超集 Workspace<br/>同一套页面、筛选器、队列、报表"]
+  Workbench --> DataFilter["按 brand_access 过滤数据<br/>单品牌=锁定唯一品牌，多品牌=可筛选多个品牌"]
+  DataFilter --> OpenRecord["打开玩家、订单、工单、活动记录"]
+  OpenRecord --> RecordBrand["落到记录所属品牌上下文"]
+  DataFilter --> Operations["经营操作入口<br/>玩家、资金、活动、渠道、客服"]
+  RecordBrand --> Operations
+  Workbench --> ConfigCenter["进入配置中心"]
+  RecordBrand --> ConfigCenter
+  ConfigCenter --> ConfigLayers["同一套配置 UI<br/>市场模板 + 品牌设置"]
+  ConfigLayers --> TenantBrandCount{"商户旗下品牌数量"}
+  TenantBrandCount -->|1 个品牌| SingleBrandConfig["唯一市场模板可编辑<br/>品牌设置只读继承且锁死"]
+  TenantBrandCount -->|2 个或更多品牌| MultiBrandConfig["市场模板可编辑<br/>品牌设置可指定 1 个或多个品牌"]
+  SingleBrandConfig --> Publish["差异预览、确认提交"]
+  MultiBrandConfig --> Publish
+
+  classDef start fill:#e8f3f1,stroke:#13756f,color:#152b28;
+  classDef decision fill:#fff8ec,stroke:#9b6518,color:#3d2b12;
+  class Login,ResolveAccess,BrandScope,Workbench,DataFilter,OpenRecord,RecordBrand,Operations,ConfigCenter,ConfigLayers,SingleBrandConfig,MultiBrandConfig,Publish start;
+  class TenantBrandCount decision;
+              </pre>
+            </div>
+            <div class="plain-panel">
+              <p>Workspace 只解决经营视图和记录上下文，不承担配置层级含义。配置修改统一进入配置中心，由配置中心解析市场模板和品牌设置。</p>
+              <p>商户后台不存在 0 个品牌的正常使用态。员工登录后先解析权限角色和 <code>brand_access</code>，生成可访问品牌集合。无论可访问 1 个品牌还是多个品牌，都进入同一套商户经营工作台。</p>
+              <p>Workspace 按多品牌能力超集设计，前端不为单一品牌和多品牌拆两套页面。导航、筛选器、表格、队列、报表、配置中心沿用同一套组件和交互。</p>
+              <p>所有职能员工工作台也遵从同一原则：客服、财务、风控、运营、渠道、报表等岗位不为单品牌和多品牌拆入口，只通过功能权限、品牌范围、数据过滤、控件锁定和差异预览来裁剪。</p>
+              <p>可访问品牌数量只影响数据过滤和控件可操作性，不影响入口形态。单品牌权限时，品牌筛选器固定为唯一品牌，多选、跨品牌对比、批量跨品牌动作被锁定或禁用；多品牌权限时，同一套页面允许在授权品牌集合内筛选、聚合、对比和批量操作。</p>
+              <p>统一经营工作台只能承载聚合、筛选和入口。打开玩家、订单、工单、活动等具体记录后，操作上下文必须落到记录所属品牌，避免在聚合列表里产生模糊写入。</p>
+              <p>单一品牌和多品牌都保留市场模板与品牌设置两层概念，前端使用同一套配置 UI 和交互。市场模板是默认继承基准，品牌设置表达具体品牌是否有覆盖。</p>
+              <p>配置中心的默认继承基准是市场模板，不是单一商户通用值。一个品牌必须绑定一个市场模板，品牌配置默认继承市场模板；只有明确创建品牌覆盖后，才与市场模板产生差异。</p>
+              <p>配置数据模型只有两层：市场模板和品牌覆盖；不增加“品牌组模板”或“同市场品牌组继承层”。前端操作范围提供市场模板配置、同市场品牌组配置和单一品牌配置三种，其中同市场品牌组配置只是批量写入方式，用于一次性把同一国家市场下的多个品牌写入品牌覆盖。</p>
+              <p>品牌覆盖按字段级表达，不做整份配置覆盖。每个字段都要能展示继承市场模板、品牌覆盖和恢复继承，数组类配置按新增、修改匹配项、移除匹配项处理，避免误替换整套规则。</p>
+              <p>多品牌多市场是配置中心的默认设计基准：市场模板承载金额、支付、风控、VIP、活动和本地化默认参数；跨市场批量同步只是操作工具，不是新的继承层。多品牌单一市场时，金额字段可以作为同市场批量项；单一品牌单一市场时，品牌选择锁定，只保留继承查看和必要的市场模板编辑。</p>
+              <p>单一品牌商户可以修改唯一市场模板；品牌设置仍然存在，但被锁定为只读继承市场模板，不能创建品牌覆盖，不能修改品牌设置。</p>
+              <p>多品牌商户除了修改市场模板，还可以进入品牌设置并指定 1 个或多个授权品牌进行覆盖。没有覆盖的品牌继续继承所属市场模板。</p>
+              <p>配置修改权限通过角色配置和动作边界控制，不额外增加审批流程或多人确认流程。配置中心需要提供生效解释能力：字段来源、市场模板值、品牌覆盖值、最后修改人和当前生效原因。</p>
+              <p>异常状态需要在同一套前端内表达，例如市场模板停用、品牌停用、域名过期、支付通道关闭、渠道关闭注册、品牌无可用域名、员工无可访问品牌。</p>
+              <p>如果商户后续从单一品牌扩展为多品牌，前端 UI 不需要换一套；新增品牌必须选择一个市场模板并先继承该市场模板，只有明确创建品牌覆盖后才与市场模板产生差异。</p>
+            </div>
+            <div class="grid two">
+              <article class="card">
+                <strong>经营上下文</strong>
+                <p>入口始终是同一套多品牌能力超集 Workspace。员工可访问品牌数量只决定数据过滤和控件锁定状态，具体记录操作仍落到记录所属品牌。</p>
+              </article>
+              <article class="card">
+                <strong>配置作用域</strong>
+                <p>市场模板和品牌设置始终存在。单一品牌锁死品牌设置为继承；多品牌允许指定 1 个或多个品牌创建覆盖。</p>
+              </article>
+            </div>
+          </section>
+
+          <section id="attribution">
+            <div class="section-head">
+              <h2>§8 来源归因体系</h2>
+            </div>
+            <div class="diagram">
+              <div class="diagram-title">流程图 4：玩家注册来源归因优先级</div>
+              <pre class="mermaid">
+flowchart TD
+  Visit["玩家访问品牌入口"] --> Invite{"有效邀请链接"}
+  Invite -->|是| InviteSource["主归因：邀请来源<br/>同时形成玩家推广关系"]
+  Invite -->|否| Official{"有效官方推广链接"}
+  Official -->|是| OfficialSource["主归因：官方直推"]
+  Official -->|否| Ads{"有效广告参数 / UTM"}
+  Ads -->|是| AdsSource["主归因：广告投放"]
+  Ads -->|否| Natural{"可识别自然访问"}
+  Natural -->|是| NaturalSource["主归因：自然流量"]
+  Natural -->|否| UnknownSource["主归因：未知来源<br/>保留失败原因"]
+
+  InviteSource --> Register["注册完成"]
+  OfficialSource --> Register
+  AdsSource --> Register
+  NaturalSource --> Register
+  UnknownSource --> Register
+  Register --> Immutable["原始来源固定<br/>员工划拨、撤销代理端、渠道关闭均不改写"]
+  Register --> Evidence["辅助证据保留<br/>UTM、referrer、落地页、二维码"]
+
+  classDef source fill:#e8f3f1,stroke:#13756f,color:#152b28;
+  classDef decision fill:#fff8ec,stroke:#9b6518,color:#3d2b12;
+  classDef lock fill:#eef3f2,stroke:#65716e,color:#202625;
+  class Visit,InviteSource,OfficialSource,AdsSource,NaturalSource,UnknownSource,Register,Evidence source;
+  class Invite,Official,Ads,Natural decision;
+  class Immutable lock;
+              </pre>
+            </div>
+            <div class="grid three">
+              <article class="card">
+                <strong>自然流量</strong>
+                <p>无明确推广参数或直接访问品牌官网。每个品牌必须有一个默认自然流量入口，作为兜底来源。</p>
+              </article>
+              <article class="card">
+                <strong>广告投放</strong>
+                <p>来自广告链接、UTM、媒体买量、落地页投放或广告 campaign，用于计算投放效果、ROI 和广告渠道质量。</p>
+              </article>
+              <article class="card">
+                <strong>官方直推</strong>
+                <p>由商户推广或运营团队创建的官方推广入口，例如线下活动二维码、KOL 专属链接、活动落地页、商务直推链接。</p>
+              </article>
+              <article class="card">
+                <strong>邀请来源</strong>
+                <p>由玩家、普通邀请人或外部代理的邀请码、邀请链接带来。邀请来源会同时产生来源归因和玩家之间的推广关系。</p>
+              </article>
+              <article class="card">
+                <strong>人工导入</strong>
+                <p>后台迁移、老系统导入、线下名单导入。人工导入必须保留来源说明，避免和自然流量混淆。</p>
+              </article>
+              <article class="card">
+                <strong>未知来源</strong>
+                <p>参数缺失、参数无效、链接过期、跨品牌来源、无法识别的 referrer。未知来源应可追踪失败原因。</p>
+              </article>
+            </div>
+            <div class="callout">
+              若邀请链接和 UTM 同时存在，主归因给邀请关系，UTM 作为辅助证据保留。被邀请来的玩家可以跟随上级来源归因，但必须标记为裂变获客。
+            </div>
+          </section>
+
+          <section id="performance">
+            <div class="section-head">
+              <h2>§9 业绩归集与员工间划拨</h2>
+            </div>
+            <div class="diagram">
+              <div class="diagram-title">流程图 5：同一流水的三维统计口径</div>
+              <pre class="mermaid">
+flowchart LR
+  Event["玩家流水 / 注册 / 投注 / 充值"] --> ChannelDim["渠道维度<br/>最初从哪个入口来"]
+  Event --> StaffDim["员工维度<br/>当前由哪个员工经营归集"]
+  Event --> AgentDim["代理树维度<br/>玩家之间推广关系"]
+
+  ChannelDim --> ROI["ROI、流量质量、渠道复盘"]
+  StaffDim --> StaffPerf["推广员业绩、内部经营责任"]
+  AgentDim --> Commission["下线查看、多层分润、代理报表"]
+
+  StaffAdjust["员工间划拨"] --> StaffDim
+  StaffAdjust -.不改写.-> ChannelDim
+  StaffAdjust -.不改写.-> AgentDim
+
+  classDef event fill:#eef3f2,stroke:#65716e,color:#202625;
+  classDef dim fill:#e8f3f1,stroke:#13756f,color:#152b28;
+  classDef output fill:#fff8ec,stroke:#9b6518,color:#3d2b12;
+  class Event,StaffAdjust event;
+  class ChannelDim,StaffDim,AgentDim dim;
+  class ROI,StaffPerf,Commission output;
+              </pre>
+            </div>
+            <div class="diagram">
+              <div class="diagram-title">流程图 6：员工间划拨，不做转代</div>
+              <pre class="mermaid">
+flowchart TD
+  PromoterA["推广员 A 的直推线"] --> FirstLevel["第一级会员"]
+  FirstLevel --> Downline["其下游代理树 / 邀请树"]
+  Request["具备划拨权限的商户账号发起"] --> Scope["选择第一级会员及下游树"]
+  Scope --> Effective["设置生效时间"]
+  Effective --> AssignToB["员工经营归属改为推广员 B"]
+  AssignToB --> Future["后续业绩归集给 B"]
+  AssignToB --> KeepSource["原始来源不变"]
+  AssignToB --> KeepTree["代理树位置不变"]
+  AssignToB --> KeepCommission["玩家代理佣金不变"]
+  AssignToB --> NoRetro["历史业绩不追溯"]
+  Request --> NoTransfer["禁止转代<br/>不通过运营动作重排玩家代理树"]
+
+  classDef normal fill:#e8f3f1,stroke:#13756f,color:#152b28;
+  classDef hold fill:#fff8ec,stroke:#9b6518,color:#3d2b12;
+  classDef stop fill:#fff3f0,stroke:#a83c32,color:#4b1914;
+  class PromoterA,FirstLevel,Downline,Request,Scope,Effective,AssignToB,Future normal;
+  class KeepSource,KeepTree,KeepCommission,NoRetro hold;
+  class NoTransfer stop;
+              </pre>
+            </div>
+            <div class="plain-panel">
+              <p>员工间划拨只调整员工经营归属，不调整原始来源归因，也不调整玩家之间的代理树。</p>
+              <p>推广员可以有自己的直推线。直推得到的第一级会员及其往下产生的代理树，可以在员工之间整体划拨。</p>
+              <p>划拨后，玩家和下线的原始来源不变，代理树位置不变，玩家代理佣金不变，只改变当前员工经营归属。</p>
+              <p>划拨从生效时间起影响后续业绩归集，历史业绩不追溯。划拨后产生的新下线，默认继承当前被划拨线的员工经营归属，直到再次划拨给其他员工。</p>
+              <p>推广员离职时，具备划拨权限的商户账号可以把其名下的直推线和经营归属整体划拨给新人。离职划拨不追溯历史业绩。</p>
+            </div>
+            <div class="callout danger">
+              不提供转代功能，不通过运营动作重排玩家之间的代理树。
+            </div>
+          </section>
+
+          <section id="agent">
+            <div class="section-head">
+              <h2>§10 代理体系</h2>
+            </div>
+            <div class="grid two">
+              <article class="card">
+                <strong>代理体系回答的问题</strong>
+                <p>代理体系回答“玩家之间的推广关系是什么”，不是“玩家从哪个渠道来”。</p>
+              </article>
+              <article class="card">
+                <strong>外部代理本质</strong>
+                <p>外部代理是“玩家 + 代理端查看能力”。升级外部代理只是增加代理端账号和只读查看能力。</p>
+              </article>
+              <article class="card">
+                <strong>代理端可见</strong>
+                <p>下线昵称、注册时间、VIP、渠道、脱敏后的联系方式、充值/提现/投注/派彩流水、自己的佣金报表和推广素材库。</p>
+              </article>
+              <article class="card">
+                <strong>代理端不可见</strong>
+                <p>下线密码、完整敏感身份资料、设备指纹、登录历史、后台风控判断、商户内部备注和员工经营归属。</p>
+              </article>
+            </div>
+            <div class="plain-panel">
+              <p>每个玩家天然可以拥有邀请关系或推广链。普通玩家默认没有代理端账号，也不一定能看到详细下线与佣金报表。</p>
+              <p>代理树描述玩家之间的上级和下级关系，服务于下线查看、推广关系、佣金计算和代理报表。</p>
+              <p>代理端是外部代理查看自己代理线的入口。代理端只读，不承载玩家资料修改、资金操作、渠道管理、品牌配置或团队管理。</p>
+              <p>撤销外部代理只关闭代理端入口和查看能力。玩家端账号不变，历史下线不变，原始来源不变，历史佣金事实不变。</p>
+            </div>
+          </section>
+
+          <section id="channel">
+            <div class="section-head">
+              <h2>§11 渠道与推广入口</h2>
+            </div>
+            <div class="plain-panel">
+              <p>渠道是品牌下的来源归因容器，用于统计和运营管理。渠道可以承接自然流量、广告投放、官方直推和邀请流量，但外部代理本人不作为渠道本体存在。</p>
+              <p>域名是品牌级入口资产，不是渠道资产。渠道创建推广入口时，只能选择当前品牌下已配置、可用的域名；不能把 BrandA 的域名绑定到 BrandB 的渠道。</p>
+              <p>玩家访问入口时，域名先确定品牌上下文；渠道绑定、路径、邀请码、UTM、落地页或推广参数再确定来源归因。只有域名且没有明确渠道信息时，进入该品牌默认自然流量入口。</p>
+              <ul>
+                <li>自然流量渠道：品牌创建时自动生成一个默认自然流量入口，不允许手工删除，也不应关闭注册。</li>
+                <li>广告投放渠道：由商户团队创建或从广告模板克隆，用于承接投放 campaign、UTM、广告素材和投放报表。</li>
+                <li>官方直推渠道：由商户团队创建，用于线下活动、KOL、商务合作、内部推广链接和二维码。</li>
+                <li>邀请流量：由玩家或外部代理的邀请链接产生。邀请流量可以落到邀请来源统计，但代理本人仍属于玩家/代理体系，不属于渠道体系。</li>
+                <li>关闭注册：某个渠道停止接收新玩家，但保留老玩家、历史归因和业绩统计。关闭注册可恢复。</li>
+                <li>渠道删除：删除应是软删除。删除前需要处理入口、二维码、活动、负责人和历史报表展示，但不删除历史归因事实。</li>
+                <li>域名变更：域名解绑、换绑或停用只影响后续入口解析。历史注册记录应保留当时的品牌、域名、渠道和推广参数快照。</li>
+              </ul>
+            </div>
+            <div class="callout">
+              渠道质量预警可以包括异常注册率、风控命中率、早期流失率、投诉率。预警只通知负责人、团队队长和具备渠道管理或最高确认权限的角色，不自动冻结渠道或业绩。
+            </div>
+          </section>
+
+          <section id="security">
+            <div class="section-head">
+              <h2>§12 账号与安全治理</h2>
+            </div>
+            <div class="diagram">
+              <div class="diagram-title">流程图 7：非会员账号生命周期</div>
+              <pre class="mermaid">
+stateDiagram-v2
+  [*] --> PendingFirstLogin: 创建账号并人工交接
+  PendingFirstLogin --> Active: 首次登录<br/>改密码 + 绑定 TOTP
+  PendingFirstLogin --> FirstLoginExpired: 7 天未完成首登
+  FirstLoginExpired --> Resetting: 上级重置
+  Resetting --> PendingFirstLogin: 重新交接
+  Active --> Locked: 登录失败 / 风险触发
+  Locked --> Active: 复核解锁
+  Active --> Resetting: 密码或 TOTP 重置
+  Active --> Disabled: 停用 / 离职 / 撤销入口
+  Locked --> Disabled: 停用
+  Disabled --> [*]
+            </pre>
+            </div>
+            <div class="plain-panel">
+              <p>非会员账号包括平台账号、商户初始最高权限账号、商户员工账号和代理端账号。非会员账号全部采用人工交接，不发邀请邮件，不发激活链接，不绑定个人邮箱或手机号，不走找回密码邮件，不发短信 OTP。</p>
+              <p>平台端与商户端登录采用账号密码、TOTP / Google Authenticator 和 IP 白名单。代理端采用账号密码和 TOTP / Google Authenticator，默认不强制 IP 白名单，但必须保持只读边界。</p>
+              <p>首次登录原则：上级线下交接用户名和初始密码；本人首次登录后必须改新密码并绑定 TOTP；绑定完成后账号才进入正常使用。</p>
+              <p>首登窗口：新账号开通后 7 天内必须完成首次登录和 TOTP 绑定。超期账号不可直接继续登录，必须由上级重置后重新交接。</p>
+              <p>账号生命周期至少包括：待首登、正常、首登过期、停用、锁定、重置中。</p>
+            </div>
+            <div class="grid two">
+              <article class="card">
+                <strong>创建责任</strong>
+                <p>平台创建商户初始最高权限账号，默认绑定 owner 角色模板；具备账号管理权限的商户账号创建商户员工账号；商户将玩家升级为外部代理时创建代理端账号；会员账号由玩家在品牌会员端自助注册。</p>
+              </article>
+              <article class="card">
+                <strong>停用责任</strong>
+                <p>平台可停用平台侧账号和商户；具备账号管理权限的商户账号可停用商户员工；商户可撤销代理端入口；风控或客服按权限处理玩家冻结、封禁或解封。</p>
+              </article>
+              <article class="card">
+                <strong>重置责任</strong>
+                <p>商户员工找具备账号重置权限的商户角色；商户初始最高权限账号找平台 admin；平台普通管理角色找平台超管；平台超管走多人共管和线下核验。</p>
+              </article>
+              <article class="card">
+                <strong>会话原则</strong>
+                <p>账号停用、权限收回、TOTP 重置、密码重置和 IP 白名单变化后，应注销相关活跃 session。</p>
+              </article>
+            </div>
+            <div class="callout">
+              平台 Impersonate 只用于排障、支持和审计场景。体系原则上必须可见、可追踪、可撤销，并且不能默认获得资金、高危配置和敏感审批能力。
+            </div>
+          </section>
+
+          <section id="flows">
+            <div class="section-head">
+              <h2>§13 主线流程</h2>
+            </div>
+            <div class="diagram">
+              <div class="diagram-title">流程图 8：平台开户商户到玩家运营主链路</div>
+              <pre class="mermaid">
+flowchart TD
+  OA["OA 完成公司侧审批"] --> OpenMerchant["平台创建商户与初始最高权限账号"]
+  OpenMerchant --> OwnerLogin["初始账号人工交接并首次登录"]
+  OwnerLogin --> OpenBrand["平台开通品牌"]
+  OpenBrand --> DefaultSource["品牌生成默认自然流量入口"]
+  DefaultSource --> Staff["具备账号管理权限的角色创建员工账号"]
+  Staff --> Channel["商户创建广告投放 / 官方直推渠道"]
+  Channel --> Register["玩家访问入口并注册"]
+  Register --> SourceLock["固定原始来源归因"]
+  Register --> Invite["玩家邀请新玩家"]
+  Invite --> AgentRelation["形成玩家推广关系 / 代理树"]
+  AgentRelation --> UpgradeAgent["商户可升级玩家为外部代理"]
+  UpgradeAgent --> AgentPortal["开通代理端只读查看"]
+  Register --> StaffAssign["员工间可划拨经营归属"]
+  StaffAssign --> KeepRules["不改来源、不改代理树、不追溯历史"]
+
+  classDef main fill:#e8f3f1,stroke:#13756f,color:#152b28;
+  classDef guard fill:#fff8ec,stroke:#9b6518,color:#3d2b12;
+  class OA,OpenMerchant,OwnerLogin,OpenBrand,DefaultSource,Staff,Channel,Register,Invite,AgentRelation,UpgradeAgent,AgentPortal,StaffAssign main;
+  class SourceLock,KeepRules guard;
+              </pre>
+            </div>
+            <ol class="decision-list">
+              <li>平台开户商户：OA 完成公司侧审批后，平台端接收开通结果；平台创建商户与初始最高权限账号，默认绑定 owner 角色模板；该账号通过人工交接完成首次登录；商户进入可配置状态。</li>
+              <li>平台开品牌：商户提出品牌需求；平台确认套餐、域名、经营币种、目标地区和基础配置；平台开通品牌；品牌生成默认自然流量入口和基础配置；商户在商户端继续做品牌经营配置。</li>
+              <li>商户开员工：具备账号管理权限的商户账号创建员工账号；选择权限角色配置和 <code>brand_access</code>；系统生成初始账号；上级线下交接；员工首次登录后进入对应权限上下文。</li>
+              <li>玩家注册：玩家访问品牌入口；系统根据邀请、推广链接、广告参数或自然访问确定原始来源；玩家按品牌注册配置完成注册；玩家归属于该品牌，并固定原始来源归因。</li>
+              <li>玩家邀请：玩家通过邀请链接带来新玩家。新玩家注册时记录邀请来源，并形成玩家之间的推广关系。邀请关系进入代理体系，不把邀请人变成渠道本体。</li>
+              <li>升级外部代理：商户将某个玩家升级为外部代理。系统为该玩家开通代理端账号；玩家端身份不变；代理端只读查看下线、佣金和素材。</li>
+              <li>员工间划拨：具备划拨权限的商户账号可以把推广员直推得到的第一级会员及其下游代理树，在员工之间整体划拨。划拨不改来源、不改代理树、不追溯历史业绩。</li>
+              <li>撤销外部代理：商户关闭该玩家的代理端入口。关闭入口不自动删除玩家、不删除下线、不改原始来源、不改历史佣金事实。</li>
+              <li>渠道运营：商户可新增广告投放渠道和官方直推渠道，可关闭注册或软删除入口。渠道操作影响入口和统计口径，不应改写玩家历史来源。</li>
+            </ol>
+          </section>
+
+          <section id="principles">
+            <div class="section-head">
+              <h2>§14 已拍板原则</h2>
+            </div>
+            <ol class="decision-list panel">
+              <li>品牌是玩家、钱包、订单、活动、风控、渠道和报表的核心隔离边界；玩家单位数据必须按品牌严格隔离。</li>
+              <li>商户是合同、计费、团队和多品牌经营的归属边界。</li>
+              <li>一个品牌在整个生命周期只经营一个币种；商户可以通过多个品牌经营多个币种，需要多币种时开多个品牌，并可设计为同一系列。</li>
+              <li>跨品牌报表和经营视图必须保留品牌、市场和币种维度，不同币种金额不能混加，也不做汇率折算；非金额指标也按配置规则分开。</li>
+              <li>商户模板由多个市场模板组成，不再保留独立通用模板。市场模板唯一键以国家为单位，币种是市场模板属性，不作为模板唯一键。</li>
+              <li>每个市场模板由平台提供默认参数，商户启用后可调整；平台默认模板后续变更不自动覆盖已启用的商户市场模板。</li>
+              <li>品牌必须基于某一个市场模板创建，默认继承市场模板；只有明确创建字段级品牌覆盖后，才与市场模板产生差异。</li>
+              <li>货币单位格式需要按市场模板配置，包括币种、小数位、最小金额单位、千分位和展示格式。</li>
+              <li>本地化配置需要进入市场模板，包括语言、时区、日期格式、手机号格式、银行信息格式、节假日和本地活动日历。</li>
+              <li>配置数据模型只有市场模板和品牌覆盖两层；前端操作范围有市场模板配置、同市场品牌组配置、单一品牌配置三种。同市场品牌组配置只是批量写入方式，不是长期继承层。</li>
+              <li>品牌覆盖按字段级表达，不做整份配置覆盖；每个字段应能展示继承市场模板、品牌覆盖和恢复继承。</li>
+              <li>配置中心和经营工作台按多品牌多市场优先设计，再收敛到多品牌单一市场，最后收敛到单一品牌单一市场；后两者是同一套能力的简化态和锁定态。</li>
+              <li>域名从属于品牌，是品牌级入口资产；渠道只能绑定同品牌下的可用域名，不能跨品牌复用域名。</li>
+              <li>域名负责确定品牌上下文，渠道负责解释来源归因。渠道启停、关闭注册、删除或域名解绑都不改写历史来源事实。</li>
+              <li>玩家注册、订单、活动参与、VIP 奖励和佣金结算等关键事实需要保存当时的品牌、市场、币种、配置、渠道和域名快照。</li>
+              <li>来源归因和代理体系分离。来源解释入口，代理解释推广关系，业绩归集解释当前业绩责任。</li>
+              <li>外部代理不是渠道。外部代理是玩家被授予代理端查看能力后形成的身份能力。</li>
+              <li>渠道可以承接邀请流量，但渠道不等于代理本人，关闭渠道也不等于撤销代理。</li>
+              <li>原始来源归因注册后固定。员工间划拨、撤销代理端不改写原始来源。</li>
+              <li>员工间划拨只改员工经营归属，不改玩家代理树，不影响玩家代理佣金，不追溯历史业绩。</li>
+              <li>不提供转代功能，不通过运营动作重排玩家之间的代理树。</li>
+              <li>商户端 Workspace 采用多品牌能力超集设计。单品牌和多品牌使用同一套前端入口、筛选器、列表、队列、报表和配置中心。</li>
+              <li>平台端和商户端只提供电脑版管理工作台，不设计手机版；会员端和代理端是否需要移动端，按对应访问场景另行设计。</li>
+              <li>所有职能员工工作台遵从同一原则。后续功能设计只处理岗位权限、数据过滤、控件锁定、差异预览，以及不同功能页的多品牌展现形式。</li>
+              <li>单品牌权限只锁定品牌选择和跨品牌操作，不切换到另一套页面；多品牌权限在同一套页面内开放多选、聚合、对比和批量能力。</li>
+              <li>配置中心使用同一套 UI 表达市场模板和品牌设置。市场模板是默认继承基准，品牌设置表达具体品牌覆盖。</li>
+              <li>单一品牌商户可以修改唯一市场模板，但品牌设置锁定为只读继承，不开放品牌覆盖写入。</li>
+              <li>多品牌商户可以修改市场模板，也可以在品牌设置中指定 1 个或多个同一国家市场下的授权品牌批量写入品牌覆盖；不能在模糊的聚合视图下直接改配置。</li>
+              <li>配置修改权限通过角色配置和动作边界控制，不额外增加审批流程或多人确认流程。</li>
+              <li>配置中心需要提供生效解释能力：字段来源、市场模板值、品牌覆盖值、最后修改人和当前生效原因。</li>
+              <li>异常状态需要明确展示，例如市场模板停用、品牌停用、域名过期、支付通道关闭、渠道关闭注册、品牌无可用域名、员工无可访问品牌。</li>
+              <li>当前不设计旧商户通用模板迁移场景，也暂不设计配置版本、发布单和回滚单。</li>
+              <li>非会员开户全部人工交接。平台端与商户端使用账号密码、TOTP 和 IP 白名单；代理端使用账号密码和 TOTP，并通过只读边界控制风险。</li>
+              <li>本文档聚焦主线体系设计，不包含字段表、详细状态机、权限矩阵、报表字段表和接口设计。</li>
+            </ol>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+      mermaid.initialize({
+        startOnLoad: true,
+        securityLevel: "strict",
+        theme: "base",
+        themeVariables: {
+          fontFamily:
+            "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif",
+          primaryColor: "#e8f3f1",
+          primaryTextColor: "#152b28",
+          primaryBorderColor: "#13756f",
+          lineColor: "#80938f",
+          secondaryColor: "#fff8ec",
+          tertiaryColor: "#eef3f2",
+          clusterBkg: "#ffffff",
+          clusterBorder: "#d9e1df"
+        }
+      });
+    </script>
+  </body>
+</html>
