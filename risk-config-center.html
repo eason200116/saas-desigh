@@ -1331,6 +1331,8 @@
           country: "泰国",
           name: "泰国市场",
           currency: "THB",
+          language: "泰语",
+          timezone: "UTC+7",
           defaultSource: "平台默认参数",
           locale: "泰语 / UTC+7"
         },
@@ -1338,6 +1340,8 @@
           country: "越南",
           name: "越南市场",
           currency: "VND",
+          language: "越南语",
+          timezone: "UTC+7",
           defaultSource: "平台默认参数",
           locale: "越南语 / UTC+7"
         },
@@ -1345,8 +1349,10 @@
           country: "菲律宾",
           name: "菲律宾市场",
           currency: "PHP",
+          language: "英语 / 菲律宾语",
+          timezone: "UTC+8",
           defaultSource: "平台默认参数",
-          locale: "英语 / UTC+8"
+          locale: "英语 / 菲律宾语 / UTC+8"
         }
       };
 
@@ -1615,6 +1621,11 @@
       function marketLabel(currency) {
         const market = marketTemplates[currency];
         return market ? `${market.country} / ${market.currency}` : currency;
+      }
+
+      function marketMetaText(currency) {
+        const market = marketTemplates[currency];
+        return market ? `币种 ${market.currency}，语言 ${market.language}` : currency;
       }
 
       function marketTemplateName(currency) {
@@ -1902,7 +1913,7 @@
               (currency) => `
                 <div class="template-card active" role="button" tabindex="0" data-market-select="${currency}">
                   <strong>${marketTemplateName(currency)} <span class="currency-tag">${currency}</span></strong>
-                  <p>${marketTemplates[currency].defaultSource}，${marketBrandCount(currency)} 个品牌继承；这里只做选择和关系展示。</p>
+                  <p>${marketTemplates[currency].defaultSource}，${marketMetaText(currency)}；${marketBrandCount(currency)} 个品牌继承。这里只做选择和关系展示。</p>
                   ${renderMarketSelectorContent(currency)}
                 </div>
               `
