@@ -4,10 +4,10 @@
 
 ## 已迁移文件
 
-- `v2-core-flows.html`：主体系设计文档 HTML 版
-- `vip-config-center.html`：VIP 配置中心多品牌配置原型
-- `risk-config-center.html`：复杂风控规则配置中心原型
-- `*.png`：前期截图记录；平台端、商户端后续只以电脑版为准，移动端截图仅作历史参考
+- `docs/v2-core-flows.html`：主体系设计文档 HTML 版
+- `prototypes/vip-config-center.html`：VIP 配置中心多品牌配置原型
+- `prototypes/risk-config-center.html`：复杂风控规则配置中心原型
+- `assets/screenshots/*.png`：前期截图记录；平台端、商户端后续只以电脑版为准，移动端截图仅作历史参考
 
 ## 当前阶段目标
 
@@ -98,6 +98,6 @@
 
 ## 推荐继续打开
 
-- 主文档：`v2-core-flows.html`
-- VIP 配置示例：`vip-config-center.html`
-- 复杂配置示例：`risk-config-center.html`
+- 主文档：`docs/v2-core-flows.html`
+- VIP 配置示例：`prototypes/vip-config-center.html`
+- 复杂配置示例：`prototypes/risk-config-center.html`
