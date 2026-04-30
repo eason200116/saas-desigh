@@ -9,6 +9,7 @@
 
 - 主体系文档：`docs/v2-core-flows.html`
 - 当前交接说明：`docs/handoff.md`
+- Agent 基本原则：`agent.md`
 - 需求文件体系规范：`docs/standards/product-requirements-file-system.md`
 - 项目级产品上下文：`docs/product/README.md`
 - 需求包目录规范：`docs/requirements/README.md`
