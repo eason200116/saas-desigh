@@ -5,6 +5,10 @@
 ## 已迁移文件
 
 - `docs/v2-core-flows.html`：主体系设计文档 HTML 版
+- `docs/standards/product-requirements-file-system.md`：产品前期需求文件体系规范
+- `docs/product/README.md`：项目级产品上下文目录说明
+- `docs/requirements/README.md`：需求包目录说明
+- `docs/templates/requirement-package-template.md`：需求包模板
 - `prototypes/vip-config-center.html`：VIP 配置中心多品牌配置原型
 - `prototypes/risk-config-center.html`：复杂风控规则配置中心原型
 
@@ -94,9 +98,11 @@
 - 抽象通用组件：品牌筛选器、品牌选择器、差异预览、锁定提示、继承状态、覆盖状态、生效解释。
 - 梳理配置中心的数据模型：国家市场模板、品牌设置、字段级继承、字段级覆盖、货币单位格式、本地化规则、异常状态和历史快照。
 - 继续补充权限矩阵，但保持“角色配置 × brand_access × 动作边界”的主线。
+- 后续新增需求必须按 `docs/standards/product-requirements-file-system.md` 建立需求包，避免继续把结论、问题和原型说明混写在同一个文档里。
 
 ## 推荐继续打开
 
 - 主文档：`docs/v2-core-flows.html`
+- 需求文件体系规范：`docs/standards/product-requirements-file-system.md`
 - VIP 配置示例：`prototypes/vip-config-center.html`
 - 复杂配置示例：`prototypes/risk-config-center.html`
