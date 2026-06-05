@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>会员详情 · 字段补充（标红=现有，新增=按流程文档补充）</title>
+    <style>
+      :root {
+        --bg: #f3f5f8; --surface: #ffffff; --line: #e6eaf0; --ink: #1f2733;
+        --muted: #8a93a3; --label: #6b7585; --blue: #2563eb; --red: #d4380d;
+        --green: #13756f; --green-soft: #e8f3f1; --amber: #9b6518;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; background: var(--bg); color: var(--ink); line-height: 1.6;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", sans-serif; font-size: 14px;
+      }
+      .wrap { max-width: 1280px; margin: 0 auto; padding: 16px; }
+      .legend {
+        background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+        padding: 12px 16px; margin-bottom: 14px; display: flex; flex-wrap: wrap; gap: 18px; align-items: center;
+      }
+      .legend b { font-size: 13px; }
+      .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--label); }
+      .swatch { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+      .tag-new {
+        display: inline-block; font-size: 11px; font-weight: 700; color: #fff; background: var(--green);
+        border-radius: 4px; padding: 0 6px; line-height: 18px; margin-left: 6px; vertical-align: middle;
+      }
+      .titlebar {
+        background: var(--surface); border: 1px solid var(--line); border-radius: 8px 8px 0 0;
+        padding: 12px 16px; font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 10px;
+      }
+      .pill { font-size: 12px; font-weight: 600; color: var(--blue); background: #eaf1ff; border-radius: 12px; padding: 2px 10px; }
+      .tabs {
+        background: var(--surface); border-left: 1px solid var(--line); border-right: 1px solid var(--line);
+        display: flex; gap: 26px; padding: 0 16px; border-bottom: 2px solid var(--line);
+      }
+      .tabs span { padding: 10px 2px; color: var(--muted); font-size: 14px; cursor: default; }
+      .tabs span.active { color: var(--blue); font-weight: 700; box-shadow: inset 0 -2px 0 var(--blue); }
+      .card { background: var(--surface); border: 1px solid var(--line); border-top: none; }
+      .sec-title {
+        font-size: 14px; font-weight: 700; padding: 14px 16px 8px; border-top: 1px solid var(--line);
+        display: flex; align-items: center; gap: 8px;
+      }
+      .sec-title:first-child { border-top: none; }
+      .sec-title.add { color: var(--green); }
+      .grid {
+        display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+        border-top: 1px solid var(--line);
+      }
+      .grid.cols3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .grid.cols2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .field {
+        padding: 10px 16px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line);
+        display: flex; gap: 8px; align-items: baseline; min-height: 44px;
+      }
+      .field .lbl { color: var(--label); white-space: nowrap; }
+      .field .val { color: var(--ink); font-weight: 600; word-break: break-all; }
+      .field.exist .val { color: var(--red); }
+      .field.add { background: #f6fbfa; }
+      .field.add .val { color: var(--ink); }
+      .mini-btn { font-size: 12px; color: var(--blue); border: 1px solid #cdd9ff; border-radius: 4px; padding: 0 6px; margin-left: 6px; }
+      .ok { color: #16a34a; font-weight: 700; }
+      .subhead { background: #f0f5ff; font-weight: 700; padding: 8px 16px; border-top: 1px solid var(--line); font-size: 13px; }
+      code { background: #eef3f2; border-radius: 4px; padding: 1px 5px; font-size: 12px; color: #2a3633; }
+      @media (max-width: 1024px) { .grid, .grid.cols3 { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+      @media (max-width: 640px) { .grid, .grid.cols3, .grid.cols2 { grid-template-columns: minmax(0,1fr); } }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="legend">
+        <b>图例：</b>
+        <span class="chip"><span class="swatch" style="background:var(--red)"></span>红色 = 该用户详情现有字段</span>
+        <span class="chip"><span class="tag-new">新增</span>按流程文档补充的字段</span>
+        <span class="chip" style="margin-left:auto;color:var(--muted)">会员 ID 2250893 · 商户 (2001)sit-inr · 示例数据</span>
+      </div>
+
+      <div class="titlebar">会员详情 — 会员ID: 2250893 <span class="pill">(2001)sit-inr</span></div>
+      <div class="tabs">
+        <span class="active">基本信息</span><span>充提信息</span><span>投注信息</span>
+        <span>钱包信息</span><span>账变记录</span><span>操作日志</span>
+      </div>
+
+      <div class="card">
+        <!-- 基本信息 -->
+        <div class="sec-title">基本信息</div>
+        <div class="grid">
+          <div class="field exist"><span class="lbl">会员ID</span><span class="val">2250893</span></div>
+          <div class="field exist"><span class="lbl">商户</span><span class="val">(2001)sit-inr</span></div>
+          <div class="field exist"><span class="lbl">账号</span><span class="val">919***888</span></div>
+          <div class="field exist"><span class="lbl">绑定(邮箱/手机号)</span><span class="val">--</span></div>
+          <div class="field exist"><span class="lbl">语种</span><span class="val">zh</span></div>
+          <div class="field exist"><span class="lbl">用户余额</span><span class="val">98,000.00</span></div>
+          <div class="field exist"><span class="lbl">三方余额</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">未开奖下注金额</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">充值等级</span><span class="val">L1</span></div>
+          <div class="field exist"><span class="lbl">首次登录</span><span class="val">2026-06-03 01:30:00 (UTC+5:30)</span></div>
+          <div class="field exist"><span class="lbl">注册时间</span><span class="val">2026-06-03 20:24:30 (UTC+5:30)</span></div>
+          <div class="field exist"><span class="lbl">用户状态</span><span class="val ok">启用</span><span class="mini-btn">修改</span></div>
+          <div class="field exist"><span class="lbl">用户备注</span><span class="val">--</span><span class="mini-btn">修改</span></div>
+          <div class="field exist"><span class="lbl">用户类型</span><span class="val">真实用户</span></div>
+          <!-- 新增字段 -->
+          <div class="field add"><span class="lbl">经营币种 <span class="tag-new">新增</span></span><span class="val">INR</span></div>
+          <div class="field add"><span class="lbl">经营员工 staff_id <span class="tag-new">新增</span></span><span class="val">emp-208（推广A）</span></div>
+        </div>
+
+        <!-- 归因来源（新增） -->
+        <div class="sec-title add">归因来源 <span class="tag-new">新增</span></div>
+        <div class="grid">
+          <div class="field add"><span class="lbl">主归因 source_type</span><span class="val">自然流量（organic）</span></div>
+          <div class="field add"><span class="lbl">注册渠道 channel_id</span><span class="val">ch-553（默认自然流量）</span></div>
+          <div class="field add"><span class="lbl">搜索引擎</span><span class="val">Google</span></div>
+          <div class="field add"><span class="lbl">referrer</span><span class="val">https://www.google.com/</span></div>
+          <div class="field add"><span class="lbl">utm_source / medium / campaign</span><span class="val">-- / -- / --</span></div>
+          <div class="field add"><span class="lbl">click_id（gclid/fbclid…）</span><span class="val">--</span></div>
+          <div class="field add"><span class="lbl">落地页 landing_url</span><span class="val">https://sit-inr.example.com/</span></div>
+          <div class="field add"><span class="lbl">邀请码 invite_code</span><span class="val">--</span></div>
+          <div class="field add"><span class="lbl">首次触点 first_touch_at</span><span class="val">2026-06-03 20:09:51 (UTC+5:30)</span></div>
+          <div class="field add"><span class="lbl">末次触点 last_touch_at</span><span class="val">2026-06-03 20:23:40 (UTC+5:30)</span></div>
+          <div class="field add" style="grid-column: span 2"><span class="lbl">来源快照 source_snapshot</span><span class="val"><code>{market:IN, merchant:2001, brand:30012, domain:d-8842, channel:ch-553, source:organic}</code></span></div>
+        </div>
+
+        <!-- 归属与层级（新增） -->
+        <div class="sec-title add">归属与层级 <span class="tag-new">新增</span></div>
+        <div class="grid">
+          <div class="field add"><span class="lbl">集团 group_id</span><span class="val">1001（集团）</span></div>
+          <div class="field add"><span class="lbl">市场 market_id</span><span class="val">IN（印度市场 · INR）</span></div>
+          <div class="field exist"><span class="lbl">商户 merchant_id</span><span class="val">2001（sit-inr）</span></div>
+          <div class="field add"><span class="lbl">品牌 brand_id</span><span class="val">30012（隔离边界）</span></div>
+          <div class="field add"><span class="lbl">域名 domain_id</span><span class="val">d-8842（主站）</span></div>
+          <div class="field add"><span class="lbl">是否绑定代理 is_agent_bound</span><span class="val">否</span></div>
+          <div class="field add"><span class="lbl">归属类型 owner_type</span><span class="val">平台 / 商户（platform）</span></div>
+          <div class="field add"><span class="lbl">会员唯一键</span><span class="val"><code>brand_id 30012 + 919***888</code></span></div>
+        </div>
+
+        <!-- 数据统计 -->
+        <div class="sec-title">数据统计</div>
+        <div class="grid cols3">
+          <div class="field exist"><span class="lbl">今日/累计充值</span><span class="val">0.00 / 100,000.00</span></div>
+          <div class="field exist"><span class="lbl">今日/累计提现</span><span class="val">1,000.00 / 1,000.00</span></div>
+          <div class="field exist"><span class="lbl">今日/累计充提差</span><span class="val">-1,000.00 / 99,000.00</span></div>
+          <div class="field exist"><span class="lbl">今日/累计有效投注</span><span class="val">0.00 / 0.00</span></div>
+          <div class="field exist"><span class="lbl">今日/累计输赢</span><span class="val">0.00 / 0.00</span></div>
+          <div class="field exist"><span class="lbl">今日/累计活动优惠</span><span class="val">0.00 / 0.00</span></div>
+        </div>
+
+        <!-- 活动奖励信息 -->
+        <div class="sec-title">活动奖励信息</div>
+        <div class="grid">
+          <div class="field exist"><span class="lbl">已领红包</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">新手礼包</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">大转盘</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">注册送金</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">邀请转盘奖励</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">TG频道活动</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">首充奖励</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">超级大奖</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">代理红包充值</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">回归新充值奖励</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">每日签到</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">锦标赛奖励</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">新会员礼包</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">回归奖励</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">每周/日奖励</span><span class="val">0.00 / 0.00</span></div>
+        </div>
+
+        <!-- 代理数据 / 代理树与佣金 -->
+        <div class="sec-title">代理数据 <span style="color:var(--green);font-weight:700">· 代理树与佣金 <span class="tag-new">新增</span></span></div>
+        <div class="grid cols3">
+          <div class="field exist"><span class="lbl">总获得佣金</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">邀请奖励</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">下级数量</span><span class="val">0</span></div>
+          <div class="field exist"><span class="lbl">合伙人奖励</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">上级代理ID（agent_id）</span><span class="val">2250893（自身 = 无上级 / 根）</span></div>
+          <div class="field exist"><span class="lbl">是否领取返佣</span><span class="val">是</span></div>
+          <div class="field add"><span class="lbl">直接上级 parent_agent_id</span><span class="val">--（代理树根）</span></div>
+          <div class="field add"><span class="lbl">代理层级 agent_level</span><span class="val">1 / 10</span></div>
+          <div class="field add"><span class="lbl">代理路径 agent_path</span><span class="val">2250893</span></div>
+          <div class="field add"><span class="lbl">佣金模式 commission_mode</span><span class="val">返佣 rebate（投注流水返佣）</span></div>
+          <div class="field add"><span class="lbl">代理状态 agent_status</span><span class="val">生效</span></div>
+          <div class="field add"><span class="lbl">结算周期</span><span class="val">周结算</span></div>
+        </div>
+
+        <!-- VIP -->
+        <div class="sec-title">VIP</div>
+        <div class="grid">
+          <div class="field exist"><span class="lbl">VIP经验值</span><span class="val">0</span></div>
+          <div class="field exist"><span class="lbl">VIP等级</span><span class="val">0</span></div>
+          <div class="field exist"><span class="lbl">VIP每月奖励</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">VIP升级礼包</span><span class="val">0.00</span></div>
+        </div>
+
+        <!-- 保险箱 -->
+        <div class="sec-title">保险箱</div>
+        <div class="grid">
+          <div class="field exist"><span class="lbl">保险箱余额</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">已领取收益</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">待领取收益</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">保险箱利率</span><span class="val">58.00%</span></div>
+        </div>
+
+        <!-- 打码/洗码 -->
+        <div class="sec-title">打码/洗码</div>
+        <div class="grid cols3">
+          <div class="field exist"><span class="lbl">累计打码量</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">需要打码量</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">会员洗码量</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">返水金额</span><span class="val">0.00</span></div>
+          <div class="field exist"><span class="lbl">本次打码倍数</span><span class="val">0</span></div>
+          <div class="field exist"><span class="lbl">打码量</span><span class="val">0</span><span class="mini-btn">修改</span></div>
+        </div>
+
+        <!-- 注册登录信息 + 风控补充 -->
+        <div class="sec-title">注册登录信息 <span style="color:var(--green);font-weight:700">· 风控补充 <span class="tag-new">新增</span></span></div>
+        <div class="grid cols3">
+          <div class="field exist"><span class="lbl">注册时间 registered_at</span><span class="val">2026-06-03 20:24:30 (UTC+5:30)</span></div>
+          <div class="field exist"><span class="lbl">注册IP register_ip</span><span class="val">8.211.42.128</span></div>
+          <div class="field exist"><span class="lbl">同IP注册用户数</span><span class="val">105</span></div>
+          <div class="field exist"><span class="lbl">注册浏览器指纹 device_id</span><span class="val">--</span></div>
+          <div class="field exist"><span class="lbl">同指纹注册用户</span><span class="val">0</span></div>
+          <div class="field add"><span class="lbl">注册时区</span><span class="val">UTC+5:30（市场时区，落库 UTC）</span></div>
+          <div class="field add"><span class="lbl">注册端 / 浏览器</span><span class="val">Web · Chrome</span></div>
+          <div class="field add"><span class="lbl">防环校验</span><span class="val">通过（单一上级 · 无闭环）</span></div>
+          <div class="field add"><span class="lbl">会员状态 member_status</span><span class="val">正常</span></div>
+        </div>
+        <div class="subhead">最后3次登录信息</div>
+        <div class="grid cols3">
+          <div class="field exist"><span class="lbl">最后第1次登录时间</span><span class="val">2026-06-04 11:43:11 (UTC+5:30)</span></div>
+          <div class="field exist"><span class="lbl">第1次登录IP</span><span class="val">8.211.42.128</span></div>
+          <div class="field exist"><span class="lbl">第1次同IP用户数</span><span class="val">5</span></div>
+          <div class="field exist"><span class="lbl">最后第2次登录时间</span><span class="val">2026-06-03 20:53:16 (UTC+5:30)</span></div>
+          <div class="field exist"><span class="lbl">第2次登录IP</span><span class="val">8.211.42.128</span></div>
+          <div class="field exist"><span class="lbl">第2次同IP用户数</span><span class="val">22</span></div>
+          <div class="field exist"><span class="lbl">最后第3次登录时间</span><span class="val">--</span></div>
+          <div class="field exist"><span class="lbl">第3次登录IP</span><span class="val">--</span></div>
+          <div class="field exist"><span class="lbl">第3次同IP用户数</span><span class="val">--</span></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

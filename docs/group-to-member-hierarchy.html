@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>核心层级和体系介绍</title>
+    <style>
+      :root {
+        --bg: #f6f7f9;
+        --surface: #ffffff;
+        --surface-soft: #f1f5f4;
+        --line: #d9e1df;
+        --line-strong: #b8c7c3;
+        --text: #202625;
+        --muted: #65716e;
+        --teal: #13756f;
+        --green: #31723f;
+        --amber: #9b6518;
+        --red: #a83c32;
+        --ink: #162321;
+        --shadow: 0 16px 45px rgba(31, 42, 39, 0.08);
+        --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        --font-mono: ui-monospace, "SF Mono", "SFMono-Regular", "JetBrains Mono", "Menlo",
+          "Consolas", "Liberation Mono", monospace;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        color: var(--text);
+        background: var(--bg);
+        font-family: var(--font-sans);
+        font-size: 15px;
+        line-height: 1.7;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        font-feature-settings: "kern" 1, "liga" 1, "tnum" 1;
+      }
+      a { color: inherit; text-decoration: none; }
+      .layout { display: grid; grid-template-columns: 280px minmax(0, 1fr); min-height: 100vh; }
+      .sidebar {
+        position: sticky; top: 0; height: 100vh; overflow-y: auto;
+        border-right: 1px solid var(--line); background: rgba(255, 255, 255, 0.92); padding: 28px 22px;
+      }
+      .brand-mark { display: grid; gap: 4px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+      .brand-mark strong { color: var(--ink); font-size: 16px; line-height: 1.35; }
+      .brand-mark span { color: var(--muted); font-size: 12px; }
+      .nav { display: grid; gap: 4px; margin-top: 18px; }
+      .nav a { border-radius: 6px; color: #384541; font-size: 13px; line-height: 1.35; padding: 8px 10px; }
+      .nav a:hover { background: var(--surface-soft); color: var(--teal); }
+      main { min-width: 0; }
+      .hero {
+        border-bottom: 1px solid var(--line);
+        background: linear-gradient(120deg, rgba(19, 117, 111, 0.12), transparent 52%),
+          linear-gradient(90deg, rgba(49, 114, 63, 0.10), transparent 65%), var(--surface);
+        padding: 48px min(6vw, 72px) 32px;
+      }
+      .eyebrow { color: var(--teal); font-size: 13px; font-weight: 700; margin: 0 0 12px; }
+      h1, h2, h3 { color: var(--ink); line-height: 1.28; margin: 0; }
+      h1 { max-width: 980px; font-size: clamp(30px, 4vw, 52px); font-weight: 800; }
+      .hero .summary { max-width: 980px; color: #44514e; font-size: 17px; margin: 18px 0 0; }
+      .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+      .tag, .print-button {
+        align-items: center; border: 1px solid var(--line-strong); border-radius: 6px;
+        color: #30403c; display: inline-flex; font-size: 13px; min-height: 34px; padding: 6px 10px;
+      }
+      .print-button { background: var(--ink); border-color: var(--ink); color: #fff; cursor: pointer; font-weight: 700; }
+      .content { max-width: 1120px; padding: 34px min(6vw, 72px) 80px; }
+      section { scroll-margin-top: 24px; margin-top: 34px; }
+      section:first-child { margin-top: 0; }
+      .section-head { display: grid; gap: 10px; margin-bottom: 16px; }
+      h2 { border-left: 4px solid var(--teal); font-size: 25px; padding-left: 12px; }
+      h3 { font-size: 17px; margin: 22px 0 10px; }
+      p { margin: 10px 0; }
+      ul, ol { margin: 10px 0 0; padding-left: 22px; }
+      li + li { margin-top: 7px; }
+      .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); padding: 22px; }
+      .grid { display: grid; gap: 14px; }
+      .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+      .card strong { color: var(--ink); }
+      .callout {
+        background: #fff8ec; border: 1px solid #ead4ab; border-left: 4px solid var(--amber);
+        border-radius: 8px; color: #4d3a20; padding: 16px 18px; margin-top: 16px;
+      }
+      .diagram { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; margin: 18px 0 22px; overflow-x: auto; padding: 18px; text-align: center; }
+      .diagram-title { color: var(--ink); font-size: 15px; font-weight: 800; margin-bottom: 14px; text-align: center; }
+      .mermaid { text-align: center; }
+      .mermaid svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+      .table-wrap { overflow-x: auto; }
+      table { border-collapse: collapse; min-width: 720px; width: 100%; font-variant-numeric: tabular-nums; }
+      th, td { border-bottom: 1px solid var(--line); padding: 11px 12px; text-align: left; vertical-align: top; }
+      th { background: var(--surface-soft); color: var(--ink); font-size: 13px; font-weight: 700; letter-spacing: 0.01em; }
+      td { color: #394642; font-size: 14px; }
+      tr.db-has td { color: #c0392b; }
+      tr.db-has code { color: #c0392b; background: #fdecea; }
+      .db-note { font-size: 12px; color: var(--muted); }
+      code {
+        font-family: var(--font-mono);
+        font-size: 0.88em;
+        background: var(--surface-soft);
+        border-radius: 4px;
+        padding: 1px 5px;
+        font-feature-settings: normal;
+      }
+      .footer-note { border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; margin-top: 44px; padding-top: 18px; }
+      @media (max-width: 980px) {
+        .layout { display: block; }
+        .sidebar { position: static; height: auto; }
+        .grid.two, .grid.three { grid-template-columns: minmax(0, 1fr); }
+      }
+      @media print {
+        .sidebar, .print-button { display: none; }
+        .layout { display: block; }
+        body { background: #fff; }
+        .panel { box-shadow: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar" aria-label="章节目录">
+        <div class="brand-mark">
+          <strong>核心层级和体系介绍</strong>
+          <span>集团核心层级 · 归因来源 · 代理体系</span>
+        </div>
+        <nav class="nav">
+          <a href="#scope">§0 文档定位</a>
+          <a href="#overview">§1 层级总览</a>
+          <a href="#relations">§1.1 层级间关系</a>
+          <a href="#layers">§2 各层级说明</a>
+          <a href="#channel">§3 渠道三分类</a>
+          <a href="#attribution">§4 归因来源</a>
+          <a href="#agent">§5 代理体系</a>
+          <a href="#principles">§6 关键原则</a>
+        </nav>
+      </aside>
+
+      <main>
+        <header class="hero">
+          <p class="eyebrow">体系设计稿 · 配套说明</p>
+          <h1>核心层级和体系介绍</h1>
+          <p class="summary">
+            本文为「集团 → 市场 → 商户 → 域名 → 渠道 → 会员」层级树状图提供配套说明，
+            只解释层级关系本身，不展开字段、接口、表结构与异常状态机。
+          </p>
+          <div class="toolbar" aria-label="文档标签">
+            <span class="tag">集团 / 市场 / 商户</span>
+            <span class="tag">域名 / 渠道 / 会员</span>
+            <span class="tag">来源归因：投放 / 代理 / 自流量</span>
+            <button class="print-button" type="button" onclick="window.print()">打印</button>
+          </div>
+        </header>
+
+        <div class="content">
+          <section id="scope">
+            <div class="section-head"><h2>§0 文档定位</h2></div>
+            <div class="panel">
+              <p>
+                本文档分为<strong>「核心层级」</strong>与<strong>「核心体系」</strong>两部分。核心层级自上而下讲清
+                <strong>集团 → 市场 → 商户 → 域名 → 渠道 → 会员</strong>
+                这条主线上每一层的含义、归属关系，以及层级之间的继承、授权与入口关系（§1–§3）。
+              </p>
+              <p>
+                核心体系包含两大主类型：<strong>归因来源</strong>（§4）解释会员最初从哪个入口来、如何按优先级判定主归因并逐层归集到集团；
+                <strong>代理体系</strong>（§5）解释会员之间的推广关系、代理树归属与返佣 / 盈亏两种代理模式。
+              </p>
+              <p>
+                文档只解释层级与体系的关系本身，不展开字段、接口、表结构与异常状态机。前置原则：
+                <strong>端是访问入口，不是业务层级</strong>——平台端、商户端、代理端、会员端只是不同身份进入同一套业务体系的窗口。
+              </p>
+            </div>
+          </section>
+
+          <section id="overview">
+            <div class="section-head"><h2>§1 层级总览</h2></div>
+            <div class="diagram">
+              <div class="diagram-title">流程图 1：层级主线 · 继承授权 · 四端入口</div>
+              <pre class="mermaid">
+flowchart TD
+  Group["集团<br/>最高控制方 · 全局策略与资源"] --> Market["市场<br/>国家市场 · 币种 + 语言 + 本地化"]
+  Market --> Merchant["商户<br/>合同 · 计费 · 团队边界"]
+  Merchant --> Domain["域名<br/>商户级入口资产"]
+  Domain --> Channel["渠道<br/>来源归因容器"]
+  Channel --> Paid["投放<br/>广告 · UTM / campaign"]
+  Channel --> Agent["代理<br/>邀请来源 · 推广关系"]
+  Channel --> Organic["自流量<br/>自然 + 官方直推 · 兜底"]
+  Paid --> Member["会员<br/>玩家 · 商户内严格隔离"]
+  Agent --> Member
+  Organic --> Member
+
+  Market --> MarketTpl["市场模板<br/>平台默认配置参数"]
+  MarketTpl -. 默认继承 .-> Merchant
+  Merchant --> Team["商户团队<br/>角色配置 + 权限管理"]
+  Team -. 按授权经营 .-> Domain
+  Domain --> DomainKinds["域名类型<br/>主站 / 推广 / 落地 / 备用"]
+  Member --> AgentTree["代理树<br/>玩家邀请 / 推广关系"]
+  Agent -. 形成推广关系 .-> AgentTree
+
+  PlatformPortal["平台端"] -. 身份入口 .-> Group
+  MerchantPortal["商户端"] -. 身份入口 .-> Team
+  MemberPortal["会员端"] -. 身份入口 .-> Member
+  AgentPortal["代理端"] -. 只读查看 .-> AgentTree
+
+  classDef spine fill:#e8f3f1,stroke:#13756f,color:#152b28,stroke-width:1px;
+  classDef chan fill:#fff8ec,stroke:#9b6518,color:#3d2b12,stroke-width:1px;
+  classDef attr fill:#eef3f2,stroke:#65716e,color:#202625,stroke-width:1px;
+  classDef portal fill:#f7fbfa,stroke:#80938f,color:#2a3633,stroke-width:1px;
+  class Group,Market,Merchant,Domain,Channel,Member spine;
+  class Paid,Agent,Organic chan;
+  class MarketTpl,Team,DomainKinds,AgentTree attr;
+  class PlatformPortal,MerchantPortal,MemberPortal,AgentPortal portal;
+              </pre>
+            </div>
+            <div class="grid two">
+              <article class="card">
+                <strong>实线 = 从属主线</strong>
+                <p>集团 → 市场 → 商户 → 域名 → 渠道 → 会员。上一层确定下一层的归属边界，逐层向下、不跨层混用。</p>
+              </article>
+              <article class="card">
+                <strong>虚线 = 继承 / 授权 / 入口关系</strong>
+                <p>市场模板向商户「默认继承」配置；商户团队「按授权经营」域名与渠道；四端只作「身份入口」接入对应层级，不构成业务层级。</p>
+              </article>
+            </div>
+            <div class="callout">
+              主线口径一句话：集团下分市场，市场下挂商户，商户持有域名，域名承载渠道，
+              渠道按来源分为投放、代理、自流量三类，三类渠道最终都把流量沉淀为会员；
+              市场模板默认继承、商户团队按授权经营、四端作身份入口，是挂在主线上的横向关系。
+            </div>
+          </section>
+
+          <section id="relations">
+            <div class="section-head"><h2>§1.1 层级间关键关系</h2></div>
+            <div class="grid two">
+              <article class="card">
+                <strong>市场模板 · 默认继承</strong>
+                <p>市场以国家为唯一键，由平台提供默认配置参数（金额、支付、风控阈值、VIP 档位、本地化）。商户启用后默认继承，可在自身范围内调整；平台后续变更不自动覆盖已启用的市场模板。</p>
+              </article>
+              <article class="card">
+                <strong>商户团队 · 按授权经营</strong>
+                <p>商户用一支职能团队经营旗下业务。账号能力由角色配置决定，可操作范围由权限配置决定；团队对域名、渠道、会员的操作都在授权边界内进行。</p>
+              </article>
+              <article class="card">
+                <strong>域名类型 · 入口资产</strong>
+                <p>一个商户可拥有主站、推广、落地、备用域名。域名负责把访问落到确定的商户上下文；解绑、换绑或停用只影响后续解析，不改写历史快照。</p>
+              </article>
+              <article class="card">
+                <strong>代理树 · 推广关系</strong>
+                <p>会员之间天然可形成邀请 / 推广关系，构成代理树。代理类渠道在带来会员的同时形成推广关系；代理树服务于下线查看、佣金计算与代理报表，与渠道来源归因相互独立。</p>
+              </article>
+            </div>
+            <div class="callout">
+              四端入口：平台端接入集团级上下文，商户端接入商户团队（商户上下文），会员端接入单个会员上下文，
+              代理端只读查看自己的代理线。<strong>端是访问入口，不是业务层级。</strong>
+            </div>
+          </section>
+
+          <section id="layers">
+            <div class="section-head"><h2>§2 各层级说明</h2></div>
+            <div class="grid two">
+              <article class="card">
+                <strong>集团</strong>
+                <p>最高归属与控制方，统管旗下多个市场与商户，负责整体策略、资源调配和全局口径，是整条链路的顶层边界。</p>
+              </article>
+              <article class="card">
+                <strong>市场</strong>
+                <p>按国家或地区划分的经营单位，承载币种、语言与本地化口径，使各市场的金额、风控阈值、活动档位互不混用。以市场模板（国家为单位、币种与语言为属性）向下默认继承给商户。</p>
+              </article>
+              <article class="card">
+                <strong>商户</strong>
+                <p>实际的运营主体与合同、计费、团队归属边界，<strong>是会员与业务数据的隔离边界</strong>。其下挂<strong>商户团队</strong>（角色配置 + 权限管理），按授权经营域名、渠道与会员，是经营责任的承载层。</p>
+              </article>
+              <article class="card">
+                <strong>域名</strong>
+                <p>商户级入口资产，分主站、推广、落地、备用等类型，负责把访问落到确定的商户上下文。<strong>域名先定上下文，渠道再定来源</strong>；域名不归属于渠道，渠道启停或删除不改变域名归属，也不改写历史会员来源。</p>
+              </article>
+              <article class="card">
+                <strong>渠道</strong>
+                <p>挂在域名之下的「来源归因容器」，用于统计与运营管理。渠道可绑定本商户下已配置、可用的域名生成推广入口，但不能跨商户借用域名。详见 §3。</p>
+              </article>
+              <article class="card">
+                <strong>会员</strong>
+                <p>面向 C 端的玩家主体，是注册、钱包、投注、活动、VIP、邀请关系的承载者。会员之间形成<strong>代理树</strong>（邀请 / 推广关系）。会员严格按商户隔离，钱包、订单、VIP、佣金与客服记录都不跨商户混用。</p>
+              </article>
+            </div>
+
+            <h3>数据模型 · 层级基数（研发）</h3>
+            <p>建表前先对齐各层从属的基数，避免外键挂错层：</p>
+            <div class="table-wrap panel">
+              <table>
+                <thead>
+                  <tr><th>关系</th><th>基数</th><th>说明</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>集团 → 市场</td><td>1 : N</td><td>一个集团下多个市场（按国家 / 区域划分）</td></tr>
+                  <tr><td>市场 → 商户</td><td>1 : N</td><td><strong>商户归属单一市场</strong>（主运营市场）；若需经营其它市场 / 币种，在对应市场下另建商户，不跨市场混用。<strong>商户（<code>merchant_id</code>）是会员与业务数据的隔离边界</strong></td></tr>
+                  <tr><td>商户 → 域名</td><td>1 : N</td><td>主站 / 推广 / 落地 / 备用；域名是商户级入口资产</td></tr>
+                  <tr><td>域名 → 渠道</td><td>1 : N</td><td>一个域名下可挂多个推广渠道；渠道绑定所属域名生成推广入口</td></tr>
+                  <tr><td>渠道 → 会员</td><td>1 : N</td><td>一个推广渠道下可注册多个会员；会员注册时落到唯一渠道（来源归因）</td></tr>
+                  <tr><td>会员 ↔ 会员（代理树）</td><td>自关联 · ≤ 10 级</td><td>上下级推广关系，单一直接上级，最高 10 级</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="callout">
+              数据规则：①会员唯一键 <code>UNIQUE(merchant_id, login_name)</code>，<strong>同一手机号 / 邮箱可在不同商户各自注册为独立会员</strong>；
+              ②钱包 / 订单 / 投注 / 活动 / VIP / 佣金均以 <code>merchant_id</code> 为隔离键，不跨商户混加；
+              ③商户固定单一经营币种，继承所属市场模板；不同币种不做汇率折算直接相加。
+            </div>
+          </section>
+
+          <section id="channel">
+            <div class="section-head"><h2>§3 渠道三分类（来源归因）</h2></div>
+            <div class="panel">
+              <p>
+                渠道层把会员的来源拆成三类。它回答「会员最初从哪个入口来」，
+                与「会员之间的推广关系（代理树）」以及「当前由哪个员工经营（业绩归集）」是三件独立的事，
+                <strong>同时存在但不混成同一个字段或同一个动作</strong>。
+              </p>
+            </div>
+            <div class="grid three">
+              <article class="card">
+                <strong>投放</strong>
+                <p>付费广告来源。来自广告链接、UTM、媒体买量、落地页或广告 campaign，用于核算投放效果、ROI 和广告渠道质量。</p>
+              </article>
+              <article class="card">
+                <strong>代理</strong>
+                <p>分销 / 推广来源。由会员、邀请人或外部代理的邀请码、邀请链接带来，既产生来源归因，又形成会员之间的推广关系。按发起形态分<strong>正常邀请</strong>（玩家 / 邀请人 / 代理发起的个人邀请）与<strong>活动邀请</strong>（玩家分享活动拉新的裂变行为）两类。外部代理本质是「会员 + 代理端只读查看能力」，代理本人不作为渠道本体存在。</p>
+              </article>
+              <article class="card">
+                <strong>自流量</strong>
+                <p>自然 / 私域来源。无明确推广参数的直接访问，以及商户自建的官方直推入口（线下二维码、KOL 链接、活动落地页等）。每个商户必须有一个默认自然流量入口作兜底，不允许手工删除。</p>
+              </article>
+            </div>
+            <div class="callout">
+              来源优先级（简化口径）：有效邀请链接 → 官方直推 → 广告 / UTM → 可识别自然访问 → 未知来源。
+              <strong>原始来源一旦在注册时固定，员工划拨、撤销代理端、渠道关闭都不改写。</strong>
+            </div>
+          </section>
+
+          <section id="attribution">
+            <div class="section-head"><h2>§4 归因来源</h2></div>
+            <div class="panel">
+              <p>
+                <strong>归因来源回答「会员最初从哪个入口来」。</strong>
+                玩家访问商户入口后，<strong>域名先确定商户上下文，渠道与推广参数再确定来源</strong>，
+                注册完成时主归因即被固定，并保留 UTM、referrer、落地页、二维码等辅助证据。原始来源一旦写定，
+                员工划拨、撤销代理端、渠道关闭都不再改写。
+              </p>
+              <p>
+                <strong>从归因到集团的整体流程：</strong>
+                会员在某域名注册 → 系统按优先级判定主归因（邀请 &gt; 官方直推 &gt; 广告 &gt; 自然 &gt; 未知）→
+                该会员的注册、投注、充值等流水带上「渠道 / 员工 / 代理树」三个维度 →
+                数据先在<strong>渠道</strong>内汇总（ROI、流量质量），再到<strong>域名 / 商户</strong>（经营责任、商户聚合），
+                逐层向上到<strong>市场</strong>（按国家 / 币种口径），最终在<strong>集团</strong>形成全局报表。
+                每一层只在自己的边界内聚合，不同币种、不同市场不直接混加。
+              </p>
+            </div>
+
+            <h3>归因时点与窗口（研发）</h3>
+            <div class="table-wrap panel">
+              <table>
+                <thead>
+                  <tr><th>规则</th><th>口径</th><th>原因</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>来源归因取值</td><td>归因窗口内的<strong>末次有效触点（last-touch）</strong>，注册时锁定</td><td>用户注册前可能多次访问，统一以末次有效参数为准，避免来源漂移</td></tr>
+                  <tr><td>代理绑定取值</td><td><strong>首次有效绑定（first-bind，sticky）</strong>，一旦绑定上级即固定</td><td>防止他人邀请码覆盖、抢线；保证代理树稳定</td></tr>
+                  <tr><td>归因窗口</td><td>默认 7 天，可按市场配置</td><td>cookie / 参数留存时长，超窗口视为新触点</td></tr>
+                  <tr><td>链接有效期 TTL</td><td>邀请默认 30 天、广告随 campaign、官方按活动，均可配</td><td>过期参数判为失效，回落自然 / 未知</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="diagram">
+              <div class="diagram-title">流程图 2：从用户到集团的归属路径</div>
+              <pre class="mermaid">
+flowchart TD
+  User["用户 / 会员<br/>注册时固定 访问端 + 来源 + 归属"] --> Attr["来源归因<br/>投放 / 代理 / 自流量"]
+  Attr --> Own{"是否绑定代理关系？"}
+  Own -->|有绑定| AgOwn["归属代理<br/>挂入代理线（最高 10 级）"]
+  Own -->|无绑定| PlatOwn["归属平台 / 商户"]
+  AgOwn --> Domain["域名<br/>确定商户上下文"]
+  PlatOwn --> Domain
+  Domain --> Merchant["商户<br/>经营责任 / 计费 / 团队"]
+  Merchant --> Market["市场<br/>国家 / 币种 / 本地化口径"]
+  Market --> Group["集团<br/>全局报表与口径"]
+  classDef u fill:#fff8ec,stroke:#9b6518,color:#3d2b12;
+  classDef dec fill:#fff8ec,stroke:#9b6518,color:#3d2b12;
+  classDef own fill:#eef3f2,stroke:#65716e,color:#202625;
+  classDef sp fill:#e8f3f1,stroke:#13756f,color:#152b28;
+  class User,Attr u;
+  class Own dec;
+  class AgOwn,PlatOwn own;
+  class Domain,Merchant,Market,Group sp;
+              </pre>
+            </div>
+            <h3>流程图 2 简介</h3>
+            <div class="panel">
+              <p>
+                该图描述一名会员从<strong>注册落地</strong>开始，其业绩与归属如何沿
+                <strong>渠道 → 商户 → 市场 → 集团</strong> 逐层上卷。要点如下：
+              </p>
+            </div>
+            <div class="grid three">
+              <article class="card">
+                <strong>① 逐层上卷</strong>
+                <p>会员 → 渠道 → 商户 → 市场 → 集团，每一层只在自己的边界内聚合，不跨层混加。</p>
+              </article>
+              <article class="card">
+                <strong>② 归属分叉</strong>
+                <p>关键分叉在「是否绑定代理关系」：<strong>无绑定 → 归属平台 / 商户</strong>；<strong>有绑定 → 归属代理</strong>并挂入代理树（最高 10 级）。</p>
+              </article>
+              <article class="card">
+                <strong>③ 快照固定</strong>
+                <p>所有归属在注册时一次性写定并形成快照，后续不反向改写。</p>
+              </article>
+            </div>
+            <div class="table-wrap panel">
+              <p class="db-note" style="margin:0 0 10px"><strong style="color:#c0392b">红色 = 数据库 / 代码仓库已有字段</strong>（已标注对应表.列，定义按 DB 口径）；黑色 = DB 暂无、建议新增或派生的字段。比对来源：<code>Ar_V1_DataBase</code> 库结构 + <code>saas-desigh</code> 仓库。</p>
+              <table>
+                <thead>
+                  <tr><th>字段</th><th>数据库对应（表.列）</th><th>所属环节</th><th>定义（按 DB 口径）</th><th>用途 / 原因</th></tr>
+                </thead>
+                <tbody>
+                  <tr class="db-has"><td><code>member_id</code></td><td><code>tab_Users.UserId</code>（int·IDENTITY）</td><td>用户 / 会员</td><td>会员唯一 ID</td><td>全链路归集与按商户隔离的主键</td></tr>
+                  <tr class="db-has"><td><code>client_type</code></td><td><code>tab_Users.PhoneType / RegType</code></td><td>用户 / 会员 · 访问端</td><td>访问端 / 注册类型；DB 现以 PhoneType（端类型）、RegType（注册类型）粗粒度记录，<strong>需扩展为 6 端枚举</strong>：ios_native / android_native / ios_wrapper / android_wrapper / pc（含平板）/ h5</td><td>区分端来源，分端统计、风控与归因。端来源包含：ios原生、安卓原生、iOS壳包、安卓壳包、pc（含平板）、h5（手机端）</td></tr>
+                  <tr class="db-has"><td><code>registered_at</code></td><td><code>tab_Users.AddTime</code>（UserStartDate=首登）</td><td>注册</td><td>注册完成时间</td><td>来源与归属快照的时点基准</td></tr>
+                  <tr class="db-has"><td><code>group_id</code></td><td><code>tab_Users.GroupID</code></td><td>集团</td><td>组织顶层 ID（DB 为集团 / 总代理口径）</td><td>顶层全局报表归集</td></tr>
+                  <tr><td><code>market_id</code></td><td>无独立列（<code>tab_m_Merchant.Country</code> + 币种配置派生）</td><td>市场</td><td>所属市场（国家）；<strong>建议新增</strong></td><td>币种 / 语言 / 本地化口径，跨市场不混加</td></tr>
+                  <tr class="db-has"><td><code>merchant_id</code></td><td><code>tab_Users.AppID</code> / <code>tab_m_Merchant.MrId</code></td><td>商户</td><td>所属商户 / 站点（AppID，如 2001=sit-inr）；<strong>商户（<code>merchant_id</code>）是会员与业务数据的核心隔离边界</strong></td><td>计费、经营责任、数据隔离、聚合</td></tr>
+                  <tr class="db-has"><td><code>domain_id</code></td><td><code>tab_PwaDomain.Id</code> / <code>tab_Channels.DomainUrl</code></td><td>域名</td><td>域名入口资产（State / IsDeleted 控制启停）</td><td>确定商户上下文，留存入口快照</td></tr>
+                  <tr class="db-has"><td><code>channel_id</code></td><td><code>tab_Users.ChannelCode</code> + <code>tab_Channels.ChannelID</code></td><td>渠道</td><td>注册渠道编码（ChannelCode=渠道编码）</td><td>来源归因容器，ROI / 流量质量统计</td></tr>
+                  <tr><td><code>source_type</code></td><td>派生（由 ChannelCode / InviterCode / RegType 推导）</td><td>来源归因</td><td>主归因 <code>invite / official / ads / organic / unknown</code>；DB 无独立列，<strong>建议新增</strong></td><td>决定归属与统计口径</td></tr>
+                  <tr><td><code>referrer</code></td><td>无</td><td>来源归因 · 辅证</td><td>请求来源页地址；<strong>建议新增</strong></td><td>识别自然流量与搜索引擎</td></tr>
+                  <tr><td><code>utm_source / medium / campaign</code></td><td>无</td><td>来源归因 · 辅证</td><td>广告链接参数；<strong>建议新增</strong></td><td>核算投放效果与 ROI</td></tr>
+                  <tr class="db-has"><td><code>click_id</code></td><td><code>tab_Users.Gpcadid</code>（GP 广告 ID）</td><td>来源归因 · 辅证</td><td>点击 ID；DB 仅有 Gpcadid，<strong>需补</strong> gclid / fbclid / ttclid / msclkid</td><td>广告平台回传与对账</td></tr>
+                  <tr><td><code>is_agent_bound</code></td><td>派生（Superior 是否为有效代理）</td><td>归属判定</td><td>是否绑定代理关系；<strong>建议显式落库</strong></td><td>决定归属平台还是归属代理</td></tr>
+                  <tr><td><code>owner_type</code></td><td>派生（Superior / AgentType）</td><td>归属判定</td><td>归属类型 <code>platform / agent</code>；<strong>建议新增</strong></td><td>归属结果落库</td></tr>
+                  <tr class="db-has"><td><code>agent_id</code></td><td><code>tab_Users.Superior</code>（=代理）</td><td>代理</td><td>直接上级代理 ID</td><td>代理树挂载与佣金归集</td></tr>
+                  <tr class="db-has"><td><code>agent_path</code></td><td><code>tab_Users_Relative</code>（PUserID→CUserID 逐级）</td><td>代理树</td><td>上级链路（关系表记录）</td><td>多层分润与下线查看</td></tr>
+                  <tr class="db-has"><td><code>agent_level</code></td><td><code>tab_Users_Relative.Lv</code></td><td>代理树</td><td>代理层级（Lv）</td><td>级差分润与下线 / 报表层级展示</td></tr>
+                  <tr class="db-has"><td><code>commission_mode</code></td><td><code>tab_Users.RebateState_Bet / RebateState_Recharge</code></td><td>代理</td><td>返佣状态：投注返佣（RebateState_Bet）/ 充值返佣（RebateState_Recharge）；<strong>盈亏模式需另配</strong></td><td>返佣 / 盈亏结算方式</td></tr>
+                  <tr class="db-has"><td><code>currency</code></td><td><code>CurrencyName</code>（支付 / 商户配置）/ <code>tab_m_Merchant.Country</code></td><td>市场 / 商户</td><td>经营币种；DB 在支付 / 商户配置层，<strong>建议会员级冗余</strong></td><td>金额口径，不跨币种混加</td></tr>
+                  <tr class="db-has"><td><code>staff_id</code></td><td><code>tab_Users.OwnerID / BelongID</code></td><td>业绩归集</td><td>经营归属（Owner / Belong，口径待确认）</td><td>业绩归集第三维、员工间划拨</td></tr>
+                  <tr><td><code>first_touch_at / last_touch_at</code></td><td>无</td><td>来源归因</td><td>首次 / 末次有效触点时间；<strong>建议新增</strong></td><td>归因窗口与「末次触点」取值依据</td></tr>
+                  <tr class="db-has"><td><code>invite_code</code></td><td><code>tab_Users.InviterCode</code></td><td>代理</td><td>注册所用邀请码</td><td>解析上级、建立代理绑定</td></tr>
+                  <tr><td><code>invite_type</code></td><td>DB / 代码均<strong>无独立列</strong>（最接近的 <code>tab_Users.RegType</code> 仅区分手机 / 邮箱注册方式，非邀请类型）</td><td>代理 · 邀请细分</td><td>邀请类型 <code>normal / activity</code>（正常邀请 / 活动邀请）；<strong>建议新增</strong></td><td>区分个人邀请与活动裂变，分开统计获客质量与活动效果</td></tr>
+                  <tr><td><code>invite_activity_id</code></td><td>会员级<strong>无独立列</strong>；活动邀请关系现由下游表记录：<code>tab_UserInvitedTask</code>(UserId↔ParentId)、<code>tb_InviteCodeBind</code>、<code>tab_InvitedWheelSpinRecord.FromUserId</code>，但均无「活动 ID」字段</td><td>代理 · 邀请细分</td><td>活动邀请对应的活动 ID；仅活动邀请有值，<strong>建议新增</strong></td><td>还原由哪个活动驱动的裂变，核算活动 ROI 与奖励发放</td></tr>
+                  <tr><td><code>landing_url</code></td><td>无</td><td>来源归因 · 辅证</td><td>落地页地址；<strong>建议新增</strong></td><td>还原投放 / 活动入口</td></tr>
+                  <tr class="db-has"><td><code>device_id / register_ip</code></td><td><code>tab_User_RegisterDevice.DeviceId</code> / <code>tab_Users.RegisterIP</code></td><td>风控</td><td>设备指纹 / 注册 IP</td><td>防作弊、防环、风控判定</td></tr>
+                  <tr class="db-has"><td><code>member_status</code></td><td><code>tab_Users.UserState</code>（+ IsBlock / IsValid）</td><td>会员</td><td>会员状态</td><td>生命周期与风控控制</td></tr>
+                  <tr><td><code>channel_status</code></td><td><code>tab_Channels</code> 无状态列</td><td>渠道</td><td>渠道状态：启用 / 关闭注册 / 软删；<strong>建议新增</strong></td><td>渠道生命周期，关注册保留历史归因</td></tr>
+                  <tr class="db-has"><td><code>agent_status</code></td><td><code>tab_Agent_User</code>（存在=已开通）/ <code>tab_Agent_Locked</code></td><td>代理</td><td>代理状态：生效 / 锁定 / 撤销</td><td>代理端开通 / 撤销，不动代理树与历史佣金</td></tr>
+                  <tr><td><code>source_snapshot</code></td><td>无</td><td>注册快照</td><td>市场 / 商户 / 域名 / 渠道 / 来源快照；<strong>建议新增</strong></td><td>保证历史事实不被改写</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="callout">
+              比对结论：<strong>会员主体、商户 / 站点、域名、渠道、代理树（Superior + tab_Users_Relative.Lv）、返佣状态、邀请码、设备 / IP、会员状态</strong>等核心字段 DB 已具备（标红）；
+              <strong>来源归因明细（source_type / referrer / utm / 触点时间 / 落地页 / 快照）、归属显式标识（is_agent_bound / owner_type）、市场与渠道状态</strong>等多为派生或缺失，建议新增。
+              字段类型、长度、可空以建表规范为准；现有唯一性以 <code>tab_Users.UserId</code> 为主键，跨商户隔离需结合 <code>AppID</code>。
+            </div>
+
+            <div class="diagram">
+              <div class="diagram-title">流程图 3：注册主归因优先级（含访问端）</div>
+              <pre class="mermaid">
+flowchart TD
+  Client["访问端 client_type<br/>iOS原生 / 安卓原生 / iOS壳包 / 安卓壳包 / PC端（含平板） / 手机H5端"] --> Visit["玩家访问商户入口"]
+  Visit --> Invite{"有效邀请链接？"}
+
+  Invite -->|是| S1["主归因：邀请来源<br/>同时形成代理树推广关系"]
+  Invite -->|否| Official{"有效官方推广链接？"}
+  Official -->|是| S2["主归因：官方直推"]
+  Official -->|否| Ads{"有效广告参数 / UTM？"}
+  Ads -->|是| S3["主归因：广告投放"]
+  Ads -->|否| Nat{"可识别自然访问？"}
+  Nat -->|是| S4["主归因：自然流量"]
+  Nat -->|否| S5["主归因：未知来源<br/>保留失败原因"]
+  S1 --> InvKind{"邀请类型？<br/>invite_type"}
+  InvKind -->|个人邀请码 / 链接| S1a["正常邀请<br/>玩家 / 邀请人 / 代理发起的个人邀请"]
+  InvKind -->|分享活动邀请| S1b["活动邀请<br/>玩家分享活动拉新（裂变获客 · 带活动ID）"]
+  S1a --> Reg["注册完成"]
+  S1b --> Reg
+  S2 --> Reg
+  S3 --> Reg
+  S4 --> Reg
+  S5 --> Reg
+  Reg --> Lock["原始来源固定<br/>划拨 / 撤代 / 关渠道均不改写"]
+  Reg --> Roll["三维归集<br/>渠道 → 商户 → 市场 → 集团"]
+  classDef src fill:#e8f3f1,stroke:#13756f,color:#152b28;
+  classDef dec fill:#fff8ec,stroke:#9b6518,color:#3d2b12;
+  classDef lock fill:#eef3f2,stroke:#65716e,color:#202625;
+  class Client,Visit,S1,S1a,S1b,S2,S3,S4,S5,Reg,Roll src;
+  class Invite,Official,Ads,Nat,InvKind dec;
+  class Lock lock;
+              </pre>
+            </div>
+            <div class="panel">
+              <p>
+                <strong>流程图 3 整体流程：</strong>玩家访问商户入口后，系统按<strong>固定优先级依次判定主归因，命中即停</strong>——
+                第一个满足的条件即作为该玩家的主归因，不再向下判断。判定顺序为：
+                有效邀请链接（→ 邀请来源，同时建立代理树推广关系）→ 有效官方推广链接（→ 官方直推）→
+                有效广告参数 / UTM（→ 广告投放）→ 可识别自然访问（→ 自然流量）→ 都不满足则归未知来源并保留失败原因。
+              </p>
+              <p>
+                判定完成后<strong>注册完成</strong>，主归因写入快照<strong>就此固定</strong>，员工划拨、撤销代理端、关闭渠道均不改写；
+                与此同时，该玩家后续的注册、投注、充值等流水按<strong>渠道 → 商户 → 市场 → 集团</strong>逐层三维归集。
+                核心原则是<strong>优先级唯一、命中即停、就高不就低</strong>（如邀请链接与 UTM 同时存在，优先判为邀请来源）。
+              </p>
+              <p>
+                <strong>邀请来源再细分为两类（<code>invite_type</code>）：</strong>
+                <strong>正常邀请</strong>——玩家、邀请人、代理等角色发起的个人邀请行为（个人邀请码 / 链接）；
+                <strong>活动邀请</strong>——玩家通过分享活动邀请他人的裂变获客行为（活动专属邀请链接，带活动 ID）。
+                两类<strong>都进代理树、都归代理（上级）</strong>，区别仅在发起形态与是否携带活动上下文：
+                正常邀请用于核算个人 / 代理拉新，活动邀请用于核算活动裂变效果与 ROI，二者分开统计。
+              </p>
+            </div>
+
+            <h3>访问端（六类）</h3>
+            <p>玩家访问入口的客户端类型在注册时记录为 <code>client_type</code>，与主归因正交（端只回答「从哪种客户端进来」，来源回答「从哪个入口来」）。共六类：</p>
+            <div class="grid three">
+              <article class="card">
+                <strong>iOS 原生</strong>
+                <p>上架 App Store 的原生 iOS 应用，原生壳 + 原生界面。<em>例：从 App Store 下载的官方 App。</em></p>
+              </article>
+              <article class="card">
+                <strong>安卓原生</strong>
+                <p>原生 Android 应用（APK），原生壳 + 原生界面。<em>例：官网或应用市场下载的安卓 App。</em></p>
+              </article>
+              <article class="card">
+                <strong>iOS 壳包</strong>
+                <p>iOS WebView 套壳应用，外壳为原生、内容为 H5。<em>例：用套壳分发绕过审核的 iOS 包。</em></p>
+              </article>
+              <article class="card">
+                <strong>安卓壳包</strong>
+                <p>Android WebView 套壳 APK，外壳为原生、内容为 H5。<em>例：渠道分发的安卓套壳包。</em></p>
+              </article>
+              <article class="card">
+                <strong>PC 端（含平板）</strong>
+                <p>桌面浏览器访问，含平板等大屏设备。<em>例：Windows / Mac 浏览器或 iPad 横屏访问。</em></p>
+              </article>
+              <article class="card">
+                <strong>手机 H5 端</strong>
+                <p>移动浏览器直接访问的 H5 页面，无需安装。<em>例：手机浏览器打开推广短链。</em></p>
+              </article>
+            </div>
+
+            <h3 id="attr-sources">五类来源简介与举例</h3>
+            <div class="grid three">
+              <article class="card">
+                <strong>自然流量</strong>
+                <p>无明确推广参数的直接访问或搜索进入，是每个商户必备的兜底来源。<em>例：用户在搜索引擎搜商户名点进官网。</em></p>
+              </article>
+              <article class="card">
+                <strong>广告投放</strong>
+                <p>来自广告链接、UTM、媒体买量、落地页 campaign，用于核算投放效果与 ROI。<em>例：Facebook 广告带 fbclid 进入落地页。</em></p>
+              </article>
+              <article class="card">
+                <strong>官方直推</strong>
+                <p>商户运营创建的官方推广入口。<em>例：线下活动二维码、KOL 专属短链、商务直推链接、活动落地页。</em></p>
+              </article>
+              <article class="card">
+                <strong>邀请来源</strong>
+                <p>由玩家、邀请人或外部代理的邀请码 / 链接带来，同时形成代理树。再分两类：<strong>正常邀请</strong>＝玩家 / 邀请人 / 代理发起的个人邀请；<strong>活动邀请</strong>＝玩家分享活动邀请他人的裂变行为。<em>例：老玩家分享带自己 ID 的邀请链接（正常邀请）；玩家分享「邀请转盘」活动拉新（活动邀请）。</em></p>
+              </article>
+              <article class="card">
+                <strong>未知来源</strong>
+                <p>参数缺失、失效、过期、跨商户或无法识别 referrer，应可追踪失败原因。<em>例：链接过期后直接打开域名。</em></p>
+              </article>
+            </div>
+
+            <h3 id="attr-entry">主归因往下：各来源的入口与采集方式</h3>
+            <div class="table-wrap panel">
+              <table>
+                <thead>
+                  <tr><th>主归因</th><th>入口形态</th><th>采集 / 识别方式与举例</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>自然流量</td>
+                    <td>搜索进入 / 直接访问</td>
+                    <td>解析请求 <code>referrer</code> 的来源域名以识别搜索引擎名称，无 referrer 则记为直接访问。可识别的海外搜索引擎：Google、Bing、Yahoo、Yahoo! Japan、DuckDuckGo、Ecosia、Startpage、Brave Search、Ask.com、AOL、Mojeek、You.com、Perplexity、Qwant、Swisscows、MetaGer、SearXNG、Lycos、Excite、Dogpile、OneSearch、Gibiru、Presearch、Yandex、Mail.ru、Rambler、Naver、Daum、goo、Seznam、Onet、WP（Wirtualna Polska）、Coc Coc、Sapo、Eniro、Najdi、Walla。<strong>中国搜索引擎（百度、搜狗、360、神马等）归入「其他」；凡未在上述列表中的搜索引擎一律默认归入「其他」。</strong></td>
+                  </tr>
+                  <tr>
+                    <td>广告投放</td>
+                    <td>广告链接 / 落地页</td>
+                    <td>读取 UTM 参数（<code>utm_source / utm_medium / utm_campaign / utm_content / utm_term</code>）与平台点击 ID：Google <code>gclid</code>、Meta <code>fbclid</code>、TikTok <code>ttclid</code>、Bing <code>msclkid</code>。例：<code>?utm_source=facebook&amp;utm_campaign=th_618</code>。</td>
+                  </tr>
+                  <tr>
+                    <td>官方直推</td>
+                    <td>专属链接 / 二维码</td>
+                    <td>商户在「官方直推渠道」生成带渠道标识的短链或二维码，扫码 / 点击即带上渠道 ID。例：线下展会物料二维码、KOL 专属 <code>?ch=kol_anna</code>。</td>
+                  </tr>
+                  <tr>
+                    <td>邀请来源 · 正常邀请</td>
+                    <td>个人邀请码 / 邀请链接</td>
+                    <td>玩家 / 邀请人 / 代理发起的个人邀请，链接或邀请码内含上级玩家 / 代理 ID，注册时写入代理树上级关系，<code>invite_type=normal</code>。例：<code>/r/INV8K3D</code> 或填写邀请码 <code>8K3D</code>。</td>
+                  </tr>
+                  <tr>
+                    <td>邀请来源 · 活动邀请</td>
+                    <td>活动专属邀请链接 / 海报</td>
+                    <td>玩家通过分享活动邀请他人（裂变获客），链接含上级 ID + 活动 ID，注册时既挂代理树又触发活动奖励，<code>invite_type=activity</code> 并记 <code>invite_activity_id</code>。例：邀请转盘 <code>/act/wheel?inv=8K3D&amp;act=2026spin</code>。</td>
+                  </tr>
+                  <tr>
+                    <td>未知来源</td>
+                    <td>兜底</td>
+                    <td>上述均无法识别时落入未知来源，记录失败原因（参数无效 / 过期 / 跨商户）。例：referrer 与 UTM 均为空且非已知直接入口。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="callout">
+              若邀请链接与 UTM 同时存在，<strong>主归因给邀请来源</strong>，UTM 作为辅助证据保留；被邀请玩家可跟随上级来源，但需标记为「裂变获客」。
+            </div>
+
+            <h3>归因边界与边缘情况（研发）</h3>
+            <div class="grid two">
+              <article class="card">
+                <strong>邀请 + UTM 同时存在</strong>
+                <p>主归因判为<strong>邀请来源</strong>，UTM 作为辅助证据保留；被邀请玩家可跟随上级来源，但标记为「裂变获客」。</p>
+              </article>
+              <article class="card">
+                <strong>多次触点</strong>
+                <p>归因窗口内<strong>末次触点</strong>定来源；代理绑定以<strong>首次</strong>为准，不被后续覆盖。</p>
+              </article>
+              <article class="card">
+                <strong>跨商户邀请码</strong>
+                <p>在 B 商户使用 A 商户的邀请码 / 链接<strong>无效</strong>（商户隔离）→ 落未知来源，记录失败原因。</p>
+              </article>
+              <article class="card">
+                <strong>referrer / UA 被抹除</strong>
+                <p>隐私模式、Tor、部分 App 内置浏览器会抹除 referrer 与精简 UA → 无法判搜索引擎，归<strong>自然流量直接访问</strong>或<strong>未知来源</strong>。</p>
+              </article>
+              <article class="card">
+                <strong>防作弊 / 防环</strong>
+                <p>自己邀请自己、上下级成环、同设备多账号需校验拦截，<strong>不写入代理树</strong>。</p>
+              </article>
+              <article class="card">
+                <strong>移动端归因（注明）</strong>
+                <p>本期以 web 的 referrer / UTM / 点击 ID 为准；App 安装归因（deep link、deferred deep link、设备指纹匹配）<strong>另行设计</strong>。</p>
+              </article>
+            </div>
+
+            <h3 id="attr-agent">来源归因 · 代理树归属</h3>
+            <p>不同主归因决定会员是否进入代理树，以及该会员<strong>归代理所有还是归平台所有</strong>：</p>
+            <div class="table-wrap panel">
+              <table>
+                <thead>
+                  <tr><th>主归因</th><th>是否进代理树</th><th>玩家归属</th><th>说明与举例</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>邀请来源（正常邀请 / 活动邀请）</td><td>是</td><td><strong>归代理（上级）</strong></td><td>无论正常邀请还是活动邀请，都挂到上级代理树下，佣金按代理模式结算；活动邀请额外触发活动奖励并记 <code>invite_activity_id</code>。例：A 邀请 B → B 归 A 这条代理线；A 分享邀请转盘活动拉来 C → C 同样归 A，并发放转盘奖励。</td></tr>
+                  <tr><td>官方直推</td><td>视渠道配置</td><td>默认归平台 / 商户</td><td>官方运营入口默认归平台侧；若直推链接绑定了某外部代理，则该入口带来的玩家归该代理。例：KOL 专属链接绑定代理则归该 KOL。</td></tr>
+                  <tr><td>广告投放</td><td>否</td><td>归平台 / 商户</td><td>商户买量获取，归平台运营，不归任何个人代理。例：信息流广告获客计入商户投放业绩。</td></tr>
+                  <tr><td>自然流量</td><td>否</td><td>归平台 / 商户</td><td>用户自行搜索 / 直接进入，无上级，归平台兜底。例：搜商户名进入的新用户。</td></tr>
+                  <tr><td>未知来源</td><td>否</td><td>归平台</td><td>无法识别，统一归平台兜底，保留失败原因待追溯。</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="callout">
+              一句话：<strong>只有邀请来源（及绑定了代理的官方直推）会让会员归代理；广告、自然、未知都归平台 / 商户。</strong>
+              来源归因解释「入口」，代理树解释「人与人的推广关系」，两者相互独立、不可混为一谈。
+            </div>
+          </section>
+
+          <section id="agent">
+            <div class="section-head"><h2>§5 代理体系</h2></div>
+            <div class="panel">
+              <p>
+                代理体系回答的是<strong>「玩家之间的推广关系是什么」</strong>，
+                而不是「玩家从哪个渠道来」。<strong>外部代理的本质是「玩家 + 代理端只读查看能力」</strong>——
+                升级外部代理只是为该玩家增加一个代理端账号和只读权限，不改变其玩家身份。
+              </p>
+              <p>
+                每个玩家天然可以拥有邀请关系或推广链；<strong>代理树</strong>描述玩家之间的上下级关系，
+                服务于下线查看、推广关系、佣金计算和代理报表。撤销外部代理只关闭代理端入口与查看能力，
+                玩家端账号、历史下线、原始来源和历史佣金事实都不变。
+              </p>
+              <p>
+                <strong>代理树写入约束（研发）：</strong>每个会员只有<strong>一个直接上级</strong>；写入时须<strong>防环校验</strong>——
+                自己不能成为自己的上级，也不可形成上下级闭环；代理树最高 10 级。
+              </p>
+            </div>
+
+            <div class="diagram">
+              <div class="diagram-title">流程图 4：各归因注册路径 → 归属判定 → 代理树（最高 10 级）</div>
+              <pre class="mermaid">
+flowchart TD
+  R1["邀请来源注册<br/>邀请码 / 邀请链接"] --> Bind{"是否绑定代理关系？"}
+  R2["官方直推注册<br/>官方专属链接 / 二维码"] --> Bind
+  R3["广告投放注册<br/>UTM / 点击ID"] --> Bind
+  R4["自然流量注册<br/>搜索 / 直接访问"] --> Bind
+  R5["未知来源注册<br/>参数缺失 / 失效"] --> Bind
+  Bind -->|无绑定| Plat["归属平台<br/>不进代理树<br/>（自然 / 广告 / 未知 / 未绑直推）"]
+  Bind -->|有绑定| Ag["归属代理<br/>挂入上级代理<br/>（邀请来源 / 绑代理的官方直推）"]
+  Ag --> T1
+  Ag -. 只读查看 .-> Portal["代理端<br/>下线 / 流水 / 佣金报表"]
+
+  subgraph Tree["代理树 · 最高 10 级"]
+    direction LR
+    T1["1级"] --> T2["2级"] --> T3["3级"] --> T4["4级"] --> T5["5级"] --> T6["6级"] --> T7["7级"] --> T8["8级"] --> T9["9级"] --> T10["10级 · 最高"]
+  end
+
+  classDef src fill:#e8f3f1,stroke:#13756f,color:#152b28;
+  classDef dec fill:#fff8ec,stroke:#9b6518,color:#3d2b12;
+  classDef plat fill:#eef3f2,stroke:#65716e,color:#202625;
+  classDef ag fill:#e8f3f1,stroke:#13756f,color:#152b28,stroke-width:2px;
+  classDef lv fill:#fff8ec,stroke:#9b6518,color:#3d2b12;
+  classDef po fill:#f7fbfa,stroke:#80938f,color:#2a3633;
+  class R1,R2,R3,R4,R5 src;
+  class Bind dec;
+  class Plat plat;
+  class Ag ag;
+  class T1,T2,T3,T4,T5,T6,T7,T8,T9,T10 lv;
+  class Portal po;
+              </pre>
+            </div>
+            <div class="callout">
+              归属判定只看注册时<strong>是否绑定代理关系</strong>：<strong>无绑定 → 归属平台</strong>（自然、广告、未知、未绑代理的官方直推）；<strong>有绑定 → 归属代理</strong>（邀请来源、绑定了代理的官方直推），挂入上级代理线。代理树<strong>最高 10 级</strong>。
+            </div>
+
+            <h3>代理层级（1–10 级）</h3>
+            <div class="panel">
+              <p>
+                <strong>代理层级</strong>指代理树中从某代理到其某个下线之间的<strong>层级距离</strong>：某代理的直接下线为其
+                <strong>1 级下线</strong>，下线的下线为 <strong>2 级</strong>，依此类推，最深至 <strong>10 级</strong>。
+                同一会员只有一个直接上级，整条上级链路记录在 <code>agent_path</code> 中。
+              </p>
+              <p>
+                层级用于<strong>多级分润的级差计算</strong>、下线列表与代理报表的层级展示。
+                <em>例：A → B → C，对 A 而言 B 是 1 级、C 是 2 级；按级差制，A 在 C 的业绩上实得「A 级比例 − B 级比例」的部分。</em>
+              </p>
+            </div>
+
+            <div class="grid two">
+              <article class="card">
+                <strong>代理端可见</strong>
+                <p>下线昵称、注册时间、VIP、渠道、脱敏联系方式，下线的充值 / 提现 / 投注 / 派彩流水，自己的佣金报表与推广素材库。</p>
+              </article>
+              <article class="card">
+                <strong>代理端不可见</strong>
+                <p>下线密码、完整敏感身份资料、设备指纹、登录历史、后台风控判断、商户内部备注与员工经营归属。代理端只读，不能改资料、动资金、管渠道。</p>
+              </article>
+            </div>
+
+            <h3 id="agent-modes">两种代理模式</h3>
+            <div class="grid two">
+              <article class="card">
+                <strong>返佣代理模式（投注流水返佣）</strong>
+                <p>按下线的<strong>投注流水（turnover）</strong>固定比例返佣，<strong>无论玩家输赢都产生</strong>。成本可预测、激励走量。
+                <br/><em>例：下线本月投注流水 100,000，返佣比例 0.8% → 代理获 800。</em></p>
+              </article>
+              <article class="card">
+                <strong>盈亏代理模式（用户亏损返利）</strong>
+                <p>按下线<strong>净亏损（即平台净盈利）</strong>的一定比例分成；下线整体盈利时本期分成计 0 或负数结转。与平台盈亏挂钩、高风险高回报。
+                <br/><em>例：下线本月净亏损 50,000，分成比例 30% → 代理获 15,000；若该月下线整体盈利，则代理分成为 0。</em></p>
+              </article>
+            </div>
+            <div class="table-wrap panel">
+              <table>
+                <thead>
+                  <tr><th>对比维度</th><th>返佣代理模式</th><th>盈亏代理模式</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>计算基数</td><td>下线投注流水</td><td>下线净亏损（平台盈利）</td></tr>
+                  <tr><td>是否随输赢波动</td><td>否，按流水稳定结算</td><td>是，玩家赢则无分成</td></tr>
+                  <tr><td>代理收益特征</td><td>稳定、可预测</td><td>波动大、上限高</td></tr>
+                  <tr><td>平台成本特征</td><td>固定成本，走量越大越高</td><td>与盈利同向，亏损时不付</td></tr>
+                  <tr><td>适合代理类型</td><td>大流量、低净亏的拉新型</td><td>高净值、高亏损的深耕型</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="callout">
+              两种模式都只改变<strong>佣金如何计算</strong>，不改变代理树结构与来源归因。核心原则：<strong>不提供转代</strong>，不通过运营动作重排代理树；员工间划拨只改经营归属，不改原始来源与代理树位置。
+            </div>
+
+            <h3>佣金计算口径（研发）</h3>
+            <div class="table-wrap panel">
+              <table>
+                <thead>
+                  <tr><th>项目</th><th>定义 / 规则</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>有效投注流水</td><td>返佣模式基数 = 已结算注单的有效流水；取消、对冲、未结算注单不计；不同游戏类型的有效投注口径可单独配置。</td></tr>
+                  <tr><td>净亏损</td><td>盈亏模式基数 = 会员净亏损 = 投注 − 派彩 − 红利 − 返水 − 调整（平台口径）；为负（会员盈利）则当期记 0 或负数结转。</td></tr>
+                  <tr><td>多级分润模型</td><td>按<strong>级差制</strong>配置：每级设佣金比例，上级实得为本级比例与下级比例之差；最高 10 级。</td></tr>
+                  <tr><td>结算周期</td><td>可配日清算 / 周结算 / 月结算；周期快照锁定后出佣金报表。</td></tr>
+                  <tr><td>负数结转</td><td>盈亏模式当期为负时结转下期，直至冲平；是否清零可配置。</td></tr>
+                  <tr><td>调整与冲减</td><td>撤单、红包冲回、风控扣回在结算前并入基数，避免多发或漏扣。</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="principles">
+            <div class="section-head"><h2>§6 关键原则</h2></div>
+            <div class="panel">
+              <ol>
+                <li><strong>逐层从属，不跨层混用。</strong>上一层确定下一层的归属边界；会员、资金、订单等关键数据以商户为隔离边界。</li>
+                <li><strong>域名定上下文，渠道定来源。</strong>只有域名而无明确渠道信息时，进入该商户的默认自然流量入口。</li>
+                <li><strong>三套关系分离。</strong>来源归因（渠道）解释入口，代理体系解释会员之间的推广关系，业绩归集解释当前员工的经营责任，三者不可合一。</li>
+                <li><strong>历史事实不被改写。</strong>注册时的市场、商户、域名、渠道与来源会形成快照，后续配置调整、划拨、渠道关闭均不反向改写历史。</li>
+                <li><strong>不提供转代。</strong>不通过运营动作重排会员之间的代理树；员工间划拨只改经营归属，不改原始来源与代理树位置。</li>
+              </ol>
+            </div>
+            <p class="footer-note">配套于「集团 → 会员」层级树状图 · 集团层级体系说明。</p>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+      mermaid.initialize({
+        startOnLoad: true,
+        securityLevel: "strict",
+        theme: "base",
+        themeVariables: {
+          fontFamily:
+            "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif",
+          fontSize: "13px",
+          primaryColor: "#e8f3f1",
+          primaryTextColor: "#152b28",
+          primaryBorderColor: "#13756f",
+          lineColor: "#80938f",
+          secondaryColor: "#fff8ec",
+          tertiaryColor: "#eef3f2",
+          clusterBkg: "#ffffff",
+          clusterBorder: "#d9e1df"
+        }
+      });
+    </script>
+  </body>
+</html>
