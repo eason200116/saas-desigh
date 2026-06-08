@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>会员详情 · 新增字段说明（名词解释 / 应用场景 / 异常情况）</title>
+    <style>
+      :root {
+        --green: #2e7d5b; --blue: #1565c0; --red: #d4380d; --orange: #e65100;
+        --border: #e2e6ea; --muted: #7a8494; --ink: #1f2927; --bg: #f6f8fb;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        background: var(--bg); color: var(--ink); font-size: 14px; line-height: 1.7;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      }
+      .header { background: linear-gradient(135deg, #1a3a2a, #2e7d5b); color: #fff; padding: 28px 32px; }
+      .header h1 { font-size: 23px; margin-bottom: 6px; }
+      .header p { opacity: .85; font-size: 13px; }
+      .header .stats { display: flex; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
+      .header .stat { background: rgba(255,255,255,.12); border-radius: 10px; padding: 8px 16px; }
+      .header .stat b { font-size: 20px; display: block; }
+      .header .stat small { opacity: .75; font-size: 11px; }
+      .toolbar { position: sticky; top: 0; z-index: 10; background: #fff; border-bottom: 1px solid var(--border); padding: 11px 24px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+      .toolbar input { flex: 1; min-width: 220px; height: 38px; border: 1px solid var(--border); border-radius: 8px; padding: 0 14px; font-size: 14px; }
+      .toolbar .ct { color: var(--muted); font-size: 13px; }
+      .container { max-width: 1320px; margin: 0 auto; padding: 18px 24px; }
+      .card { background: #fff; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 16px; overflow: hidden; }
+      .card-head { padding: 14px 20px; background: #fafbfc; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+      .card-head .arr { width: 18px; font-size: 12px; color: var(--muted); transition: .2s; }
+      .card-head.col .arr { transform: rotate(-90deg); }
+      .card-head h2 { font-size: 16px; margin: 0; flex: 1; }
+      .card-head .cnt { font-size: 12px; color: var(--muted); }
+      .card-head.col + .card-body { display: none; }
+      .card-body { padding: 0; overflow-x: auto; }
+      table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+      thead th { text-align: left; padding: 10px 16px; font-weight: 700; background: #f6f8fb; border-bottom: 2px solid var(--border); white-space: nowrap; }
+      td { padding: 11px 16px; border-bottom: 1px solid #f0f2f5; vertical-align: top; }
+      tr:hover td { background: #f9fbfa; }
+      .fname { font-weight: 700; color: var(--red); white-space: nowrap; }
+      .fname code { display: block; font-weight: 400; font-size: 11px; color: var(--muted); margin-top: 3px; }
+      td.exc { color: #9a3a1a; }
+      .col-def { width: 27%; }
+      .col-use { width: 27%; }
+      .col-exc { width: 30%; }
+      .callout { margin: 0 0 16px; background: #fff7f3; border: 1px solid #ffd9c7; border-left: 4px solid var(--red); border-radius: 10px; padding: 14px 18px; }
+      .callout h3 { font-size: 15px; color: var(--red); margin-bottom: 8px; }
+      .callout .three { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+      .callout .three .b { flex: 1; min-width: 200px; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 12.5px; }
+      .callout .three .b b { color: var(--blue); }
+      .rec th { background: #eef8f2; }
+      .pri { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 8px; white-space: nowrap; }
+      .pri-h { background: #fdecea; color: #c62828; }
+      .pri-m { background: #fff3e0; color: var(--orange); }
+      .pri-l { background: #e8f5e9; color: var(--green); }
+      .grp-row td { background: #f0f4f8; font-weight: 700; color: var(--blue); font-size: 14px; }
+      .legend { padding: 12px 24px; background: #fff; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--muted); }
+      .legend b { color: var(--red); }
+      @media (max-width: 860px) { .col-def, .col-use, .col-exc { width: auto; } }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>会员详情 · 新增字段说明</h1>
+      <p>名词解释 / 应用场景 / 异常情况 — 配套《会员详情·新增字段》页面，对齐《集团→会员 核心层级与体系》文档口径</p>
+      <div class="stats">
+        <div class="stat"><b>30</b><small>新增字段</small></div>
+        <div class="stat"><b>5</b><small>所属分组</small></div>
+      </div>
+    </div>
+
+    <div class="legend">
+      字段名为 <b>红色</b> 表示会员详情页中的新增（红字）字段；每个字段给出 <b>名词解释</b> · <b>应用场景</b> · <b>异常情况</b> 三栏。来源口径以核心层级体系文档为准（集团→市场→商户→域名→渠道→会员；来源归因 / 代理体系 / 业绩归集三套关系分离；历史事实不改写；不提供转代）。
+    </div>
+
+    <div class="toolbar">
+      <input id="q" placeholder="🔍 搜索字段 / 关键词…" oninput="F()" />
+      <span class="ct" id="rc"></span>
+    </div>
+
+    <div class="container">
+
+      <!-- 基本信息 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>① 基本信息组</h2><span class="cnt">3 字段</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>字段</th><th class="col-def">名词解释</th><th class="col-use">应用场景</th><th class="col-exc">异常情况</th></tr></thead>
+            <tbody>
+              <tr><td class="fname">经营币种<code>currency</code></td><td>会员所属市场/商户锁定的结算币种，注册即固定、终身唯一，所有金额以此计。</td><td>财务分币种统计；提现/充值限额按币种配置；同集团跨市场金额不可直接相加。</td><td class="exc">跨市场合并报表禁止直接求和（须分币种列示）；币种错绑只能注销重注册，不可修改。</td></tr>
+              <tr><td class="fname">邀请人<code>inviterId</code></td><td>邀请码发起人 ID（通常=直接上级代理），点击可下钻该用户详情。</td><td>裂变追踪、代理树构建依据、佣金归属判定。</td><td class="exc">无邀请码注册则为空；邀请人被注销/冻结时，代理关系仍保留快照不随之改写。</td></tr>
+              <tr><td class="fname">访问端<code>accessClient</code></td><td>最近一次访问的客户端类型，枚举 pc/h5/安卓/ios/安卓壳包/ios壳包。</td><td>设备分布分析、端侧问题定位、APP 下载引导、风控识别。</td><td class="exc">壳包内 WebView 以外层壳判定；UA 被篡改/无法识别时记「未知端」并保留原始 UA。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 归因来源 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>② 归因来源组</h2><span class="cnt">7 字段</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>字段</th><th class="col-def">名词解释</th><th class="col-use">应用场景</th><th class="col-exc">异常情况</th></tr></thead>
+            <tbody>
+              <tr><td class="fname">主归因<code>mainAttribution</code></td><td>注册来源唯一归类（自然流量/广告投放/官方直推/邀请来源 + 未知），优先级唯一、命中即停。</td><td>获客成本核算、渠道质量评估、ROI 分母；报表按主归因拆分。</td><td class="exc">邀请链接+UTM 并存→判邀请来源，UTM 留辅证并标「裂变获客」；全部无法识别→未知来源并记失败原因。</td></tr>
+              <tr><td class="fname">推广平台名称<code>promoPlatform</code></td><td>识别出的外部推广平台。带平台点击ID精确识别：Google（gclid）、Meta/Facebook（fbclid）、TikTok（ttclid）、Bing（msclkid）；经 utm_source 识别：Instagram、YouTube、Telegram、WhatsApp、X（Twitter）、Snapchat、Kwai、ShareChat、Line、Zalo；<strong>以上均未命中或无参数 → 其他</strong>。</td><td>广告投放平台维度效果与对账；KOL/平台归集。</td><td class="exc">多平台参数冲突按点击ID优先级判定；不可识别→其他；App 安装归因另行设计。</td></tr>
+              <tr><td class="fname">注册渠道<code>regChannelId</code></td><td>注册时命中的后台定义渠道ID（如 pc001=Facebook推广1），挂在域名之下的来源归因容器。</td><td>渠道维度注册转化统计、渠道质量与结算。</td><td class="exc">未命中任何渠道→落该经营单元默认自然流量兜底渠道（不可删除/不关注册）；渠道关闭不改历史快照。</td></tr>
+              <tr><td class="fname">登录渠道<code>loginChannelId</code></td><td>会员最近一次登录命中的渠道ID，可与注册渠道不同。</td><td>活跃来源分析、再营销渠道评估、回流入口判断。</td><td class="exc">直接访问无渠道参数时显示默认/空；跨商户域名进入应判异常并拦截。</td></tr>
+              <tr><td class="fname">搜索引擎<code>searchEngine</code></td><td>由 referrer 来源域名识别。可识别引擎：Google、Bing、Yahoo、Yahoo! Japan、DuckDuckGo、Ecosia、Startpage、Brave Search、Ask.com、AOL、Mojeek、You.com、Perplexity、Qwant、Swisscows、MetaGer、SearXNG、Lycos、Excite、Dogpile、OneSearch、Gibiru、Presearch、Yandex、Mail.ru、Rambler、Naver、Daum、goo、Seznam、Onet、WP（Wirtualna Polska）、Coc Coc、Sapo、Eniro、Najdi、Walla；<strong>中国引擎（百度/搜狗/360/神马等）及未列出者一律归「其他」</strong>；无 referrer 记直接访问。</td><td>SEO 效果评估、自然流量质量。</td><td class="exc">referrer 被剥离（隐私模式/referrer 策略）→记直接访问；非搜索来源（如经 Meta 进入）→其他。</td></tr>
+              <tr><td class="fname">邀请码<code>inviteCode</code></td><td>会员注册实际使用的邀请码，关联邀请人/代理ID。</td><td>代理树绑定、裂变奖励触发、邀请人佣金归属。</td><td class="exc">码失效/过期/跨商户→可注册但不绑代理并记原因；活动邀请码额外记 invite_activity_id。</td></tr>
+              <tr><td class="fname">邀请类型<code>invite_type</code></td><td>邀请来源细分：正常邀请（invite_type=normal，个人邀请）/ 活动邀请（invite_type=activity，裂变获客，含 invite_activity_id）。</td><td>区分纯邀请与活动裂变；活动邀请触发活动奖励并标裂变。</td><td class="exc">活动码过期但邀请链接有效→降级为正常邀请；两类标记冲突时以活动邀请优先并记原因。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 归属与层级 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>③ 归属与层级组 <span style="font-size:12px;font-weight:400;color:var(--red)">※ 仅研发时查看，后续上线会隐藏掉</span></h2><span class="cnt">3 字段</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>字段</th><th class="col-def">名词解释</th><th class="col-use">应用场景</th><th class="col-exc">异常情况</th></tr></thead>
+            <tbody>
+              <tr><td class="fname">集团<code>groupId</code></td><td>最高归属与控制方，统管旗下多市场与商户，是层级主线顶层。</td><td>多商户汇总报表维度、全局口径与策略。</td><td class="exc">集团下不同市场币种/语言不同，跨市场指标不默认混合。</td></tr>
+              <tr><td class="fname">市场<code>marketId</code></td><td>按国家/地区划分的经营单位，承载币种、语言与本地化口径（INR · hi）。</td><td>本地化配置、风控阈值与活动档位的边界。</td><td class="exc">同集团跨市场金额/非金额指标按规则分开，不混用。</td></tr>
+              <tr><td class="fname">商户<code>merchantId</code></td><td>实际运营主体与合同/计费/团队归属边界，是会员数据隔离的经营单元。</td><td>多商户数据隔离、权限边界、经营责任承载。</td><td class="exc">在 A 注册的会员进入 B 视为 B 的新会员；会员/钱包/订单/活动/佣金不跨单元混用。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 代理数据 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>④ 代理数据组</h2><span class="cnt">9 字段</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>字段</th><th class="col-def">名词解释</th><th class="col-use">应用场景</th><th class="col-exc">异常情况</th></tr></thead>
+            <tbody>
+              <tr><td class="fname">一级代理<code>rootAgentId</code></td><td>该会员所在代理树的顶级（根）代理。</td><td>总代业绩归集、分成顶层、大代理线监控。</td><td class="exc">自身即根则显示自己/空；代理线超最大层级后新增不再挂树。</td></tr>
+              <tr><td class="fname">直接上级代理<code>parentAgentId</code></td><td>代理树中该会员的直接父节点（=邀请人）。</td><td>一级返佣计算、直属关系展示。</td><td class="exc">平台直客无直接上级；不提供转代，划拨只改经营归属不改代理树位置。</td></tr>
+              <tr><td class="fname">代理层级<code>agentLevel</code></td><td>当前深度 / 最大允许层级（如 3 / 10）。</td><td>多级返佣分成层级、防无限级嵌套。</td><td class="exc">达上限后下级不再建代理关系；层级数须与代理路径长度一致，否则告警。</td></tr>
+              <tr><td class="fname">代理路径<code>agentPath</code></td><td>根→本会员的完整代理 ID 链。<strong>超过 3 层时仅展示「一级 → … → 直接上级 → 本人」</strong>（中间层折叠），点击查看整条线全部代理信息。</td><td>上下级关系核查、多级返佣溯源、闭环排查。</td><td class="exc">≤3 层时全量展示不折叠；路径出现重复 ID→闭环异常；中间代理注销→以快照为准。</td></tr>
+              <tr><td class="fname">佣金模式<code>commissionMode</code></td><td>代理收益方式两类：返佣=投注流水返佣 / 返利=亏损分成返利。</td><td>代理结算口径、不同代理线差异化激励。</td><td class="exc">同线不同级可不同模式；模式变更只对变更后业绩生效，历史按原模式结算。</td></tr>
+              <tr><td class="fname">返佣等级<code>rebateLevel</code></td><td>会员自身的返佣等级/档位，决定其投注流水返佣比例（如 Lv3=0.5%）。</td><td>返佣计算、等级化激励、与 VIP/活跃度联动调整。</td><td class="exc">等级变更只对变更后流水生效，历史按原等级结算；无返佣资格时为 0 级/空。</td></tr>
+              <tr><td class="fname">是否给上级返佣<code>rebateToUpline</code></td><td>该会员产生的有效投注流水是否为其上级代理计提返佣。</td><td>控制返佣链路；内部号/测试号可关闭不计佣。</td><td class="exc">关闭后上级不再因其流水获佣，但代理树关系保留；与代理状态独立。</td></tr>
+              <tr><td class="fname">是否可领取返佣<code>canClaimRebate</code></td><td>该会员是否被允许领取自身累积的返佣（资格/开关），区别于「是否领取返佣」的已领状态。</td><td>风控冻结期禁领、达标后开放领取、活动期临时管控。</td><td class="exc">冻结/风控期间置否仍累计不发；恢复后可补领，留审计。</td></tr>
+              <tr><td class="fname">代理状态<code>agentStatus</code></td><td>代理资格状态（生效/冻结/注销），与用户账号状态独立。</td><td>冻结作弊代理返佣但不影响其玩家身份；注销取消资格保留历史。</td><td class="exc">账号启用但代理冻结/注销时，下级业绩不再计佣；状态变更留审计。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 注册登录信息 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>⑤ 注册登录信息组</h2><span class="cnt">8 字段</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>字段</th><th class="col-def">名词解释</th><th class="col-use">应用场景</th><th class="col-exc">异常情况</th></tr></thead>
+            <tbody>
+              <tr><td class="fname">注册端<code>regClient</code></td><td>会员注册时使用的客户端，枚举 pc/h5/ios/安卓/ios壳包/安卓壳包。</td><td>注册端转化分析、APP 渗透率。</td><td class="exc">UA 被篡改记未知；注册端与长期登录端差异大→疑养号/接管。</td></tr>
+              <tr><td class="fname">注册设备号<code>regDeviceId</code></td><td>注册设备的稳定唯一标识（安卓/iOS 原生包采集的设备 ID）；<b>为后续原生包预留</b>，壳包/H5 阶段可能为空或临时值。</td><td>多开/养号识别、设备维度风控、配合防环与同设备聚合。</td><td class="exc">壳包/H5 取不到稳定 ID→为空或记临时值，待原生包补采；设备号被重置/越狱伪造→标风险。</td></tr>
+              <tr><td class="fname">是否模拟器<code>isEmulator</code></td><td>注册/登录设备是否为模拟器/虚拟环境。</td><td>批量注册与作弊识别、风控拦截。</td><td class="exc">反检测伪装可能漏判；云真机/越狱设备单独标记。</td></tr>
+              <tr><td class="fname">同设备账号数<code>sameDeviceAccountCount</code></td><td>与本会员同一设备号注册/登录的账号总数。</td><td>多开/工作室/养号识别、设备维度风控聚合。</td><td class="exc">取不到稳定设备号时不计；家庭共享设备可能误判，需结合行为研判。</td></tr>
+              <tr><td class="fname">登录端<code>loginClient</code></td><td>会员最近一次登录的客户端，枚举同注册端。</td><td>活跃端分析、注册端与登录端一致性风控。</td><td class="exc">登录端频繁跨端切换+异地→异常登录告警。</td></tr>
+              <tr><td class="fname">登录设备号<code>loginDeviceId</code></td><td>最近一次登录设备的稳定唯一标识（原生包采集）；<b>为后续原生包预留</b>。</td><td>常用设备识别、异常设备登录监控、同设备多账号聚合。</td><td class="exc">登录设备号与注册设备号长期不一致→疑账号转手/接管；取不到时待原生包补采。</td></tr>
+              <tr><td class="fname">注册域名<code>regDomain</code></td><td>会员注册时进入的域名（属本商户），完成主线 商户→域名；域名定上下文，渠道定来源。域名类型：主站/推广/落地/备用。</td><td>渠道入口落到确定经营上下文；推广域名效果归集。</td><td class="exc">仅有域名而无渠道时落该单元默认自然流量；域名删除/启停不改写历史会员的注册域名快照。</td></tr>
+              <tr><td class="fname">登录域名<code>loginDomain</code></td><td>会员最近一次登录进入的域名，可与注册域名不同（如注册走推广域名、登录走主站域名）。</td><td>回流入口分析、主站/备用域名切换监控。</td><td class="exc">跨商户域名进入应判异常并拦截；域名被封后登录走备用域名属正常切换。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <script>
+      function F() {
+        var q = (document.getElementById('q').value || '').toLowerCase();
+        var shown = 0;
+        document.querySelectorAll('.card').forEach(function (card) {
+          var vis = 0;
+          card.querySelectorAll('tbody tr').forEach(function (r) {
+            if (r.classList.contains('grp-row')) return;
+            var ok = !q || r.textContent.toLowerCase().includes(q);
+            r.style.display = ok ? '' : 'none';
+            if (ok) { vis++; shown++; }
+          });
+          // 含表格的卡片：无命中则隐藏
+          if (card.querySelector('tbody')) card.style.display = vis ? '' : 'none';
+        });
+        document.getElementById('rc').textContent = q ? ('命中 ' + shown + ' 行') : '';
+      }
+    </script>
+  </body>
+</html>
