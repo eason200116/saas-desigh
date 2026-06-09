@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SaaS 后台工作计划书</title>
+<style>
+:root{--green:#2e7d5b;--blue:#1565c0;--orange:#e65100;--border:#e2e6ea;--muted:#7a8494;--text:#1f2927;--bg:#f6f8fb}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.7}
+
+/* ===== 导航 ===== */
+.nav{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--border);padding:0 28px;display:flex;gap:0;overflow-x:auto}
+.nav a{padding:12px 18px;font-size:14px;font-weight:600;color:var(--muted);text-decoration:none;border-bottom:3px solid transparent;white-space:nowrap;cursor:pointer}
+.nav a.active{color:var(--green);border-bottom-color:var(--green)}
+.nav a:hover{color:var(--text)}
+
+/* ===== 通用 ===== */
+.header{background:linear-gradient(135deg,#1a3a2a,#2e7d5b);color:#fff;padding:32px 36px}
+.header h1{font-size:26px;margin-bottom:6px}
+.header p{opacity:.85;font-size:14px}
+.container{max-width:1440px;margin:0 auto;padding:20px 28px}
+.section{display:none}
+.section.active{display:block}
+.card{background:#fff;border:1px solid var(--border);border-radius:12px;margin-bottom:16px;overflow:hidden}
+.card-head{padding:16px 20px;background:#fafbfc;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;display:flex;align-items:center;gap:10px}
+.card-head:hover{background:#f0f4f2}
+.card-head h3{font-size:16px;margin:0;flex:1}
+.card-head .arr{width:20px;font-size:13px;color:var(--muted);transition:.2s}
+.card-head.col .arr{transform:rotate(-90deg)}
+.card-head.col+.card-body{display:none}
+.card-body{padding:20px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;padding:10px 14px;font-weight:700;border-bottom:2px solid var(--border);background:#f6f8fb}
+td{padding:10px 14px;border-bottom:1px solid #f0f2f5;vertical-align:top}
+tr:hover{background:#f9fbfa}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:8px}
+.b-done{background:#e8f5e9;color:#2e7d32}
+.b-new{background:#e3f2fd;color:#1565c0}
+.b-opt{background:#fff3e0;color:#e65100}
+.b-todo{background:#f5f5f5;color:#9e9e9e}
+.b-phase{background:#ede7f6;color:#5e35b1}
+
+/* ===== 进度条 ===== */
+.progress-row{display:flex;gap:16px;flex-wrap:wrap;margin:20px 0}
+.prog-card{flex:1;min-width:120px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px 20px;text-align:center}
+.prog-card b{font-size:32px;display:block;line-height:1.2}
+.prog-card small{color:var(--muted);font-size:13px}
+.prog-card.c1{border-left:4px solid #4caf50}
+.prog-card.c2{border-left:4px solid #2196f3}
+.prog-card.c3{border-left:4px solid #ff9800}
+.prog-card.c4{border-left:4px solid #9e9e9e}
+.pbar{height:14px;background:#eee;border-radius:7px;overflow:hidden;display:flex;margin:12px 0}
+.pbar .s{height:100%}.s1{background:#4caf50}.s2{background:#2196f3}.s3{background:#ff9800}
+
+/* ===== 对照表 ===== */
+.compare-table{width:100%;border-collapse:collapse;font-size:14px}
+.compare-table th{padding:12px 16px;font-size:14px}
+.compare-table th.sit-h{background:#eef3fb;color:var(--blue);width:42%}
+.compare-table th.mid-h{background:#f6f8fb;width:16%;text-align:center}
+.compare-table th.saas-h{background:#eef8f2;color:var(--green);width:42%}
+.compare-table td{padding:10px 16px}
+.compare-table td.sit-col{background:rgba(21,101,192,.02)}
+.compare-table td.mid-col{text-align:center;background:#fafbfc;font-size:12px}
+.compare-table td.saas-col{background:rgba(46,125,91,.02)}
+.compare-table tr.group-row td{background:#f0f4f8;font-weight:700;font-size:15px;border-bottom:2px solid var(--border);padding:10px 16px}
+.fn{font-weight:600}
+.sub-fn{padding-left:20px;color:#475569;font-size:13px}
+.sub-fn::before{content:"└ ";color:#ccc}
+.diff-tag{font-size:11px;display:inline-block;margin-top:3px}
+.arrow{color:var(--green);font-weight:700}
+.arrow.empty{color:#ddd}
+.note{font-size:12px;color:var(--muted);font-style:italic;margin-top:2px}
+
+/* ===== 工作计划 ===== */
+.phase{border:2px solid var(--border);border-radius:12px;margin-bottom:20px;overflow:hidden}
+.phase-head{padding:16px 20px;display:flex;align-items:center;gap:12px}
+.phase-head.p1{background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border-bottom:2px solid #c8e6c9}
+.phase-head.p2{background:linear-gradient(135deg,#e3f2fd,#e8eaf6);border-bottom:2px solid #bbdefb}
+.phase-head.p3{background:linear-gradient(135deg,#fff3e0,#fce4ec);border-bottom:2px solid #ffe0b2}
+.phase-head h3{font-size:17px;margin:0;flex:1}
+.phase-head .ph-badge{font-size:12px;font-weight:700;padding:4px 12px;border-radius:8px}
+.ph-done{background:#4caf50;color:#fff}
+.ph-active{background:#2196f3;color:#fff}
+.ph-plan{background:#ff9800;color:#fff}
+.phase-body{padding:16px 20px}
+.task-list{list-style:none;font-size:14px}
+.task-list li{padding:8px 0;border-bottom:1px solid #f0f2f5;display:flex;align-items:center;gap:10px}
+.task-list li:last-child{border-bottom:0}
+.task-check{width:18px;height:18px;border-radius:4px;border:2px solid #ccc;flex:none;display:flex;align-items:center;justify-content:center;font-size:12px}
+.task-check.done{background:#4caf50;border-color:#4caf50;color:#fff}
+.task-check.done::after{content:"✓"}
+.task-name{flex:1}
+.task-tag{font-size:11px;font-weight:600;padding:2px 6px;border-radius:4px}
+.t-fin{background:#e8f5e9;color:#2e7d32}
+.t-dev{background:#e3f2fd;color:#1565c0}
+.t-progress{background:#e3f2fd;color:#1565c0}
+.t-plan{background:#fff3e0;color:#e65100}
+
+@media(max-width:900px){
+  .container{padding:14px 16px}
+  .compare-table th,.compare-table td{padding:8px 10px;font-size:13px}
+}
+
+/* ===== V1 功能点清单 ===== */
+.v1-search{margin:0;padding:9px 14px;border:1px solid var(--border);border-radius:8px;width:100%;max-width:420px;font-size:14px}
+.v1-card{margin-bottom:12px}
+.v1-table{width:100%;border-collapse:collapse;font-size:13px}
+.v1-table th{padding:8px 12px;background:#f6f8fb;font-size:13px;text-align:left;border-bottom:2px solid var(--border)}
+.v1-table td{padding:7px 12px;border-bottom:1px solid #f0f2f5;vertical-align:top}
+.v1-table tr.v1-sub td{background:#eef3fb;color:var(--blue);font-weight:700;font-size:13px}
+.v1-table code{background:#f3f4f6;padding:1px 5px;border-radius:4px;font-size:12px;color:#b5179e;word-break:break-all}
+
+/* ===== 会员迁移清单 ===== */
+.mfilter{display:flex;gap:8px;margin-bottom:14px}
+.mf-btn{padding:6px 16px;border:1px solid var(--border);background:#fff;border-radius:20px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.mf-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.m-card{margin-bottom:12px}
+.m-table{width:100%;border-collapse:collapse;font-size:13px}
+.m-table th{padding:8px 12px;background:#f6f8fb;text-align:left;border-bottom:2px solid var(--border);font-size:13px}
+.m-table td{padding:8px 12px;border-bottom:1px solid #f0f2f5;vertical-align:middle}
+.m-table code{background:#f3f4f6;padding:1px 5px;border-radius:4px;font-size:12px;color:#b5179e;word-break:break-all}
+.st-done{background:#e8f5e9;color:#2e7d32}
+.st-todo{background:#fff3e0;color:#e65100}
+
+/* ===== SitINR 原有功能（11业务域三层） ===== */
+.fi-stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.fi-stat{border:1px solid var(--border);border-radius:10px;padding:8px 16px;text-align:center;min-width:90px}
+.fi-stat b{font-size:20px;display:block;color:var(--green)}
+.fi-stat small{color:var(--muted);font-size:11px}
+.fi-legend{display:flex;gap:16px;padding:8px 0;font-size:12px;flex-wrap:wrap;color:var(--muted);margin-bottom:8px}
+.fi-legend span{display:inline-flex;align-items:center;gap:4px}
+.fi-tag{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:4px}
+.fi-t-admin{background:#e3f2fd;color:#1565c0}
+.fi-t-api{background:#e8f5e9;color:#2e7d32}
+.fi-t-db{background:#f3e5f5;color:#7b1fa2}
+.fi-search{width:100%;max-width:420px;height:36px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:14px;margin-bottom:6px}
+.fi-domain{background:#fff;border:1px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.fi-domain-head{display:flex;align-items:center;padding:12px 16px;background:#fafbfc;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;gap:10px}
+.fi-domain-head:hover{background:#f0f4f2}
+.fi-domain-head .fi-arr{width:16px;font-size:12px;color:var(--muted);transition:.2s}
+.fi-domain-head.col .fi-arr{transform:rotate(-90deg)}
+.fi-domain-head h4{font-size:15px;margin:0;flex:1}
+.fi-domain-head .fi-dcount{font-size:12px;color:var(--muted)}
+.fi-domain-head.col + .fi-domain-body{display:none}
+.fi-sub{border-bottom:1px solid #f0f2f5}
+.fi-sub:last-child{border-bottom:0}
+.fi-sub-head{padding:9px 16px;font-weight:700;font-size:13px;color:var(--blue);background:#f9fbfd}
+.fi-layer{padding:7px 16px 7px 28px;display:flex;gap:10px;border-top:1px solid #f5f7fa}
+.fi-layer-label{flex:none;width:60px;padding-top:2px}
+.fi-layer-items{flex:1;font-size:13px;color:#374151;line-height:1.8}
+@media(max-width:768px){.fi-layer{flex-direction:column;gap:4px}.fi-layer-label{width:auto}}
+/* ===== 二阶段图文示意图 ===== */
+.intro-block{margin-bottom:28px}
+.intro-block .ib-title{font-size:17px;font-weight:700;color:#1a2332;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.intro-block .ib-num{display:inline-flex;width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;align-items:center;justify-content:center;font-size:14px;flex:none}
+.intro-block .ib-desc{color:var(--muted);font-size:14px;margin-bottom:12px;padding-left:34px}
+.mock{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:0 0 10px 34px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.mock-cap{font-size:12px;color:var(--muted);padding-left:34px;margin-bottom:18px}
+/* 顶栏示意 */
+.mk-topbar{background:linear-gradient(90deg,#3b5bdb,#4263eb);display:flex;align-items:center;gap:4px;padding:10px 16px;flex-wrap:wrap}
+.mk-topbar .mk-tab{color:#fff;font-size:13px;padding:6px 12px;border-radius:6px;display:flex;align-items:center;gap:4px;white-space:nowrap}
+.mk-topbar .mk-tab.hot{background:rgba(255,255,255,.22);font-weight:700}
+.mk-topbar .mk-tab.new{background:rgba(255,235,140,.3);font-weight:600}
+/* 快捷工作台示意 */
+.mk-wb{background:#f8fafc;padding:16px}
+.mk-wb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.mk-wb-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;font-size:12px;color:#374151}
+.mk-wb-card .ic{font-size:20px;display:block;margin-bottom:5px}
+/* 用户详情归因示意 */
+.mk-detail{background:#fff;padding:16px}
+.mk-detail h5{font-size:13px;color:var(--brand,#0960bd);margin-bottom:10px;border-left:3px solid var(--green);padding-left:8px}
+.mk-fields{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 16px;font-size:12px}
+.mk-fields .f{background:#f8fafc;border:1px solid var(--border);border-radius:6px;padding:8px 10px}
+.mk-fields .f.new{background:#fff7ed;border-color:#fed7aa}
+.mk-fields .f .k{color:var(--muted);font-size:11px;display:block}
+.mk-fields .f .v{color:#1a2332;font-weight:600;margin-top:2px}
+.mk-fields .f .tag-n{font-size:9px;background:#e65100;color:#fff;padding:0 4px;border-radius:3px;margin-left:4px}
+@media(max-width:768px){.mk-fields{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>SaaS 后台工作计划书</h1>
+  <p>SitINR 超级管理系统 → SaaS 多商户后台迁移 · 功能对比与阶段规划</p>
+  <p style="opacity:.7;font-size:12px;margin-top:4px">最后更新 2026-06-08 · 已按 localhost:8200 新 SaaS 后台实际构建状态校准 · 数据口径：163 功能点（细粒度）</p>
+</div>
+
+<div class="nav" id="nav">
+  <a class="active" onclick="showTab('overview',this)">概览与进度</a>
+  <a onclick="showTab('modules',this)">模块定义</a>
+  <a onclick="showTab('sitinr',this)">SitINR 原有功能</a>
+  <a onclick="showTab('v1list',this)">V1 功能点清单</a>
+  <a onclick="showTab('saas',this)">SaaS 已完成功能</a>
+  <a onclick="showTab('compare',this)">迁移对照表</a>
+  <a onclick="showTab('diff',this)">差异化内容</a>
+  <a onclick="showTab('plan',this)">工作计划</a>
+  <a onclick="showTab('p1intro',this)">一阶段已完成内容</a>
+  <a onclick="showTab('member',this)">二阶段介绍</a>
+</div>
+
+<!-- ==================== 1. 概览与进度 ==================== -->
+<div class="section active" id="sec-overview">
+<div class="container">
+  <div class="progress-row">
+    <div class="prog-card c1" style="cursor:pointer" onclick="jumpToCompare('done')"><b id="ov-done">—</b><small>已迁移</small></div>
+    <div class="prog-card c2" style="cursor:pointer" onclick="jumpToCompare('new')"><b id="ov-new">—</b><small>SaaS 新增</small></div>
+    <div class="prog-card c3" style="cursor:pointer" onclick="jumpToCompare('todo')"><b id="ov-todo">—</b><small>待迁移</small></div>
+    <div class="prog-card c4" style="cursor:pointer" onclick="jumpToCompare('na')"><b id="ov-na">—</b><small>不迁移</small></div>
+  </div>
+  <div class="pbar" id="ov-pbar"></div>
+  <p style="text-align:center;color:var(--muted);font-size:13px;margin-top:6px" id="ov-rate"></p>
+
+  <div class="card" style="margin-top:20px">
+    <div class="card-body">
+      <h3 style="margin-bottom:12px">各模块进度 <span style="font-size:12px;font-weight:400;color:var(--muted)">（点击数字跳转到对照表）</span></h3>
+      <table>
+        <thead><tr><th>模块</th><th>已迁移</th><th>SaaS新增</th><th>待迁移</th><th>不迁移</th><th>完成率</th></tr></thead>
+        <tbody id="ov-modules"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ==================== 2. SitINR 原有功能 ==================== -->
+<div class="section" id="sec-sitinr">
+<div class="container">
+  <div class="card">
+    <div class="card-head"><h3>SitINR 超级管理系统 · 原有全功能清单（11 业务域 · 三层对齐）</h3></div>
+    <div class="card-body">
+      <div class="fi-stats">
+        <div class="fi-stat"><b>600+</b><small>后台 Action</small></div>
+        <div class="fi-stat"><b>200+</b><small>会员端 API</small></div>
+        <div class="fi-stat"><b>121</b><small>Service 服务</small></div>
+        <div class="fi-stat"><b>500+</b><small>数据表</small></div>
+        <div class="fi-stat"><b>11</b><small>业务域</small></div>
+        <div class="fi-stat"><b>29</b><small>Controller</small></div>
+      </div>
+      <div class="fi-legend">
+        <span><span class="fi-tag fi-t-admin">后台</span> Ar_V1_Admin 管理后台</span>
+        <span><span class="fi-tag fi-t-api">会员端</span> 会员 App/H5 接口</span>
+        <span><span class="fi-tag fi-t-db">数据</span> 数据库表</span>
+        <span style="margin-left:auto">检索 Ar_V1_Admin + ar_v1_lotteryapi + Ar_V1_DataBase 整合 · 点击业务域可折叠</span>
+      </div>
+      <input class="fi-search" id="fiQ" placeholder="🔍 搜索功能点 / 表名…" oninput="filterFI()">
+      <p style="font-size:12px;color:var(--muted);margin:0 0 12px" id="fiCount"></p>
+      <div id="fi-root"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ==================== 2b. V1 全功能点清单 ==================== -->
+<div class="section" id="sec-v1list">
+<div class="container">
+  <div class="card">
+    <div class="card-head"><h3>V1 全功能点清单（按业务域分类）</h3></div>
+    <div class="card-body">
+      <p style="margin-bottom:14px;color:var(--muted)">源自 SitINR（V1）后台逐控制器梳理，共 <b>11 个业务域 · 240 个功能点</b>，含路由与逻辑说明。点击模块标题可折叠。</p>
+      <input class="v1-search" id="v1Search" placeholder="🔍 搜索功能名称 / 路由 / 说明…" oninput="filterV1()">
+      <p style="font-size:12px;color:var(--muted);margin:6px 0 14px" id="v1Count"></p>
+      <div id="v1-modules"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ==================== 3. SaaS 已完成功能 ==================== -->
+<div class="section" id="sec-saas">
+<div class="container">
+  <div class="card">
+    <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h3>SaaS 后台 · 已完成功能介绍（基于 54 张截图确认）</h3></div>
+    <div class="card-body">
+      <p style="margin-bottom:16px;color:var(--muted)">SaaS 后台采用 Vue3 + Naive UI 架构，支持多集团多商户。结合 v3 原型（Ar_V3_LottoPlatformDesign）核对，实际为 <b>11 个一级模块</b>（财务/会员/游戏/系统/报表 + 数据分析/运营/租户/仪表盘/个人中心 + 平台架构）。</p>
+      <table>
+        <thead><tr><th>模块</th><th>已完成页面</th><th>差异标记</th></tr></thead>
+        <tbody>
+          <tr><td><b>会员管理</b></td>
+            <td>会员列表（高级筛选+批量操作+自定义列）<br>
+              会员详情（6Tab：基本信息/充提/投注/钱包/账变/操作日志）<br>
+              会员层级 · 下级会员 · 在线人数<br>
+              会员银行卡管理（6Tab：银行卡/USDT/PIX/电子钱包/UPI/实名认证）</td>
+            <td><span class="badge b-new">新增</span> 详情账变Tab/操作日志Tab<br>
+              <span class="badge b-new">新增</span> PIX钱包/实名认证Tab<br>
+              <span class="badge b-opt">优化</span> 银行卡1页→6Tab<br>
+              <span class="badge b-opt">优化</span> 详情1页→6Tab</td></tr>
+          <tr><td><b>财务管理</b></td>
+            <td>资金账变 · 人工充值（含批量导入）<br>
+              人工充值审核列表/记录<br>
+              本地收款账号管理（4Tab：银行卡/UPI/USDT/EWallet）<br>
+              支代付三方管理 · 银行字典<br>
+              充值类型管理（2Tab：大类+通道）<br>
+              充值订单管理（4Tab：三方待入款/本地待入款/全部入款/直充短信）<br>
+              提现类型管理（2Tab：大类+通道）<br>
+              提现订单管理（6Tab：出款看板/员工操作台/组别配置/员工报表/当前提现/全部记录）</td>
+            <td><span class="badge b-new">新增</span> 直充短信Tab<br>
+              <span class="badge b-new">新增</span> 批量指派组长<br>
+              <span class="badge b-opt">优化</span> 出款模块整合为6Tab<br>
+              <span class="badge b-opt">优化</span> 充值通道含成功率统计<br>
+              <span class="badge b-opt">优化</span> 充值/提现类型各合并通道Tab</td></tr>
+          <tr><td><b>游戏管理</b></td>
+            <td>三方游戏记录（5大类Tab：彩票/视讯/体育/电子/棋牌 + 左侧游戏分类导航）</td>
+            <td><span class="badge b-opt">优化</span> 3视图→5Tab+分类导航<br>
+              <span class="badge b-new">新增</span> 左侧游戏分类</td></tr>
+          <tr><td><b>系统管理</b></td>
+            <td>系统用户（4Tab详情弹窗：基本信息/归属商户/出款权限/充值权限 + 批量操作）<br>
+              系统角色 · IP白名单<br>
+              平台日志 · 中台日志</td>
+            <td><span class="badge b-opt">优化</span> 用户详情改为4Tab弹窗<br>
+              <span class="badge b-new">新增</span> 批量赋权/充提权限搜索<br>
+              <span class="badge b-opt">优化</span> 日志增加详情展开</td></tr>
+          <tr><td><b>报表管理</b></td>
+            <td>数据统计（5Tab：24小时报表/数据概况/商户报表/通道报表/三方商户号报表）<br>
+              支代付通道预警（预警卡片+详情弹窗+规则配置）</td>
+            <td><span class="badge b-new">新增</span> 4个报表Tab<br>
+              <span class="badge b-new">新增</span> 实时走势图+自动刷新<br>
+              <span class="badge b-new">新增</span> 通道预警+规则配置</td></tr>
+          <tr><td><b>数据分析</b><br><small>v3新增</small></td>
+            <td>流量看板 · 漏斗分析 · 路径分析 · 告警</td>
+            <td><span class="badge b-new">全部新增</span> SitINR 无此模块</td></tr>
+          <tr><td><b>运营管理</b><br><small>v3新增</small></td>
+            <td>站点列表 · APP管理 · 版本管理 · 套餐包 · 取包 · 图片裁剪</td>
+            <td><span class="badge b-opt">优化</span> 整合 SitINR 站点/APP/版本/套餐<br>
+              <span class="badge b-new">新增</span> 图片裁剪工具</td></tr>
+          <tr><td><b>租户管理</b><br><small>v3新增·SaaS核心</small></td>
+            <td>租户列表 · 组织架构 · 管理员用户 · 调度任务 · 样式管理 · 字典</td>
+            <td><span class="badge b-new">全部新增</span> 多商户 SaaS 核心层，SitINR 单站点无</td></tr>
+          <tr><td><b>仪表盘/个人中心</b><br><small>v3</small></td>
+            <td>欢迎页 dashboard · 个人中心 profile</td>
+            <td><span class="badge b-opt">优化</span> 替代 SitINR 首页仪表板</td></tr>
+          <tr><td><b>平台架构</b></td>
+            <td>集团/商户视角切换 · 多商户下拉筛选<br>
+              快捷工作台（24快捷入口）· 多Tab页签导航<br>
+              全局自定义列 · 全局快捷时间按钮</td>
+            <td><span class="badge b-new">全部新增</span> SitINR 完全没有</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:14px;font-size:13px;color:var(--muted)">⚠ 会员管理核对补充：真实菜单中「用户USDT钱包 / 用户电子钱包 / 用户PIX钱包」为 3 个独立菜单项（非折叠在银行卡管理内）；「会员VIP管理」（VIP等级/人数/经验值配置/操作日志）与「会员洗码管理」（洗码记录/规则说明）为 2 个同级独立模块。</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ==================== 4. 迁移对照表 ==================== -->
+<div class="section" id="sec-compare">
+<div class="container">
+  <div class="card">
+    <div class="card-head"><h3>SitINR ↔ SaaS 功能对照表</h3></div>
+    <div class="card-body" style="padding:0;overflow-x:auto">
+      <table class="compare-table" id="compareTable">
+        <thead><tr>
+          <th class="sit-h">SitINR 原有功能</th>
+          <th class="mid-h">状态</th>
+          <th class="saas-h">SaaS 对应功能</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ==================== 5. 差异化内容 ==================== -->
+<div class="section" id="sec-diff">
+<div class="container">
+  <div class="card">
+    <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h3>第一阶段 · 迁移优化项（SaaS 对 SitINR 的改进）</h3></div>
+    <div class="card-body">
+      <table>
+        <thead><tr><th width="200">功能</th><th>SitINR 原有</th><th>SaaS 优化后</th><th width="80">类型</th></tr></thead>
+        <tbody>
+          <tr><td><b>会员详情</b></td><td>单页面，所有信息平铺</td><td>拆分为 6 个独立 Tab（基本/充提/投注/钱包/账变/日志），新增账变+操作日志</td><td><span class="badge b-opt">优化</span></td></tr>
+          <tr><td><b>会员银行卡</b></td><td>单页面，5种支付方式混排</td><td>6 个 Tab（银行卡/USDT/PIX/电子钱包/UPI/实名认证），新增 PIX 和实名认证</td><td><span class="badge b-opt">优化</span></td></tr>
+          <tr><td><b>提现订单管理</b></td><td>提现审核 + RemoteWork 出款模块分散 6 个独立页面</td><td>整合为 1 个模块 6 Tab（看板/操作台/组别/报表/当前/全部）</td><td><span class="badge b-opt">优化</span></td></tr>
+          <tr><td><b>充值订单管理</b></td><td>单页面充值列表</td><td>4 Tab（三方待入/本地待入/全部入款/直充短信），新增直充短信</td><td><span class="badge b-opt">优化</span></td></tr>
+          <tr><td><b>充值/提现类型</b></td><td>类型和通道分 2 个独立页面</td><td>各合并为 1 个页面 2 Tab（大类 + 通道），通道含成功率统计</td><td><span class="badge b-opt">优化</span></td></tr>
+          <tr><td><b>三方游戏记录</b></td><td>3 个数据视图（快速/代理/历史）切换</td><td>5 大类 Tab + 左侧游戏分类导航（WinGo/K3/5D/TRX/XOSO/新彩种）</td><td><span class="badge b-opt">优化</span></td></tr>
+          <tr><td><b>系统用户</b></td><td>简单编辑表单</td><td>4 Tab 详情弹窗（基本信息/归属商户/出款权限/充值权限）+ 批量操作</td><td><span class="badge b-opt">优化</span></td></tr>
+          <tr><td><b>数据统计</b></td><td>单页报表</td><td>5 Tab（24h报表/概况/商户/通道/三方商户号）+ 实时走势图 + 自动刷新</td><td><span class="badge b-opt">优化</span></td></tr>
+          <tr><td><b>全局列表体验</b></td><td>列固定不可调，仅日期选择器</td><td>统一支持自定义列 + 快捷时间按钮 + 高级筛选折叠</td><td><span class="badge b-opt">优化</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h3>第二阶段 · 会员管理（要做的功能清单）</h3><span class="badge b-phase" style="flex:none">进行中</span></div>
+    <div class="card-body">
+      <p style="margin-bottom:14px;color:var(--muted)">会员管理按 <b>7 组分类</b> + <b>2 个独立模块</b> 建设。以下为待建功能：</p>
+      <table>
+        <thead><tr><th width="130">分组</th><th>待建功能</th></tr></thead>
+        <tbody>
+          <tr><td><b>账号</b></td><td>会员列表 · 登录日志 · 短信验证码查询 · 实名认证 · 分组管理（含分组权限）· IP黑名单</td></tr>
+          <tr><td><b>会员层级</b></td><td>会员层级 · 充值等级</td></tr>
+          <tr><td><b>风控</b></td><td>相同IP · 刷通道用户清单 · 异常会员处理</td></tr>
+          <tr><td><b>活动</b></td><td>合伙人奖励 · 会员活动黑名单 · 充值奖励发放记录</td></tr>
+          <tr><td><b>资金</b></td><td>银行卡查询 · 用户USDT钱包 · 用户电子钱包 · 用户PIX钱包 · 会员提现限制名单</td></tr>
+          <tr><td><b>代理</b></td><td>下级会员列表 · 会员返佣等级 · 昨日返佣等级 · 代理审核机制</td></tr>
+          <tr><td><b>VIP</b></td><td>会员VIP升级奖励记录</td></tr>
+          <tr><td><b>会员VIP管理</b><br><small>独立模块</small></td><td>VIP等级 · VIP人数 · 经验值配置 · VIP操作日志</td></tr>
+          <tr><td><b>会员洗码管理</b><br><small>独立模块</small></td><td>洗码记录 · 洗码规则说明</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h3>SaaS 新增功能（SitINR 完全没有）</h3></div>
+    <div class="card-body">
+      <table>
+        <thead><tr><th width="200">功能</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><b>集团/商户视角切换</b></td><td>顶栏支持集团→商户视角切换，实现多商户 SaaS 架构</td></tr>
+          <tr><td><b>多商户下拉筛选</b></td><td>所有页面支持按商户筛选，SitINR 仅单站点</td></tr>
+          <tr><td><b>快捷工作台</b></td><td>按权限展示 24 个快捷入口，一键直达</td></tr>
+          <tr><td><b>多 Tab 页签导航</b></td><td>支持同时打开多个功能页签，可快速切换</td></tr>
+          <tr><td><b>PIX 钱包管理</b></td><td>巴西 PIX 支付方式独立 Tab</td></tr>
+          <tr><td><b>出款看板</b></td><td>员工状态/订单状态/24h订单/预警统计实时面板</td></tr>
+          <tr><td><b>出款员工实时状态</b></td><td>在线/暂停/未上班状态实时监控</td></tr>
+          <tr><td><b>批量指派组长</b></td><td>提现订单支持批量指派出款组长</td></tr>
+          <tr><td><b>直充短信</b></td><td>充值订单管理新增直充短信 Tab</td></tr>
+          <tr><td><b>通道预警</b></td><td>5类预警（代收失败率/拉单失败/余额不足/代付通道/大额出款）+ 规则配置 + 详情弹窗</td></tr>
+          <tr><td><b>通道报表 / 三方商户号报表</b></td><td>按支付通道和三方商户号维度的独立报表</td></tr>
+          <tr><td><b>24h 实时走势图</b></td><td>代收/代付金额+笔数+成功率分时图表，支持自动刷新</td></tr>
+          <tr><td><b>充提权限搜索</b></td><td>系统用户列表新增充提权限快速搜索入口</td></tr>
+          <tr><td><b>全局自定义列</b></td><td>所有列表页统一支持自定义列配置</td></tr>
+          <tr><td><b>数据分析模块</b><br><small>v3</small></td><td>流量看板 / 漏斗分析 / 路径分析 / 告警，SitINR 完全没有的运营分析能力</td></tr>
+          <tr><td><b>租户管理模块</b><br><small>v3·核心</small></td><td>租户列表/组织架构/管理员/调度任务/样式管理/字典，多商户 SaaS 的核心层</td></tr>
+          <tr><td><b>运营管理-图片裁剪</b><br><small>v3</small></td><td>站点素材图片在线裁剪工具</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ==================== 5b. 一阶段介绍 ==================== -->
+<div class="section" id="sec-p1intro">
+<div class="container">
+  <div class="card">
+    <div class="card-head"><h3>一阶段已建成果 · 基于目标后台 localhost:8200 实际路由</h3></div>
+    <div class="card-body">
+      <p style="margin-bottom:16px;color:var(--muted)">以下为第一阶段已在新 SaaS 后台中建成的全部页面，按目标后台顶栏 <b>8 大模块</b> + 平台架构分组。<br>数据来源：V3 路由配置 + localhost:8200 实际运行验证。角色标注：<span class="badge b-new">admin</span> 总控端 · <span class="badge b-done">tenant</span> 商户端 · <span class="badge b-opt">双端</span> 均可见。</p>
+      <table>
+        <thead><tr><th width="140">模块</th><th width="200">页面/功能</th><th>路由 / Tab 结构</th><th width="60">角色</th></tr></thead>
+        <tbody>
+          <tr class="group-row"><td colspan="4">会员管理</td></tr>
+          <tr><td rowspan="7"><b>会员管理</b></td><td>会员列表</td><td><code>/member/user</code> · 高级筛选（商户/账号/IP/渠道/设备/VIP等 20+ 字段）· 批量操作 · 修改密码 · 导入导出 · 自定义列</td><td><span class="badge b-done">tenant</span></td></tr>
+          <tr><td>会员详情</td><td><code>/finance/memberDetail/:id</code> · <b>6 Tab</b>：基本信息 / 充提信息 / 投注信息 / 钱包信息 / 账变记录 / 操作日志</td><td><span class="badge b-done">tenant</span></td></tr>
+          <tr><td>会员层级</td><td><code>/member/level</code> · 代理维度列表，含代理类型/层级/投注统计列</td><td><span class="badge b-done">tenant</span></td></tr>
+          <tr><td>下级会员</td><td><code>/member/subsetUser</code> · 代理线下下级会员列表</td><td><span class="badge b-done">tenant</span></td></tr>
+          <tr><td>资金账变</td><td><code>/member/fundChange</code> · 全站资金流水查询，支持导出 + 修改备注</td><td><span class="badge b-done">tenant</span></td></tr>
+          <tr><td>银行卡管理</td><td><code>/member/bankCard</code> · <b>6 Tab</b>：银行卡信息 / USDT地址 / PIX钱包 / 电子钱包 / UPI / 实名认证</td><td><span class="badge b-done">tenant</span></td></tr>
+          <tr><td>在线人数</td><td><code>/member/onlineUsers</code> · 实时在线会员列表（顶栏 badge 联动）</td><td><span class="badge b-done">tenant</span></td></tr>
+
+          <tr class="group-row"><td colspan="4">财务管理</td></tr>
+          <tr><td rowspan="9"><b>财务管理</b></td><td>充值订单管理</td><td><code>/finance/rechargeOrder</code> · <b>4 Tab</b>：三方待入款 / 本地待入款(银行+UPI) / 全部入款记录 / 直充短信</td><td><span class="badge b-done">tenant</span></td></tr>
+          <tr><td>提现订单管理</td><td><code>/finance/withdrawOrder</code> · <b>5 Tab</b>：出款看板 / 员工操作台 / 组别配置 / 员工报表 / 全部记录</td><td><span class="badge b-done">tenant</span></td></tr>
+          <tr><td>提现类型管理</td><td><code>/finance/withdrawType</code> · <b>2 Tab</b>：提现大类 / 提现通道（含代付测试）</td><td><span class="badge b-done">tenant</span></td></tr>
+          <tr><td>充值类型管理</td><td><code>/finance/rechargeType</code> · <b>2 Tab</b>：充值大类 / 充值通道（含成功率统计 + 代收测试）</td><td><span class="badge b-done">tenant</span></td></tr>
+          <tr><td>人工充值</td><td><code>/finance/manualRecharge</code> · 查询+充值+批量导入 / <code>manualRechargeAuditList</code> 审核列表 / <code>manualRechargeAuditRecords</code> 审核记录</td><td><span class="badge b-done">tenant</span></td></tr>
+          <tr><td>本地收款账号</td><td><code>/finance/localPaymentAccount</code> · <b>4 Tab</b>：银行卡 / UPI / USDT / 电子钱包</td><td><span class="badge b-done">tenant</span></td></tr>
+          <tr><td>银行字典</td><td><code>/finance/bankDictionary</code> · 银行信息管理 + 状态开关</td><td><span class="badge b-done">tenant</span></td></tr>
+          <tr><td>支代付三方管理</td><td><code>/finance/payoutThirdParty</code> · 三方支付通道 + 关联商户 + 余额查询</td><td><span class="badge b-done">tenant</span></td></tr>
+          <tr><td>充值/提现通道配置</td><td><code>/finance/rechargeChannel</code> 充值通道字典 · <code>/finance/withdrawConfig</code> <b>2 Tab</b>：通道字典 / 银行映射</td><td><span class="badge b-new">admin</span></td></tr>
+
+          <tr class="group-row"><td colspan="4">游戏管理</td></tr>
+          <tr><td><b>游戏管理</b></td><td>三方游戏记录</td><td><code>/game/order</code> · <b>5 Tab</b>：彩票 / 视讯 / 体育 / 电子 / 棋牌，左侧游戏分类导航</td><td><span class="badge b-done">tenant</span></td></tr>
+
+          <tr class="group-row"><td colspan="4">报表管理</td></tr>
+          <tr><td rowspan="6"><b>报表管理</b></td><td>数据统计</td><td><code>/report/statistics</code> · <b>5 Tab</b>：24h实时报表 / 数据概况 / 商户报表 / 通道报表 / 三方商户号报表（含走势图 + 自动刷新）</td><td><span class="badge b-opt">双端</span></td></tr>
+          <tr><td>支代付通道预警</td><td><code>/report/channel-alert</code> · 5 类预警统计卡片 + 详情弹窗 + 规则配置</td><td><span class="badge b-done">tenant</span></td></tr>
+          <tr><td>流量看板</td><td><code>/analytics/trafficDashboard</code> · 全站流量实时看板</td><td><span class="badge b-new">admin</span></td></tr>
+          <tr><td>路径分析</td><td><code>/analytics/pathAnalysis</code> · 用户行为路径分析</td><td><span class="badge b-new">admin</span></td></tr>
+          <tr><td>漏斗分析</td><td><code>/analytics/funnelAnalysis</code> · 转化漏斗分析</td><td><span class="badge b-new">admin</span></td></tr>
+          <tr><td>告警</td><td><code>/analytics/alarm</code> · 业务告警规则 + 通知</td><td><span class="badge b-new">admin</span></td></tr>
+
+          <tr class="group-row"><td colspan="4">系统管理</td></tr>
+          <tr><td rowspan="12"><b>系统管理</b></td><td>系统用户</td><td><code>/system/user</code> · 4 Tab 详情弹窗（基本信息/归属商户/出款权限/充值权限）+ 批量赋权</td><td><span class="badge b-opt">双端</span></td></tr>
+          <tr><td>系统角色</td><td><code>/system/role</code> · 角色权限管理（菜单 + 按钮级）</td><td><span class="badge b-opt">双端</span></td></tr>
+          <tr><td>IP白名单</td><td><code>/system/whiteIp</code> · 后台访问 IP 白名单管理</td><td><span class="badge b-opt">双端</span></td></tr>
+          <tr><td>平台日志 / 系统日志</td><td><code>/system/platform-log</code> 操作日志 · <code>/system/log</code> 系统运行日志</td><td><span class="badge b-opt">双端</span></td></tr>
+          <tr><td>菜单管理</td><td><code>/system/menu</code> · 动态菜单树，N 级嵌套 + 排序 + 启停</td><td><span class="badge b-new">admin</span></td></tr>
+          <tr><td>系统监控 / 缓存</td><td><code>/system/monitor</code>（流量监控 + Runner）· <code>/system/cache</code> 缓存管理</td><td><span class="badge b-new">admin</span></td></tr>
+          <tr><td>组织架构</td><td><code>/tenant/organization</code> · 集团→商户组织树</td><td><span class="badge b-new">admin</span></td></tr>
+          <tr><td>租户列表</td><td><code>/tenant/tenantList</code> · 商户列表 + 状态管理</td><td><span class="badge b-new">admin</span></td></tr>
+          <tr><td>管理员用户</td><td><code>/tenant/adminUser</code> · 租户管理员账号管理</td><td><span class="badge b-new">admin</span></td></tr>
+          <tr><td>字典管理</td><td><code>/tenant/dictionary</code> · <b>3 Tab</b>：国家 / 币种 / 语言</td><td><span class="badge b-new">admin</span></td></tr>
+          <tr><td>样式管理</td><td><code>/tenant/styleManage</code> · <b>5 Tab</b>：域名 / 布局 / 主题 / 底栏 / 素材</td><td><span class="badge b-new">admin</span></td></tr>
+          <tr><td>调度任务</td><td><code>/tenant/scheduler</code> · 定时任务调度管理</td><td><span class="badge b-new">admin</span></td></tr>
+
+          <tr class="group-row"><td colspan="4">运营管理</td></tr>
+          <tr><td rowspan="3"><b>运营管理</b></td><td>APP管理</td><td><code>/operations/app</code> · <b>2 Tab</b>：版本管理 / 套餐包</td><td><span class="badge b-opt">双端</span></td></tr>
+          <tr><td>站点列表</td><td><code>/operations/siteList</code> · 多商户站点管理 + 站点详情 + 前端样式 + 游戏导航</td><td><span class="badge b-opt">双端</span></td></tr>
+          <tr><td>图片裁剪</td><td><code>/operations/imageCrop</code> · 站点素材在线裁剪工具</td><td><span class="badge b-opt">双端</span></td></tr>
+
+          <tr class="group-row"><td colspan="4">平台架构（SaaS 全新跨模块能力）</td></tr>
+          <tr><td rowspan="5"><b>平台架构</b></td><td>集团/商户切换</td><td>顶栏左侧：集团名 + 商户标签 + 切换按钮，多集团→多商户视角</td><td><span class="badge b-opt">双端</span></td></tr>
+          <tr><td>多商户下拉筛选</td><td>所有列表页筛选区：商户下拉（必填红星），按商户隔离数据</td><td><span class="badge b-opt">双端</span></td></tr>
+          <tr><td>多 Tab 页签导航</td><td>内容区顶部：可同时打开多个功能页签，右键关闭/关闭其他</td><td><span class="badge b-opt">双端</span></td></tr>
+          <tr><td>全局自定义列</td><td>表格右上角齿轮：列显隐/排序/宽度持久化</td><td><span class="badge b-opt">双端</span></td></tr>
+          <tr><td>快捷时间按钮</td><td>筛选区：今天/昨天/本周/上周/本月/上月/所有 一键切换</td><td><span class="badge b-opt">双端</span></td></tr>
+        </tbody>
+      </table>
+
+      <p style="margin-top:16px;font-size:13px;color:var(--muted)">统计：<b>42 个页面/功能入口</b>（含 Tab 子页 70+）。预览：<a href="http://localhost:8200/index.html?v7#/prd-docs?doc=overview" target="_blank">http://localhost:8200/index.html?v7#/prd-docs?doc=overview</a></p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ==================== 6. 工作计划 ==================== -->
+<div class="section" id="sec-plan">
+<div class="container">
+
+  <div class="phase">
+    <div class="phase-head p1">
+      <h3>第一阶段：核心财务与基础框架</h3>
+      <span class="ph-badge ph-done">已完成</span>
+    </div>
+    <div class="phase-body">
+      <p style="color:var(--muted);margin-bottom:12px">9 大模块 · 42 个页面/功能入口 · 详见「一阶段介绍」板块完整清单</p>
+      <ul class="task-list">
+        <li style="border-bottom:2px solid #e2e6ea"><div class="task-check done"></div><span class="task-name" style="font-weight:700;color:#1565c0">▸ 平台架构（SaaS 全新 · 5 项）</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">集团/商户视角切换 · 多商户下拉筛选</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">多 Tab 页签导航 · 全局自定义列 · 快捷时间按钮</span><span class="task-tag t-fin">已完成</span></li>
+
+        <li style="border-bottom:2px solid #e2e6ea"><div class="task-check done"></div><span class="task-name" style="font-weight:700;color:#1565c0">▸ 会员管理（7 页面）</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">会员列表 <code>/member/user</code> — 20+ 字段高级筛选 · 批量操作 · 修改密码 · 导入导出</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">会员详情 <code>/finance/memberDetail/:id</code> — 6 Tab（基本/充提/投注/钱包/账变/操作日志）</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">会员层级 · 下级会员 · 在线人数</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">资金账变 <code>/member/fundChange</code> — 全站资金流水 · 导出 · 修改备注</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">银行卡管理 <code>/member/bankCard</code> — 6 Tab（银行卡/USDT/PIX/电子钱包/UPI/实名认证）</span><span class="task-tag t-fin">已完成</span></li>
+
+        <li style="border-bottom:2px solid #e2e6ea"><div class="task-check done"></div><span class="task-name" style="font-weight:700;color:#1565c0">▸ 财务管理（9 页面）</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">充值订单 <code>/finance/rechargeOrder</code> — 4 Tab（三方待入/本地待入/全部入款/直充短信）</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">提现订单 <code>/finance/withdrawOrder</code> — 5 Tab（看板/操作台/组别/报表/全部记录）</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">充值类型 · 提现类型（各 2 Tab：大类 + 通道）</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">人工充值 · 审核列表 · 审核记录（3 页面）</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">本地收款账号 — 4 Tab（银行卡/UPI/USDT/电子钱包）</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">银行字典 · 支代付三方管理 · 充值/提现通道配置</span><span class="task-tag t-fin">已完成</span></li>
+
+        <li style="border-bottom:2px solid #e2e6ea"><div class="task-check done"></div><span class="task-name" style="font-weight:700;color:#1565c0">▸ 游戏 · 报表 · 系统（8 页面）</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">三方游戏记录 — 5 Tab（彩票/视讯/体育/电子/棋牌）+ 左侧分类导航</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">数据统计 — 5 Tab（24h/概况/商户/通道/三方商户号）· 通道预警（5 类预警 + 规则）</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">系统用户（4Tab 详情弹窗 + 批量赋权）· 系统角色 · IP 白名单</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">平台日志 · 系统日志 · 菜单管理 · 系统监控 · 缓存管理</span><span class="task-tag t-fin">已完成</span></li>
+
+        <li style="border-bottom:2px solid #e2e6ea"><div class="task-check done"></div><span class="task-name" style="font-weight:700;color:#1565c0">▸ 数据分析 · 运营 · 租户（v3 全新 · 13 页面）</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">数据分析：流量看板 · 路径分析 · 漏斗分析 · 告警</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">运营管理：APP 管理 · 站点列表 · 图片裁剪</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">租户管理：组织架构 · 租户列表 · 管理员 · 字典(3Tab) · 调度任务 · 样式管理(5Tab)</span><span class="task-tag t-fin">已完成</span></li>
+
+        <li style="border-bottom:2px solid #e2e6ea"><div class="task-check done"></div><span class="task-name" style="font-weight:700;color:#1565c0">▸ 会员管理迁移已完成部分（21/49 功能点）</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">会员列表 <code>/UserInfo/UserManage</code> — 多维筛选 · 批量操作 · 修改密码 · 导出</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">会员列表(代理) <code>/UserInfo/UserManage_Agent</code> — 合并为商户/代理筛选</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">会员详情(6Tab) <code>/UserInfo/UserDetaile</code> — 基本/充提/投注/钱包/账变/操作日志</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">会员投注汇总 <code>/UserInfo/UserDetaile_BetTotal</code> — 详情·投注 Tab</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">会员列表导出 · 会员数据导入 · 下级会员列表 · 下级会员导出</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">实名认证列表+审核 <code>/UserInfo/UserRealName</code> — 银行卡·实名认证 Tab</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">USDT 地址 · 银行卡列表 · 银行卡列表(代理) — 银行卡管理 6Tab 覆盖</span><span class="task-tag t-fin">已完成</span></li>
+        <li><div class="task-check done"></div><span class="task-name">充值/提现操作(8项) — 充值银行/订单/记录/审核 + 提现订单/日志/审核/手动处理 → 一阶段财务模块全覆盖</span><span class="task-tag t-fin">已完成</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head p2">
+      <h3>第二阶段：会员管理深度迁移</h3>
+      <span class="ph-badge ph-active">进行中</span>
+    </div>
+    <div class="phase-body">
+      <p style="color:var(--muted);margin-bottom:12px">会员管理按 <b>7 组分类</b> + <b>2 个独立模块</b> 建设，以下为要做的功能：</p>
+      <table>
+        <thead><tr><th width="150">分组</th><th>要做的功能</th></tr></thead>
+        <tbody>
+          <tr><td><b>账号</b></td><td>会员列表 · 登录日志 · 短信验证码查询 · 实名认证 · 分组管理 · IP黑名单</td></tr>
+          <tr><td><b>会员层级</b></td><td>会员层级 · 充值等级</td></tr>
+          <tr><td><b>风控</b></td><td>相同IP · 刷通道用户清单 · 异常会员处理</td></tr>
+          <tr><td><b>活动</b></td><td>合伙人奖励 · 会员活动黑名单 · 充值奖励发放记录</td></tr>
+          <tr><td><b>资金</b></td><td>银行卡查询 · 用户USDT钱包 · 用户电子钱包 · 用户PIX钱包 · 会员提现限制名单</td></tr>
+          <tr><td><b>代理</b></td><td>下级会员列表 · 会员返佣等级 · 昨日返佣等级 · 代理审核机制</td></tr>
+          <tr><td><b>VIP</b></td><td>会员VIP升级奖励记录</td></tr>
+          <tr><td><b>会员VIP管理</b><br><small>独立模块</small></td><td>VIP等级 · VIP人数 · 经验值配置 · VIP操作日志</td></tr>
+          <tr><td><b>会员洗码管理</b><br><small>独立模块</small></td><td>洗码记录 · 洗码规则说明</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head p3">
+      <h3>第三阶段：系统配置 + 活动 + 报表</h3>
+      <span class="ph-badge ph-plan">规划中</span>
+    </div>
+    <div class="phase-body">
+      <p style="color:var(--muted);margin-bottom:12px">补全系统配置、活动营销、代理管理、报表中心、游戏管理（数据分析/运营/租户/系统监控已在一阶段完成，不再重复列出）</p>
+      <ul class="task-list">
+        <li style="border-bottom:2px solid #e2e6ea"><div class="task-check"></div><span class="task-name" style="font-weight:700;color:#e65100">▸ 系统配置（SitINR 迁移）</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">站点设置 / H5设置 / 参数配置 / API配置（CloudFlare/Facebook/OSS）</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">消息管理（弹窗/滚动/推送消息）· 短信配置(18商户) · 邮件配置 · 极光/Firebase推送</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">设备管理 / 安全设置 / Google验证 · 充值/提现/打码全局规则</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">注册开关 / 注册赠送 / 首充返利 · 活动列表 / 域名像素 · 客服配置</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">导出中心 / 导出日志 · 维护管理 · 多语言 / 消息模板</span><span class="task-tag t-plan">规划</span></li>
+
+        <li style="border-bottom:2px solid #e2e6ea"><div class="task-check"></div><span class="task-name" style="font-weight:700;color:#e65100">▸ 活动营销</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">幸运转盘（配置/任务/抽奖记录/实物奖励/发货）</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">邀请转盘（配置/出款审核/统计）</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">每日/每周任务（配置/记录）· 签到活动（配置/记录）</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">新会员礼包 / 老用户回归 / 负盈利奖励</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">积分商城（商品/订单/兑换/规则）· 积分抽奖 · 轮播图</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">锦标赛 · TG频道活动 · 奖金中心 · 宝箱</span><span class="task-tag t-plan">规划</span></li>
+
+        <li style="border-bottom:2px solid #e2e6ea"><div class="task-check"></div><span class="task-name" style="font-weight:700;color:#e65100">▸ 代理管理</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">返佣等级/比例配置 · 手动返佣 · 用户返利（等级/报表/历史）</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">代理关系树（D/C/M/A四级 + 导入/解绑）· 邀请报表</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">独立代理库（Lottery_Agent：代理账号/Google验证/在线状态/日志）</span><span class="task-tag t-plan">规划</span></li>
+
+        <li style="border-bottom:2px solid #e2e6ea"><div class="task-check"></div><span class="task-name" style="font-weight:700;color:#e65100">▸ 报表中心</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">邀请/渠道/财务/游戏/用户报表（D/C/M/A 四级）</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">留存用户报表 · 同IP/登录类型报表 · 用户安全报表 · 邀请转盘统计</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">充值/提现次数报表 · 用户充值/提现/游戏/财务报表</span><span class="task-tag t-plan">规划</span></li>
+
+        <li style="border-bottom:2px solid #e2e6ea"><div class="task-check"></div><span class="task-name" style="font-weight:700;color:#e65100">▸ 游戏管理（SitINR 最大模块 · 建议单独排期）</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">自营彩票：WinGo/K3/5D/4D/Bingo18/TRX/XOSO/F-XOSO 期号/订单/控制/赢额限制</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">第三方厂商：厂商管理/游戏列表/映射/热门/RTP · 码量配置/规则/记录</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">投注记录深度：电子/彩票/直播/体育/棋牌（代理/导出/奖励）</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">厂商对接：老虎机/CQ9/JDB/HB/PG/XB · 资金回收 · 转账记录 · 锦标赛</span><span class="task-tag t-plan">规划</span></li>
+
+        <li style="border-bottom:2px solid #e2e6ea"><div class="task-check"></div><span class="task-name" style="font-weight:700;color:#e65100">▸ 渠道/内容/其它</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">渠道列表/编辑/批量/推广设置 · 来源归因 / 落地页配置</span><span class="task-tag t-plan">规划</span></li>
+        <li><div class="task-check"></div><span class="task-name">工单系统 / 文件上传(OSS)</span><span class="task-tag t-plan">规划</span></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ==================== 7. 二阶段介绍 ==================== -->
+<div class="section" id="sec-member">
+<div class="container">
+
+  <div class="card">
+    <div class="card-head"><h3>第二阶段介绍 · 会员管理深度迁移</h3><span class="badge b-phase" style="flex:none">进行中</span></div>
+    <div class="card-body">
+      <p style="margin-bottom:24px;color:var(--muted)">第二阶段聚焦会员管理迁移，同时做顶部导航分类优化、快捷工作台新增编辑功能，并在用户详情中新增归因字段。以下分四部分介绍。</p>
+
+      <!-- 一、迁移内容 -->
+      <div class="intro-block">
+        <div class="ib-title"><span class="ib-num">1</span>迁移内容</div>
+        <div class="ib-desc">第二阶段在原型中共<b>新增 35 个功能点</b>，按分类优化后的归属分布在 <b>6 个模块</b>（会员相关功能经重新归类，部分落入风控管理 / 配置中心 / 运营管理）。以原型 <code style="background:#f0f4f8;padding:1px 5px;border-radius:4px">localhost:8200</code> 实建页面为准，清单如下：</div>
+        <div style="margin-left:34px">
+        <table>
+          <thead><tr><th width="110">模块</th><th>新增功能点（按子分类）</th><th width="56">数量</th></tr></thead>
+          <tbody>
+            <tr><td><b>会员管理</b></td><td><b style="color:#1d4ed8">会员分组</b>：用户分组 · 分组表单<br><b style="color:#1d4ed8">认证·银行卡</b>：CPF认证 · KW认证<br><b style="color:#1d4ed8">登录·验证</b>：登录日志列表 · 登录日志（新增设备ID/浏览器指纹查询） · 短信验证码查询<br><b style="color:#1d4ed8">代理关系</b>：代理关系(D/C/M/A) · 代理关系导入</td><td>9</td></tr>
+            <tr><td><b>运营管理</b></td><td><b style="color:#1d4ed8">消息管理</b>：站内消息（整合推送消息） · 公告消息<br><b style="color:#1d4ed8">运营配置</b>：首充管理 · 活动资讯 · 轮播图管理 · 邀请人任务 · 邀请任务 · TG频道管理 · ARB提现活动管理 · 下载APP充值领奖励<br><b style="color:#1d4ed8">运营数据</b>：VIP奖励记录 · VIP等级人数 · 合伙人奖励 · 返佣报表 · 昨日返佣等级 · 充值奖励发放记录 · 邀请奖励领取记录 · 连续签到记录</td><td>18</td></tr>
+            <tr><td><b>风控管理</b></td><td><b style="color:#1d4ed8">异常·检测</b>：异常会员处理 · 互刷名单 · 相同IP<br><b style="color:#1d4ed8">风控名单</b>：会员提现限制名单 · 会员活动黑名单 · 刷通道用户清单</td><td>6</td></tr>
+            <tr><td><b>配置中心</b></td><td><b style="color:#1d4ed8">等级配置</b>：VIP等级 · VIP经验配置 · 充值等级<br><b style="color:#1d4ed8">返佣·代理</b>：返佣等级 · 代理审核机制<br><b style="color:#1d4ed8">会员规则</b>：分组权限配置 · 签到配置</td><td>7</td></tr>
+            <tr><td><b>游戏管理</b></td><td><b style="color:#1d4ed8">会员洗码管理</b>：洗码记录 · 洗码规则说明</td><td>2</td></tr>
+            <tr><td><b>系统管理</b></td><td><b style="color:#1d4ed8">访问控制</b>：IP黑名单</td><td>1</td></tr>
+          </tbody>
+          <tfoot><tr style="background:#f0f4f8;font-weight:700"><td>合计</td><td>6 个模块 · 14 个子分类</td><td>43</td></tr></tfoot>
+        </table>
+        <p style="font-size:12px;color:var(--muted);margin-top:8px">注：以上为二阶段在原型中新建的页面（工作台「新」标记项）。会员列表 / 会员层级 / 在线人数 / 会员银行卡等基础页一阶段已建，不计入新增；运营管理已重组为三组——「消息管理」（站内消息含原推送消息 / 公告消息）、「运营配置」（首充管理 / 活动资讯 / 轮播图管理 / 邀请人任务 / 邀请任务 / TG频道管理 / ARB提现活动管理 / 下载APP充值领奖励）、「运营数据」（VIP奖励记录 / VIP等级人数 / 合伙人奖励 / 返佣报表 / 昨日返佣等级 / 充值奖励发放记录 / 邀请奖励领取记录 / 连续签到记录，归集记录报表类非配置内容）；原「活动任务」已移除、推送消息并入站内消息；会员管理「登录日志(代理)」已移除。完整迁移状态（已完成 / 待办 / 新增）见上方「迁移对照表」。</p>
+        </div>
+      </div>
+
+      <!-- 二、顶部tab定义及分类优化 -->
+      <div class="intro-block">
+        <div class="ib-title"><span class="ib-num">2</span>顶部 Tab 定义及分类优化</div>
+        <div class="ib-desc">顶栏重构为 <b>8 个一级模块</b>，按使用频率与职责重新归类。其中「风控管理」「配置中心」从原会员子项提升为一级模块。</div>
+        <div class="mock"><img src="img/topnav.png?v=2" alt="顶栏8大模块" style="width:100%;display:block"></div>
+        <div class="mock-cap">▲ 目标后台真实顶栏截图（localhost:8200）：会员/运营/风控/配置中心/财务/游戏/报表/系统 8 大模块</div>
+        <div style="margin-left:34px">
+        <table>
+          <thead><tr><th width="50">#</th><th width="120">模块</th><th>职责定义</th></tr></thead>
+          <tbody>
+            <tr><td>①</td><td><b>会员管理</b></td><td>会员账号、层级、分组与风控名单等会员行为与数据查询</td></tr>
+            <tr><td>②</td><td><b>运营管理</b></td><td>拉新促活的运营工具：消息推送、Banner、广告、资讯</td></tr>
+            <tr><td>③</td><td><b>风控管理</b><span class="badge b-new" style="margin-left:6px">优化提升</span></td><td>用户行为风控：活动刷子、支付通道刷子、异常用户监控与处置</td></tr>
+            <tr><td>④</td><td><b>配置中心</b><span class="badge b-new" style="margin-left:6px">优化提升</span></td><td>低频规则配置：VIP、代理、返佣、签到等无需频繁改动的内容</td></tr>
+            <tr><td>⑤</td><td><b>财务管理</b></td><td>资金变动相关的配置与数据：充值/提现、收款通道、资金账变</td></tr>
+            <tr><td>⑥</td><td><b>游戏管理</b></td><td>游戏配置与数据：排序/入口开关、三方游戏投注与结算记录</td></tr>
+            <tr><td>⑦</td><td><b>报表管理</b></td><td>各类经营数据报表与数据预警</td></tr>
+            <tr><td>⑧</td><td><b>系统管理</b></td><td>SaaS 系统账号、角色权限与访问控制</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:13px;color:var(--muted);margin-top:10px">分类优化：① 风控从会员子项独立成模块，统一管理刷子/异常；② 配置中心收纳所有低频配置，与高频操作分离；③ 会员管理内部按 7 组多列下拉布局，新人一眼找到入口。</p>
+        </div>
+      </div>
+
+      <!-- 三、快捷工作台新增编辑功能 -->
+      <div class="intro-block">
+        <div class="ib-title"><span class="ib-num">3</span>快捷工作台 · 新增编辑功能（增 / 删 / 排序）</div>
+        <div class="ib-desc">点击顶栏 Logo 进入「快捷工作台」，按账号权限聚合常用入口一键直达。<b>本期新增「编辑布局」</b>：用户可自定义工作台磁贴——<b>增</b>（添加入口）、<b>删</b>（移除入口）、<b>排序</b>（拖动调整顺序）。</div>
+        <div class="mock"><img src="img/workbench-edit.png?v=2" alt="快捷工作台编辑模式" style="width:100%;display:block"></div>
+        <div class="mock-cap">▲ 目标后台真实截图（localhost:8200）：点「✎ 编辑布局」进入编辑模式 —— 每个磁贴右上角 ✕ 可删除、拖动磁贴可排序、「＋ 添加入口」加入更多功能</div>
+        <ul style="margin-left:34px;font-size:13px;color:#374151;line-height:2">
+          <li>· <b>增</b>：点「＋ 添加入口」，从全部功能中勾选加入工作台</li>
+          <li>· <b>删</b>：点磁贴右上角 ✕，移除不常用入口</li>
+          <li>· <b>排序</b>：拖动磁贴自由调整顺序，常用功能置顶</li>
+          <li>· 布局按账号本地保存，可「↺ 恢复默认」一键还原</li>
+          <li>· 入口按当前账号权限过滤，无权限不显示</li>
+        </ul>
+      </div>
+
+      <!-- 四、用户详情新增归因字段 -->
+      <div class="intro-block">
+        <div class="ib-title"><span class="ib-num">4</span>用户详情 · 新增归因字段（红字标识）</div>
+        <div class="ib-desc">在会员详情中<b>新增「归因来源」独立板块</b>，并在基本信息、代理数据、注册信息 / 登录信息等板块补充归因相关字段（<span style="color:#d4380d;font-weight:600">红字＝新增</span>），定位会员从哪来、谁带来的、走哪条链路注册，支撑渠道效果分析与代理业绩归集。</div>
+        <div class="mock"><img src="img/member-detail.png?v=3" alt="会员详情完整页" style="width:100%;display:block"></div>
+        <div class="mock-cap">▲ 目标后台真实截图（localhost:8200 · 会员详情完整页，共 12 个板块）：<span style="color:#d4380d">红色字段</span>即新增的归因相关字段</div>
+        <div style="margin-left:34px">
+        <table>
+          <thead><tr><th width="180">板块</th><th>新增字段（<span style="color:#d4380d">红字</span>）</th></tr></thead>
+          <tbody>
+            <tr><td><b>基本信息</b><br><small>补充</small></td><td>邀请人 · 访问端</td></tr>
+            <tr><td><b>归因来源</b><br><small>新增板块</small></td><td>主归因 · 推广平台名称 · 注册渠道 · 登录渠道 · 搜索引擎 · 邀请码 · 邀请类型</td></tr>
+            <tr><td><b>归属与层级</b><br><small>新增 · 仅研发查看，上线隐藏</small></td><td>集团 · 市场 · 商户</td></tr>
+            <tr><td><b>代理数据</b><br><small>补充</small></td><td>一级代理 · 直接上级代理 · 代理层级 · 代理路径 · 佣金模式 · 返佣等级 · 是否给上级返佣 · 是否可领取返佣 · 代理状态</td></tr>
+            <tr><td><b>注册信息</b><br><small>重排·补充</small></td><td>注册端 · 注册设备号/指纹（合并） · 是否模拟器 · 同设备注册用户数 · 同指纹注册用户数 · 注册域名</td></tr>
+            <tr><td><b>登录信息</b><br><small>新增板块</small></td><td>登录端 · 登录设备号/指纹（含登录浏览器指纹） · 同设备登录数 · 同指纹登录数 · 登录域名</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:13px;color:var(--muted);margin-top:10px">完整 12 个板块：基本信息 · 归因来源 · 归属与层级 · 数据统计 · 活动奖励信息 · 代理数据 · VIP · 保险箱 · 打码/洗码 · 注册信息 · 登录信息 · 最后 3 次登录信息。</p>
+        <p style="font-size:13px;color:var(--muted);margin-top:6px">原则：归因事实在注册时固化快照，后续渠道启停 / 代理划拨不改写历史来源。「归属与层级」用于多商户隔离核对，仅研发可见，正式环境隐藏。</p>
+        <p style="font-size:13px;color:var(--muted);margin-top:6px"><b style="color:#475569">会员列表同步：</b>上述红字字段（<b>除「归因来源」「归属与层级」外</b>，共 23 项）已作为<span style="color:#d4380d;font-weight:600">红色列</span>同步至会员列表，可在工具栏「自定义列」中显隐。其中<b>「是否给上级返佣」「是否可领取返佣」</b>做成<b>配置开关</b>，切换时<b>需二次确认</b>。</p>
+        <p style="margin-top:12px"><a href="attribution-flow.html" target="_blank" style="display:inline-block;background:#2563eb;color:#fff;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600">📊 归因来源 · 判定流程图</a> <a href="member-detail-field-glossary-full.html" target="_blank" style="display:inline-block;background:#2e7d5b;color:#fff;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600">📖 会员详情 · 全字段说明（11 板块 99 字段：名词解释 / 应用场景 / 异常情况）</a> <a href="member-detail-field-glossary.html" target="_blank" style="display:inline-block;color:#d4380d;padding:8px 12px;text-decoration:underline;font-size:13px">仅看新增字段（30 项）»</a></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+// ===== Tab 切换 =====
+function showTab(id, el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  document.querySelectorAll('.nav a').forEach(a=>a.classList.remove('active'));
+  if(el) el.classList.add('active');
+  else document.querySelector(`.nav a[onclick*="${id}"]`).classList.add('active');
+  if((location.hash||'').replace('#','')!==id){ try{ history.replaceState(null,'','#'+id); }catch(e){ location.hash=id; } }
+}
+// URL hash 深链：链接带 #member 时直达「二阶段介绍」
+(function(){ var h=(location.hash||'').replace('#',''); if(h && document.getElementById('sec-'+h)) showTab(h); })();
+
+// ===== 对照表数据 =====
+const CMP=[
+  {g:"会员管理（按真实菜单 24 项核对）"},
+  {sit:"会员列表（含批量/行操作/详情6Tab）",saas:"会员列表 + 会员详情(6Tab)",s:"done",n:"详情:基本/充提/投注/钱包/账变/操作日志"},
+  {sit:"会员层级",saas:"会员层级（代理维度列表）",s:"done"},
+  {sit:"下级会员列表",saas:"下级会员",s:"done"},
+  {sit:"会员返佣等级（User_RebateLv）",saas:"—",s:"todo",n:"tab_Commissions"},
+  {sit:"昨日返佣等级",saas:"—",s:"todo"},
+  {sit:"充值等级（RechargeLevel）",saas:"—",s:"todo",n:"tab_Users_Recharge_Level"},
+  {sit:"相同IP（同IP注册/登录查询）",saas:"—",s:"todo",n:"Report/Ip_Same。真实菜单合为1项"},
+  {sit:"登录日志（LoginLog）",saas:"—",s:"todo",n:"tab_LoginRecord"},
+  {sit:"银行卡查询（UsersBanks）",saas:"会员银行卡管理",s:"done"},
+  {sit:"短信验证码查询（RegisterSMS）",saas:"—",s:"todo",n:"tab_Codes"},
+  {sit:"用户USDT钱包",saas:"会员银行卡-USDT Tab",s:"done",n:"真实菜单是独立项"},
+  {sit:"用户电子钱包",saas:"会员银行卡-电子钱包 Tab",s:"done",n:"真实菜单是独立项"},
+  {sit:"用户PIX钱包",saas:"会员银行卡-PIX Tab",s:"new",n:"真实菜单是独立项"},
+  {sit:"实名认证（UserRealName）",saas:"会员银行卡-实名认证 Tab",s:"done"},
+  {sit:"分组管理（UserGroup）",saas:"—",s:"todo",n:"tab_UserGroup"},
+  {sit:"合伙人奖励（PartnerRewards）",saas:"—",s:"todo",n:"tab_PartnerRewards"},
+  {sit:"代理审核机制（AgentAudit）",saas:"—",s:"todo"},
+  {sit:"会员VIP升级奖励记录（VipRewards）",saas:"—",s:"todo",n:"tab_VipRewards"},
+  {sit:"会员提现限制名单（UserWithdrawBlack）",saas:"—",s:"todo"},
+  {sit:"会员活动黑名单（MemberActivityBlack）",saas:"—",s:"todo"},
+  {sit:"异常会员处理（AbnormalUser）",saas:"—",s:"todo"},
+  {sit:"刷通道用户清单（CodeWashRecord）",saas:"—",s:"todo"},
+  {sit:"充值奖励发放记录（RechargeDelayedReward）",saas:"—",s:"todo"},
+  {sit:"IP黑名单（BlackIp 增删/解除）",saas:"—",s:"todo",n:"系统管理有白名单，会员侧黑名单待补"},
+  {sit:"在线人数（在线会员列表）",saas:"在线人数",s:"done",n:"截图未列，实际有此页"},
+
+  {g:"会员VIP管理（独立模块·真实菜单 4 项）"},
+  {sit:"VIP等级（VipLevel）",saas:"—",s:"todo",n:"tab_VipLevel"},
+  {sit:"VIP人数（VipLevelQuantity）",saas:"—",s:"todo",n:"各等级会员数统计"},
+  {sit:"经验值配置（VipCurrencyExp）",saas:"—",s:"todo",n:"tab_VipUsersExp_Day"},
+  {sit:"VIP操作日志（VipRecord）",saas:"—",s:"todo",n:"tab_VipRecord"},
+
+  {g:"会员洗码管理（独立模块·真实菜单 2 项·之前遗漏）"},
+  {sit:"洗码记录（按会员查询）",saas:"洗码记录（原型已建·流水×比例/日结周结/页面合计·总计）",s:"done",n:"tab_CodeWashRecord"},
+  {sit:"洗码规则说明（CodeWashRule）",saas:"洗码规则说明（原型已建·游戏×VIP规则表+机制说明）",s:"done",n:"tab_CodeWashingRule"},
+
+  {g:"会员相关·非本菜单（归属其它模块）"},
+  {sit:"签到记录/配置 → 归活动营销",saas:"—",s:"todo"},
+  {sit:"任务活动/首充管理 → 归活动营销",saas:"—",s:"todo"},
+  {sit:"站内消息 → 归系统/消息",saas:"—",s:"todo"},
+
+  {g:"财务管理"},
+  {sit:"资金账变（3视图）",saas:"资金账变",s:"done"},
+  {sit:"人工充值+审核",saas:"人工充值+审核列表/记录",s:"done",n:"SaaS 新增批量导入"},
+  {sit:"收款银行卡（单页）",saas:"本地收款账号管理（4Tab）",s:"done",n:"优化：拆为银行卡/UPI/USDT/EWallet"},
+  {sit:"第三方支付（单页）",saas:"支代付三方管理",s:"done",n:"SaaS 增加关联商户列"},
+  {sit:"银行管理",saas:"银行字典",s:"done"},
+  {sit:"充值渠道+支付方式（2独立页）",saas:"充值类型管理（2Tab：大类+通道）",s:"done",n:"优化：合并+成功率统计"},
+  {sit:"充值列表（单页）",saas:"充值订单管理（4Tab）",s:"done",n:"优化：拆为三方/本地/全部/直充短信"},
+  {sit:"└ （无）",saas:"└ 直充短信 Tab",s:"new"},
+  {sit:"提现审核+RemoteWork出款（分散6页）",saas:"提现订单管理（6Tab整合）",s:"done",n:"优化：整合为统一模块"},
+  {sit:"└ 出款看板/操作台/组别/报表/订单",saas:"└ 6Tab全部保留",s:"done"},
+  {sit:"└ （无）",saas:"└ 批量指派组长",s:"new"},
+  {sit:"充值申诉处理（RechargeAppeal）",saas:"—",s:"todo"},
+  {sit:"UPI充值 / USDT充值（RechargeUpi/UsdtRecharge）",saas:"—",s:"todo"},
+  {sit:"充值级别配置（RechargeLevel）",saas:"—",s:"todo"},
+  {sit:"人工充值权限配置（ManualRechargePermission）",saas:"系统-权限部分覆盖",s:"todo"},
+  {sit:"提现处理镜像（WithdrawProcessingMirror）",saas:"—",s:"todo"},
+  {sit:"USDT提现设置 / 自动提现配置（AutoWithdrawConfig）",saas:"—",s:"todo"},
+  {sit:"提现银行限额 / 提现黑名单（UserWithdrawBlack）",saas:"—",s:"todo"},
+  {sit:"出款组别权限配置（WithdrawalGroupConfig）",saas:"提现订单-组别配置",s:"done"},
+  {sit:"在线银行SMS（OnlineBankingSms）",saas:"—",s:"todo"},
+  {sit:"第三方银行 / 支付银行 / 电子钱包/KBZ/Wave",saas:"支代付三方管理部分覆盖",s:"todo"},
+  {sit:"支付测试接口（代收/代付测试）",saas:"充值/提现通道-测试按钮",s:"done"},
+  {sit:"代理财务记录（FinanceRecord_Agent）",saas:"—",s:"todo"},
+  {sit:"财务日志 / 保险箱记录（SafeRecord）",saas:"—",s:"todo"},
+  {sit:"【内部API】代收代付回调 / 查询三方余额 / 手动出款",saas:"—",s:"na",n:"后端接口，非后台页面"},
+
+  {g:"游戏管理"},
+  {sit:"游戏历史（3视图切换）",saas:"三方游戏记录（5大类Tab+左侧分类）",s:"done",n:"优化：按游戏大类分Tab"},
+  {sit:"└ （无）",saas:"└ 左侧游戏分类导航",s:"new"},
+  {sit:"自营-WinGo（期号/订单/控制/赢额限制）",saas:"—",s:"todo",n:"tab_Win_Game*"},
+  {sit:"自营-K3（期号/订单/玩法/控制/赢率）",saas:"—",s:"todo",n:"tab_K3_Game*"},
+  {sit:"自营-5D / 4D（期号/订单/赔率/撤单）",saas:"—",s:"todo",n:"tab_5D/4D_Game*"},
+  {sit:"自营-Bingo18（订单/配置/趋势统计）",saas:"—",s:"todo",n:"tab_Bingo18_Game*"},
+  {sit:"自营-TRX-Win（期号/订单）",saas:"—",s:"todo",n:"tab_Trx_Win_Game*"},
+  {sit:"越南彩-Xoso / F-Xoso（期号/投注/城市/赢率配置）",saas:"—",s:"todo",n:"tab_Xoso/FXoso_Game*"},
+  {sit:"第三方-厂商管理（状态/IP验证/同步）",saas:"—",s:"todo",n:"ThirdGameVendor"},
+  {sit:"第三方-游戏列表/映射/热门/RTP配置",saas:"—",s:"todo",n:"ThirdGameList"},
+  {sit:"第三方-码量配置/规则/记录（CodeWash）",saas:"—",s:"todo"},
+  {sit:"第三方-投注记录（电子/彩票/直播/体育/棋牌）",saas:"三方游戏记录部分覆盖",s:"todo"},
+  {sit:"厂商对接-老虎机/CQ9/HB/JDB/PG/XB列表",saas:"—",s:"todo"},
+  {sit:"游戏资金回收 / 转账历史",saas:"—",s:"todo"},
+  {sit:"锦标赛（Champion_Task 配置/结算）",saas:"—",s:"todo"},
+  {sit:"玩法指南 / 游戏控制用户 / 彩种分类",saas:"—",s:"todo"},
+
+  {g:"系统管理"},
+  {sit:"后台用户列表（简单CRUD）",saas:"系统用户（4Tab详情弹窗+批量操作）",s:"done",n:"优化：详情改为4Tab弹窗"},
+  {sit:"└ （无）",saas:"└ 批量赋权/充提权限搜索",s:"new"},
+  {sit:"角色权限",saas:"系统角色",s:"done"},
+  {sit:"IP白名单",saas:"IP白名单",s:"done"},
+  {sit:"操作日志",saas:"平台日志",s:"done",n:"SaaS 增加日志类型+状态筛选"},
+  {sit:"Web日志",saas:"中台日志",s:"done",n:"SaaS 操作详情可展开"},
+  {sit:"系统日志",saas:"日志(log)",s:"done",n:"v3 已建"},
+  {sit:"（无）",saas:"系统监控(monitor)",s:"new",n:"v3 新增"},
+  {sit:"（无）",saas:"缓存管理(cache)",s:"new",n:"v3 新增"},
+  {sit:"菜单管理",saas:"菜单(menu)",s:"done",n:"v3 已建"},
+  {sit:"角色类型配置（RoleType）",saas:"—",s:"todo"},
+  {sit:"站点设置 / H5设置（SiteSet/H5Setting）",saas:"运营-站点列表部分覆盖",s:"todo"},
+  {sit:"参数配置 / 参数配置日志（ParameterConfig）",saas:"—",s:"todo"},
+  {sit:"API设置（ApiSetting/CloudFlare/Facebook/OSS）",saas:"—",s:"todo"},
+  {sit:"APP URL / APK包管理",saas:"运营-APP/版本管理",s:"done"},
+  {sit:"弹窗消息 / 滚动消息 / 推送消息（SiteMessages）",saas:"—",s:"todo",n:"tab_SiteMessage"},
+  {sit:"短信配置（18商户）/ 邮件配置（SmsSettings）",saas:"—",s:"todo"},
+  {sit:"极光/Firebase推送配置",saas:"—",s:"todo"},
+  {sit:"设备管理 / 设备日志（Devices）",saas:"—",s:"todo"},
+  {sit:"安全设置 / Google验证（Safe_Settings）",saas:"—",s:"todo"},
+  {sit:"充值/提现/打码全局规则（RechargeSeting/WithdrawalSeting/AmountOfCod）",saas:"—",s:"todo"},
+  {sit:"注册状态/赠送 / 首充返利（RegisterState/FirstDepositRebate）",saas:"—",s:"todo"},
+  {sit:"活动列表（ActiveList）/ 域名像素配置（EventRegionConfig）",saas:"—",s:"todo"},
+  {sit:"客服配置 / 客户建议（CustomerService/Suggestion）",saas:"—",s:"todo"},
+  {sit:"游戏分类 / 彩票分类（GameCategory/LotteryCategory）",saas:"—",s:"todo"},
+  {sit:"版本类型 / 套餐包配置 / 快递类型（Config）",saas:"运营-套餐包部分覆盖",s:"todo"},
+  {sit:"多语言 / 消息模板（Template）",saas:"—",s:"todo"},
+  {sit:"导出中心 / 导出日志（ExportCenter）",saas:"—",s:"todo"},
+  {sit:"维护管理（Maintenance）",saas:"—",s:"todo"},
+
+  {g:"报表管理"},
+  {sit:"实时统计（单页）",saas:"数据统计 statistics（5Tab）",s:"done",n:"优化：大幅升级"},
+  {sit:"└ （无）",saas:"└ 24h报表/商户报表/通道报表/三方商户号报表",s:"new"},
+  {sit:"（无）",saas:"报表看板 dashboard",s:"new",n:"v3 已建"},
+  {sit:"（无）",saas:"渠道预警 channelAlert（5类预警+规则配置）",s:"new",n:"v3 已建"},
+  {sit:"邀请报表（D/C/M/A四级）",saas:"—",s:"todo",n:"Chart_InviteAward"},
+  {sit:"渠道报表（A/C级）",saas:"—",s:"todo",n:"Chart_Channel"},
+  {sit:"财务报表（D/C/M/A四级）",saas:"—",s:"todo",n:"Chart_Finance"},
+  {sit:"游戏报表 / GT游戏报表",saas:"—",s:"todo",n:"Chart_Lottery"},
+  {sit:"用户报表（注册/活跃/留存）",saas:"—",s:"todo",n:"Chart_User/UserKeep"},
+  {sit:"充值/提现报表（按用户维度）",saas:"—",s:"todo",n:"Chart_Recharge/Withdraw"},
+  {sit:"同IP报表 / 登录类型报表（风控）",saas:"—",s:"todo"},
+  {sit:"用户安全报表 / 邀请转盘统计报表",saas:"—",s:"todo"},
+  {sit:"实时统计明细（Realtime_StatisticsDetail）",saas:"数据统计部分覆盖",s:"done"},
+
+  {g:"数据分析（v3新增模块）"},
+  {sit:"（SitINR无）",saas:"流量看板 trafficDashboard",s:"new",n:"v3 已建"},
+  {sit:"（SitINR无）",saas:"漏斗分析 funnelAnalysis",s:"new",n:"v3 已建"},
+  {sit:"（SitINR无）",saas:"路径分析 pathAnalysis",s:"new",n:"v3 已建"},
+  {sit:"（SitINR无）",saas:"告警 alarm",s:"new",n:"v3 已建"},
+
+  {g:"运营管理（v3新增模块）"},
+  {sit:"站点设置",saas:"站点列表 siteList",s:"done",n:"v3 已建，多商户化"},
+  {sit:"APP URL/APK管理",saas:"APP 管理 app",s:"done",n:"v3 已建"},
+  {sit:"版本类型",saas:"版本管理 version",s:"done",n:"v3 已建"},
+  {sit:"套餐包配置",saas:"套餐包 package + 取包 takePackage",s:"done",n:"v3 已建"},
+  {sit:"（无）",saas:"图片裁剪 imageCrop",s:"new",n:"v3 新增工具"},
+
+  {g:"租户管理（v3新增模块·SaaS核心）"},
+  {sit:"（SitINR单站点无）",saas:"租户列表 tenantList",s:"new",n:"多商户核心"},
+  {sit:"（SitINR无）",saas:"组织架构 organization",s:"new",n:"v3 已建"},
+  {sit:"后台用户（部分）",saas:"管理员用户 adminUser",s:"done",n:"v3 已建"},
+  {sit:"（无）",saas:"调度任务 scheduler",s:"new",n:"v3 已建"},
+  {sit:"（无）",saas:"样式管理 styleManage",s:"new",n:"v3 已建"},
+  {sit:"字典数据",saas:"字典 dictionary",s:"done",n:"v3 已建"},
+
+  {g:"仪表盘/个人中心（v3）"},
+  {sit:"首页仪表板(D/C/M)",saas:"欢迎页 dashboard/welcome",s:"done",n:"v3 已建"},
+  {sit:"（个人资料）",saas:"个人中心 profile",s:"done",n:"v3 已建"},
+
+  {g:"平台架构（SaaS全新）"},
+  {sit:"（SitINR无）",saas:"集团/商户视角切换",s:"new"},
+  {sit:"（SitINR无）",saas:"多商户下拉筛选",s:"new"},
+  {sit:"（SitINR无）",saas:"快捷工作台（24快捷入口）",s:"new"},
+  {sit:"（SitINR无）",saas:"多Tab页签导航",s:"new"},
+  {sit:"（SitINR无）",saas:"全局自定义列 + 快捷时间按钮",s:"new"},
+
+  {g:"活动营销"},
+  {sit:"幸运转盘（配置/任务/抽奖记录/实物奖励/发货）",saas:"—",s:"todo",n:"tab_Turntable_*"},
+  {sit:"邀请转盘（配置/出款审核/统计）",saas:"—",s:"todo",n:"tab_UserInvitedWheel"},
+  {sit:"每日任务（配置/记录）",saas:"—",s:"todo",n:"tab_DailyConfig"},
+  {sit:"每周任务（配置/记录）",saas:"—",s:"todo",n:"tab_WeeklyConfig"},
+  {sit:"新会员礼包（配置/申请/领取/负盈利奖励）",saas:"—",s:"todo",n:"tab_GiftPack_*"},
+  {sit:"老用户回归活动 / 奖励历史",saas:"—",s:"todo",n:"Activity_OldUserReturn"},
+  {sit:"积分商城（商品/订单/兑换/规则/地址）",saas:"—",s:"todo",n:"tab_Product_*"},
+  {sit:"积分抽奖（配置/中奖单/发货单）",saas:"—",s:"todo",n:"tab_PointsLottery"},
+  {sit:"签到活动（配置/记录）",saas:"—",s:"todo",n:"tab_SignIn"},
+  {sit:"锦标赛活动（已列入游戏管理）",saas:"—",s:"todo"},
+  {sit:"TG频道活动 / 奖金中心 / 宝箱",saas:"—",s:"todo"},
+  {sit:"轮播图管理（Banners）/ 新闻 / 欢迎页",saas:"—",s:"todo"},
+
+  {g:"代理管理"},
+  {sit:"返佣等级配置（RebateLevel）",saas:"—",s:"todo",n:"tab_Commissions"},
+  {sit:"返佣比例配置（RebateLvRateConfig）",saas:"—",s:"todo"},
+  {sit:"手动返佣（RebateManual）",saas:"—",s:"todo"},
+  {sit:"用户返利（等级/报表/历史/编辑）",saas:"—",s:"todo"},
+  {sit:"代理关系树（D/C/M/A四级 + 导入/解绑）",saas:"—",s:"todo",n:"tab_Users_Relative"},
+  {sit:"邀请报表（D/C/M/A四级 + 导出）",saas:"—",s:"todo"},
+  {sit:"独立代理库（Lottery_Agent：代理账号/Google验证/在线状态/日志）",saas:"—",s:"todo"},
+
+  {g:"渠道/内容/其它"},
+  {sit:"渠道列表/编辑/批量/推广设置（Channel）",saas:"—",s:"todo",n:"tab_Channels"},
+  {sit:"来源归因 / 落地页配置（Source/LandingPage）",saas:"—",s:"todo"},
+  {sit:"理财管理（财富订单/类型/设置）",saas:"—",s:"na",n:"SaaS V1 不含理财"},
+  {sit:"工单系统 / 文件上传（OSS）",saas:"—",s:"todo"},
+];
+
+// 给每个数据行标记所属模块
+let curGroup="";
+CMP.forEach(row=>{if(row.g)curGroup=row.g;else row._g=curGroup;});
+
+// ===== 概览统计（从数据动态计算） =====
+function calcOverview(){
+  const items=CMP.filter(r=>r.s);
+  const d=items.filter(r=>r.s==="done").length;
+  const n=items.filter(r=>r.s==="new").length;
+  const t=items.filter(r=>r.s==="todo").length;
+  const na=items.filter(r=>r.s==="na").length;
+  document.getElementById("ov-done").textContent=d;
+  document.getElementById("ov-new").textContent=n;
+  document.getElementById("ov-todo").textContent=t;
+  document.getElementById("ov-na").textContent=na;
+  const total=d+n+t;
+  document.getElementById("ov-pbar").innerHTML=`<div class="s s1" style="width:${d/total*100}%"></div><div class="s s2" style="width:${n/total*100}%"></div><div class="s s3" style="width:${t/total*100}%"></div>`;
+  const migrateTotal=d+t;
+  document.getElementById("ov-rate").innerHTML=`迁移完成率 <b style="color:#4caf50">${Math.round(d/migrateTotal*100)}%</b>（${d}/${migrateTotal}） · 含新增功能覆盖率 <b style="color:#2196f3">${Math.round((d+n)/(d+n+t)*100)}%</b>（${d+n}/${d+n+t}）`;
+
+  // 各模块统计
+  const mods=[...new Set(CMP.filter(r=>r.g).map(r=>r.g))];
+  const tb=document.getElementById("ov-modules");
+  tb.innerHTML="";
+  mods.forEach(m=>{
+    const mi=items.filter(r=>r._g===m);
+    const md=mi.filter(r=>r.s==="done").length;
+    const mn=mi.filter(r=>r.s==="new").length;
+    const mt=mi.filter(r=>r.s==="todo").length;
+    const mna=mi.filter(r=>r.s==="na").length;
+    const rate=md+mt>0?Math.round(md/(md+mt)*100):(mn>0?"全新":"0");
+    const rateColor=rate==="全新"?"#2196f3":rate>=70?"#4caf50":rate>=30?"#ff9800":"#9e9e9e";
+    const link=(mod,st,count)=>count>0?`<a class="link" style="font-weight:700;font-size:15px" onclick="jumpToCompare('${st}','${mod}')">${count}</a>`:`<span style="color:#ddd">0</span>`;
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td><b>${m}</b></td><td>${link(m,"done",md)}</td><td>${link(m,"new",mn)}</td><td>${link(m,"todo",mt)}</td><td>${link(m,"na",mna)}</td><td><b style="color:${rateColor}">${typeof rate==="number"?rate+"%":rate}</b></td>`;
+    tb.appendChild(tr);
+  });
+}
+
+// ===== 点击数字跳转到对照表（带筛选） =====
+function jumpToCompare(status, mod){
+  showTab("compare");
+  // 高亮对照表中对应状态的行
+  document.querySelectorAll("#compareTable tr[data-s]").forEach(tr=>{
+    const matchS=tr.dataset.s===status;
+    const matchM=!mod||true; // 模块筛选通过滚动定位实现
+    tr.style.display="";
+    tr.style.background=matchS?"rgba(9,96,189,.06)":"";
+  });
+  // 如果指定了模块，滚动到该模块的分组行
+  if(mod){
+    document.querySelectorAll("#compareTable .group-row").forEach(gr=>{
+      if(gr.textContent.includes(mod)){
+        setTimeout(()=>gr.scrollIntoView({behavior:"smooth",block:"start"}),100);
+      }
+    });
+  } else {
+    // 滚动到对照表顶部
+    setTimeout(()=>document.getElementById("sec-compare").scrollIntoView({behavior:"smooth"}),100);
+  }
+  // 在导航高亮"迁移对照表"
+  document.querySelectorAll(".nav a").forEach(a=>a.classList.remove("active"));
+  document.querySelector('.nav a[onclick*="compare"]').classList.add("active");
+}
+
+// 渲染对照表
+const tbody=document.querySelector('#compareTable tbody');
+const SL2={done:"已迁移",new:"SaaS新增",todo:"待迁移",na:"不迁移"};
+const SC2={done:"b-done",new:"b-new",todo:"b-todo",na:"b-todo"};
+CMP.forEach(row=>{
+  const tr=document.createElement('tr');
+  if(row.g){
+    tr.className='group-row';
+    tr.innerHTML=`<td colspan="3">▸ ${row.g}</td>`;
+  } else {
+    const isSub=row.sit&&row.sit.startsWith("└")||row.saas&&row.saas.startsWith("└");
+    const sitClass=isSub?"sub-fn":"fn";
+    const saasClass=isSub?"sub-fn":"fn";
+    const arrow=row.s==="todo"||row.s==="na"?'<span class="arrow empty">—</span>'
+      :row.s==="new"?'<span class="arrow">★</span>'
+      :'<span class="arrow">→</span>';
+    tr.dataset.s=row.s;
+    tr.dataset.g=row._g||"";
+    tr.innerHTML=`
+      <td class="sit-col"><span class="${sitClass}">${row.sit||""}</span></td>
+      <td class="mid-col">${arrow}<br><span class="badge ${SC2[row.s]}">${SL2[row.s]}</span></td>
+      <td class="saas-col"><span class="${saasClass}" style="${row.saas==="—"?"color:#ccc":""}">${row.saas||""}</span>${row.n?'<div class="note">'+row.n+'</div>':''}</td>`;
+  }
+  tbody.appendChild(tr);
+});
+
+const V1F=[{"m": "会员管理", "groups": [{"g": "用户查询与操作", "items": [["会员列表", "/UserInfo/UserManage", "按商户/账号/IP/渠道/设备/VIP等多维度筛选会员，支持导出", "查看"], ["会员列表(代理)", "/UserInfo/UserManage_Agent", "代理视角的会员列表，仅展示代理线下会员", "查看"], ["会员详情", "/UserInfo/UserDetaile", "查看单个会员的完整信息：基本资料、余额、充提记录、游戏数据", "查看"], ["会员投注汇总", "/UserInfo/UserDetaile_BetTotal", "会员在各游戏中的投注、中奖、盈亏汇总统计", "报表"], ["会员列表导出", "/UserInfo/UserManageExport", "按筛选条件导出会员数据到 Excel", "导出"], ["异常会员处理", "/UserInfo/AbnormalUser", "处理异常账户：冻结、解冻、限制操作", "操作"], ["会员数据导入", "/UserInfo/UserDataImport", "批量导入会员数据（Excel文件）", "操作"], ["下级会员列表", "/UserInfo/SubsetUserList", "查询代理线下的下级会员列表", "查看"], ["下级会员导出", "/UserInfo/SubsetUserExport", "导出下级会员数据", "导出"], ["互刷名单", "/UserInfo/MutualBetList", "检测互相投注的异常会员名单", "风控"]]}, {"g": "用户分组", "items": [["用户分组", "/UserInfo/UserGroup", "按业务需要将会员划分为不同分组（默认/高价值/风险/VIP等）", "查看"], ["分组表单", "/UserInfo/UserGroupForm", "新增或编辑分组信息", "操作"], ["分组权限配置", "/UserInfo/UserGroupRightsForm", "配置分组的活动参与、提现、游戏等权限组合", "配置"]]}, {"g": "实名认证 / 银行卡", "items": [["实名认证列表", "/UserInfo/UserRealName", "查看会员实名认证状态，审核认证信息", "查看"], ["实名认证编辑", "/UserInfo/UserRealNameOpt", "审核通过/驳回会员实名认证", "操作"], ["CPF 认证列表", "/UserInfo/UserCpfList", "巴西 CPF 税号认证记录", "查看"], ["KW 认证列表", "/UserInfo/UserKWList", "其他认证方式的记录", "查看"], ["USDT 地址列表", "/UserInfo/UserUsdtList", "会员绑定的 USDT 提现地址", "查看"], ["银行卡列表", "/UserInfo/UsersBanks", "会员绑定的银行卡信息", "查看"], ["银行卡列表(代理)", "/UserInfo/UsersBanks_Agent", "代理视角的银行卡查看", "查看"]]}, {"g": "充值 / 提现操作", "items": [["充值银行", "/UserInfo/RechargeBank", "会员充值银行卡记录", "查看"], ["充值订单", "/UserInfo/RechargeOrder", "会员充值订单列表", "查看"], ["充值记录", "/UserInfo/RechargeRecord", "充值历史记录查询", "查看"], ["充值审核", "/UserInfo/RechargeExamine", "人工充值审核", "操作"], ["提现订单", "/UserInfo/WithdrawOrder", "会员提现订单列表", "查看"], ["提现日志", "/UserInfo/WithdrawLog", "提现操作日志与审核记录", "查看"], ["提现审核", "/UserInfo/WithdrawalExamine", "提现人工审核：通过/驳回/挂起", "操作"], ["提现手动处理", "/UserInfo/WithdrawalManitou", "手动处理异常提现订单", "操作"]]}, {"g": "登录 / 签到", "items": [["登录日志列表", "/UserInfo/LoginlogList", "查询会员登录历史", "查看"], ["登录日志", "/UserInfo/LoginLog", "按 IP/设备/时间维度的登录记录", "查看"], ["登录日志(代理)", "/UserInfo/LoginLog_Agent", "代理视角的登录日志", "查看"], ["连续签到记录", "/UserInfo/ContinuousSignInlog", "查询会员连续签到天数与奖励领取", "查看"], ["签到配置", "/UserInfo/SinInSetting", "配置签到奖励规则", "配置"]]}, {"g": "VIP / 返佣 / 代理关系", "items": [["VIP 等级", "/UserInfo/VipLevel", "查看和编辑 VIP 等级体系", "配置"], ["VIP 等级人数", "/UserInfo/VipLevelQuantity", "各 VIP 等级的会员人数统计", "报表"], ["VIP 奖励记录", "/UserInfo/VipRewards", "VIP 升级奖励派彩记录", "查看"], ["VIP 经验配置", "/UserInfo/VipCurrencyExp", "配置 VIP 经验值与升级规则", "配置"], ["返佣等级", "/UserInfo/User_RebateLv", "查看会员返佣等级", "查看"], ["返佣报表", "/UserInfo/UserRebateReport", "返佣数据汇总", "报表"], ["合伙人奖励", "/UserInfo/PartnerRewards", "合伙人推广奖励记录", "查看"], ["代理关系(D/C/M/A)", "/UserInfo/D_UserRelative", "按董事/经理/主管/代理四级查看代理关系树", "查看"], ["代理关系导入", "/UserInfo/UserRelativeDataImport", "批量导入代理关系绑定", "操作"]]}, {"g": "活动任务 / 首充 / 消息", "items": [["任务活动", "/UserInfo/TaskActivity", "会员参与的任务活动列表", "查看"], ["任务活动配置", "/UserInfo/TaskActivityForm", "新增/编辑任务活动规则", "配置"], ["任务订单", "/UserInfo/TaskOrder", "任务活动的参与订单", "查看"], ["首充管理", "/UserInfo/FirstRechargeManage", "首充返利活动配置与记录", "配置"], ["站内消息", "/UserInfo/Message", "向会员发送站内消息", "操作"]]}]}, {"m": "财务管理", "groups": [{"g": "财务管理", "items": [["财务记录", "/Finance/FinanceRecord", "全站资金账变记录：充值/提现/打码/活动/系统调整等所有类型的资金流水", "查看"], ["财务记录导出", "/Finance/FinanceRecord_Export", "按条件导出资金流水数据", "导出"], ["代理财务记录", "/Finance/FinanceRecord_Agent", "代理视角的资金流水（仅限代理线下用户）", "查看"], ["代理财务导出", "/Finance/FinanceRecord_Agent_Export", "导出代理资金流水", "导出"], ["财务日志", "/Finance/FinanceRecord_Log", "财务操作审计日志：谁在什么时间做了什么操作", "审计"], ["财务日志导出", "/Finance/FinanceRecordLog_Export", "导出财务审计日志", "导出"], ["保险箱记录", "/Finance/SafeRecord", "会员保险箱（安全钱包）的存取记录", "查看"]]}]}, {"m": "充值提现", "groups": [{"g": "支付方式配置", "items": [["支付方式", "/Recharge/PayName", "配置支持的支付方式（UPI/银行转账/USDT等）", "配置"], ["支付方式编辑", "/Recharge/PayNameOpt", "新增/编辑支付方式详情", "操作"], ["充值渠道", "/Recharge/RechargeChannel", "管理第三方充值渠道接入", "配置"], ["充值等级", "/Recharge/RechargeLevel", "按会员等级配置不同的充值限额和赠送比例", "配置"]]}, {"g": "充值管理", "items": [["充值列表", "/Recharge/Recharge", "所有充值订单列表，支持按状态/类型/时间筛选", "查看"], ["充值审核", "/Recharge/RechargeReview", "人工充值审核：确认到账/驳回", "操作"], ["充值审核(代理)", "/Recharge/RechargeReview_Agent", "代理视角充值审核", "操作"], ["充值审核日志", "/Recharge/RechargeReview_Log", "充值审核操作日志", "审计"], ["充值申诉", "/Recharge/RechargeAppeal", "会员充值未到账的申诉处理", "操作"], ["UPI 充值", "/Recharge/RechargeUpi", "UPI 支付方式充值管理", "查看"], ["银行转账充值", "/Recharge/RechargesBank", "银行转账充值管理（含二维码）", "查看"], ["USDT 充值", "/Recharge/UsdtRecharge", "USDT 数字货币充值管理", "查看"], ["人工充值审批", "/Recharge/ManualRechargeApprovalList", "人工充值申请的审批队列", "操作"], ["人工充值记录", "/Recharge/ManualRechargeRecords", "已完成的人工充值记录", "查看"]]}, {"g": "提现管理", "items": [["提现列表", "/Recharge/WithdrawList", "提现订单列表与配置", "查看"], ["提现渠道配置", "/Recharge/WithdrawListOpt", "配置第三方提现渠道", "配置"]]}, {"g": "第三方支付 / 电子钱包", "items": [["第三方支付", "/Recharge/ThirdPayBank", "第三方支付通道管理", "配置"], ["第三方银行", "/Recharge/ThirdpartyBank", "第三方银行接口配置", "配置"], ["电子钱包", "/Recharge/EWalletBank", "电子钱包支付方式管理", "配置"], ["KBZPay", "/Recharge/KbzpayBank", "缅甸 KBZPay 支付管理", "配置"], ["WavePay", "/Recharge/WavePayBank", "WavePay 支付管理", "配置"]]}]}, {"m": "游戏管理", "groups": [{"g": "WinGo 游戏", "items": [["WinGo 期号", "/GameManage/Win_GameIssue", "WinGo 游戏每期开奖号码管理", "游戏"], ["WinGo 订单", "/GameManage/Win_GameOrder", "WinGo 投注订单列表与查询", "查看"], ["WinGo 赢率限制", "/GameManage/Win_GameWinLimit", "WinGo 赢率控制参数配置", "配置"]]}, {"g": "K3 游戏", "items": [["K3 期号", "/GameManage/K3_GameIssue", "K3 快三游戏期号与开奖管理", "游戏"], ["K3 订单", "/GameManage/K3_GameOrder", "K3 投注订单", "查看"], ["K3 游戏控制", "/GameManage/K3_GameControl", "K3 游戏开奖结果控制", "配置"], ["K3 玩法类型", "/GameManage/K3_Game_PlayType", "K3 玩法配置（和值/三同号/二不同等）", "配置"], ["K3 赢率限制", "/GameManage/K3_GameWinLimit", "K3 赢率控制", "配置"]]}, {"g": "5D / 4D 游戏", "items": [["5D 期号", "/GameManage/V_5D_GameIssue", "5D 游戏期号管理", "游戏"], ["5D 订单", "/GameManage/V_5D_GameOrder", "5D 投注订单", "查看"], ["4D 期号", "/GameManage/FourD_GameIssue", "4D 游戏期号管理", "游戏"], ["4D 订单", "/GameManage/FourD_GameOrder", "4D 投注订单", "查看"], ["4D 赔率配置", "/GameManage/FourD_Game_OddsPlay", "4D 各玩法赔率设置", "配置"]]}, {"g": "Bingo18 / TRX", "items": [["Bingo18 期号", "/GameManage/Bingo18_GameIssue", "Bingo18 游戏期号管理", "游戏"], ["Bingo18 订单", "/GameManage/Bingo18_GameOrder", "Bingo18 投注订单", "查看"], ["Bingo18 配置", "/GameManage/Bingo18_Game_Config", "Bingo18 游戏参数配置", "配置"], ["TRX 区块", "/GameManage/Trx_Block", "TRX 区块链区块数据", "查看"], ["TRX 期号", "/GameManage/Trx_Win_GameIssue", "TRX WinGo 期号管理", "游戏"], ["TRX 订单", "/GameManage/Trx_Win_GameOrder", "TRX WinGo 投注订单", "查看"]]}, {"g": "越南彩 XOSO / F-XOSO", "items": [["XOSO 期号", "/GameManage/Task_Xoso_Game_Issue", "越南传统彩 XOSO 期号管理", "游戏"], ["XOSO 投注", "/GameManage/Task_Xoso_Game_Betting", "XOSO 投注订单", "查看"], ["F-XOSO 期号", "/GameManage/F_Xoso_Game_Issue", "极速彩 F-XOSO 期号管理", "游戏"], ["F-XOSO 北部玩法", "/GameManage/F_Xoso_Game_75NorthPlay", "F-XOSO 北部75球玩法配置", "配置"], ["F-XOSO 赢率配置", "/GameManage/F_Xoso_Game_WinRateConfig", "F-XOSO 赢率控制", "配置"]]}, {"g": "锦标赛 / 玩法指南", "items": [["锦标赛", "/GameManage/Champion_Task", "锦标赛活动配置与排名", "配置"], ["锦标赛结算", "/GameManage/Champion_TaskFinish", "锦标赛结束后奖励结算", "操作"], ["玩法指南", "/GameManage/PlayingGuide", "前端展示的游戏玩法指南管理", "操作"]]}]}, {"m": "第三方游戏", "groups": [{"g": "厂商与游戏列表", "items": [["厂商管理", "/ThirdGame/VendorPage", "第三方游戏厂商列表（CQ9/JDB/HB/PG/XB等）", "配置"], ["游戏列表", "/ThirdGame/GameListPage", "各厂商的游戏列表管理", "查看"], ["游戏映射", "/ThirdGame/MappingGameList", "第三方游戏与本地游戏ID映射关系", "配置"], ["热门游戏", "/ThirdGame/HotGameList", "热门游戏排序管理", "操作"], ["RTP 配置", "/ThirdGame/RTPForm", "游戏返还率(RTP)配置", "配置"]]}, {"g": "码量与打码", "items": [["码量配置", "/ThirdGame/CodeWashConfig", "第三方游戏打码量倍数配置", "配置"], ["码量规则", "/ThirdGame/CodeWashRule", "码量计算规则（新/旧两版）", "配置"], ["码量记录", "/ThirdGame/PCodeWashRecordPage", "会员打码量记录查询", "查看"]]}, {"g": "投注记录", "items": [["电子游戏投注", "/ThirdGame/PElectronicGamesBetRecordPage", "老虎机/电子游戏投注记录", "查看"], ["真人投注", "/ThirdGame/PLiveGamesBetRecordReportPage", "真人荷官游戏投注记录", "查看"], ["棋牌投注", "/ThirdGame/PChessGamesBetRecordReportPage", "棋牌游戏投注记录", "查看"], ["体育投注", "/ThirdGame/PSportGamesBetRecordReportPage", "体育博彩投注记录", "查看"], ["彩票投注", "/ThirdGame/PLotteryGamesBetRecordPage", "彩票类游戏投注记录", "查看"]]}, {"g": "厂商游戏（GamesController）", "items": [["老虎机列表", "/Games/GameSlots", "老虎机游戏列表管理", "游戏"], ["CQ9 游戏", "/Games/CQ9Gamelist", "CQ9 厂商游戏列表", "查看"], ["JDB 游戏", "/Games/JDBGamelist", "JDB 厂商游戏列表", "查看"], ["HB 游戏", "/Games/HBGamelist", "HB 厂商游戏列表", "查看"], ["PG 游戏", "/Games/PGGamelist", "PG 厂商游戏列表", "查看"], ["XB 游戏", "/Games/XbGamelist", "XB 厂商游戏列表", "查看"], ["游戏历史", "/Games/GameHistory", "第三方游戏投注历史", "查看"], ["资金回收", "/Games/GameMoneyRecycle", "第三方游戏余额回收到主钱包", "操作"], ["转账记录", "/Games/TransferHistory", "主钱包与游戏钱包的转账记录", "查看"]]}]}, {"m": "活动营销", "groups": [{"g": "每日 / 每周任务", "items": [["每日任务配置", "/Treasure/DailyConfig", "配置每日任务规则（充值/投注/签到等目标与奖励）", "配置"], ["每日任务记录", "/Treasure/DailyUsersRecord", "会员每日任务完成记录", "查看"], ["每周任务配置", "/Treasure/WeeklyConfig", "配置每周任务规则", "配置"], ["每周任务记录", "/Treasure/WeeklyUsersRecord", "会员每周任务完成记录", "查看"]]}, {"g": "礼包", "items": [["新会员礼包配置", "/Treasure/GiftPackConfig", "新会员礼包规则配置（首存门槛、奖励档位）", "配置"], ["礼包申请记录", "/Treasure/GiftPackMemberApplyRecord", "会员申请礼包的记录", "查看"], ["负盈利奖励", "/Treasure/GiftPackNegativeProfitRewardRecord", "首存负盈利补偿奖励记录", "查看"], ["新手礼包", "/Treasure/NewBieGiftPace", "新手引导礼包配置", "配置"]]}, {"g": "老用户回归", "items": [["老用户回归活动", "/Treasure/OldUserReturnAways", "流失用户回归奖励配置", "配置"], ["回归奖励记录", "/Treasure/OldUserReturnBonusHistory", "老用户回归奖励发放记录", "查看"]]}, {"g": "幸运转盘", "items": [["转盘配置", "/Turntable/TurntableConfig", "转盘奖品、概率、消耗积分配置", "配置"], ["转盘任务", "/Turntable/TurntableTask", "获取转盘次数的任务配置", "配置"], ["转盘中奖记录", "/Turntable/TurntableLotteryRecord", "转盘抽奖中奖记录", "查看"], ["实物奖励记录", "/Turntable/TurntablePhysicalRewardRecordList", "转盘实物奖品发货记录", "查看"]]}, {"g": "邀请转盘", "items": [["邀请转盘配置", "/Invitedwheel/InvitedWheelConfig", "邀请好友获取转盘次数的规则配置", "配置"], ["邀请转盘出款审核", "/Invitedwheel/GetInvitedWheelWithdrawRecord", "邀请转盘奖金提现审核", "操作"]]}, {"g": "产品与积分", "items": [["轮播图管理", "/Products/Banners", "首页/活动页轮播图管理", "操作"], ["产品管理", "/Products/Products", "商城产品列表管理", "操作"], ["产品规则", "/Products/ProductRules", "产品兑换规则配置", "配置"], ["兑换记录", "/Products/ExchangeRecord", "积分兑换商品的记录", "查看"], ["积分彩票", "/Products/PointsLottery", "积分抽奖活动管理", "配置"]]}]}, {"m": "代理管理", "groups": [{"g": "代理管理", "items": [["返佣等级", "/Agent/RebateLevel", "代理返佣等级体系配置", "配置"], ["返佣比例配置", "/Agent/RebateLvRateConfig", "各等级返佣比例设置", "配置"], ["手动返佣", "/Agent/RebateManual", "手动给代理发放返佣", "操作"], ["代理返佣记录", "/Agent/UserRebate", "代理返佣发放记录", "查看"], ["邀请报表(D级)", "/Agent/D_Report_InviteChart", "董事级别的邀请数据统计", "报表"], ["邀请报表(C级)", "/Agent/C_Report_InviteChart", "经理级别的邀请数据统计", "报表"], ["邀请报表(M级)", "/Agent/M_Report_InviteChart", "主管级别的邀请数据统计", "报表"], ["邀请报表(A级)", "/Agent/A_Report_InviteChart", "代理级别的邀请数据统计", "报表"]]}]}, {"m": "报表中心", "groups": [{"g": "报表中心", "items": [["邀请报表", "/Report/D_Report_InviteChart", "按日期统计邀请注册人数、首充人数、首充金额（D/C/M/A 四级）", "报表"], ["渠道报表", "/Report/D_Report_Channel", "各推广渠道的注册、充值、活跃数据（支持 A/C 级）", "报表"], ["财务报表", "/Report/D_Report_Finance", "充值/提现/盈亏汇总（支持 A/C 级）", "报表"], ["游戏报表", "/Report/D_Report_Game", "各游戏的投注/中奖/盈亏统计（支持 A/C 级）", "报表"], ["用户报表", "/Report/D_Report_Users", "用户注册、活跃、留存数据（支持 A/C/M 级）", "报表"], ["同IP报表", "/Report/D_Report_Ip_Same", "同IP注册/登录的风控检测报表", "风控"], ["登录类型报表", "/Report/D_Report_User_Login_Type", "按设备/类型统计登录数据", "报表"], ["用户充值报表", "/Report/D_UserReport_Recharge", "按用户维度的充值统计", "报表"], ["用户提现报表", "/Report/D_UserReport_Withdraw", "按用户维度的提现统计", "报表"], ["用户游戏报表", "/Report/D_UserReport_Game", "按用户维度的游戏盈亏", "报表"], ["用户财务报表", "/Report/D_UserReport_Finance", "按用户维度的财务流水", "报表"], ["充值次数报表", "/Report/C_Report_Recharge_Times", "充值频次统计", "报表"], ["提现次数报表", "/Report/C_Report_Withdraw_Times", "提现频次统计", "报表"], ["实时统计", "/Report/Realtime_StatisticsDetail", "实时在线/充值/提现统计", "报表"], ["用户留存报表", "/Report/KeepUserReport", "用户留存率统计（日/周/月）", "报表"], ["邀请转盘统计", "/Report/InvitedWheelStatisticsReport", "邀请转盘活动效果统计", "报表"], ["用户安全报表", "/Report/C_Report_User_Safe", "保险箱使用情况统计", "报表"]]}]}, {"m": "系统管理", "groups": [{"g": "权限与用户", "items": [["菜单管理", "/System/Menus", "动态菜单树管理，支持 N 级嵌套、排序、启用/禁用", "配置"], ["用户列表", "/System/UserList", "后台操作员账号管理", "查看"], ["角色管理", "/System/RoleList", "角色权限管理（菜单 + 按钮级）", "配置"], ["人工充值权限", "/System/ManualRechargePermissionList", "配置哪些操作员可以执行人工充值", "配置"], ["后台操作权限", "/System/BackstageOperationPermissionConfig", "细粒度后台操作权限配置", "配置"], ["出款组别权限", "/System/WithdrawalGroupConfigPermission", "出款审核组权限分配", "配置"]]}, {"g": "站点配置", "items": [["站点设置", "/System/SiteSet", "站点基础信息（名称/Logo/协议/关于我们）", "配置"], ["H5 设置", "/System/H5Setting", "H5 移动端页面配置", "配置"], ["参数配置", "/System/ParameterConfig", "系统全局参数（超时/限额/开关等）", "配置"], ["API 设置", "/System/ApiSetting", "API 接口地址与密钥配置", "配置"], ["CloudFlare 配置", "/System/ApiSettingCloudFlare", "CloudFlare CDN 配置", "配置"], ["Facebook 配置", "/System/ApiSettingFacebook", "Facebook 广告像素与登录配置", "配置"], ["OSS 配置", "/System/ApiSettingOSS", "对象存储服务配置", "配置"], ["APP URL 配置", "/System/AppUrlSeeting", "APP 下载地址和加载 URL", "配置"], ["APK 包管理", "/System/APKPackageManagement", "Android APK 版本发布管理", "操作"]]}, {"g": "消息与通知", "items": [["弹窗消息", "/System/SiteMessages", "登录弹窗/维护公告管理", "操作"], ["滚动消息", "/System/SiteScrollMessages", "站内滚动公告管理", "操作"], ["推送消息", "/System/PushUserMessage", "向指定用户推送消息", "操作"], ["欢迎消息", "/System/WelcomMessage", "新用户注册欢迎消息配置", "配置"]]}, {"g": "短信与邮件", "items": [["短信配置", "/System/SmsSettings", "短信通道配置（18 种短信商户）", "配置"], ["注册短信", "/System/RegisterSMS", "注册验证码短信配置", "配置"], ["短信发送", "/System/SmsSend", "手动发送短信", "操作"], ["邮件配置", "/System/EmailSetings", "邮件 SMTP 配置", "配置"]]}, {"g": "安全与 IP", "items": [["IP 白名单", "/System/IpList", "后台访问 IP 白名单", "配置"], ["设备管理", "/System/Devices", "允许登录的设备管理", "配置"], ["设备 IP", "/System/DeviceIP", "设备与 IP 绑定关系", "查看"], ["安全设置", "/System/Safe_Settings", "登录安全策略（密码复杂度/登录失败锁定等）", "配置"], ["提现黑名单", "/System/UserWithdrawBlackList", "提现黑名单会员管理", "操作"]]}, {"g": "充提规则", "items": [["充值设置", "/System/RechargeSeting", "充值全局规则（限额/赠送/打码等）", "配置"], ["提现设置", "/System/WithdrawalSeting", "提现全局规则（限额/审核门槛/手续费）", "配置"], ["USDT 提现设置", "/System/WithdrawalUsdtSeting", "USDT 提现规则配置", "配置"], ["自动提现配置", "/System/AutoWithdrawConfig", "自动审核提现的条件配置（金额/频次/风控条件）", "配置"], ["打码量配置", "/System/AmountOfCodConfig", "提现所需打码量倍数配置", "配置"]]}, {"g": "注册与活动", "items": [["注册状态", "/System/RegisterState", "开放/关闭注册开关", "配置"], ["注册人数", "/System/RegisterCount", "注册人数统计与限制", "查看"], ["注册赠送", "/System/RegistPresent", "注册赠送金币配置", "配置"], ["首充返利", "/System/FirstDepositRebate", "首充返利规则配置", "配置"], ["活动列表", "/System/ActiveList", "全站活动列表管理", "操作"], ["域名像素配置", "/System/EventRegionConfig", "Facebook 域名像素追踪配置", "配置"]]}, {"g": "游戏分类", "items": [["游戏分类", "/System/GameCategory", "游戏分类管理", "配置"], ["彩票分类", "/System/LotteryCategory", "彩票游戏分类", "配置"], ["客服配置", "/System/CustomerService", "客服通道与分组配置", "配置"], ["客户建议", "/System/CustomerSuggestion", "用户反馈建议管理", "查看"]]}, {"g": "日志", "items": [["系统日志", "/System/LogList", "系统运行日志", "审计"], ["Web 日志", "/System/WebLogList", "Web 请求日志", "审计"], ["操作日志", "/System/OperationLog", "后台操作员操作审计日志", "审计"], ["设备日志", "/System/DevicesLog", "设备登录日志", "审计"], ["导出中心日志", "/System/ExportCenterLog", "数据导出操作日志", "审计"], ["参数配置日志", "/System/ParameterConfigLog", "系统参数修改历史", "审计"]]}]}, {"m": "渠道与配置", "groups": [{"g": "渠道与配置", "items": [["渠道列表", "/Channel/ChannelList", "推广渠道列表管理", "查看"], ["渠道编辑", "/Channel/ChannelOpt", "新增/编辑推广渠道", "操作"], ["银行管理", "/Bank/TranBank", "银行转账管理", "查看"], ["银行编辑", "/Bank/BankOpt", "银行信息编辑", "操作"], ["推送消息配置", "/Config/PushMsgConfig", "APP 推送消息模板配置", "配置"], ["系统设置", "/Config/Setting", "全局系统参数", "配置"], ["IP 黑名单", "/BlackIp/BlackIpView", "IP 封禁列表管理（新增/解除）", "操作"]]}]}, {"m": "其他", "groups": [{"g": "首页仪表板", "items": [["首页(D级)", "/Home/Main_D", "董事级仪表板：全站充提/注册/游戏数据概览", "查看"], ["首页(C级)", "/Home/Main_C", "经理级仪表板", "查看"], ["首页(M级)", "/Home/Main_M", "主管级仪表板", "查看"], ["在线会员", "/Home/OnlineMember", "实时在线会员列表", "查看"]]}, {"g": "理财管理", "items": [["理财类型", "/Wealth/WealthType", "理财产品类型配置", "配置"], ["理财订单", "/Wealth/WealthOrder", "会员理财订单列表", "查看"], ["理财设置", "/Wealth/WealthSetting", "理财全局规则配置", "配置"]]}, {"g": "远程工作（出款组）", "items": [["工作仪表板", "/RemoteWork/RemoteDashboard", "出款组工作台：实时订单/人员状态/异常预警", "查看"], ["工作人员列表", "/RemoteWork/RwUserList", "出款组人员管理", "操作"], ["工作报表", "/RemoteWork/RwUserReport", "出款人员工作量统计", "报表"], ["系统配置", "/RemoteWork/RwSysConfig", "出款系统全局配置", "配置"], ["开始/停止工作", "/RemoteWork/StartWork", "出款员开始/结束接单", "操作"]]}]}];
+(function renderV1(){
+  const box=document.getElementById("v1-modules"); if(!box) return;
+  const TC={ "查看":"b-done","操作":"b-new","配置":"b-opt","审核":"b-phase","导出":"b-todo","新增":"b-new","编辑":"b-opt","删除":"b-todo" };
+  V1F.forEach(mod=>{
+    const cnt=mod.groups.reduce((a,x)=>a+x.items.length,0);
+    const card=document.createElement("div"); card.className="card v1-card"; card.dataset.mod=mod.m;
+    let h=`<div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h3>${mod.m} <span style="font-weight:400;color:var(--muted);font-size:13px">· ${cnt} 功能点</span></h3></div><div class="card-body" style="padding:0;overflow-x:auto">`;
+    h+='<table class="v1-table"><thead><tr><th style="width:20%">功能名称</th><th style="width:26%">路由</th><th>逻辑说明</th><th style="width:56px">类型</th></tr></thead><tbody>';
+    mod.groups.forEach(g=>{
+      h+=`<tr class="v1-sub"><td colspan="4">▸ ${g.g}</td></tr>`;
+      g.items.forEach(it=>{
+        const tc=TC[it[3]]||"b-todo";
+        h+=`<tr><td class="fn">${it[0]}</td><td><code>${it[1]||""}</code></td><td style="color:#475569;font-size:13px">${it[2]||""}</td><td><span class="badge ${tc}">${it[3]||""}</span></td></tr>`;
+      });
+    });
+    h+="</tbody></table></div>"; card.innerHTML=h; box.appendChild(card);
+  });
+})();
+function filterV1(){
+  const q=(document.getElementById("v1Search").value||"").toLowerCase();
+  let shown=0;
+  document.querySelectorAll("#v1-modules .v1-card").forEach(card=>{
+    let mv=0;
+    card.querySelectorAll("tbody tr:not(.v1-sub)").forEach(r=>{
+      const ok=!q||r.textContent.toLowerCase().includes(q);
+      r.style.display=ok?"":"none"; if(ok){mv++;shown++;}
+    });
+    card.querySelectorAll("tr.v1-sub").forEach(sg=>{
+      let n=sg.nextElementSibling,vis=false;
+      while(n&&!n.classList.contains("v1-sub")){ if(n.style.display!=="none")vis=true; n=n.nextElementSibling; }
+      sg.style.display=vis?"":"none";
+    });
+    card.style.display=mv?"":"none";
+  });
+  document.getElementById("v1Count").textContent="显示 "+shown+" 个功能点";
+}
+
+const MEMBER=[{"g": "① 用户查询与操作", "items": [["会员列表", "/UserInfo/UserManage", 1, ""], ["会员列表（代理视角）", "/UserInfo/UserManage_Agent", 1, "合并为商户/代理筛选"], ["会员详情（6Tab）", "/UserInfo/UserDetaile", 1, ""], ["会员投注汇总", "/UserInfo/UserDetaile_BetTotal", 1, "详情·投注Tab"], ["会员列表导出", "/UserInfo/UserManageExport", 1, ""], ["异常会员处理（冻结/解冻/限制）", "/UserInfo/AbnormalUser", 0, ""], ["会员数据导入", "/UserInfo/UserDataImport", 1, ""], ["下级会员列表", "/UserInfo/SubsetUserList", 1, ""], ["下级会员导出", "/UserInfo/SubsetUserExport", 1, ""], ["互刷名单（风控）", "/UserInfo/MutualBetList", 0, ""]]}, {"g": "② 用户分组", "items": [["用户分组", "/UserInfo/UserGroup", 0, ""], ["分组表单（增/改）", "/UserInfo/UserGroupForm", 0, ""], ["分组权限配置", "/UserInfo/UserGroupRightsForm", 0, ""]]}, {"g": "③ 实名认证 / 银行卡", "items": [["实名认证列表", "/UserInfo/UserRealName", 1, "银行卡·实名认证Tab"], ["实名认证审核", "/UserInfo/UserRealNameOpt", 1, ""], ["CPF 认证（巴西税号）", "/UserInfo/UserCpfList", 0, ""], ["KW 认证", "/UserInfo/UserKWList", 0, ""], ["USDT 提现地址", "/UserInfo/UserUsdtList", 1, "银行卡·USDT Tab"], ["银行卡列表", "/UserInfo/UsersBanks", 1, ""], ["银行卡列表（代理）", "/UserInfo/UsersBanks_Agent", 1, "合并"]]}, {"g": "④ 充值 / 提现操作（SaaS 已在财务模块实现）", "items": [["充值银行", "/UserInfo/RechargeBank", 1, ""], ["充值订单", "/UserInfo/RechargeOrder", 1, ""], ["充值记录", "/UserInfo/RechargeRecord", 1, ""], ["充值审核", "/UserInfo/RechargeExamine", 1, ""], ["提现订单", "/UserInfo/WithdrawOrder", 1, ""], ["提现日志", "/UserInfo/WithdrawLog", 1, ""], ["提现审核（通过/驳回/挂起）", "/UserInfo/WithdrawalExamine", 1, ""], ["提现手动处理", "/UserInfo/WithdrawalManitou", 1, ""]]}, {"g": "⑤ 登录 / 签到", "items": [["登录日志列表", "/UserInfo/LoginlogList", 0, ""], ["登录日志（IP/设备/时间）", "/UserInfo/LoginLog", 0, ""], ["登录日志（代理）", "/UserInfo/LoginLog_Agent", 0, ""], ["连续签到记录", "/UserInfo/ContinuousSignInlog", 0, ""], ["签到配置", "/UserInfo/SinInSetting", 0, ""]]}, {"g": "⑥ VIP / 返佣 / 代理关系", "items": [["VIP 等级", "/UserInfo/VipLevel", 0, ""], ["VIP 等级人数", "/UserInfo/VipLevelQuantity", 0, ""], ["VIP 奖励记录", "/UserInfo/VipRewards", 0, ""], ["VIP 经验配置", "/UserInfo/VipCurrencyExp", 0, ""], ["返佣等级", "/UserInfo/User_RebateLv", 0, ""], ["返佣报表", "/UserInfo/UserRebateReport", 0, ""], ["合伙人奖励", "/UserInfo/PartnerRewards", 0, ""], ["代理关系（D/C/M/A 四级）", "/UserInfo/D_UserRelative", 0, "会员层级/下级会员已部分覆盖"], ["代理关系导入", "/UserInfo/UserRelativeDataImport", 0, ""]]}, {"g": "⑦ 活动任务 / 首充 / 消息", "items": [["任务活动", "/UserInfo/TaskActivity", 0, ""], ["任务活动配置", "/UserInfo/TaskActivityForm", 0, ""], ["任务订单", "/UserInfo/TaskOrder", 0, ""], ["首充管理", "/UserInfo/FirstRechargeManage", 0, ""], ["站内消息", "/UserInfo/Message", 0, ""]]}];
+(function renderMember(){
+  const box=document.getElementById("member-groups"); if(!box) return;
+  MEMBER.forEach(g=>{
+    const gd=g.items.filter(i=>i[2]).length;
+    const card=document.createElement("div"); card.className="card m-card";
+    let h=`<div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h3>${g.g} <span style="font-weight:400;color:var(--muted);font-size:13px">· ${gd}/${g.items.length} 已完成</span></h3></div><div class="card-body" style="padding:0;overflow-x:auto">`;
+    h+='<table class="m-table"><thead><tr><th style="width:24%">功能点</th><th style="width:30%">SitINR 路由</th><th style="width:80px">状态</th><th>备注</th></tr></thead><tbody>';
+    g.items.forEach(it=>{
+      const done=it[2];
+      const badge=done?'<span class="badge st-done">✓ 已完成</span>':'<span class="badge st-todo">○ 未完成</span>';
+      h+=`<tr data-done="${done?1:0}"><td class="fn">${it[0]}</td><td><code>${it[1]||""}</code></td><td>${badge}</td><td style="color:#475569;font-size:12px">${it[3]||""}</td></tr>`;
+    });
+    h+="</tbody></table></div>"; card.innerHTML=h; box.appendChild(card);
+  });
+})();
+function filterMember(mode,btn){
+  document.querySelectorAll(".mf-btn").forEach(b=>b.classList.remove("active")); if(btn)btn.classList.add("active");
+  document.querySelectorAll("#member-groups .m-card").forEach(card=>{
+    let vis=0;
+    card.querySelectorAll("tbody tr").forEach(r=>{
+      const d=r.dataset.done==="1";
+      const ok=mode==="all"||(mode==="done"&&d)||(mode==="todo"&&!d);
+      r.style.display=ok?"":"none"; if(ok)vis++;
+    });
+    card.style.display=vis?"":"none";
+  });
+}
+
+calcOverview();
+
+// ===== SitINR 原有功能：11 业务域 × 三层（后台/会员端/数据） =====
+const FI_DATA=[
+{domain:"① 用户 / 会员",subs:[
+  {name:"会员基础",admin:"会员列表(多维筛选)、会员详情(投注统计/资金/活动汇总)、批量操作、用户数据导入、在线会员、用户分组+分组权限、用户有效性设置",api:"注册、登录、获取用户信息、修改昵称、设置语言、忘记密码、搜索用户、心跳",db:"tab_Users(主表)、Users_Safe、Users_Locked、Users_Relative(关系树)、UserGroup、User_Valid、User_RegisterDevice、UserHideSettings"},
+  {name:"实名/认证",admin:"实名认证审核",api:"获取实名信息、获取/设置安全问题、添加安全邮箱、换手机/邮箱、验证码校验",db:"tab_UserRealName、tab_GoogleVerify"},
+  {name:"VIP 体系",admin:"VIP等级配置、VIP奖励记录、VIP经验配置",api:"获取VIP信息、领取VIP奖励、VIP等级详情、VIP奖励列表、会员操作日志",db:"tab_VipUsers、VipLevel、VipRecord、VipRewards、VipUsersExp_Day"},
+  {name:"会员层级/充值等级",admin:"会员层级、充值等级配置",api:"—",db:"tab_Users_Recharge_Level、tab_UserLevel_Recharge、tab_FixUserLevel"},
+]},
+{domain:"② 财务 / 充提",subs:[
+  {name:"充值",admin:"充值列表/审核/审核日志、充值导入、银行卡充值、UPI充值、USDT充值、电子钱包/KBZ/Wave、充值申诉、充值级别、人工充值权限",api:"充值记录、本地银行/UPI/USDT下单、C2C充值(下单/取消/申诉/确认)、三方支付、提交UTR、创建/取消/查询充值订单、首充PIX判断",db:"tab_Recharges、RechargesBank、RechargesUpi、C2C_RechargeOrder、tab_ManualRechargePermission、RechargeDelayedRewardLog"},
+  {name:"提现",admin:"提现审核(自动/手动)、提现日志、提现处理镜像、提现渠道配置、USDT提现设置、提现银行限额、提现黑名单",api:"提现记录、提现大类/账户、新提现、C2C提现(重匹配/取消/改额/申诉/确认)、添加/删除 银行卡/电子钱包/USDT/PIX/UPI/FastUPI/NewUPI、UPI验证码",db:"tab_Withdraw、WithdrawalBankCard、WithdrawType、UserWithdrawBlack、Manual_WithdrawOrder、AutoWithdrawConfig、C2C_WithdrawOrder/Pool、Withdraw_ProcessingMirror"},
+  {name:"资金账变/保险箱",admin:"财务记录(查询/代理/日志/导出)、安全记录、异常资金处理(余额/保险箱/提现/奖励返还)",api:"获取钱包/余额、资金流水、保险箱(转入/转出/余额/记录)",db:"tab_FinancialLog(100分片)、FinancialLog_Day、FinancialRedLog、SafeRecord、Safe_Settings"},
+  {name:"钱包集成",admin:"—",api:"RSN钱包(激活/进入/信息/支付)、ARB钱包(激活/进入/信息/返现)、获取支付地址",db:"tab_Dovecash、tab_UgTransferHistoryLog"},
+]},
+{domain:"③ 支付通道 / 银行",subs:[
+  {name:"支付方式与渠道",admin:"支付方式(PayName)、充值渠道(增删改/密钥/编辑)、提现渠道、第三方银行/支付银行、在线银行SMS、支付测试接口",api:"获取充值渠道/支付大类/银行列表",db:"tab_PayType、PayName、PayingBank、ThirdPayBank、ThirdpartyBank、PaymentGroupConfig、UsdtType"},
+  {name:"银行字典",admin:"银行管理、转账银行、银行代码",api:"获取银行列表",db:"tab_Banks、BankCode、MsgBank"},
+  {name:"内部/回调(API)",admin:"提款通知接收",api:"【内部】代收/代付回调、核实代付、创建缺失充值单、支付IP白名单、按渠道/订单/商户号获取支付类型、同步支付渠道、查询三方余额、手动出款(初始化/新增/更新/记录)",db:"tab_Withdraw_ThirdParty_Record、WithdrawThirdLog、EventApiRecord"},
+]},
+{domain:"④ 游戏（自营彩票）",subs:[
+  {name:"WinGo / TRX-Win",admin:"期号、订单(普通/日志/代理/导出)、类型、控制、玩法、赢额限制",api:"类型/玩法/期号/开奖结果/最近5期、投注、我的投注",db:"tab_Win_Game(+Type/PlayType/Result/Resolve/Control)、Trx_Win_Game*、tab_Win_GameOrder(100分片)"},
+  {name:"K3 / 5D / 4D",admin:"各游戏 期号/订单/类型/控制/玩法/赢额限制",api:"类型/玩法/期号/赔率/开奖、投注、我的投注/历史、撤单(4D)",db:"tab_K3_Game*、5D_Game*、4D_Game*、Trx_5D/K3_Game*"},
+  {name:"Bingo18",admin:"订单、配置、趋势统计",api:"配置/期号/赔率/开奖/最近50期/周开奖/趋势/排行、投注、投注统计",db:"tab_Bingo18_Game*、Bingo18_GameTrendStatistics"},
+  {name:"越南彩 Xoso / F-Xoso",admin:"期号/投注/城市配置/赢率配置(F-Xoso)",api:"基础数据/期号/开奖/投注记录、投注、取消、区域玩法+赔率",db:"tab_Xoso_Game*、FXoso_Game*(Category/Type/Config/Issue/Play/Odds/Betting/Citys)、VN_Game*(North/Center/South)"},
+  {name:"游戏通用",admin:"玩法指南、游戏控制用户、彩种分类",api:"获取游戏类型列表、获取彩票大类/热门彩票",db:"tab_GameCategory、LotteryCategory、NewLottery_Game_*、GameWinLimit、Game_Control_User、tab_GameOrder(分片)"},
+]},
+{domain:"⑤ 游戏（第三方/电子）",subs:[
+  {name:"厂商与游戏",admin:"厂商管理(状态/IP验证)、游戏映射、游戏列表(自定义类型/热门)、同步游戏列表、RTP配置",api:"热门游戏、游戏分类+基础、全部游戏、点击排行、三方游戏登录、按大类获取厂商、电子/视讯厂商、捕鱼小游戏",db:"tab_ThirdGameList、ThirdGameVendor、ThirdGameListCustomType、ThirdGameRTP、tab_GameSlots、SlotsType"},
+  {name:"投注记录",admin:"电子/彩票/直播/体育/棋牌 投注记录(查询/导出/代理)、电子游戏投注奖励、电子赢率外链",api:"—",db:"tab_ThirdGameElectronicBetRecord、LotteryBetRecord、ChessCardBetRecord、SportsBetRecord、VideoBetRecord、LoginRecord、TransferRecord"},
+  {name:"码量/洗码",admin:"码量配置/规则(新旧)/记录",api:"—",db:"tab_CodeWashRecord、CodeWashingRule、CodeWashSumStatistic"},
+  {name:"厂商对接(GamesController)",admin:"老虎机、XB/CQ9/HB/JDB/PG 游戏列表、游戏历史(真人/体育/迷你)、资金回收、转账历史",api:"通过设备/用户获取游戏信息(DoveCash)",db:"tab_GameRealPerson、GameSlotesLog、GameSports"},
+]},
+{domain:"⑥ 活动 / 营销",subs:[
+  {name:"任务(日/周)",admin:"日任务配置/记录、周任务配置/记录",api:"每日奖励(数量/列表/领取/记录)、每周奖励(任务/领取/记录)、新手指引、日访问记录",db:"tab_DailyConfig(+Detail)、WeeklyConfig(+Detail)、DailyUsersRecord、WeeklyUsersRecord"},
+  {name:"礼包",admin:"新手礼包、礼包配置、负盈利奖励(批准/拒绝/锁定)、礼包申请/领取记录",api:"新会员礼包信息、申请/领取礼包、首充负盈利申请、新手礼包领取",db:"tab_NewbieGiftPack(+Progress/Record)、GiftPack_Config(+Award)、GiftPack_NegativeProfitRewardRecord、GiftPack_UserRewardRecord、FirstRechargeManage"},
+  {name:"转盘",admin:"转盘配置/任务/抽奖记录/实物奖励/发货/导入",api:"大转盘(当日存款/旋转次数/信息/记录/抽奖)",db:"tab_Turntable_Config、Turntable_Task、Turntable_LotteryRecord、Turntable_PostUserRotateNum"},
+  {name:"邀请转盘",admin:"邀请转盘配置、出款记录/审核/锁定、导出",api:"邀请转盘信息、抽奖、提现记录、取款、规则",db:"tab_UserInvitedWheel(+Detail)、InvitedWheelSpinRecord、InvitedWheelWithdrawRecord"},
+  {name:"锦标赛/老用户回归/TG",admin:"老用户回归活动/奖励历史、TG活动",api:"锦标赛(入口/列表/加入/详情/排名)、领取回归奖励、TG配置、宝箱、奖金中心",db:"tab_Champion_Task(+ParticipateUser/RankingAwards)、Activity_OldUserReturn、TGActivityRecord/Setting、RewardConfig"},
+  {name:"签到",admin:"签到列表/设置、连续签到日志",api:"签到内容/连续签到/记录、活动列表/详情",db:"tab_SignInLog、SignInRecharges、SignCount、tab_SinIn"},
+  {name:"积分商城/积分彩",admin:"积分抽奖配置/中奖单/发货单、产品/横幅/订单/兑换记录、产品规则",api:"积分商城(开关/商品/记录/订单/规则/兑换/地址)",db:"tab_PointsLottery(+Orders/Tickets)、Product(+List/Types/Orders/Banners)、UserIntegralLog、Integral_Game_Exchange"},
+]},
+{domain:"⑦ 代理 / 返佣",subs:[
+  {name:"返佣体系",admin:"返佣等级/费率配置、手动返佣、用户返利(等级/报表/历史)",api:"用户返佣、推广地址、邀请团队、总返佣规则、推广教程、佣金明细、邀请记录、团队日报、合伙人奖励",db:"tab_Commissions、PartnerRewards(+Config/Detail)、Integral_Invite_Level、tab_Users_Relative"},
+  {name:"代理关系(D/C/M/A四级)",admin:"董事/经理/主任/代理 用户关系列表+导出、关系导入/解绑",api:"—",db:"tab_Users_Relative、Users_Relative_Chart、tb_chart_relative*"},
+  {name:"代理账号(独立库)",admin:"—",api:"—",db:"【Lottery_Agent库】tab_Agent_User、Agent_GoogleVerify、Agent_Locked、Agent_OnLineStatus、Agent_Logs"},
+]},
+{domain:"⑧ 报表 / 统计",subs:[
+  {name:"四级报表(D/C/M/A)",admin:"邀请/财务/游戏/用户/渠道 报表 + 用户游戏/财务报表 + 导出（每类都有董事/经理/主任/代理四个层级）",api:"—",db:"【Lottery_Chart库】通用版 Chart_*、A版 A_Chart_*、商户版 M_Chart_*"},
+  {name:"专项报表",admin:"留存用户报表、邀请转盘统计、用户安全报表、GT游戏报表",api:"中奖人排行、团队日报",db:"tab_Chart_UserKeep、Chart_TimeSharingReport、InvitedWheelStatistics、Chart_User_Safe"},
+  {name:"统计维度",admin:"首页仪表板(D/C/M级)",api:"—",db:"Chart_Finance/Recharge/Withdraw/Lottery/User_Login/Integral/Champion/Turntable/InviteAward 各维度(均有 通用/A/M 三版)"},
+]},
+{domain:"⑨ 风控 / 安全",subs:[
+  {name:"IP风控",admin:"IP黑名单(增删)、白名单IP(增删/启停/批量/绑定用户)、设备IP、注册IP/登录IP查询",api:"获取客户端IP、检查是否允许下注",db:"tab_Ips、IPScanner、BlackIp相关、tab_client_ip"},
+  {name:"设备/指纹",admin:"设备管理、设备日志、浏览器指纹查询、同设备查询",api:"注册设备",db:"tab_User_RegisterDevice、sys_Devices、DeviceLog"},
+  {name:"黑名单/标记",admin:"会员活动黑名单、提现限制名单、刷通道清单、用户标记",api:"—",db:"tab_MemberActivityBlack、UserWithdrawBlack、MarkRecord、UserMarkData"},
+  {name:"安全设置",admin:"安全设置、Google验证、用户隐藏设置",api:"—",db:"tab_Safe_Settings、GoogleVerify、UserHideSettings"},
+]},
+{domain:"⑩ 系统 / 配置",subs:[
+  {name:"权限",admin:"菜单管理、系统用户(Google验证)、角色管理、角色类型",api:"—",db:"sys_Menus、sys_Users、sys_Roles、sys_RoleType、jxc_*(进销存权限)"},
+  {name:"站点/基础配置",admin:"站点设置、提款设置、充值设置、注册赠送/开关、邀请码开关、隐私/风险协议、积分商城开关、代码金额配置",api:"获取隐私政策/风险协议/玩法指引/App下载/首页配置/PWA配置/维护信息、按key获取字典",db:"tab_Sites、tab_Settings、tab_GlobalSiteConfig、QueryConfig、Maintenance、APKPackageManagement、PwaDomain"},
+  {name:"短信/邮件/推送",admin:"短信设置(18商户)、极光推送(Web/App)、Firebase推送配置",api:"短信验证码、邮箱验证码、注册短信开关",db:"tab_SmsSettings、EmailSettings、sys_SetSms"},
+  {name:"多语言/模板/版本",admin:"版本类型、套餐包配置(用户/年度/渠道/专业)、快递类型",api:"多语言、获取字典枚举",db:"tab_MultiLanguage、Template、sys_VersionType、sys_AppVersion"},
+  {name:"日志/导出",admin:"系统日志、Web日志、操作日志、设备日志、导出中心",api:"—",db:"sys_Logs、sys_LoginOutLog、ExportCenterConfig/Log、【Lottery_Log库】ErrorLog、各订单100分片备份"},
+  {name:"CDN/商户(CloudFlareApi)",admin:"—",api:"【CF-API】CF账户/开发者模式/清缓存、IP白名单(增删改)、商户管理(增删改)、操作日志",db:"tab_Mr_Merchant、Mr_Users/Roles/Menus、m_*(移动商户)"},
+]},
+{domain:"⑪ 消息 / 内容 / 渠道",subs:[
+  {name:"消息通知",admin:"消息列表/编辑、推送消息、客服通知、红页",api:"消息列表、设置消息状态(单/批量/全部)、弹框消息/列表、滚动消息、客服群入口/链接",db:"tab_Message、UserMessage、SiteMessage、PushUserMessages、CustomerNotice、CustomerService、Redpage"},
+  {name:"内容/轮播",admin:"横幅管理、新闻、欢迎页",api:"首页轮播图、新闻",db:"tab_Banners、Product_Banners、tab_News"},
+  {name:"渠道/来源",admin:"渠道列表/编辑/批量/推广设置、域名像素配置",api:"—",db:"tab_Channels、Source、SourceUse、LandingPageConfig/Management、EventRegionConfig"},
+  {name:"理财/工单/上传",admin:"财富订单/类型/设置、远程工作(出款仪表板/操作台/组别/报表/调度/转单)",api:"工单(删卡类型/AI订单查询)、文件上传(OSS/图片/视频)",db:"tab_WealthOrder、WealthType、tab_Manual_WithdrawOrder、tab_TaskOrder"},
+]},
+];
+(function renderFI(){
+  var root=document.getElementById("fi-root"); if(!root) return;
+  var h="";
+  FI_DATA.forEach(function(d){
+    h+='<div class="fi-domain"><div class="fi-domain-head" onclick="this.classList.toggle(\'col\')"><span class="fi-arr">▼</span><h4>'+d.domain+'</h4><span class="fi-dcount">'+d.subs.length+' 个子类</span></div><div class="fi-domain-body">';
+    d.subs.forEach(function(s){
+      h+='<div class="fi-sub"><div class="fi-sub-head">'+s.name+'</div>';
+      if(s.admin&&s.admin!=='—')h+='<div class="fi-layer"><span class="fi-layer-label"><span class="fi-tag fi-t-admin">后台</span></span><div class="fi-layer-items">'+s.admin+'</div></div>';
+      if(s.api&&s.api!=='—')h+='<div class="fi-layer"><span class="fi-layer-label"><span class="fi-tag fi-t-api">会员端</span></span><div class="fi-layer-items">'+s.api+'</div></div>';
+      if(s.db&&s.db!=='—')h+='<div class="fi-layer"><span class="fi-layer-label"><span class="fi-tag fi-t-db">数据</span></span><div class="fi-layer-items">'+s.db+'</div></div>';
+      h+='</div>';
+    });
+    h+='</div></div>';
+  });
+  root.innerHTML=h;
+  var fc=document.getElementById("fiCount"); if(fc)fc.textContent=FI_DATA.length+' 个业务域 · '+FI_DATA.reduce(function(a,d){return a+d.subs.length;},0)+' 个子分类';
+})();
+function filterFI(){
+  var q=(document.getElementById("fiQ").value||"").toLowerCase();
+  document.querySelectorAll("#fi-root .fi-domain").forEach(function(dom){
+    var any=false;
+    dom.querySelectorAll(".fi-sub").forEach(function(sub){
+      var m=!q||sub.textContent.toLowerCase().includes(q);
+      sub.style.display=m?"":"none"; if(m)any=true;
+    });
+    dom.style.display=any?"":"none";
+    if(q&&any)dom.querySelector(".fi-domain-head").classList.remove("col");
+  });
+}
+
+// ===== 二阶段：会员管理全功能清单（UserInfoController 236 Action / 93 页面 · 13 域，融合迁移状态） =====
+const MB_DATA=[
+ {d:"① 会员查询与列表",s:"opt",pages:"会员列表 UserManage、代理视角 UserManage_Agent、会员详情 UserDetaile、投注汇总 UserDetaile_BetTotal、异常会员 AbnormalUser、互刷名单 MutualBetList、下级会员 SubsetUserList(_New)、数据导入 UserDataImport",ops:"列表导出 UserManageExport、代理导出 UserManageAgentExport、下级导出 SubsetUserExport",plan:"列表/详情/层级/下级/导入 一阶段已完成；异常会员→会员列表批量操作+行内状态切换，互刷名单→风控组"},
+ {d:"② 会员操作（行内/批量）",s:"opt",pages:"—",ops:"修改密码 EditUserpwdSubmit、会员审核 UserReview/UpdateUserReview、设为代理 SetUserAgent_1/2/UserAgentOpen、谷歌验证 UserGoogleVerifyOpt、批量刷新谷歌码 BatchRefreshGoogleCodeOpt、隐藏信息 setUserHideInfoSubmit、红包赠送 AddBankGiveAway、批量操作 GetBatchUser/BatchUserSubmit、同步分组到SaaS SyncGroupToSass",plan:"修改密码 一阶段已完成；审核/设代理/谷歌验证/批量/隐藏信息 二阶段补全"},
+ {d:"③ 用户分组",s:"todo",pages:"分组列表 UserGroup、分组表单 UserGroupForm、分组权限配置 UserGroupRightsForm",ops:"分组状态 SetUserGroupState、批量改组 UpdateAllUserGroup、提交表单 SubmitUserGroupForm",plan:"分组+权限 SaaS 合并为 1 个页面，权限内嵌配置抽屉"},
+ {d:"④ 实名 / 证件认证",s:"opt",pages:"实名认证 UserRealName、CPF 认证 UserCpfList、KW 认证 UserKWList",ops:"实名审核 UserRealNameOpt、CPF 审核 UserCpfOpt、KW 审核 UserKWOpt",plan:"实名认证 一阶段已完成（银行卡 Tab）；CPF/KW 二阶段并入银行卡管理 Tab"},
+ {d:"⑤ 银行卡 / 钱包 / 收款方式",s:"opt",pages:"银行卡 UsersBanks、代理视角 UsersBanks_Agent、USDT 地址 UserUsdtList、电子钱包 WalletList、USDT 类型 UsdtType、Menarik MenarikType、TouchnGo TouchngoType、支付组配置 PaymentGroupConfig、USDT 归集 UsdtCollection",ops:"各方式增删改 *Opt、更新提现银行卡 UpdateWithdrawalBankCard、支付组增删改/状态 Save/Set/DeletePaymentGroupConfig",plan:"银行卡/USDT/UPI/电子钱包 一阶段已完成（6 Tab）；PIX/支付组/Menarik/TouchnGo 二阶段补全"},
+ {d:"⑥ 充值（会员维度）",s:"done",pages:"充值银行 RechargeBank、充值订单 RechargeOrder、充值记录 RechargeRecord、充值审核 RechargeExamine、充值延迟奖励 UserRechargeDelayedRewardLog、首充管理 FirstRechargeManage",ops:"补单状态 ReplacementState、充值导出 RechargelListExport/ThirdRechargelListExport、首充配置 Submit/Set FirstRechargeManage",plan:"一阶段财务模块全覆盖（充值订单 4Tab/充值类型/人工充值）"},
+ {d:"⑦ 提现（会员维度）",s:"done",pages:"提现订单 WithdrawOrder、提现日志 WithdrawLog/_Agent、处理镜像 WithdrawLogProcessingMirror、提现审核 WithdrawalExamine、手动处理 WithdrawalManitou、待付限额 PayPendingLimitRecordPage",ops:"审核锁定/解锁 WithdrawalExamineLock/UnLock/Batch.../SubUserLock、开始审核 WithdrawalStartAudit、三方取消 WithdrawalThridPartCancel、指派组长 AssignToLeader、订单状态 WithOrderState/SubState/RefreshWithdrawState、导出 WithdrawalListExport",plan:"一阶段财务模块全覆盖（提现订单 5Tab：看板/操作台/组别/报表/全部）"},
+ {d:"⑧ 资金处理（异常/回退/保险箱）",s:"opt",pages:"—",ops:"余额返还 UserBalanceBack、奖励返还 UserBonusBack(批量/导入)、保险箱返还 UserSafeBack(批量/导入)、提现返还 UserWithdrawalBack(批量/导入)、三方余额 GetUserThirdBalanceList、奖励记录 UserRewardRecord",plan:"资金账变 一阶段已完成；异常回退/保险箱返还/奖励返还 二阶段补全"},
+ {d:"⑨ VIP",s:"todo",pages:"VIP 等级 VipLevel、VIP 人数 VipLevelQuantity、经验配置 VipCurrencyExp、VIP 奖励 VipRewards、VIP 等级编辑 UpdateVipLevel",ops:"VIP 操作日志 VipRecord",plan:"VIP 等级/人数/经验/奖励/日志 → SaaS VIP 组"},
+ {d:"⑩ 返佣 / 代理关系",s:"opt",pages:"返佣等级 User_RebateLv、昨日返佣 User_RebateLv_Last、返佣报表 UserRebateReport/UserRebateLvReport、合伙人奖励 PartnerRewards、代理关系 D/C/M/A 级 D_/C_/M_/A_UserRelative",ops:"用户返佣编辑 EditUserRebate/UserRebate、关系导入 UserRelativeDataImport、解绑导入 UserRelativeUnBindImportFile、各级导出 *_Export",plan:"会员层级/下级 一阶段已完成；返佣等级/报表/合伙人/代理关系树(D/C/M/A)/导入 → SaaS 代理组"},
+ {d:"⑪ 登录 / 签到",s:"todo",pages:"登录日志 LoginlogList/LoginLog/_Agent、签到 SinIn、签到配置 SinInSetting、连续签到 ContinuousSignInlog",ops:"—",plan:"登录日志→账号组；签到配置/连续签到→活动组（代理视角合并为筛选）"},
+ {d:"⑫ 活动任务 / 消息",s:"todo",pages:"任务活动 TaskActivity/TaskActivityForm、任务订单 TaskOrder、站内消息 Message、短信验证码查询 SmsList、红页日志 RedPageLog",ops:"—",plan:"任务活动/订单/首充/站内消息/短信验证码 → SaaS 活动组"},
+];
+(function renderMB(){
+  var root=document.getElementById("mb-root"); if(!root) return;
+  var SB={done:["b-done","已完成"],opt:["b-opt","部分"],todo:["b-todo","待建"],na:["b-todo","不迁移"]};
+  var h="";
+  MB_DATA.forEach(function(m){
+    var sb=SB[m.s]||SB.todo;
+    var na=m.s==="na"?' style="background:#fce4ec;color:#c62828"':"";
+    h+='<div class="fi-domain"><div class="fi-domain-head" onclick="this.classList.toggle(\'col\')"><span class="fi-arr">\u25bc</span><h4>'+m.d+'</h4><span class="badge '+sb[0]+'"'+na+'>'+sb[1]+'</span><span class="fi-dcount" style="margin-left:10px">\u5c55\u5f00</span></div><div class="fi-domain-body">';
+    if(m.pages&&m.pages!=="\u2014")h+='<div class="fi-layer"><span class="fi-layer-label"><span class="fi-tag fi-t-admin">\u9875\u9762</span></span><div class="fi-layer-items">'+m.pages+'</div></div>';
+    if(m.ops&&m.ops!=="\u2014")h+='<div class="fi-layer"><span class="fi-layer-label"><span class="fi-tag fi-t-api">\u64cd\u4f5c</span></span><div class="fi-layer-items">'+m.ops+'</div></div>';
+    if(m.plan)h+='<div class="fi-layer"><span class="fi-layer-label"><span class="fi-tag fi-t-db">\u8fc1\u79fb</span></span><div class="fi-layer-items">'+m.plan+'</div></div>';
+    h+='</div></div>';
+  });
+  root.innerHTML=h;
+  var c=document.getElementById("mbCount"); if(c)c.textContent="UserInfoController \u00b7 236 Action / 93 \u9875\u9762 \u00b7 "+MB_DATA.length+" \u4e2a\u529f\u80fd\u57df";
+})();
+function filterMB(){
+  var q=(document.getElementById("mbQ").value||"").toLowerCase();
+  document.querySelectorAll("#mb-root .fi-domain").forEach(function(dom){
+    var m=!q||dom.textContent.toLowerCase().includes(q);
+    dom.style.display=m?"":"none";
+    if(q&&m)dom.querySelector(".fi-domain-head").classList.remove("col");
+  });
+}
+</script>
+</body>
+</html>

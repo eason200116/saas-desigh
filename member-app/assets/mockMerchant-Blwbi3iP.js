@@ -1,0 +1,1 @@
+const a=["(1050) daman","(1048) 91club","(1040) 66bet"],e=[{label:"(1050) daman",value:"1050"},{label:"(1048) 91club",value:"1048"},{label:"(1040) 66bet",value:"1040"}];function l(){return a[Math.floor(Math.random()*a.length)]}export{l as r,e as s};

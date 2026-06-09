@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AR SaaS - Vue</title>
+  <script>
+  // 主题改色：青绿(teal #009688) → 蓝色(#2563eb)。统一顶部导航与所有选中态控件。
+  (function () {
+    var PRIMARY = '#2563eb';      // 主色蓝（顶部导航 + 主按钮 + 选中态）
+    var PRIMARY_HOVER = '#3b82f6';// hover 浅蓝
+    function fix(str) {
+      if (!str) return str;
+      return str
+        .replace(/#009688/gi, PRIMARY)
+        .replace(/#1eb4a6/gi, PRIMARY_HOVER)
+        .replace(/rgba\(\s*0\s*,\s*150\s*,\s*136/gi, 'rgba(37, 99, 235')
+        .replace(/rgb\(\s*0\s*,\s*150\s*,\s*136\s*\)/gi, 'rgb(37, 99, 235)')
+        .replace(/rgba\(\s*30\s*,\s*180\s*,\s*166/gi, 'rgba(59, 130, 246')
+        .replace(/rgb\(\s*30\s*,\s*180\s*,\s*166\s*\)/gi, 'rgb(59, 130, 246)');
+    }
+    function fixStyleEl(el) {
+      var c = el.textContent;
+      if (c && (c.indexOf('009688') > -1 || c.indexOf('1eb4a6') > -1 || c.indexOf('150, 136') > -1 || c.indexOf('150,136') > -1)) {
+        el.textContent = fix(c);
+      }
+    }
+    function fixInline(el) {
+      if (!el.getAttribute) return;
+      var s = el.getAttribute('style');
+      if (s && (s.indexOf('009688') > -1 || s.indexOf('1eb4a6') > -1 || s.indexOf('150, 136') > -1 || s.indexOf('150,136') > -1)) {
+        el.setAttribute('style', fix(s));
+      }
+    }
+    function sweep() {
+      var styles = document.querySelectorAll('style');
+      for (var i = 0; i < styles.length; i++) fixStyleEl(styles[i]);
+      var styled = document.querySelectorAll('[style]');
+      for (var j = 0; j < styled.length; j++) fixInline(styled[j]);
+    }
+    var mo = new MutationObserver(function (muts) {
+      for (var i = 0; i < muts.length; i++) {
+        var m = muts[i];
+        for (var a = 0; a < m.addedNodes.length; a++) {
+          var n = m.addedNodes[a];
+          if (n.nodeType !== 1) continue;
+          if (n.tagName === 'STYLE') fixStyleEl(n);
+          else {
+            fixInline(n);
+            if (n.querySelectorAll) {
+              var sub = n.querySelectorAll('style,[style]');
+              for (var s = 0; s < sub.length; s++) {
+                if (sub[s].tagName === 'STYLE') fixStyleEl(sub[s]); else fixInline(sub[s]);
+              }
+            }
+          }
+        }
+        if (m.type === 'attributes' && m.attributeName === 'style') fixInline(m.target);
+        if (m.type === 'characterData' && m.target.parentElement && m.target.parentElement.tagName === 'STYLE') fixStyleEl(m.target.parentElement);
+      }
+    });
+    function start() {
+      sweep();
+      mo.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['style'], characterData: true });
+    }
+    if (document.body) start();
+    else document.addEventListener('DOMContentLoaded', start);
+  })();
+  </script>
+  <script>
+  // 顶部导航分组下拉 → 多列全展开（mega menu）
+  (function () {
+    function injectCss() {
+      if (document.getElementById('ar-mega-css')) return;
+      var st = document.createElement('style'); st.id = 'ar-mega-css';
+      st.textContent =
+        '.ar-mega{display:flex!important;flex-wrap:wrap;align-items:stretch;gap:8px 0;max-width:94vw;padding:8px 2px}'
+        + '.ar-mega>.ar-mega-col{display:flex;flex-direction:column;min-width:178px;padding:0 12px}'
+        + '.ar-mega>.ar-mega-col+.ar-mega-col{border-left:1px solid #eef2f7}'
+        + '.ar-mega .n-dropdown-option-body--group{font-weight:700;color:#1d4ed8!important;opacity:1!important}'
+        + '.ar-mega .n-dropdown-option-body{display:flex;align-items:center}'
+        + '.ar-mega .ar-tag{font-size:9px;font-weight:400;margin-left:auto;flex:none;opacity:.5;letter-spacing:.5px}'
+        + '.ar-mega .ar-tag-new{color:#e8820a}'
+        + '.ar-mega .ar-tag-old{color:#9aa4b2}'
+        + '.v-binder-follower-content:has(.ar-mega){position:fixed!important;left:50%!important;top:58px!important;right:auto!important;bottom:auto!important;transform:translateX(-50%)!important}'
+        + '.v-binder-follower-content:has(.ar-mega) .n-dropdown{max-width:94vw}';
+      document.head.appendChild(st);
+    }
+    // 原有功能（有真实页面）的入口；其余视为本次新加
+    var EXISTING = {'会员列表':1,'下级会员列表':1,'在线人数':1,'会员层级':1,'会员银行卡管理':1,'系统用户管理':1,'系统角色管理':1,'白名单IP':1,'平台日志':1,'中台日志':1,'资金账变':1,'充值订单管理':1,'充值类型管理':1,'人工充值':1,'人工充值审核列表':1,'人工充值审核记录':1,'提现订单管理':1,'提现类型管理':1,'本地收款账号管理':1,'支代付三方管理':1,'银行字典':1,'三方游戏记录':1,'数据统计':1,'支代付通道预警':1};
+    function build(menu) {
+      if (menu.__armega) return;
+      var first = menu.querySelector('.n-dropdown-option');
+      if (!first) return;
+      var holder = first.parentElement;
+      var arr = [].slice.call(holder.children).filter(function (c) { return c.classList && c.classList.contains('n-dropdown-option'); });
+      if (!arr.length) return;
+      // 仅对“全分组”菜单生效（首项是分组标题）；财务等混合菜单跳过
+      if (!arr[0].querySelector('.n-dropdown-option-body--group')) return;
+      menu.__armega = true;
+      injectCss();
+      var cols = [], cur = null;
+      var HIDE = { '登录日志(代理)': 1, '登录日志（代理）': 1, '活动任务': 1, '任务活动': 1, '任务活动配置': 1, '任务订单': 1 };
+      arr.forEach(function (o) {
+        var groupTitle = o.querySelector('.n-dropdown-option-body--group');
+        var labEl = groupTitle || o.querySelector('.n-dropdown-option-body__label');
+        if (labEl && HIDE[labEl.textContent.trim()]) { o.remove(); return; }
+        if (groupTitle || !cur) { cur = document.createElement('div'); cur.className = 'ar-mega-col'; cols.push(cur); }
+        if (!groupTitle) {
+          var body = o.querySelector('.n-dropdown-option-body');
+          var labelEl = o.querySelector('.n-dropdown-option-body__label');
+          var name = labelEl ? labelEl.textContent.trim() : '';
+          if (body && !body.querySelector('.ar-tag')) {
+            var isOld = !!EXISTING[name];
+            var tag = document.createElement('span');
+            tag.className = 'ar-tag ' + (isOld ? 'ar-tag-old' : 'ar-tag-new');
+            tag.textContent = isOld ? '原' : '新';
+            body.appendChild(tag);
+          }
+        }
+        cur.appendChild(o);
+      });
+      cols.forEach(function (c) { holder.appendChild(c); });
+      (function () {
+        var SIG = { '连续签到记录': 1, '充值奖励发放记录': 1, '昨日返佣等级': 1, '站内消息': 1 };
+        var isOps = arr.some(function (o) { var l = o.querySelector('.n-dropdown-option-body__label'); return l && SIG[l.textContent.trim()]; });
+        if (!isOps || holder.querySelector('.ar-add-col')) return;
+        var grpTpl = null, itTpl = null;
+        arr.forEach(function (o) { if (o.querySelector('.n-dropdown-option-body--group')) { grpTpl = grpTpl || o; } else { itTpl = itTpl || o; } });
+        if (!grpTpl || !itTpl) return;
+        // 运营管理整组重排：清掉打包原列，按 消息管理 / 运营配置 / 运营数据 三组重建（所有项按 label 路由 SPECS）
+        [].slice.call(holder.querySelectorAll('.ar-mega-col')).forEach(function (c) { c.remove(); });
+        var ADD = [
+          ['消息管理', ['站内消息', '公告消息']],
+          ['运营配置', ['首充管理', '活动资讯', '轮播图管理', '邀请人任务', '邀请任务', 'TG频道管理', 'ARB提现活动管理', '下载APP充值领奖励']],
+          ['运营数据', ['VIP奖励记录', 'VIP等级人数', '合伙人奖励', '返佣报表', '昨日返佣等级', '充值奖励发放记录', '邀请奖励领取记录', '连续签到记录']]
+        ];
+        ADD.forEach(function (G) {
+          var col = document.createElement('div'); col.className = 'ar-mega-col ar-add-col';
+          var gh = grpTpl.cloneNode(true); var ght = gh.querySelector('.n-dropdown-option-body--group'); if (ght) ght.textContent = G[0]; col.appendChild(gh);
+          G[1].forEach(function (nm) {
+            var it = itTpl.cloneNode(true);
+            var lab = it.querySelector('.n-dropdown-option-body__label'); if (lab) lab.textContent = nm;
+            var ot = it.querySelector('.ar-tag'); if (ot) ot.remove();
+            var bd = it.querySelector('.n-dropdown-option-body'); if (bd) { var tg = document.createElement('span'); tg.className = 'ar-tag ar-tag-new'; tg.textContent = '新'; bd.appendChild(tg); }
+            col.appendChild(it);
+          });
+          holder.appendChild(col);
+        });
+      })();
+      holder.classList.add('ar-mega');
+    }
+    var mo = new MutationObserver(function (muts) {
+      for (var i = 0; i < muts.length; i++) {
+        var m = muts[i];
+        for (var a = 0; a < m.addedNodes.length; a++) {
+          var n = m.addedNodes[a]; if (n.nodeType !== 1) continue;
+          var menus = [];
+          if (n.classList && n.classList.contains('n-dropdown-menu')) menus.push(n);
+          if (n.querySelectorAll) { var q = n.querySelectorAll('.n-dropdown-menu'); for (var k = 0; k < q.length; k++) menus.push(q[k]); }
+          menus.forEach(function (menu) { requestAnimationFrame(function () { build(menu); }); });
+        }
+      }
+    });
+    function start() { mo.observe(document.documentElement, { childList: true, subtree: true }); }
+    if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+  })();
+  </script>
+  <script>
+  // 快捷工作台：Logo 入口 + 整页快捷入口（参考原 SaaS 设计）
+  (function () {
+    // [名称, 路由, 所属路径, 模块色, 是否新增]
+    var T = [
+      ['提现订单管理','withdraw-orders','财务管理 / 提现','fin',0],
+      ['充值订单管理','deposit-orders','财务管理 / 充值','fin',0],
+      ['人工充值','manual-recharge','财务管理 / 人工充值','fin',0],
+      ['人工充值审核列表','manual-recharge-audit-list','财务管理 / 人工充值','fin',0],
+      ['人工充值审核记录','manual-recharge-audit-records','财务管理 / 人工充值','fin',0],
+      ['本地收款账号管理','local-payment-account','财务管理 / 收款·通道','fin',0],
+      ['支代付三方管理','payout-third-party','财务管理 / 收款·通道','fin',0],
+      ['充值类型管理','recharge-type','财务管理 / 充值','fin',0],
+      ['提现类型管理','withdraw-type','财务管理 / 提现','fin',0],
+      ['银行字典','bank-dictionary','财务管理 / 收款·通道','fin',0],
+      ['资金账变','fund-change','财务管理 / 资金账变','fin',0],
+      ['会员列表','member-list','会员管理 / 账号查询','mem',0],
+      ['会员层级','member-level','会员管理 / 账号查询','mem',0],
+      ['下级会员','member-tags','会员管理 / 账号查询','mem',0],
+      ['会员银行卡管理','bank-card','会员管理 / 认证·银行卡','mem',0],
+      ['在线人数','online-users','会员管理 / 账号查询','mem',0],
+      ['用户分组','user-group','会员管理 / 会员分组','mem',1],
+      ['分组表单','user-group-form','会员管理 / 会员分组','mem',1],
+      ['CPF认证','cpf-auth','会员管理 / 认证·银行卡','mem',1],
+      ['KW认证','kw-auth','会员管理 / 认证·银行卡','mem',1],
+      ['登录日志列表','login-log-list','会员管理 / 登录·验证','mem',1],
+      ['登录日志','login-log','会员管理 / 登录·验证','mem',1],
+      ['短信验证码查询','sms-code','会员管理 / 登录·验证','mem',1],
+      ['代理关系(D/C/M/A)','agent-relation','会员管理 / 代理关系','mem',1],
+      ['代理关系导入','agent-relation-import','会员管理 / 代理关系','mem',1],
+      ['站内消息','inbox-message','运营管理 / 消息管理','ops',1],
+      ['公告消息','announcement-msg','运营管理 / 消息管理','ops',1],
+      ['首充管理','first-recharge','运营管理 / 运营配置','ops',1],
+      ['活动资讯','activity-news','运营管理 / 运营配置','ops',1],
+      ['轮播图管理','banner-mgmt','运营管理 / 运营配置','ops',1],
+      ['邀请人任务','inviter-task','运营管理 / 运营配置','ops',1],
+      ['邀请任务','invite-task','运营管理 / 运营配置','ops',1],
+      ['TG频道管理','tg-channel','运营管理 / 运营配置','ops',1],
+      ['ARB提现活动管理','arb-withdraw-activity','运营管理 / 运营配置','ops',1],
+      ['下载APP充值领奖励','app-download-reward','运营管理 / 运营配置','ops',1],
+      ['VIP奖励记录','vip-reward-log','运营管理 / 运营数据','ops',1],
+      ['VIP等级人数','vip-level-count','运营管理 / 运营数据','ops',1],
+      ['合伙人奖励','partner-reward','运营管理 / 运营数据','ops',1],
+      ['返佣报表','rebate-report','运营管理 / 运营数据','ops',1],
+      ['昨日返佣等级','rebate-level-yesterday','运营管理 / 运营数据','ops',1],
+      ['充值奖励发放记录','recharge-reward-log','运营管理 / 运营数据','ops',1],
+      ['邀请奖励领取记录','invite-reward-log','运营管理 / 运营数据','ops',1],
+      ['连续签到记录','signin-log','运营管理 / 运营数据','ops',1],
+      ['异常会员处理','abnormal-member','风控管理 / 异常·检测','risk',1],
+      ['互刷名单','mutual-bet','风控管理 / 异常·检测','risk',1],
+      ['相同IP','same-ip','风控管理 / 异常·检测','risk',1],
+      ['会员提现限制名单','withdraw-limit-list','风控管理 / 风控名单','risk',1],
+      ['会员活动黑名单','activity-blacklist','风控管理 / 风控名单','risk',1],
+      ['刷通道用户清单','channel-abuse-list','风控管理 / 风控名单','risk',1],
+      ['VIP等级','vip-level-config','配置中心 / 等级配置','cfg',1],
+      ['VIP经验配置','vip-exp-config','配置中心 / 等级配置','cfg',1],
+      ['充值等级','recharge-level','配置中心 / 等级配置','cfg',1],
+      ['返佣等级','rebate-level','配置中心 / 返佣·代理','cfg',1],
+      ['代理审核机制','agent-audit','配置中心 / 返佣·代理','cfg',1],
+      ['分组权限配置','group-permission','配置中心 / 会员规则','cfg',1],
+      ['签到配置','signin-config','配置中心 / 会员规则','cfg',1],
+      ['三方游戏记录','third-party-game','游戏管理 / 游戏记录','game',0],
+      ['洗码记录','wash-record','游戏管理 / 会员洗码管理','game',1],
+      ['洗码规则说明','wash-rule','游戏管理 / 会员洗码管理','game',1],
+      ['数据统计','data-statistics','报表管理 / 数据报表','rep',0],
+      ['支代付通道预警','channel-alert','报表管理 / 数据报表','rep',0],
+      ['系统用户','sys-users','系统管理 / 权限管理','sys',0],
+      ['系统角色','sys-roles','系统管理 / 权限管理','sys',0],
+      ['IP白名单','sys-white-ip','系统管理 / 访问控制','sys',0],
+      ['IP黑名单','ip-blacklist','系统管理 / 访问控制','sys',1],
+      ['平台日志','sys-log','系统管理 / 日志','sys',0],
+      ['中台日志','mid-platform-log','系统管理 / 日志','sys',0]
+    ];
+    var IC = { fin: '💳', mem: '👤', game: '🎮', rep: '📊', sys: '⚙️', ops: '📣', risk: '🚨', cfg: '🎚️' };
+    function css() {
+      if (document.getElementById('ar-wb-css')) return;
+      var st = document.createElement('style'); st.id = 'ar-wb-css';
+      st.textContent =
+        '.header-logo{cursor:pointer}'
+        + '.ar-wb-page{position:fixed;left:0;right:0;top:106px;bottom:0;background:#f3f4f6;z-index:1990;display:none;flex-direction:column}'
+        + '.ar-wb-page.open{display:flex}'
+        + '.ar-wb-tabbar{background:#fff;border-bottom:1px solid #e5e7eb;height:42px;display:flex;align-items:flex-end;padding:0 14px;flex:none}'
+        + '.ar-wb-tab{padding:8px 16px;font-size:13px;color:#2563eb;font-weight:600;border:1px solid #e5e7eb;border-bottom-color:#fff;border-radius:8px 8px 0 0;background:#fff;display:flex;align-items:center;gap:10px;margin-bottom:-1px}'
+        + '.ar-wb-tab .x{cursor:pointer;color:#94a3b8;font-size:12px}.ar-wb-tab .x:hover{color:#ef4444}'
+        + '.ar-wb-body{flex:1;overflow:auto;padding:16px}'
+        + '.ar-wb-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px 24px;margin-bottom:14px}'
+        + '.ar-wb-ws{font-size:12px;font-weight:700;color:#2563eb;letter-spacing:1.5px}'
+        + '.ar-wb-title{font-size:24px;font-weight:800;color:#1f2937;margin:4px 0}'
+        + '.ar-wb-desc{font-size:13px;color:#94a3b8}'
+        + '.ar-wb-count{float:right;background:#f1f5f9;color:#475569;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600}'
+        + '.ar-wb-sec{font-size:18px;font-weight:700;color:#1f2937}'
+        + '.ar-wb-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:12px;margin-top:14px}'
+        + '.ar-wb-tile{display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid #eef2f7;border-radius:12px;cursor:pointer;background:#fff;transition:.15s}'
+        + '.ar-wb-tile:hover{border-color:#bcd0ff;box-shadow:0 6px 16px rgba(37,99,235,.1);transform:translateY(-1px)}'
+        + '.ar-wb-ic{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}'
+        + '.ar-wb-tx{min-width:0;flex:1}'
+        + '.ar-wb-nm{font-size:13px;font-weight:600;color:#1f2937;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+        + '.ar-wb-pt{font-size:11px;color:#8a93a3;background:#f1f5f9;border-radius:5px;padding:1px 7px;display:inline-block;margin-top:4px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
+        + '.tint-fin .ar-wb-ic{background:#dcfce7;color:#16a34a}'
+        + '.tint-mem .ar-wb-ic{background:#e0e7ff;color:#4f46e5}'
+        + '.tint-game .ar-wb-ic{background:#ffedd5;color:#ea580c}'
+        + '.tint-rep .ar-wb-ic{background:#cffafe;color:#0891b2}'
+        + '.tint-sys .ar-wb-ic{background:#eef2f7;color:#64748b}'
+        + '.tint-ops .ar-wb-ic{background:#ccfbf1;color:#0d9488}'
+        + '.tint-risk .ar-wb-ic{background:#ffe4e6;color:#e11d48}'
+        + '.tint-cfg .ar-wb-ic{background:#ede9fe;color:#7c3aed}'
+        + '.ar-wb-new{font-size:9px;font-weight:600;color:#e8820a;opacity:.7;margin-left:5px;letter-spacing:.5px}'
+        + '.ar-wb-sec-row{display:flex;align-items:center;gap:12px}'
+        + '.ar-wb-tools{margin-left:auto;display:flex;gap:8px}'
+        + '.ar-wb-mini{height:30px;padding:0 12px;border:1px solid #d8dee6;background:#fff;color:#475569;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer}'
+        + '.ar-wb-mini:hover{border-color:#bcd0ff;color:#2563eb}.ar-wb-mini.pri{background:#2563eb;border-color:#2563eb;color:#fff}'
+        + '.ar-wb-hint{font-size:12px;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:7px 12px;margin-top:10px}'
+        + '.ar-wb-tile.editing{position:relative;cursor:grab}.ar-wb-tile.editing:active{cursor:grabbing}.ar-wb-tile.drag{opacity:.35}'
+        + '.ar-wb-grid.editing .ar-wb-tile{border-style:dashed}'
+        + '.ar-wb-del{position:absolute;top:-7px;right:-7px;width:20px;height:20px;border-radius:50%;border:0;background:#ef4444;color:#fff;font-size:11px;line-height:20px;text-align:center;cursor:pointer;z-index:2;padding:0;box-shadow:0 1px 4px rgba(0,0,0,.25)}'
+        + '.ar-wb-h{display:flex;align-items:center;gap:8px;margin-bottom:4px}.ar-wb-h b{font-size:16px;color:#1f2937}.ar-wb-h small{color:#94a3b8;font-size:12px}'
+        + '.ar-wb-close{margin-left:auto;border:0;background:#f1f5f9;border-radius:8px;width:28px;height:28px;cursor:pointer;font-size:14px;color:#64748b}'
+        + '.ar-wb-addmask{position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:2600;display:flex;align-items:center;justify-content:center}'
+        + '.ar-wb-addpanel{background:#fff;border-radius:14px;width:min(840px,92vw);max-height:74vh;overflow:auto;padding:18px 20px;box-shadow:0 24px 64px rgba(2,6,23,.3)}'
+        + '.ar-wb-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}'
+        + '.ar-wb-chip{display:inline-flex;align-items:center;gap:7px;padding:6px 11px 6px 7px;border:1px solid #eef2f7;border-radius:10px;cursor:pointer;font-size:13px;color:#1f2937;background:#fafbfc}'
+        + '.ar-wb-chip:hover{border-color:#bcd0ff;background:#f0f6ff}.ar-wb-chip-p{font-size:11px;color:#94a3b8}.ar-wb-chip-plus{color:#2563eb;font-weight:700}'
+        + '@media(max-width:1280px){.ar-wb-grid{grid-template-columns:repeat(5,1fr)}}'
+        + '@media(max-width:900px){.ar-wb-grid{grid-template-columns:repeat(3,1fr)}}';
+      document.head.appendChild(st);
+    }
+    var page, body, editing = false, addOpen = false, dragRoute = null;
+    var BY = {}; T.forEach(function (t) { BY[t[1]] = t; });
+    var DEFAULT = T.filter(function (t) { return ['mem', 'ops', 'fin'].indexOf(t[3]) >= 0; }).map(function (t) { return t[1]; });
+    function getLayout() {
+      try { var s = JSON.parse(localStorage.getItem('ar_wb_layout_v2')); if (s && s.length) return s.filter(function (r) { return BY[r]; }); } catch (e) {}
+      return DEFAULT.slice();
+    }
+    var layout = getLayout();
+    function save() { try { localStorage.setItem('ar_wb_layout_v2', JSON.stringify(layout)); } catch (e) {} }
+    function tileHtml(r) {
+      var t = BY[r]; if (!t) return '';
+      return '<div class="ar-wb-tile tint-' + t[3] + (editing ? ' editing' : '') + '" data-route="' + r + '"' + (editing ? ' draggable="true"' : '') + '>'
+        + (editing ? '<button class="ar-wb-del" data-del="' + r + '" title="删除">✕</button>' : '')
+        + '<div class="ar-wb-ic">' + IC[t[3]] + '</div><div class="ar-wb-tx"><div class="ar-wb-nm">' + t[0] + (t[4] ? '<span class="ar-wb-new">新</span>' : '') + '</div><span class="ar-wb-pt">' + t[2] + '</span></div></div>';
+    }
+    function addPicker() {
+      var avail = T.filter(function (t) { return layout.indexOf(t[1]) < 0; });
+      var chips = avail.length ? avail.map(function (t) {
+        return '<div class="ar-wb-chip tint-' + t[3] + '" data-add-route="' + t[1] + '"><span class="ar-wb-ic" style="width:26px;height:26px;font-size:13px;border-radius:7px">' + IC[t[3]] + '</span>' + t[0] + '<span class="ar-wb-chip-p">' + t[2] + '</span><span class="ar-wb-chip-plus">＋</span></div>';
+      }).join('') : '<div style="color:#94a3b8;font-size:13px;padding:10px 4px">已全部添加到工作台</div>';
+      return '<div class="ar-wb-addmask" data-addclose="1"><div class="ar-wb-addpanel"><div class="ar-wb-h"><b>添加快捷入口</b><small>点击下方功能即可加入工作台（' + avail.length + ' 个可添加）</small><button class="ar-wb-close" data-addclose="1">✕</button></div><div class="ar-wb-chips">' + chips + '</div></div></div>';
+    }
+    function render() {
+      var bar = editing
+        ? '<button class="ar-wb-mini" data-add="1">＋ 添加入口</button><button class="ar-wb-mini" data-reset="1">↺ 恢复默认</button><button class="ar-wb-mini pri" data-done="1">✓ 完成</button>'
+        : '<button class="ar-wb-mini" data-edit="1">✎ 编辑布局</button>';
+      body.innerHTML =
+        '<div class="ar-wb-card"><span class="ar-wb-count">快捷入口 ' + layout.length + '</span><div class="ar-wb-ws">WORKSPACE</div><div class="ar-wb-title">快捷工作台</div><div class="ar-wb-desc">根据当前账号权限，展示常用页面快捷入口；支持自定义增删与拖动排序。</div></div>'
+        + '<div class="ar-wb-card"><div class="ar-wb-sec-row"><div class="ar-wb-sec">快捷入口</div><div class="ar-wb-tools">' + bar + '</div></div>'
+        + (editing ? '<div class="ar-wb-hint">编辑模式：拖动磁贴可排序 · 点磁贴右上角 ✕ 删除 · 「添加入口」加入更多功能</div>' : '')
+        + '<div class="ar-wb-grid' + (editing ? ' editing' : '') + '">' + layout.map(tileHtml).join('') + '</div></div>'
+        + (editing && addOpen ? addPicker() : '');
+    }
+    function buildPage() {
+      css();
+      page = document.createElement('div'); page.className = 'ar-wb-page';
+      page.innerHTML = '<div class="ar-wb-body"></div>';
+      document.body.appendChild(page);
+      body = page.querySelector('.ar-wb-body');
+      page.addEventListener('click', function (e) {
+        var el = e.target;
+        if (el.closest('[data-close]')) { close(); return; }
+        if (el.closest('[data-edit]')) { editing = true; render(); return; }
+        if (el.closest('[data-done]')) { editing = false; addOpen = false; render(); return; }
+        if (el.closest('[data-reset]')) { layout = DEFAULT.slice(); save(); render(); return; }
+        if (el.closest('[data-add]')) { addOpen = true; render(); return; }
+        var addChip = el.closest('[data-add-route]');
+        if (addChip) { var ar = addChip.getAttribute('data-add-route'); if (layout.indexOf(ar) < 0) { layout.push(ar); save(); } render(); return; }
+        if (el.closest('[data-addclose]')) { addOpen = false; render(); return; }
+        var del = el.closest('[data-del]');
+        if (del) { var i = layout.indexOf(del.getAttribute('data-del')); if (i >= 0) { layout.splice(i, 1); save(); } render(); return; }
+        if (editing) return;
+        var tile = el.closest('.ar-wb-tile');
+        if (tile) { location.hash = '#/' + tile.getAttribute('data-route'); close(); }
+      });
+      page.addEventListener('dragstart', function (e) { var t = e.target.closest('.ar-wb-tile'); if (t && editing) { dragRoute = t.getAttribute('data-route'); t.classList.add('drag'); if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move'; } });
+      page.addEventListener('dragend', function (e) { var t = e.target.closest('.ar-wb-tile'); if (t) t.classList.remove('drag'); dragRoute = null; });
+      page.addEventListener('dragover', function (e) { if (dragRoute) e.preventDefault(); });
+      page.addEventListener('drop', function (e) {
+        if (!dragRoute) return; e.preventDefault();
+        var over = e.target.closest('.ar-wb-tile');
+        var from = layout.indexOf(dragRoute); if (from >= 0) layout.splice(from, 1);
+        if (over && over.getAttribute('data-route') !== dragRoute) { layout.splice(layout.indexOf(over.getAttribute('data-route')), 0, dragRoute); }
+        else layout.push(dragRoute);
+        save(); dragRoute = null; render();
+      });
+      render();
+    }
+    function open() { if (!page) buildPage(); else render(); page.classList.add('open'); }
+    function close() { if (page) { page.classList.remove('open'); if (editing || addOpen) { editing = false; addOpen = false; render(); } } }
+    function toggle() { if (page && page.classList.contains('open')) close(); else open(); }
+    function ensureEntry() {
+      var logo = document.querySelector('.header-logo');
+      if (logo && !logo.__arwb) {
+        logo.__arwb = 1; css();
+        logo.addEventListener('click', function (e) { e.preventDefault(); e.stopImmediatePropagation(); if (window.__arOpenTab) window.__arOpenTab('hub'); else toggle(); }, true);
+      }
+    }
+    window.addEventListener('hashchange', close);
+    window.__arHub = open;
+    var mo = new MutationObserver(function () { ensureEntry(); });
+    function start() { ensureEntry(); mo.observe(document.documentElement, { childList: true, subtree: true }); }
+    if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+  })();
+  </script>
+  <script>
+  // 新增子页面框架：拦截菜单/工作台点击，渲染真实列表/表单页（注入式）
+  (function () {
+    var M = ['(1050) daman', '(1040) 66bet', '(1048) 91club'];
+    function commas(n) { return ('' + n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+    function cell(t, i) {
+      switch (t) {
+        case 'mch': return '<span class="arp-mch">' + M[i % 3] + '</span>';
+        case 'id': var _id = 50000 + i; return '<span class="arp-id" data-copy="' + _id + '">' + _id + '<i class="arp-cp" title="复制">⧉</i></span>';
+        case 'acct': return 'user_' + (1000 + (i * 7) % 8999);
+        case 'name': return ['张三', '李四', '王五', '赵六', '孙七'][i % 5];
+        case 'money': return commas((((i * 91733) % 500000000) / 100).toFixed(2));
+        case 'int': return (i * 37) % 800;
+        case 'time': return '2026-0' + (i % 9 + 1) + '-' + (10 + i % 18) + ' 1' + (i % 9) + ':' + (10 + i % 49);
+        case 'ip': return '<a class="arp-iplink">8.2' + (i % 9) + (i % 9) + '.' + (i % 200) + '.x</a>';
+        case 'dev': return ['PC', 'iOS', 'Android', 'PC', 'H5'][i % 5];
+        case 'devid': var _di = ((i + 1) * 2654435761 >>> 0).toString(16).toUpperCase(); return '<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px">DID-' + ('00000000' + _di).slice(-8) + '</span>';
+        case 'fp': var _fa = ((i + 1) * 2246822519 >>> 0).toString(16), _fb = ((i * 13 + 7) * 2654435761 >>> 0).toString(16); return '<span style="font-family:ui-monospace,Menlo,monospace;font-size:12px">fp_' + (_fa + _fb).slice(0, 10) + '</span>';
+        case 'on': return (i % 3 ? '<span class="arp-badge arp-on">正常</span>' : '<span class="arp-badge arp-off">异常</span>');
+        case 'vip': return 'VIP' + (i % 6);
+        case 'gtype': return ['彩票', '电子', '真人', '体育', '棋牌', '小游戏'][i % 6];
+        case 'cyc': return ['日结', '周结'][i % 2];
+        case 'pct': return ((i * 3) % 18 + 1) + '%';
+        case 'm2': return commas((((i * 9173) % 9000000) / 100).toFixed(0)) + ' / ' + ((i * 7) % 99 + 1);
+        case 'm3': return commas((((i * 9173) % 9000000) / 100).toFixed(0)) + ' / ' + ((i * 7) % 99 + 1) + ' / ' + ((i * 3) % 30 + 1);
+        case 'sw': return '是';
+        default: return t; // 字面量
+      }
+    }
+    var SPECS = {
+      'member-tags': { t: '下级会员列表', f: ['商户','代理ID','下级ID','会员账号','最小层级','最大层级','注册设备','使用状态','数据排序','注册开始时间','注册结束时间','交易开始时间','交易结束时间','VIP等级','备注'], c: [['商户','mch'],['会员ID','id'],['账号','acct'],['VIP等级','vip'],['上级ID','id'],['相对层级','int'],['直属下级','int'],['全部下级','int'],['注册日期','time'],['使用状态','on'],['在线状态','离线'],['注册设备','Android'],['黑名单','正常'],['投注(金额/次)','m2'],['充值(金额/次)','m2'],['提现(金额/次)','m2'],['返佣(金额/次)','m2'],['账户余额','money']], tb: ['导出','批量禁用','批量启用','批量拉白','批量拉黑'], ra: ['详情','修改密码','下级列表'], n: 24 },
+      'member-level': { t: '会员层级', f: ['商户','会员ID','代理类型','当前层级','日期'], c: [['商户','mch'],['会员ID','id'],['会员账号','acct'],['上级ID','id'],['层级','int'],['直属下级','int'],['全部下级','int'],['代理类型','内部代理'],['注册时间','time'],['投注(金额/次/人)','m3'],['中奖(金额/次/人)','m3'],['佣金','money'],['充值(金额/次/人)','m3'],['提现(金额/次/人)','m3'],['红包','money']], tb: ['导出','批量解除代理关系'], ra: ['详情','下级列表','解除代理'], n: 20 },
+      'member-list': { t: '会员列表', f: ['商户','会员ID','代理ID','会员账号','注册IP','渠道','注册设备','会员状态','代理状态','邀请码','VIP等级','会员分组','黑名单状态','余额排序','注册开始时间','注册结束时间','备注'], c: [['商户','mch'],['会员ID','id'],['会员账号','acct'],['昵称','name'],['余额','money'],['保险箱余额','money'],['三方余额','money'],['积分','int'],['红包剩余金额','money'],['邀请码','INVITE2024'],['渠道号','CH001'],['注册IP','ip'],['注册设备','Android'],['打码量','int'],['会员分组','默认'],['会员类型','真实用户'],['黑名单状态','on'],['会员状态','on'],['在线状态','离线'],['上级代理ID','id'],['VIP等级','vip'],['充值次数','int'],['充值金额','money'],['注册时间','time'],['备注','-'],['邀请人','id',1],['访问端','安卓壳包',1],['一级代理','id',1],['直接上级代理','id',1],['代理层级','5 / 10',1],['代理路径','2250001→…→本会员',1],['佣金模式','返佣（投注流水）',1],['返佣等级','Lv3',1],['是否给上级返佣','sw',1],['是否可领取返佣','sw',1],['代理状态','生效',1],['注册端','安卓壳包',1],['注册设备号/指纹','devid',1],['是否模拟器','否（真机）',1],['注册域名','m.sit-inr.com',1],['同设备注册用户数','int',1],['同指纹注册用户数','int',1],['登录端','安卓壳包',1],['登录设备号/指纹','devid',1],['登录域名','www.sit-inr.com',1],['同设备登录数','int',1],['同指纹登录数','int',1]], tb: ['批量拉黑','批量拉白','批量禁用','批量启用','批量转内部代理','批量转外部代理','批量分组','批量隐藏','批量转移渠道','批量删除备注','批量重置Google验证','批量添加用户','导入批量操作','导出'], ra: ['详情','红包充值','谷歌重置','修改密码','修改用户名','三方信息','删除'], n: 328 },
+      'sys-white-ip': { t: '白名单IP', f: ['IP地址','操作用户','状态'], c: [['IP地址','ip'],['操作用户','admin01'],['添加时间','time'],['状态','on'],['备注','运营VPN出口']], tb: ['新增白名单IP','批量删除'], ra: ['编辑','删除'], n: 3 },
+      'bank-dictionary': { t: '银行字典', f: ['商户','银行名称','状态'], c: [['商户','mch'],['银行名称','HDFC Bank'],['银行Code','HDFC0001234'],['状态','on']], tb: ['新增银行','同步商户'], ra: ['编辑','删除'], n: 5 },
+      'abnormal-member': { t: '异常会员处理', f: ['用户ID', '会员账号', '商户', '异常类型', '备注'], c: [['商户','mch'],['会员ID','id'],['账号','acct'],['余额','money'],['保险箱余额','money'],['三方余额','money'],['异常类型','刷单异常'],['状态','on'],['检测时间','time']], tb: ['批量回收余额','批量保险箱转出','批量驳回提现','批量扣除彩金','导出'], ra: ['回收余额','保险箱转出','驳回提现','余额扣除','编辑'], n: 34 },
+      'mutual-bet': { t: '互刷名单', f: ['会员ID','会员账号','商户','开始时间','结束时间'], c: [['商户','mch'],['会员ID','id'],['账号','acct'],['对打对象ID','id'],['对打对象账号','acct'],['互刷局数','int'],['互刷金额','money'],['双方打码','money'],['检测时间','time']], tb: ['导出'], ra: ['查看明细','加入黑名单'], n: 28 },
+      'same-ip': { t: '相同IP', f: ['IP地址','商户','开始时间','结束时间'], c: [['IP地址','ip'],['关联会员数','int'],['商户','mch'],['代表会员','acct'],['注册数','int'],['登录数','int'],['最近活跃','time']], tb: ['导出'], ra: ['查看会员','风险标记'], n: 22 },
+      'withdraw-limit-list': { t: '会员提现限制名单', f: ['会员ID','会员账号','限制类型','商户'], c: [['商户','mch'],['会员ID','id'],['账号','acct'],['限制类型','禁止提现'],['限制金额','money'],['已用额度','money'],['限制原因','风控拦截'],['操作人','admin01'],['生效时间','time'],['到期时间','time']], tb: ['新增限制','批量导入','批量删除','导出'], ra: ['编辑','解除'], n: 19 },
+      'activity-blacklist': { t: '会员活动黑名单', f: ['会员ID','会员账号','活动','商户'], c: [['商户','mch'],['会员ID','id'],['账号','acct'],['黑名单活动','首充返利'],['活动类型','充值活动'],['加入原因','薅羊毛'],['操作人','admin02'],['加入时间','time']], tb: ['新增','批量导入','批量移除','导出'], ra: ['移除','详情'], n: 24 },
+      'channel-abuse-list': { t: '刷通道用户清单', f: ['会员ID','会员账号','支付通道','商户'], c: [['商户','mch'],['会员ID','id'],['账号','acct'],['支付通道','UPI-快捷'],['刷单次数','int'],['涉及金额','money'],['成功率','pct'],['检测时间','time'],['状态','on']], tb: ['导出'], ra: ['处理','加入黑名单'], n: 26 },
+      'inbox-message': { t: '站内消息', f: ['会员ID','注册手机号','状态','开始时间','结束时间'], c: [['订单号','id'],['会员ID','id'],['类型','客服留言'],['OutID','id'],['Mobile','138****88'],['Whatsapp','+91****'],['Description','请尽快处理提现'],['Reply','已处理'],['留言时间','time']], tb: ['群发消息','导出'], ra: ['回复','删除'], n: 31 },
+      'announcement-msg': { t: '公告消息', f: ['标题','公告类型','状态','开始时间','结束时间'], c: [['公告ID','id'],['标题','系统维护通知'],['公告类型','系统公告'],['内容摘要','今晚02:00-04:00系统维护'],['发布人','admin01'],['状态','on'],['发布时间','time'],['生效时间','time']], tb: ['新增公告','导出'], ra: ['编辑','详情','停用'], n: 16 },
+      'activity-news': { t: '活动资讯', f: ['标题','分类','状态','开始时间','结束时间'], c: [['资讯ID','id'],['标题','世界杯竞猜上线'],['分类','活动公告'],['封面','已上传'],['浏览量','int'],['排序','int'],['状态','on'],['发布时间','time']], tb: ['新增资讯','导出'], ra: ['编辑','详情','下架'], n: 18 },
+      'banner-mgmt': { t: '轮播图管理', f: ['名称','展示位置','状态'], c: [['轮播ID','id'],['图片','已上传'],['名称','首页大banner'],['展示位置','首页顶部'],['跳转链接','/activity/1001'],['排序','int'],['状态','on'],['更新时间','time']], tb: ['新增轮播图','导出'], ra: ['编辑','详情','停用'], n: 12 },
+      'inviter-task': { t: '邀请人任务', f: ['任务名称','状态','商户'], c: [['任务ID','id'],['任务名称','邀请3人奖18'],['邀请目标','3 人'],['奖励内容','彩金18元'],['参与人数','int'],['完成人数','int'],['已发放','money'],['状态','on'],['开始时间','time']], tb: ['新增任务','导出'], ra: ['编辑','详情','停用'], n: 14 },
+      'invite-task': { t: '邀请任务', f: ['任务名称','状态','商户'], c: [['任务ID','id'],['任务名称','新人邀请任务'],['任务类型','注册邀请'],['完成条件','被邀请人首充'],['奖励内容','彩金8元'],['参与人数','int'],['完成人数','int'],['状态','on'],['开始时间','time']], tb: ['新增任务','导出'], ra: ['编辑','详情','停用'], n: 15 },
+      'invite-reward-log': { t: '邀请奖励领取记录', f: ['会员ID','会员账号','状态','开始时间','结束时间'], c: [['领取ID','id'],['会员ID','id'],['账号','acct'],['邀请人数','int'],['奖励金额','money'],['领取状态','on'],['领取时间','time']], tb: ['导出'], ra: ['详情'], n: 36 },
+      'tg-channel': { t: 'TG频道管理', f: ['频道名称','状态','商户'], c: [['频道ID','id'],['频道名称','SIT-INR 官方频道'],['频道链接','t.me/sitinr'],['订阅数','int'],['关联活动','TG签到'],['状态','on'],['创建时间','time']], tb: ['新增频道','导出'], ra: ['编辑','详情','停用'], n: 10 },
+      'arb-withdraw-activity': { t: 'ARB提现活动管理', f: ['活动名称','状态','商户'], c: [['活动ID','id'],['活动名称','ARB提现返现'],['提现条件','单笔≥1000'],['奖励比例','pct'],['参与人数','int'],['已发放','money'],['状态','on'],['开始时间','time'],['结束时间','time']], tb: ['新增活动','导出'], ra: ['编辑','详情','停用'], n: 13 },
+      'app-download-reward': { t: '下载APP充值领奖励', f: ['活动名称','状态','商户'], c: [['活动ID','id'],['活动名称','下载App充值奖'],['奖励档位','充100送20'],['充值条件','≥100'],['参与人数','int'],['已发放','money'],['状态','on'],['开始时间','time']], tb: ['新增活动','导出'], ra: ['编辑','详情','停用'], n: 11 },
+      'signin-log': { t: '连续签到记录', f: ['会员ID','开始时间','结束时间'], c: [['用户ID','id'],['订单号','id'],['领取金额','money'],['相差天数','int'],['连续天数','int'],['签到日期','time']], tb: ['导出'], ra: ['详情'], n: 27 },
+      'first-recharge': { t: '首充管理', f: ['档位名称','状态','商户'], c: [['档位ID','id'],['首充金额','money'],['赠送比例','pct'],['赠送上限','money'],['参与人数','int'],['已赠送','money'],['状态','on'],['创建时间','time']], tb: ['新增档位','导出'], ra: ['编辑','发放记录','停用'], n: 12 },
+      'vip-reward-log': { t: 'VIP奖励记录', f: ['会员ID','VIP等级','商户'], c: [['会员ID','id'],['VIP等级','vip'],['奖励金额','money'],['奖励发放时间','time'],['奖励领取时间','time'],['状态','on']], tb: ['导出'], ra: ['详情'], n: 33 },
+      'vip-level-count': { t: 'VIP等级人数', f: ['商户'], c: [['ID','id'],['VIP等级','vip'],['会员人数','int'],['占比','pct']], tb: ['导出'], ra: [], n: 7 },
+      'partner-reward': { t: '合伙人奖励', f: ['代理ID','直属下级ID','首充状态','二充状态','三充状态','注册时间'], c: [['代理ID','id'],['邀请码','INVITE2024'],['直属下级ID','id'],['首充金额','money'],['二充金额','money'],['三充金额','money'],['流水','money'],['奖励金额','money'],['首充状态','on'],['二充状态','on'],['三充状态','on'],['注册时间','time'],['充值时间','time']], tb: ['奖励配置','导出'], ra: [], n: 21 },
+      'rebate-report': { t: '返佣报表', f: ['会员ID','开始时间','结束时间'], c: [['日期','time'],['彩票返佣(金额/利率)','m2'],['电子返佣(金额/利率)','m2'],['视讯返佣(金额/利率)','m2'],['体育返佣(金额/利率)','m2'],['小游戏返佣(金额/利率)','m2'],['棋牌返佣(金额/利率)','m2'],['合计','money']], tb: ['导出'], ra: [], n: 30 },
+      'rebate-level-yesterday': { t: '昨日返佣等级', f: ['返佣等级','会员ID','团队最小人数','团队最大人数','团队充值最小金额','团队充值最大金额','游戏最小金额','游戏最大金额','日期','排序'], c: [['日期','time'],['会员ID','id'],['团队人数','int'],['团队充值金额','money'],['游戏金额','money'],['返佣等级','vip'],['彩票(游戏/返佣)','m2'],['电子(游戏/返佣)','m2'],['视讯(游戏/返佣)','m2'],['体育(游戏/返佣)','m2'],['棋牌(游戏/返佣)','m2'],['计算返佣金额','money'],['派发返佣金额','money'],['派发时间','time']], tb: ['导出','上一日','下一日'], ra: ['详情'], n: 25 },
+      'recharge-reward-log': { t: '充值奖励发放记录', f: ['充值订单号','会员ID','开始时间','结束时间'], c: [['充值订单号','id'],['用户ID','id'],['订单金额','money'],['赠送比例','pct'],['奖励金额','money'],['充值时间','time'],['奖励发放时间','time'],['奖励领取时间','time'],['状态','on']], tb: ['导出'], ra: ['详情'], n: 38 },
+      'user-group': { t: '用户分组', f: ['分组名称','分组类型','商户'], c: [['分组ID','id'],['分组名称','高价值会员'],['分组类型','手动'],['会员数','int'],['分组权限','活动·提现'],['备注','重点维护'],['创建时间','time']], tb: ['新增分组','重新计算'], ra: ['分组权限','编辑','启用/停用','删除'], n: 9 },
+      'user-group-form': { t: '分组表单', form: [['分组名称','input'],['分组类型','select'],['充值金额 ≥','number'],['充值次数 ≥','number'],['投注金额 ≥','number'],['备注','input']] },
+      'cpf-auth': { t: 'CPF认证', f: ['用户ID','钱包类型','CPF','PIX','姓名'], c: [['用户ID','id'],['钱包类型','PIX'],['姓名','name'],['CPF','123.***.***-01'],['账号','acct'],['认证状态','on']], tb: ['新增','导出'], ra: ['修改','删除'], n: 16 },
+      'kw-auth': { t: 'KW认证', f: ['用户ID','钱包类型','账号'], c: [['用户ID','id'],['钱包类型','KW'],['姓名','name'],['账号','acct'],['认证状态','on']], tb: ['新增','导出'], ra: ['修改','删除'], n: 14 },
+      'login-log-list': { t: '登录日志列表', f: ['IP','商户'], c: [['登录IP','ip'],['相同登录数','int'],['关联会员数','int'],['代表会员','acct'],['最近登录','time']], tb: ['导出'], ra: ['查看会员'], n: 20 },
+      'login-log': { t: '登录日志', f: ['会员ID','IP','设备ID','浏览器指纹','开始时间','结束时间'], c: [['登录ID','id'],['会员ID','id'],['登录设备','dev'],['设备ID','devid'],['浏览器指纹','fp'],['登录时间','time'],['登录IP/登录地区','ip']], tb: ['导出'], ra: [], n: 48 },
+      'sms-code': { t: '短信验证码查询', f: ['手机号码','验证码'], c: [['手机号码','138****88'],['验证码','8842'],['业务类型','登录验证'],['内容','验证码8842'],['发送时间','time'],['状态','on'],['发送IP','ip']], tb: ['导出'], ra: [], n: 44 },
+      'agent-relation': { t: '代理关系(D/C/M/A)', f: ['会员ID','代理类型','绝对层级','日期','邀请码'], c: [['会员ID','id'],['账号','acct'],['上级ID','id'],['层级','int'],['直属下级','int'],['全部下级','int'],['代理','内部代理'],['注册时间','time'],['投注(金额/次/人)','m3'],['中奖(金额/次/人)','m3'],['佣金','money'],['充值(金额/次/人)','m3'],['提现(金额/次/人)','m3'],['红包','money'],['签到','money'],['代理红包','money'],['充值赠送','money'],['注册送金','money'],['彩金充值','money'],['首充满赠送','money']], tb: ['导出','绑定邀请码','批量解除代理'], ra: ['下级列表','返佣明细','解除代理关系','详情'], n: 40 },
+      'agent-relation-import': { t: '代理关系导入', form: [['导入文件','file'],['商户','select'],['绑定方式','select'],['Excel 批量导入 / 解绑代理关系，请先下载模板按格式上传。','note']] },
+      'vip-level-config': { t: 'VIP等级', f: [], c: [['ID','id'],['名称','vip'],['升级条件(EXP)','int'],['保级条件(EXP)','int'],['扣除经验(EXP)','int'],['升级奖励','money'],['月奖励','money'],['充值奖励(%)','pct'],['赠送金额上限','money'],['保险箱日利率(%)','pct'],['电子洗码率(%)','pct'],['真人洗码率(%)','pct'],['体育洗码率(%)','pct'],['彩票洗码率(%)','pct'],['棋牌洗码率(%)','pct'],['结算日','每月1号'],['单日提款次数上限','int'],['月奖励领取次数','int']], tb: ['新增等级'], ra: ['修改'], n: 6 },
+      'vip-exp-config': { t: 'VIP经验配置', f: [], c: [['币种','INR'],['金额等于1 EXP','int']], tb: ['新增'], ra: ['修改'], n: 5 },
+      'recharge-level': { t: '充值等级', f: ['会员等级','商户'], c: [['会员等级','vip'],['充值条件(累计)','money'],['充值渠道','UPI-快捷'],['银行卡','HDFC ***1234'],['备注','重点等级']], tb: ['新增等级'], ra: ['编辑','删除'], n: 5 },
+      'rebate-level': { t: '会员返佣等级', f: ['会员ID'], c: [['会员ID','id'],['返佣等级','vip'],['已连续使用天数','int'],['可连续使用天数','int'],['已连续使用期号','int'],['状态','on'],['添加时间','time'],['更新时间','time']], tb: ['添加会员返佣等级','批量删除'], ra: ['修改返佣等级','删除'], n: 23, note: '1.【会员返佣等级】：强行提升用户的返佣等级，将配置列表中小于配置【返佣等级】的用户修改为配置的【返佣等级】。<br>2.【已连续使用天数】：当用户所有类型的【返佣等级】都小于配置值时，将其全部修改为配置的【返佣等级】，并使【已连续使用天数】+1；若用户已有游戏类型≥配置值（未用到该配置），则【已连续使用天数】清零。<br>3.【状态】：当用户的【已连续使用天数】≥【可连续使用天数】时，配置状态变为已失效，已失效配置不再修改用户的【返佣等级】。' },
+      'agent-audit': { t: '代理审核机制', f: ['代理ID','代理类型','返佣状态'], c: [['代理ID','id'],['上级ID','id'],['直属下级','int'],['代理类型','内部代理'],['下级首充天数','int'],['返佣状态','on'],['昨日佣金','money'],['下级总投注金额','money'],['修改返佣操作人','admin01'],['修改返佣操作时间','time'],['状态操作人','admin01'],['状态操作时间','time']], tb: ['导出'], ra: ['修改返佣','启用/停用','详情'], n: 17 },
+      'group-permission': { t: '分组权限配置', form: [['所属分组','select'],['可参与活动','switch'],['可提现','switch'],['可参与游戏','switch'],['可邀请下级','switch'],['可领取红包','switch'],['每日提现次数','number'],['数据显示天数','number']] },
+      'signin-config': { t: '签到配置', f: [], c: [['ID','id'],['天数','int'],['充值金额','money'],['可领取奖金','money']], tb: ['新增规则'], ra: ['修改','删除'], n: 7 },
+      'ip-blacklist': { t: 'IP黑名单', f: ['IP地址','商户','开始时间','结束时间'], c: [['IP地址','ip'],['封禁类型','禁止登录'],['封禁原因','风控拦截'],['关联会员','acct'],['操作人','admin01'],['添加时间','time'],['状态','on']], tb: ['新增黑名单','批量导入'], ra: ['解封','编辑'], n: 15 },
+      'wash-record': { t: '洗码记录', f: ['商户','会员ID','会员账号','游戏类型','洗码状态','结算周期','VIP等级','开始时间','结束时间'], c: [['商户','mch'],['会员ID','id'],['会员账号','acct'],['VIP等级','vip'],['游戏类型','gtype'],['有效投注(流水)','money'],['洗码比例','pct'],['洗码金额','money'],['结算周期','cyc'],['状态','on'],['结算时间','time'],['领取时间','time']], tb: ['导出','批量发放'], ra: ['详情','发放'], n: 46 },
+      'wash-rule': { t: '洗码规则说明', f: ['游戏类型','VIP等级','状态'], c: [['规则ID','id'],['游戏类型','gtype'],['VIP等级','vip'],['洗码比例(%)','pct'],['起返流水','money'],['单笔上限','money'],['结算周期','cyc'],['状态','on'],['更新时间','time']], tb: ['新增规则','导出'], ra: ['编辑','启用/停用','删除'], n: 12, note: '1.【洗码】又称返水：按会员在各游戏类型产生的有效投注流水，按对应比例返还的优惠。<br>2.【有效投注/流水】：仅统计已结算且满足有效投注条件的注单；对打、双边对冲等无效注单不计入。<br>3.【洗码比例】：按「游戏类型 + VIP等级」分级设置，VIP等级越高比例越高。<br>4.【结算周期】：日结于次日 00:30 自动计算上一自然日流水并发放至洗码钱包；周结于每周一统一发放。<br>5.【起返流水】：单结算周期有效流水达到「起返流水」门槛方可产生洗码，未达门槛不计。<br>6.【单笔上限】：单次洗码发放金额上限，超出部分按上限发放。' }
+    };
+    var LBL2RT = {}; Object.keys(SPECS).forEach(function (r) { LBL2RT[SPECS[r].t] = r; });
+    LBL2RT['异常会员处理'] = 'abnormal-member'; LBL2RT['互刷名单'] = 'mutual-bet'; LBL2RT['相同IP'] = 'same-ip';
+    LBL2RT['会员提现限制名单'] = 'withdraw-limit-list'; LBL2RT['会员活动黑名单'] = 'activity-blacklist'; LBL2RT['刷通道用户清单'] = 'channel-abuse-list';
+    LBL2RT['返佣等级'] = 'rebate-level';  // 菜单短名→会员返佣等级页
+    function css() {
+      if (document.getElementById('arp-css')) return;
+      var st = document.createElement('style'); st.id = 'arp-css';
+      st.textContent =
+        '.arp-page{position:fixed;left:0;right:0;top:106px;bottom:0;background:#fff;z-index:1990;display:none;flex-direction:column}.arp-page.open{display:flex}'
+        + '.arp-tabbar{background:#fff;border-bottom:1px solid #e5e7eb;height:42px;display:flex;align-items:flex-end;padding:0 14px;flex:none}'
+        + '.arp-tab{padding:8px 16px;font-size:13px;color:#2563eb;font-weight:600;border:1px solid #e5e7eb;border-bottom-color:#fff;border-radius:8px 8px 0 0;background:#fff;display:flex;align-items:center;gap:10px;margin-bottom:-1px}'
+        + '.arp-tab .x{cursor:pointer;color:#94a3b8;font-size:12px}.arp-tab .x:hover{color:#ef4444}'
+        + '.arp-body{flex:1;overflow:auto;padding:0;background:#fff}'
+        + '.arp-card{background:#fff;padding:16px 18px}'
+        + '.arp-flt{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}'
+        + '.arp-f{display:flex;flex-direction:column;gap:4px}.arp-f label{font-size:12px;color:#6b7280}'
+        + '.arp-ipt{height:32px;border:1px solid #e5e7eb;border-radius:6px;padding:0 10px;font-size:13px;background:#fff;color:#9aa4b2}'
+        + '.arp-btns{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}'
+        + '.arp-sep{border-top:1px solid #eef2f7;margin:14px -18px 0}'
+        + '.arp-btn{height:32px;padding:0 16px;border-radius:6px;border:1px solid #e5e7eb;background:#fff;font-size:13px;cursor:pointer;color:#374151}'
+        + '.arp-btn.pri{background:#2563eb;border-color:#2563eb;color:#fff;font-weight:600}.arp-btn:hover{border-color:#bcd0ff}'
+        + '.arp-toolbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}'
+        + '.arp-wrap{overflow-x:auto}'
+        + '.arp-tbl{width:100%;border-collapse:collapse;font-size:13px}'
+        + '.arp-tbl th{background:#f1f5f9;text-align:left;padding:9px 10px;color:#334155;font-weight:600;border-bottom:1px solid #e2e8f0;white-space:nowrap}'
+        + '.arp-tbl td{padding:9px 10px;border-bottom:1px solid #f1f5f9;color:#475569;white-space:nowrap}.arp-tbl tr:hover td{background:#f9fbff}'
+        + '.arp-tbl th.arp-num,.arp-tbl td.arp-num{text-align:right}'
+        + '.arp-tbl th.arp-newcol{color:#d4380d;background:#fff4f0}.arp-tbl td.arp-newcol{color:#d4380d}'
+        + '.arp-csw{position:relative;display:inline-block;width:40px;height:22px;border-radius:22px;background:#cbd5e1;cursor:pointer;vertical-align:middle;transition:.2s;flex:none}.arp-csw:before{content:"";position:absolute;width:18px;height:18px;left:2px;top:2px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}.arp-csw.on{background:#2563eb}.arp-csw.on:before{transform:translateX(18px)}'
+        + '.arp-tbl th.arp-num{cursor:pointer}.arp-sort{color:#cbd5e1;font-size:10px;margin-left:3px}.arp-tbl th.arp-num:hover .arp-sort{color:#64748b}'
+        + '.arp-mch{display:inline-block;padding:1px 8px;border-radius:4px;background:#eff6ff;color:#2563eb;font-size:12px;border:1px solid #dbeafe;white-space:nowrap}'
+        + '.arp-id{color:#2563eb;cursor:pointer;display:inline-flex;align-items:center;gap:4px}.arp-id:hover{text-decoration:underline}'
+        + '.arp-cp{font-style:normal;color:#94a3b8;cursor:pointer;font-size:12px}.arp-cp:hover{color:#2563eb}'
+        + '.arp-iplink{color:#2563eb;cursor:pointer}.arp-iplink:hover{text-decoration:underline}'
+        + '.arp-tbl tfoot td{background:#fafcff;font-weight:600;color:#1f2937;border-top:1px solid #e2e8f0}'
+        + '.arp-pg{display:flex;justify-content:flex-end;align-items:center;gap:10px;font-size:13px;color:#64748b;flex-wrap:wrap}'
+        + '.arp-pgbar{display:flex;align-items:center;justify-content:space-between;margin-top:14px;gap:12px;flex-wrap:wrap}'
+        + '.arp-allpage{display:flex;align-items:center;gap:6px;font-size:13px;color:#64748b;cursor:pointer;white-space:nowrap}'
+        + '.arp-jump{display:flex;align-items:center;gap:6px;white-space:nowrap}.arp-jump input{width:44px;height:28px;border:1px solid #e5e7eb;border-radius:6px;text-align:center;font-size:13px;color:#374151}'
+        + '.arp-quick{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;align-items:center}.arp-quick .ql{font-size:12px;color:#94a3b8;margin-right:2px}'
+        + '.arp-adv-item{display:none!important}.arp-flt.show-adv .arp-adv-item{display:flex!important}'
+        + '.arp-fltwrap.collapsed{display:none}'
+        + '.arp-chip{height:28px;padding:0 12px;border:1px solid #e5e7eb;background:#fff;border-radius:6px;font-size:12px;color:#475569;cursor:pointer}.arp-chip:hover{border-color:#bcd0ff;color:#2563eb}.arp-chip.on{background:#2563eb;border-color:#2563eb;color:#fff}'
+        + '.arp-btn.gray{color:#475569}'
+        + '.arp-link{color:#2563eb;cursor:pointer;margin-right:10px}.arp-link:hover{text-decoration:underline}'
+        + '.arp-badge{font-size:11px;padding:2px 8px;border-radius:6px}.arp-on{background:#dcfce7;color:#15803d}.arp-off{background:#fee2e2;color:#b91c1c}'
+        + '.arp-pgbtn{min-width:28px;height:28px;padding:0 6px;border:1px solid #e5e7eb;background:#fff;border-radius:6px;cursor:pointer;color:#475569}.arp-pgbtn.cur{background:#2563eb;border-color:#2563eb;color:#fff}'
+        + '.arp-toast{position:fixed;left:50%;top:78px;transform:translateX(-50%);background:#1f2937;color:#fff;padding:8px 18px;border-radius:8px;font-size:13px;z-index:3600;opacity:0;transition:.2s}.arp-toast.show{opacity:1}'
+        + '.arp-form{display:grid;grid-template-columns:1fr 1fr;gap:16px 22px}'
+        + '.arp-ff{display:flex;flex-direction:column;gap:6px}.arp-ff label{font-size:13px;color:#374151;font-weight:500}'
+        + '.arp-ff.full{grid-column:1/3}'
+        + '.arp-sec-title{font-size:14px;font-weight:600;color:#1f2733;margin:2px 0 16px;display:flex;align-items:center;gap:8px}.arp-sec-title .arp-sec-sub{font-size:12px;font-weight:400;color:#94a3b8}'
+        + '.arp-formbox{max-width:760px;margin:10px auto 0;background:#fafbfc;border:1px solid #eef2f7;border-radius:12px;padding:22px 26px}.arp-formbox .arp-btns{margin-top:18px}'
+        + '.arp-note{grid-column:1/3;font-size:12px;color:#94a3b8;background:#f8fafc;border:1px dashed #e5e7eb;border-radius:8px;padding:10px 12px}'
+        + '.arp-file{height:40px;border:1px dashed #cbd5e1;border-radius:8px;display:flex;align-items:center;padding:0 12px;color:#94a3b8;font-size:13px;cursor:pointer}'
+        + '.arp-sw{position:relative;width:42px;height:23px;display:inline-block}.arp-sw input{display:none}.arp-sw span{position:absolute;inset:0;background:#cbd5e1;border-radius:23px;transition:.2s}.arp-sw span:before{content:"";position:absolute;width:19px;height:19px;left:2px;top:2px;background:#fff;border-radius:50%;transition:.2s}.arp-sw input:checked+span{background:#2563eb}.arp-sw input:checked+span:before{transform:translateX(19px)}'+ '.arp-mmask{position:fixed;inset:0;background:rgba(15,23,42,.42);z-index:3300;display:flex;align-items:center;justify-content:center}'+ '.arp-modal{background:#fff;border-radius:14px;width:min(1480px,96vw);height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 64px rgba(2,6,23,.3)}.arp-modal.sm{width:min(440px,92vw);height:auto;max-height:84vh}'+ '.arp-mh{display:flex;flex:none;align-items:center;padding:15px 20px;border-bottom:1px solid #eef2f7;font-size:16px;font-weight:700;color:#1f2937}.arp-mh .x{margin-left:auto;cursor:pointer;color:#94a3b8}'+ '.arp-mb{padding:18px 20px;flex:1;overflow:auto;min-height:0}.arp-mf{display:flex;flex:none;justify-content:flex-end;gap:8px;padding:14px 20px;border-top:1px solid #eef2f7}'+ '.arp-dl{display:grid;grid-template-columns:130px 1fr;gap:10px 14px;font-size:13px}.arp-dl dt{color:#94a3b8}.arp-dl dd{color:#1f2937;margin:0;word-break:break-all}'+ '.arp-dl dt.arp-new,.arp-dl dd.arp-new{color:#d4380d}.arp-dl dd.arp-new .arp-link{color:#d4380d;text-decoration:underline}.arp-dl .arp-dl-sec{grid-column:1/3;margin-top:6px;padding-top:10px;border-top:1px dashed #f0c4b8;color:#d4380d;font-weight:700}'
+        + '.arp-subtbl{width:100%;border-collapse:collapse;font-size:13px}.arp-subtbl th,.arp-subtbl td{padding:8px 12px;border-bottom:1px solid #eef2f7;text-align:left;white-space:nowrap}.arp-subtbl th{color:#94a3b8;font-weight:600;background:#f8fafc}'
+        + '.md-wrap{font-size:13px}.md-sec{font-size:14px;font-weight:700;padding:13px 18px;color:#1f2733;border-bottom:1px solid #eef2f7}.md-sec.new{color:#d4380d}'
+        + '.md-panel{background:#f0f2f5;margin:6px -20px -18px;padding:2px 16px 16px;min-height:60px}.md-block{background:#fff;border:1px solid #eef2f7;border-radius:10px;margin:14px 0;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04)}.md-block .md-grid{border-top:none}.md-block .md-subhead{margin:0}.md-block .md-tblwrap{border-left:none;border-right:none;border-radius:0;margin:0}.md-block .armd-chain{margin:12px 18px 14px}.md-block .armd-toggle,.md-block .armd-more{padding-left:18px;padding-right:18px}'
+        + '.md-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}.md-grid.c3{grid-template-columns:repeat(3,minmax(0,1fr))}.md-grid.c5{grid-template-columns:repeat(5,minmax(0,1fr))}'
+        + '.md-f{padding:12px 18px;border-bottom:1px solid #f1f5f9;display:flex;gap:10px;align-items:baseline;min-height:46px}.md-f .l{color:#94a3b8;white-space:nowrap;min-width:80px}.md-f .v{color:#1f2733;font-weight:600;word-break:break-all}.md-f.full{grid-column:1/-1}'
+        + '.md-f.new .l,.md-f.new .v{color:#d4380d}.md-f .v .arp-link{color:inherit;text-decoration:underline;cursor:pointer}.md-subhead{background:#f0f5ff;font-weight:700;padding:8px 10px;font-size:12px;color:#1f2733;margin-top:6px}'
+        + '.md-search{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 16px;background:#f8fafc;border:1px solid #eef2f7;border-radius:8px;margin-bottom:6px}.md-search .md-sf{display:flex;align-items:center;gap:6px}.md-search label{color:#475569}.md-search input{border:1px solid #d8dee8;border-radius:6px;padding:5px 8px;font-size:13px;color:#1f2733;outline:none;height:30px}.md-search input[type=date]{width:128px}.md-sbtn{background:#2563eb;color:#fff;border:none;border-radius:6px;padding:0 16px;font-size:13px;cursor:pointer;height:30px}.md-mtag{display:inline-flex;align-items:center;background:#eef2f7;color:#475569;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:600;margin-left:8px}.md-max{cursor:pointer;color:#94a3b8;font-size:15px;padding:0 6px}.arp-mh .md-max{margin-left:auto}.arp-mh .md-max+.x{margin-left:10px}.arp-modal-full{width:98vw!important;height:96vh!important}.md-edit{margin-left:8px;border:1px solid #c7dbff;color:#2563eb;background:#fff;border-radius:5px;padding:1px 8px;font-size:11px;cursor:pointer;vertical-align:middle;line-height:1.6}'
+        + '.md-tabs{display:flex;border-bottom:1px solid #eef2f7;margin-top:2px}.md-tab{padding:10px 16px;font-size:14px;color:#475569;cursor:pointer;border-bottom:2px solid transparent;font-weight:500}.md-tab.active{color:#2563eb;border-bottom-color:#2563eb;font-weight:700}.md-tab:hover{color:#2563eb}.md-fixedhead{flex:none;padding:16px 20px 0;background:#fff}.arp-mb.md-wrap{padding-top:8px}'
+        + '.md-tblwrap{border:1px solid #eef2f7;border-radius:8px;overflow:hidden;margin-top:8px}.md-tbl{width:100%;border-collapse:collapse;font-size:13px}.md-tbl th{background:#f7f9fc;color:#64748b;font-weight:600;text-align:left;padding:9px 12px;white-space:nowrap;border-bottom:1px solid #eef2f7}.md-tbl td{padding:9px 12px;border-bottom:1px solid #f3f5f9;color:#1f2733;white-space:nowrap}.md-tbl tr:last-child td{border-bottom:none}.md-tbl tr:hover td{background:#f9fbff}';
+      document.head.appendChild(st);
+    }
+    var page, tabEl, toast, cur, modal, formStore = {};
+    function ensurePage() {
+      if (page) return;
+      css();
+      page = document.createElement('div'); page.className = 'arp-page';
+      page.innerHTML = '<div class="arp-tabbar"><div class="arp-tab"><span class="arp-tt">页面</span><span class="x" data-pclose="1">✕</span></div></div><div class="arp-body"></div>';
+      document.body.appendChild(page);
+      tabEl = page.querySelector('.arp-tt');
+      page.addEventListener('click', function (e) {
+        var el = e.target;
+        if (el.closest('[data-pclose]')) { hide(); return; }
+        if (el.closest('[data-fsave]')) { doFormSave(); return; }
+        if (el.closest('[data-fcancel]')) { doFormCancel(); return; }
+        var frd = el.closest('[data-frdel]'); if (frd) { (formStore[cur.route] || []).splice(+frd.getAttribute('data-frdel'), 1); paintFormRecs(); tip('已删除'); return; }
+        if (el.classList && (el.classList.contains('arp-all') || el.classList.contains('arp-all2'))) { var ck = el.checked; page.querySelectorAll('.arp-ck').forEach(function (c) { c.checked = ck; }); page.querySelectorAll('.arp-all,.arp-all2').forEach(function (a) { a.checked = ck; }); return; }
+        if (el.closest('.arp-cp')) { var idcp = el.closest('.arp-id'); var cvp = idcp && idcp.getAttribute('data-copy'); if (navigator.clipboard && cvp) { try { navigator.clipboard.writeText(cvp); } catch (e) {} } tip('已复制 ' + cvp); return; }
+        var midEl = el.closest('.arp-mid'); if (midEl) { var mi = +midEl.getAttribute('data-mi'); openMemberDetail(cur.all[mi], midEl.getAttribute('data-copy')); return; }
+        var idc = el.closest('.arp-id'); if (idc) { var cv = idc.getAttribute('data-copy'); if (navigator.clipboard && cv) { try { navigator.clipboard.writeText(cv); } catch (e) {} } tip('已复制 ' + cv); return; }
+        var sortTh = el.closest('[data-sort]'); if (sortTh) { doSort(+sortTh.getAttribute('data-sort')); return; }
+        var qk = el.closest('[data-quick]'); if (qk) { page.querySelectorAll('[data-quick]').forEach(function (x) { x.classList.remove('on'); }); qk.classList.add('on'); tip('时间范围：' + qk.getAttribute('data-quick')); return; }
+        var advB = el.closest('[data-adv]'); if (advB) { var fl = page.querySelector('.arp-flt'); if (fl) { fl.classList.toggle('show-adv'); advB.innerHTML = fl.classList.contains('show-adv') ? '△ 收起高级' : '▽ 高级筛选'; } return; }
+        var clpB = el.closest('[data-collapse]'); if (clpB) { var fw = page.querySelector('.arp-fltwrap'); if (fw) { fw.classList.toggle('collapsed'); clpB.innerHTML = fw.classList.contains('collapsed') ? '▽ 展开' : '∧ 收起'; } return; }
+        var colB = el.closest('[data-col]'); if (colB) { doColPicker(); return; }
+        var pg = el.closest('[data-pg]'); if (pg) { cur.page = +pg.getAttribute('data-pg'); paintTable(); return; }
+        if (el.closest('.arp-search')) { doSearch(); return; }
+        if (el.closest('.arp-reset')) { doReset(); return; }
+        var tbb = el.closest('[data-tb]'); if (tbb) { doToolbar(tbb.getAttribute('data-tb')); return; }
+        var csw = el.closest('[data-csw]'); if (csw) { var cName = csw.getAttribute('data-csw'), cRi = +csw.getAttribute('data-i'), cCi = +csw.getAttribute('data-ci'), cOn = csw.classList.contains('on'), cTo = cOn ? '关闭' : '开启'; openConfirm('确认要' + cTo + '该会员的「' + cName + '」吗？', function () { cur.all[cRi][cCi] = cOn ? '否' : '是'; csw.classList.toggle('on'); tip(cName + ' 已' + cTo); }); return; }
+        var act = el.closest('[data-act]'); if (act) { doRowAction(act.getAttribute('data-act'), +act.getAttribute('data-i')); return; }
+      });
+      page.addEventListener('change', function (e) { if (e.target.classList && e.target.classList.contains('arp-jumpi')) { var mx = Math.max(1, Math.ceil(cur.view.length / 10)); cur.page = Math.max(1, Math.min(mx, +e.target.value || 1)); paintTable(); } });
+    }
+    function tip(msg) {
+      if (!toast) { toast = document.createElement('div'); toast.className = 'arp-toast'; document.body.appendChild(toast); }
+      toast.textContent = msg; toast.classList.add('show');
+      clearTimeout(toast.__t); toast.__t = setTimeout(function () { toast.classList.remove('show'); }, 1600);
+    }
+    function renderForm(s) {
+      var ff = s.form.map(function (f) {
+        var lbl = f[0], ty = f[1] || 'input', ctl, full = (lbl === '备注' || ty === 'note' || ty === 'file');
+        if (ty === 'note') return '<div class="arp-note">' + lbl + '</div>';
+        if (ty === 'select') ctl = '<select class="arp-ipt"><option value="">请选择' + lbl + '</option><option>选项 A</option><option>选项 B</option></select>';
+        else if (ty === 'switch') ctl = '<label class="arp-sw"><input type="checkbox" checked><span></span></label>';
+        else if (ty === 'number') ctl = '<input class="arp-ipt" type="number" placeholder="请输入' + lbl + '">';
+        else if (ty === 'file') ctl = '<div class="arp-file">📎 点击选择文件…</div>';
+        else ctl = '<input class="arp-ipt" placeholder="请输入' + lbl + '">';
+        return '<div class="arp-ff' + (full ? ' full' : '') + '"><label>' + lbl + '</label>' + ctl + '</div>';
+      }).join('');
+      page.querySelector('.arp-body').innerHTML =
+        '<div class="arp-card">'
+        + '<div class="arp-formbox">'
+        + '<div class="arp-sec-title" style="justify-content:center">📝 新增' + s.t.replace('表单', '') + '</div>'
+        + '<div class="arp-form">' + ff + '</div>'
+        + '<div class="arp-btns"><button class="arp-btn pri" data-fsave="1">保存</button><button class="arp-btn" data-fcancel="1">取消</button></div>'
+        + '</div>'
+        + '<div class="arp-sec-title" style="margin-top:22px">📋 已保存记录 <span class="arp-sec-sub" id="arp-frcount"></span></div>'
+        + '<div class="arp-formrecs"></div>'
+        + '</div>';
+      paintFormRecs();
+    }
+    function paintFormRecs() {
+      var s = cur.s, recs = formStore[cur.route] || [];
+      var labels = s.form.filter(function (f) { return f[1] !== 'note'; }).map(function (f) { return f[0]; });
+      var th = '<th style="width:90px">ID</th>' + labels.map(function (l) { return '<th>' + l + '</th>'; }).join('') + '<th style="width:160px">保存时间</th><th style="width:70px">操作</th>';
+      var rows = recs.map(function (rec, i) {
+        var tds = '<td>' + rec.id + '</td>' + rec.vals.map(function (v) { return '<td>' + (v === '' || v == null ? '<span style="color:#cbd5e1">-</span>' : v) + '</td>'; }).join('') + '<td>' + rec.time + '</td>';
+        return '<tr>' + tds + '<td><span class="arp-link" data-frdel="' + i + '">删除</span></td></tr>';
+      }).join('') || '<tr><td colspan="40" class="arp-empty">暂无记录，填写上方表单后点「保存」生成</td></tr>';
+      var c = page.querySelector('.arp-formrecs'); if (c) c.innerHTML = '<div class="arp-wrap"><table class="arp-tbl"><thead><tr>' + th + '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+      var cnt = page.querySelector('#arp-frcount'); if (cnt) cnt.textContent = '共 ' + recs.length + ' 条';
+    }
+    function doFormSave() {
+      var s = cur.s;
+      var ffs = [].slice.call(page.querySelectorAll('.arp-form .arp-ff'));
+      var vals = ffs.map(function (ff) { var inp = ff.querySelector('input,select'); if (!inp) return ''; if (inp.type === 'checkbox') return inp.checked ? '是' : '否'; return (inp.value || '').trim(); });
+      if (!vals[0]) { tip('请先填写' + (s.form[0] && s.form[0][0] || '必填项')); return; }
+      if (!formStore[cur.route]) formStore[cur.route] = [];
+      var recs = formStore[cur.route];
+      var d = new Date(), p = function (n) { return (n < 10 ? '0' : '') + n; };
+      recs.push({ id: 50000 + recs.length, vals: vals, time: d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds()) });
+      paintFormRecs(); tip('保存成功，已生成 1 条记录');
+      page.querySelectorAll('.arp-form input').forEach(function (i) { if (i.type === 'checkbox') i.checked = false; else i.value = ''; });
+      page.querySelectorAll('.arp-form select').forEach(function (sl) { sl.selectedIndex = 0; });
+    }
+    function doFormCancel() {
+      page.querySelectorAll('.arp-form input').forEach(function (i) { if (i.type === 'checkbox') i.checked = false; else i.value = ''; });
+      page.querySelectorAll('.arp-form select').forEach(function (sl) { sl.selectedIndex = 0; });
+      tip('已清空');
+    }
+    function buildRows(s){var a=[];for(var i=0;i<s.n;i++){a.push(s.c.map(function(c){return cell(c[1],i);}));}return a;}
+    function strip(v){return (''+v).replace(/<[^>]+>/g,'');}
+    function sumCol(rows,ci){var t=0;rows.forEach(function(r){var n=parseFloat(strip(r[ci]).replace(/,/g,''));if(!isNaN(n))t+=n;});return t;}
+    function doSort(ci){if(cur.sortCi!==ci){cur.sortCi=ci;cur.sortDir=-1;}else cur.sortDir=-cur.sortDir;cur.view=cur.view.slice().sort(function(a,b){var na=parseFloat(strip(a[ci]).replace(/,/g,''))||0,nb=parseFloat(strip(b[ci]).replace(/,/g,''))||0;return (na-nb)*cur.sortDir;});cur.page=1;paintTable();}
+    function render(route){var s=SPECS[route];if(!s)return;tabEl.textContent=s.t;if(s.form){cur={route:route,s:s};renderForm(s);return;}cur={route:route,s:s,all:buildRows(s),page:1};cur.view=cur.all;
+      var flt=s.f.map(function(l,fi){var req=/^代理ID$/.test(l),ctl;if(/时间|日期/.test(l))ctl='<input class="arp-ipt" type="date" value="2026-06-08">';else if(/状态|类型|层级|设备$|排序|等级|渠道|通道|分组|方式|活动$/.test(l))ctl='<select class="arp-ipt"><option>请选择</option><option>选项 A</option><option>选项 B</option></select>';else ctl='<input class="arp-ipt arp-fi" placeholder="'+(req?'必填':'请输入'+l)+'">';return '<div class="arp-f'+(fi>=6?' arp-adv-item':'')+'"><label>'+(req?'<span style="color:#ef4444">* </span>':'')+l+'</label>'+ctl+'</div>';}).join('');
+      var hasTime=s.f.some(function(l){return /时间|日期/.test(l);});
+      var quick=hasTime?'<div class="arp-quick"><span class="ql">快捷</span>'+['今天','昨天','本周','上周','本月','上月','所有'].map(function(q){return '<button class="arp-chip" data-quick="'+q+'">'+q+'</button>';}).join('')+'</div>':'';
+      var hasAdv=s.f.length>6;
+      var filterHtml=s.f.length?'<div class="arp-fltwrap"><div class="arp-flt">'+flt+'</div>'+quick+'</div><div class="arp-btns"><button class="arp-btn pri arp-search">🔍 搜索</button><button class="arp-btn arp-reset">↻ 重置</button>'+(hasAdv?'<button class="arp-btn gray" data-adv="1">▽ 高级筛选</button>':'')+'<button class="arp-btn gray" data-collapse="1">∧ 收起</button></div><div class="arp-sep"></div>':'';
+      page.querySelector('.arp-body').innerHTML='<div class="arp-card">'+filterHtml+'<div class="arp-tablecard"></div></div>';paintTable();}
+    function paintTable(){
+      var s=cur.s,hasBatch=(s.tb||[]).some(function(b){return b.indexOf('批量')===0;});
+      var ckTh=hasBatch?'<th style="width:34px"><input type="checkbox" class="arp-all"></th>':'';
+      var opTh=s.ra.length?'<th>操作</th>':'';
+      var th=ckTh+s.c.map(function(c,ci){if(cur.hidden&&cur.hidden[ci])return '';var num=/money|int/.test(c[1]);var ar=num?' <span class="arp-sort">'+(cur.sortCi===ci?(cur.sortDir<0?'↓':'↑'):'↕')+'</span>':'';var cls=(num?'arp-num ':'')+(c[2]?'arp-newcol':'');return '<th'+(cls.trim()?' class="'+cls.trim()+'"':'')+(num?' data-sort="'+ci+'"':'')+'>'+c[0]+ar+'</th>';}).join('')+opTh;
+      var pr=cur.view.slice((cur.page-1)*10,cur.page*10);
+      var rows=pr.map(function(r){var gi=cur.all.indexOf(r);var ck=hasBatch?'<td><input type="checkbox" class="arp-ck" data-i="'+gi+'"></td>':'';var tds=r.map(function(v,ci){if(cur.hidden&&cur.hidden[ci])return '';var ty=s.c[ci][1],col=s.c[ci][0];var num=/money|int|pct/.test(ty);if(ty==='sw'){var _on=(v==='是'||v==='1'||v===1);v='<span class="arp-csw'+(_on?' on':'')+'" data-csw="'+col+'" data-i="'+gi+'" data-ci="'+ci+'" title="点击切换（需二次确认）"></span>';}if(ty==='id'&&!/订单|活动|分组|规则|任务|领取|档位|站点|消息|工单|批次|领取ID/.test(col)){v=v.replace('class="arp-id"','class="arp-id arp-mid" data-mi="'+gi+'"');}var cls=(num?'arp-num ':'')+(s.c[ci][2]?'arp-newcol':'');return '<td'+(cls.trim()?' class="'+cls.trim()+'"':'')+'>'+v+'</td>';}).join('');var acts=s.ra.length?'<td>'+s.ra.map(function(a){return '<span class="arp-link" data-act="'+a+'" data-i="'+gi+'">'+a+'</span>';}).join('')+'</td>':'';return '<tr>'+ck+tds+acts+'</tr>';}).join('')||'<tr><td colspan="40" class="arp-empty">暂无数据</td></tr>';
+      var moneyIdx=s.c.map(function(c,i){return /money/.test(c[1])?i:-1;}).filter(function(i){return i>=0;});
+      var foot='';
+      if(moneyIdx.length){var mkFoot=function(label,rws){var c0=hasBatch?'<td></td>':'',labeled=false;s.c.forEach(function(c,ci){if(cur.hidden&&cur.hidden[ci])return;if(!labeled){c0+='<td>'+label+'</td>';labeled=true;}else if(/money/.test(c[1]))c0+='<td class="arp-num">'+commas(sumCol(rws,ci).toFixed(2))+'</td>';else c0+='<td></td>';});if(s.ra.length)c0+='<td></td>';return '<tr>'+c0+'</tr>';};foot='<tfoot>'+mkFoot('页面合计',pr)+mkFoot('总计',cur.view)+'</tfoot>';}
+      var tb=(s.tb||[]).map(function(b){return '<button class="arp-btn'+(/新增|新建|添加/.test(b)?' pri':'')+'" data-tb="'+b+'">'+b+'</button>';}).join('');
+      var tbRight='<button class="arp-btn gray" data-col="1">⚙ 自定义列</button>';
+      var pages=Math.ceil(cur.view.length/10),pgb='';for(var pp=1;pp<=Math.min(pages,7);pp++)pgb+='<button class="arp-pgbtn'+(pp===cur.page?' cur':'')+'" data-pg="'+pp+'">'+pp+'</button>';if(pages>7)pgb+='<span style="color:#94a3b8;padding:0 4px">… '+pages+'</span>';
+      var allChk=hasBatch?'<label class="arp-allpage"><input type="checkbox" class="arp-all2"> 全选当前页</label>':'<span></span>';
+      var pgbar='<div class="arp-pgbar">'+allChk+'<div class="arp-pg"><span>共 '+cur.view.length+' 条</span>'+pgb+'<span>10 条/页</span><span class="arp-jump">跳至 <input type="number" min="1" class="arp-jumpi" value="'+cur.page+'"> 页</span></div></div>';
+      var noteHtml=s.note?'<div style="margin-top:14px;padding:12px 16px;background:#f8fafc;border:1px solid #eef2f7;border-radius:8px;font-size:12px;color:#64748b;line-height:1.9"><b style="color:#475569">说明：</b><br>'+s.note+'</div>':'';
+      page.querySelector('.arp-tablecard').innerHTML='<div class="arp-toolbar">'+tb+'<div style="margin-left:auto">'+tbRight+'</div></div><div class="arp-wrap"><table class="arp-tbl"><thead><tr>'+th+'</tr></thead><tbody>'+rows+'</tbody>'+foot+'</table></div>'+pgbar+noteHtml;
+    }
+    function doSearch(){var vals=[].slice.call(page.querySelectorAll('.arp-flt .arp-fi')).map(function(x){return (x.value||'').trim();}).filter(function(v){return v;});cur.view=vals.length?cur.all.filter(function(r){var t=r.map(strip).join(' ');return vals.every(function(v){return t.indexOf(v)>=0;});}):cur.all;cur.page=1;paintTable();tip('查询完成，共 '+cur.view.length+' 条');}
+    function doReset(){page.querySelectorAll('.arp-flt input').forEach(function(i){i.value=i.type==='date'?'2026-06-08':'';});page.querySelectorAll('.arp-flt select').forEach(function(sl){sl.selectedIndex=0;});cur.view=cur.all;cur.page=1;paintTable();tip('已重置');}
+    function doExport(){var s=cur.s,head=s.c.map(function(c){return c[0];}).join(','),body=cur.view.map(function(r){return r.map(function(v){return '"'+strip(v).replace(/"/g,'""')+'"';}).join(',');}).join('\n');var csv='﻿'+head+'\n'+body;var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=s.t+'.csv';a.click();tip('已导出 '+cur.view.length+' 条');}
+    function doColPicker(){var s=cur.s;if(!cur.hidden)cur.hidden={};var body='<div style="font-size:12px;color:#94a3b8;margin-bottom:12px">勾选要显示的列（取消勾选即隐藏，实时生效）</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 18px">'+s.c.map(function(c,ci){return '<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;cursor:pointer"><input type="checkbox" class="arp-colck" data-ci="'+ci+'" '+(cur.hidden[ci]?'':'checked')+'>'+c[0]+'</label>';}).join('')+'</div>';openModal('自定义列',body,false);setTimeout(function(){document.querySelectorAll('.arp-colck').forEach(function(cb){cb.addEventListener('change',function(){var ci=+cb.getAttribute('data-ci');if(cb.checked)delete cur.hidden[ci];else cur.hidden[ci]=1;paintTable();});});},0);}
+    function doToolbar(txt){if(txt==='导出'){doExport();return;}if(/导入|批量添加用户/.test(txt)){tip(txt+'：请在弹窗中操作（演示）');return;}if(txt.indexOf('批量')===0){var ids=[].slice.call(page.querySelectorAll('.arp-ck:checked')).map(function(c){return +c.getAttribute('data-i');});if(!ids.length){tip('请先勾选要操作的数据');return;}openConfirm('确认对已选 '+ids.length+' 条执行「'+txt+'」？',function(){if(/删除|移除|解除/.test(txt)){var rm=ids.map(function(ix){return cur.all[ix];});cur.all=cur.all.filter(function(r){return rm.indexOf(r)<0;});cur.view=cur.view.filter(function(r){return rm.indexOf(r)<0;});}paintTable();tip(txt+'成功（'+ids.length+' 条）');});return;}if(/新增|新建|添加|配置|规则/.test(txt)){openForm(txt,null);return;}tip(txt);}
+    function doRowAction(act,i){var r=cur.all[i];if(act==='详情'&&cur.route==='member-list'){openMemberDetail(r);return;}if(/开关|启用|停用|上架|下架/.test(act)){tip(act+'：状态已切换');return;}if(/删除|移除|解除|解封|驳回/.test(act)){openConfirm('确认'+act+'该条数据？',function(){cur.all=cur.all.filter(function(x){return x!==r;});cur.view=cur.view.filter(function(x){return x!==r;});paintTable();tip(act+'成功');});return;}if(/编辑|修改|配置/.test(act)){openForm(act,r);return;}if(/详情|查看|下级|记录|明细|会员|信息/.test(act)){openDetail(act,r);return;}openConfirm('确认对该条执行「'+act+'」？',function(){tip(act+' 已执行');});}
+    function closeModal(){if(modal){modal.remove();modal=null;}}
+    function openModal(title,bodyHtml,onOk,okText,cls){closeModal();modal=document.createElement('div');modal.className='arp-mmask';modal.innerHTML='<div class="arp-modal'+(cls?' '+cls:'')+'"><div class="arp-mh">'+title+'<span class="x" data-mc="1">✕</span></div><div class="arp-mb">'+bodyHtml+'</div><div class="arp-mf"><button class="arp-btn" data-mc="1">取消</button>'+(onOk!==false?'<button class="arp-btn pri" data-mok="1">'+(okText||'确定')+'</button>':'')+'</div></div>';document.body.appendChild(modal);modal.addEventListener('click',function(e){var sb=e.target.closest('[data-sub]');if(sb){e.stopPropagation();openSub(sb.getAttribute('data-sub'));return;}if(e.target===modal||e.target.closest('[data-mc]')){closeModal();return;}if(e.target.closest('[data-mok]')){closeModal();if(onOk)onOk();}});}
+    function openConfirm(msg,onOk){openModal('操作确认','<div style="font-size:14px;color:#374151;padding:6px 0">'+msg+'</div>',onOk,undefined,'sm');}
+    function openForm(title,r){var s=cur.s,ff=s.c.map(function(c,idx){var v=r?strip(r[idx]):'';return '<div class="arp-ff"><label>'+c[0]+'</label><input class="arp-ipt" value="'+v+'"></div>';}).join('');openModal(title+(r?'':' · 新增'),'<div class="arp-form">'+ff+'</div>',function(){tip('保存成功');},'保存');}
+    function openDetail(title,r){var s=cur.s,dl=s.c.map(function(c,idx){return '<dt>'+c[0]+'</dt><dd>'+(r?r[idx]:'-')+'</dd>';}).join('');openModal(title,'<dl class="arp-dl">'+dl+'</dl>',false);}
+    // 会员详情：保留原生详情布局，仅在末尾追加「新增字段」（红色），不复制设计稿排版
+    function mdCards(panel){var ks=[].slice.call(panel.children),bk=null;ks.forEach(function(el){if(el.classList&&el.classList.contains('md-sec')){bk=document.createElement('div');bk.className='md-block';panel.insertBefore(bk,el);bk.appendChild(el);}else if(bk){bk.appendChild(el);}});}
+    function agCopy(root){if(!root)return;[].slice.call(root.querySelectorAll('.agpath .cn .vl')).forEach(function(v){if(v.querySelector('.agcp'))return;var id=(v.textContent||'').trim();if(!id)return;v.setAttribute('data-agid',id);v.style.cursor='pointer';var cp=document.createElement('i');cp.className='agcp';cp.setAttribute('data-agcp',id);cp.title='复制代理ID';cp.textContent='⧉';v.appendChild(cp);});}
+    document.addEventListener('click',function(e){var acp=e.target.closest&&e.target.closest('.agpath .cn .vl');if(acp){e.stopPropagation();e.preventDefault();var cid=(acp.getAttribute('data-agid')||'').trim();try{navigator.clipboard&&navigator.clipboard.writeText(cid);}catch(_){}tip('代理ID复制成功');}},true);
+    function openMemberDetail(r,idv){var id=idv||(r?strip(r[1]):'2250893'),mch=r?strip(r[0]):'(2001)sit-inr',acct=r?strip(r[2]):'919***888';
+      function f(l,v,nw,sub){return '<div class="md-f'+(nw?' new':'')+'"><span class="l">'+l+'</span><span class="v">'+(sub?'<a class="arp-link" data-sub="'+sub+'">'+v+'</a>':v)+'</span></div>';}
+      function ad(l,v,p){return '<div class="armd-d"><span class="adl">'+l+'</span><span class="adv'+(p?' plain':'')+'">'+v+'</span></div>';}
+      function adsw(l,on){return '<div class="armd-d"><span class="adl">'+l+'</span><span class="adv" style="margin-top:3px"><span class="arp-csw'+(on?' on':'')+'" data-mcsw="'+l+'" title="点击切换（需二次确认）" style="cursor:pointer"></span></span></div>';}
+      function tbl(heads,rows){return '<div class="md-tblwrap"><table class="md-tbl"><thead><tr>'+heads.map(function(h){return '<th>'+h+'</th>';}).join('')+'</tr></thead><tbody>'+rows.map(function(rw){return '<tr>'+rw.map(function(c){return '<td>'+c+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table></div>';}
+      var Hbasic='<div class="md-sec">基本信息</div><div class="md-grid">'
+        +f('会员ID',id)+f('商户',mch)+f('账号',acct)+f('绑定(邮箱/手机号)','919***888 / ra***@gmail.com')+f('语种','hi')+f('用户余额','98,320.50')+f('三方余额','1,200.00')+f('未开奖下注金额','3,500.00')+f('充值等级','L3')+f('首次登录','2026-05-12 09:12:45')+f('注册时间','2026-05-12 09:10:30')+f('用户状态','<span style="color:#16a34a">启用</span> <button class="md-edit" data-medit="用户状态">修改</button>')+f('用户备注','高价值用户，上月充值 50w+ <button class="md-edit" data-medit="用户备注">修改</button>')+f('用户类型','真实用户')
+        +f('邀请人','2250100（李四）',1,'inviter')+f('访问端','安卓壳包',1)+'</div>'
+        +'<div class="md-sec new">归因来源</div>'
+        +'<div class="armd-chain"><div class="cn mem"><span class="lv">会员</span><span class="vl">本会员</span></div><div class="ar">→</div><div class="cn"><span class="lv">渠道<i class="qm" title="会员注册/登录所用的推广渠道（代理专属链接、广告链接等），用于追踪流量来源。">?</i></span><span class="vl">ag010</span></div><div class="ar">→</div><div class="cn"><span class="lv">直接上级代理<i class="qm" title="直接邀请该会员的上级（一级上线代理）。">?</i></span><span class="vl">2250100（李四）</span></div><div class="ar">→</div><div class="cn"><span class="lv">一级代理<i class="qm" title="会员所在代理线最顶层的代理（总代）。">?</i></span><span class="vl">2250001（总代·Raj）</span></div><div class="ar">→</div><div class="cn"><span class="lv">域名<i class="qm" title="会员访问所用的站点域名（推广域名或主站域名）。">?</i></span><span class="vl">m.sit-inr.com</span></div><div class="ar">→</div><div class="cn"><span class="lv">商户<i class="qm" title="会员归属的商户（站点），是会员与数据的隔离边界。">?</i></span><span class="vl">(2001) sit-inr</span></div><div class="ar">→</div><div class="cn"><span class="lv">市场<i class="qm" title="商户所属的市场，按币种 / 地区 / 语言划分。">?</i></span><span class="vl">印度市场（INR）</span></div><div class="ar">→</div><div class="cn grp"><span class="lv">集团<i class="qm" title="平台最高层级，统管多个市场与商户。">?</i></span><span class="vl">1001（亚太集团）</span></div></div>'
+        +'<div class="armd-toggle"><span class="armd-tgt" data-armore="归因明细">∨ 归因明细</span></div>'
+        +'<div class="armd-more" style="display:none"><div class="armd-detail">'
+        +'<div class="armd-dsec">归因明细</div><div class="armd-dgrid">'
+        +ad('主归因','代理（邀请推荐）')+ad('推广平台名称','Meta（Facebook）')+ad('注册渠道','ag010（代理2250100专属链接）')+ad('登录渠道','ag010（代理2250100专属链接）')+ad('搜索引擎','其他')+ad('邀请码','AGENT100')+ad('邀请类型','正常邀请（个人邀请）')+'</div>'
+        +'<div class="armd-dsec sub">归属与层级 · 仅研发查看（上线隐藏）</div><div class="armd-dgrid">'
+        +ad('集团','1001（亚太集团）')+ad('市场','印度市场（INR · hi）')+ad('商户',mch)+'</div>'
+        +'</div></div>'
+        +'<div class="md-sec">数据统计</div><div class="md-grid c3">'
+        +f('今日/累计充值','5,000.00 / 520,000.00')+f('今日/累计提现','0.00 / 385,000.00')+f('今日/累计充提差','5,000.00 / 135,000.00')+f('今日/累计有效投注','12,800.00 / 1,680,000.00')+f('今日/累计输赢','-2,300.00 / -48,500.00')+f('今日/累计活动优惠','200.00 / 16,800.00')+'</div>'
+        +'<div class="md-sec">活动奖励信息</div><div class="md-grid">'
+        +f('已领红包','2,500.00')+f('新手礼包','500.00')+f('大转盘','350.00')+f('注册送金','100.00')+f('邀请转盘奖励','1,200.00')+f('TG频道活动','0.00')+f('首充奖励','5,000.00')+f('超级大奖','0.00')+f('代理红包充值','800.00')+f('回归新充值奖励','0.00')+f('每日签到','3,150.00')+f('锦标赛奖励','0.00')+f('新会员礼包','500.00')+f('回归奖励','0.00')+f('每周/日奖励','2,200.00 / 500.00')+'</div>'
+        +'<div class="md-sec">代理数据</div>'
+        +'<div class="agpath" data-sub="agentline" title="点击查看逐级详情"><div class="armd-chain"><div class="cn"><span class="lv">1级·总代</span><span class="vl">2250001</span></div><div class="ar">→</div><div class="cn"><span class="lv">2级</span><span class="vl">2250012</span></div><div class="ar">→</div><div class="cn"><span class="lv">3级</span><span class="vl">2250028</span></div><div class="ar">→</div><div class="cn"><span class="lv">4级</span><span class="vl">2250041</span></div><div class="ar">→</div><div class="cn"><span class="lv">5级</span><span class="vl">2250053</span></div><div class="ar">→</div><div class="cn"><span class="lv">6级</span><span class="vl">2250066</span></div><div class="ar">→</div><div class="cn"><span class="lv">7级</span><span class="vl">2250078</span></div><div class="ar">→</div><div class="cn"><span class="lv">8级</span><span class="vl">2250085</span></div><div class="ar">→</div><div class="cn"><span class="lv">9级·直属上级</span><span class="vl">2250100</span></div><div class="ar">→</div><div class="cn mem"><span class="lv">10级·本会员</span><span class="vl">'+id+'</span></div></div></div>'+'<div class="armd-toggle"><span class="armd-tgt" data-armore="代理明细">∨ 代理明细</span><span class="agpath-tip" data-sub="agentline">点击查看逐级详情 →</span></div>'+'<div class="armd-more" style="display:none"><div class="armd-detail">'+'<div class="armd-dsec">代理关系</div><div class="armd-dgrid">'+ad('一级代理','2250001（总代·Raj）')+ad('直接上级代理','2250100（李四）')+ad('代理层级','10 / 10')+'</div>'+'<div class="armd-dsec sub">业绩与返佣</div><div class="armd-dgrid">'+ad('下级数量','37',1)+ad('总获得佣金','42,680.00',1)+ad('邀请奖励','8,500.00',1)+ad('合伙人奖励','12,000.00',1)+ad('佣金模式','返佣（投注流水返佣）')+ad('返佣等级','Lv3（投注流水 0.5%）')+adsw('是否领取返佣',true)+adsw('是否给上级返佣',true)+'</div>'+'</div></div>'
+        +'<div class="md-sec">VIP</div><div class="md-grid">'
+        +f('VIP经验值','16,800')+f('VIP等级','V4')+f('VIP每月奖励','1,500.00')+f('VIP升级礼包','3,000.00')+'</div>'
+        +'<div class="md-sec">保险箱</div><div class="md-grid">'
+        +f('保险箱余额','25,000.00')+f('已领取收益','6,320.00')+f('待领取收益','840.00')+f('保险箱利率','58.00%')+'</div>'
+        +'<div class="md-sec">打码/洗码</div><div class="md-grid c3">'
+        +f('累计打码量','1,680,000.00')+f('需要打码量','1,560,000.00')+f('会员洗码量','1,680,000.00')+f('返水金额','8,400.00')+f('本次打码倍数','3')+f('打码量','120,000 <button class="md-edit" data-medit="打码量">修改</button>')+'</div>'
+        +'<div class="md-sec">注册信息</div><div class="md-grid c3">'
+        +f('注册时间','2026-05-12 09:10:30')+f('注册IP','103.48.76.52')+f('注册端','安卓壳包',1)
+        +f('注册设备号/指纹','设备号 AND-9f3c2a1b7e8d4506<br>指纹 fp_a8c3e91d7b',1)+f('是否模拟器','否（真机）',1)+f('注册域名','m.sit-inr.com（推广域名）',1)
+        +f('同IP注册用户数','3')+f('同设备注册用户数','1（仅本账号）',1)+f('同指纹注册用户数','1')+'</div>'
+        +'<div class="md-sec">登录信息</div><div class="md-grid c3">'
+        +f('登录端','安卓壳包',1)+f('登录设备号/指纹','设备号 AND-9f3c2a1b7e8d4506<br>指纹 fp_a8c3e91d7b',1)+f('登录域名','www.sit-inr.com（主站域名）',1)
+        +f('同设备登录数','1（仅本账号）',1)+f('同指纹登录数','1',1)+'</div>'
+        +'<div class="md-sec">最后3次登录信息</div><div class="md-grid c3">'
+        +f('最后第1次登录时间','2026-06-08 11:43:11')+f('第1次登录IP','103.48.76.52')+f('第1次同IP用户数','3')+f('最后第2次登录时间','2026-06-07 19:28:05')+f('第2次登录IP','103.48.76.52')+f('第2次同IP用户数','3')+f('最后第3次登录时间','2026-06-06 08:15:33')+f('第3次登录IP','49.37.112.88')+f('第3次同IP用户数','1')+'</div>';
+      var Hfund='<div class="md-sec">充值信息</div><div class="md-grid c3">'+f('人工充值','125,340.00')+f('充值赠送','12,500.00')+f('彩金充值','8,250.30')+f('累计充值','520,000.00')+f('充值次数','13')+f('充值成功率','92%')+f('首充日期','2026-05-12 09:12')+f('首充金额','2,000.00')+f('次充金额','2,000.00')+'</div>'+'<div class="md-subhead">最后 3 次充值</div>'+tbl(['充值时间','金额','充值通道','状态'],[['2026-06-08 11:11:11','2,323.00','20010 · EPayINR-QR','成功'],['2026-06-07 10:02:00','2,323.00','21002 · EPayINR-QR','成功'],['2026-06-06 09:33:21','2,323.00','21003 · EPayINR-QR','成功']])+'<div class="md-sec">提现信息</div><div class="md-grid c3">'+f('等待出款','5,000.00')+f('累计提现手续费','2,000.00')+f('累计提现','385,000.00')+f('提现次数','22')+f('提现成功率','95%')+f('最大单笔提现','50,000.00')+'</div>'+'<div class="md-subhead">最后 3 次提现</div>'+tbl(['提现时间','金额','提现通道','状态'],[['2026-06-08 11:11:11','2,323.00','20801 · EPayINR-Bank','成功'],['2026-06-07 18:20:05','2,323.00','20082 · EPayINR-Bank','成功'],['2026-06-06 08:15:33','2,323.00','20703 · EPayINR-Bank','审核中']]);
+      var Hbet='<div class="md-sec">投注概览</div><div class="md-grid c3">'+f('今日/累计有效投注','12,800.00 / 1,680,000.00')+f('今日/累计中奖','10,500.00 / 1,632,000.00')+f('今日/累计盈亏','-2,300.00 / -48,000.00')+f('今日/累计投注笔数','38 / 5,120')+f('未结算投注','3,500.00')+f('最大单笔投注','8,000.00')+'</div>'+'<div class="md-sec">各游戏投注汇总（累计）</div>'+tbl(['游戏类型','投注额','中奖额','盈亏','笔数'],[['彩票','680,000.00','652,000.00','-28,000.00','2,310'],['电子','420,000.00','410,000.00','-10,000.00','1,520'],['真人','320,000.00','318,000.00','-2,000.00','680'],['体育','180,000.00','172,000.00','-8,000.00','420'],['棋牌','80,000.00','80,000.00','0.00','190']])+'<div class="md-sec">最近投注记录</div>'+tbl(['时间','游戏','投注额','派彩','状态'],[['2026-06-08 11:40:02','彩票 · 快三','500.00','0.00','已结算'],['2026-06-08 11:12:33','电子 · PG电子','300.00','680.00','已结算'],['2026-06-08 10:55:18','真人 · 百家乐','1,000.00','1,950.00','已结算'],['2026-06-08 10:30:44','体育 · 板球','800.00','0.00','已结算']]);
+      var Hwallet='<div class="md-sec">钱包余额</div><div class="md-grid c3">'+f('中心钱包','98,320.50')+f('保险箱','25,000.00')+f('PG 电子','420.00')+f('真人场馆','800.00')+f('体育场馆','0.00')+f('棋牌场馆','120.00')+f('三方余额合计','1,200.00')+f('冻结金额','3,500.00')+f('可用余额','94,820.50')+'</div>'+'<div class="md-sec">钱包流水（最近）</div>'+tbl(['时间','钱包','类型','金额','变动后余额'],[['2026-06-08 11:40:02','中心钱包','转入','+5,000.00','98,320.50'],['2026-06-08 11:12:33','PG 电子','转出','-300.00','420.00'],['2026-06-08 10:55:18','真人场馆','转入','+1,000.00','800.00'],['2026-06-08 10:30:44','中心钱包','投注扣款','-800.00','93,320.50']]);
+      var Haccount='<div class="md-sec">账变记录</div>'+tbl(['时间','账变类型','变动金额','变动后余额','操作人','说明'],[['2026-06-08 11:40:02','充值','+5,000.00','98,320.50','系统','EPayINR-QR 充值到账'],['2026-06-08 11:12:33','投注派彩','+680.00','93,320.50','系统','电子·PG 派彩'],['2026-06-08 10:55:18','投注扣款','-1,000.00','92,640.50','系统','真人·百家乐 投注'],['2026-06-08 10:30:44','活动彩金','+200.00','93,640.50','admin01','每日签到奖励'],['2026-06-07 18:20:05','提现','-2,323.00','93,440.50','系统','EPayINR-Bank 提现']]);
+      var Hlog='<div class="md-sec">操作日志</div>'+tbl(['时间','操作人','操作类型','IP','说明'],[['2026-06-08 11:43:11','admin01','修改用户备注','103.48.x.x','备注改为「高价值用户，上月充值 50w+」'],['2026-06-08 10:20:00','admin02','重置谷歌验证','103.48.x.x','应用户申请重置'],['2026-06-07 16:05:30','admin01','调整 VIP 等级','103.48.x.x','V3 → V4'],['2026-06-06 09:30:12','系统','风控标记','-','同 IP 多账号检测'],['2026-06-05 14:10:45','admin03','解除提现限制','103.48.x.x','人工审核通过']]);
+      var mtabs=[['basic','基本信息'],['fund','充提信息'],['bet','投注信息'],['wallet','钱包信息'],['account','账变记录'],['log','操作日志']];
+      var search='<div class="md-search"><span class="md-sf"><label>会员ID<i style="color:#ef4444;font-style:normal">*</i>：</label><input value="'+id+'"></span><span class="md-sf"><label>日期：</label><input type="date" value="2026-03-10"> <span style="color:#94a3b8">→</span> <input type="date" value="2026-06-09"></span><button class="md-sbtn">查询</button></div>';
+      var tabsH='<div class="md-tabs">'+mtabs.map(function(t,i){return '<span class="md-tab'+(i===0?' active':'')+'" data-mtab="'+t[0]+'">'+t[1]+'</span>';}).join('')+'</div>';
+      var panels='<div class="md-panel" data-mpanel="basic">'+Hbasic+'</div><div class="md-panel" data-mpanel="fund" style="display:none">'+Hfund+'</div><div class="md-panel" data-mpanel="bet" style="display:none">'+Hbet+'</div><div class="md-panel" data-mpanel="wallet" style="display:none">'+Hwallet+'</div><div class="md-panel" data-mpanel="account" style="display:none">'+Haccount+'</div><div class="md-panel" data-mpanel="log" style="display:none">'+Hlog+'</div>';
+      closeModal();modal=document.createElement('div');modal.className='arp-mmask';
+      modal.innerHTML='<div class="arp-modal"><div class="arp-mh">会员详情 - 会员ID: '+id+'<span class="md-mtag">'+mch+'</span><span class="md-max" data-mmax="1" title="最大化">⛶</span><span class="x" data-mc="1">✕</span></div><div class="md-fixedhead">'+search+tabsH+'</div><div class="arp-mb md-wrap">'+panels+'</div></div>';
+      document.body.appendChild(modal);
+      [].slice.call(modal.querySelectorAll('.md-panel')).forEach(mdCards);agCopy(modal);
+      modal.addEventListener('click',function(e){var mcsw=e.target.closest('[data-mcsw]');if(mcsw){e.stopPropagation();var swn=mcsw.getAttribute('data-mcsw'),swon=mcsw.classList.contains('on'),swto=swon?'关闭':'开启';var cm=document.createElement('div');cm.className='arp-mmask';cm.style.zIndex='3400';cm.innerHTML='<div class="arp-modal sm" style="width:min(420px,92vw)"><div class="arp-mh">操作确认<span class="x" data-cc="1">✕</span></div><div class="arp-mb"><div style="font-size:14px;color:#374151;padding:6px 0">确认要'+swto+'该会员的「'+swn+'」吗？</div></div><div class="arp-mf"><button class="arp-btn" data-cc="1">取消</button><button class="arp-btn pri" data-cok="1">确定</button></div></div>';document.body.appendChild(cm);cm.addEventListener("click",function(ev){if(ev.target===cm||ev.target.closest("[data-cc]")){cm.remove();return;}if(ev.target.closest("[data-cok]")){cm.remove();mcsw.classList.toggle("on");tip(swn+" 已"+swto);}});return;}var sb=e.target.closest('[data-sub]');if(sb){e.stopPropagation();openSub(sb.getAttribute('data-sub'));return;}var am=e.target.closest('[data-armore]');if(am){var tog=am.closest('.armd-toggle');var box=tog&&tog.nextElementSibling;while(box&&!(box.classList&&box.classList.contains('armd-more')))box=box.nextElementSibling;if(box){var op=box.style.display==='none';box.style.display=op?'':'none';am.textContent=op?'∧ 收起':'∨ '+(am.getAttribute('data-armore')||'明细');}return;}var mt=e.target.closest('[data-mtab]');if(mt){var k=mt.getAttribute('data-mtab');[].slice.call(modal.querySelectorAll('.md-tab')).forEach(function(x){x.classList.toggle('active',x===mt);});[].slice.call(modal.querySelectorAll('.md-panel')).forEach(function(p){p.style.display=p.getAttribute('data-mpanel')===k?'':'none';});return;}var mx=e.target.closest('[data-mmax]');if(mx){var md0=modal.querySelector('.arp-modal');if(md0)md0.classList.toggle('arp-modal-full');return;}var med=e.target.closest('[data-medit]');if(med){e.stopPropagation();var fld=med.getAttribute('data-medit');var nm=document.createElement('div');nm.className='arp-mmask';nm.style.zIndex='3400';nm.innerHTML='<div class="arp-modal sm" style="width:min(420px,92vw)"><div class="arp-mh">修改'+fld+'<span class="x" data-sc="1">✕</span></div><div class="arp-mb"><div style="display:flex;flex-direction:column;gap:8px"><label style="font-size:13px;color:#475569">'+fld+'</label><input class="arp-ipt" style="border:1px solid #d8dee8;border-radius:7px;padding:8px 10px;font-size:14px;outline:none" placeholder="请输入新的'+fld+'"></div></div><div class="arp-mf"><button class="arp-btn" data-sc="1">取消</button><button class="arp-btn pri" data-sv="1">保存</button></div></div>';document.body.appendChild(nm);nm.addEventListener("click",function(ev){if(ev.target===nm||ev.target.closest("[data-sc]")){nm.remove();return;}if(ev.target.closest("[data-sv]")){nm.remove();tip(fld+" 已修改");}});return;}if(e.target===modal||e.target.closest('[data-mc]'))closeModal();});}
+    function openSub(kind){var title,html;
+      if(kind==='inviter'){title='邀请人详情 · 邀请码 AGENT100';html='<table class="arp-subtbl"><tbody><tr><th>会员ID</th><td>2250100</td></tr><tr><th>昵称</th><td>李四</td></tr><tr><th>商户</th><td>(2001)sit-inr</td></tr><tr><th>账号</th><td>918***456</td></tr><tr><th>专属邀请码</th><td>AGENT100</td></tr><tr><th>代理层级</th><td>4 / 10</td></tr><tr><th>下级数量</th><td>86</td></tr><tr><th>佣金模式</th><td>返佣（投注流水返佣）</td></tr><tr><th>注册时间</th><td>2026-03-20 14:08:22</td></tr><tr><th>用户状态</th><td>启用</td></tr></tbody></table>';}
+      else{title='代理线全链路（共 10 级）';html='<table class="arp-subtbl"><thead><tr><th>层级</th><th>代理ID</th><th>昵称</th><th>下级数</th><th>佣金模式</th><th>代理返佣等级</th><th>是否给上级返佣</th><th>是否给下级返佣</th></tr></thead><tbody><tr><td>1级·一级代理</td><td>2250001</td><td>Raj（总代）</td><td>312</td><td>返利（亏损分成）</td><td>Lv5</td><td>否</td><td>是</td></tr><tr><td>2级</td><td>2250012</td><td>王二</td><td>205</td><td>返佣</td><td>Lv5</td><td>是</td><td>是</td></tr><tr><td>3级</td><td>2250028</td><td>张三</td><td>168</td><td>返佣</td><td>Lv4</td><td>是</td><td>是</td></tr><tr><td>4级</td><td>2250041</td><td>赵六</td><td>142</td><td>返佣</td><td>Lv4</td><td>是</td><td>是</td></tr><tr><td>5级</td><td>2250053</td><td>孙七</td><td>119</td><td>返佣</td><td>Lv4</td><td>是</td><td>是</td></tr><tr><td>6级</td><td>2250066</td><td>周八</td><td>98</td><td>返佣</td><td>Lv3</td><td>是</td><td>是</td></tr><tr><td>7级</td><td>2250078</td><td>吴九</td><td>87</td><td>返佣</td><td>Lv3</td><td>是</td><td>是</td></tr><tr><td>8级</td><td>2250085</td><td>郑十</td><td>64</td><td>返佣</td><td>Lv3</td><td>是</td><td>是</td></tr><tr><td>9级·直接上级</td><td>2250100</td><td>李四</td><td>86</td><td>返佣</td><td>Lv3</td><td>是</td><td>是</td></tr><tr style="background:#eff6ff;font-weight:600"><td>10级·本会员</td><td>本会员</td><td>本会员</td><td>37</td><td>返佣</td><td>Lv3</td><td>是</td><td>否</td></tr></tbody></table><div style="padding:10px 2px;color:#94a3b8;font-size:12px">完整代理链路共 10 层；一级代理无上级（不给上级返佣），本会员为末级（不给下级返佣）。</div>';}
+      var m=document.createElement('div');m.className='arp-mmask';m.style.zIndex='3400';m.innerHTML='<div class="arp-modal sm" style="width:min(900px,94vw);max-width:900px"><div class="arp-mh">'+title+'<span class="x" data-sc="1">✕</span></div><div class="arp-mb">'+html+'</div></div>';document.body.appendChild(m);agCopy(m);m.addEventListener('click',function(e){if(e.target===m||e.target.closest('[data-sc]'))m.remove();});}
+    function show(route) { ensurePage(); render(route); page.classList.add('open'); var wb = document.querySelector('.ar-wb-page'); if (wb) wb.classList.remove('open'); }
+    function hide() { if (page) page.classList.remove('open'); }
+    window.__arShowPage = function (r) { if (r === 'hub') { hide(); if (window.__arHub) window.__arHub(); return true; } if (SPECS[r]) { show(r); var tb = page && page.querySelector('.arp-tabbar'); if (tb) tb.style.display = 'none'; return true; } return false; };
+    window.__arHasPage = function (r) { return r === 'hub' || !!SPECS[r]; };
+    window.__arHidePage = function () { hide(); var wb = document.querySelector('.ar-wb-page'); if (wb) wb.classList.remove('open'); };
+    window.__arSpecTitle = function (r) { return r === 'hub' ? '快捷工作台' : (SPECS[r] && SPECS[r].t); };
+    // 拦截：菜单下拉项 + 工作台磁贴
+    function openPage(r) { if (window.__arOpenTab) { window.__arOpenTab(r); } else { show(r); } }
+    // 关闭 mega 下拉：顶部是 hover 触发的下拉，点击项后鼠标停留导致菜单残留盖住子页。
+    // 用 display:none 隐藏残留浮层（不 remove，避免破坏 Naive 复用的 follower 导致无法重建）；
+    // 配合下方 mouseover 监听，hover 任意顶部菜单时恢复 display，保证能重新展开。
+    function closeMega() {
+      document.body.click();
+      document.querySelectorAll('.v-binder-follower-content').forEach(function (f) {
+        if (f.querySelector('.ar-mega')) f.style.display = 'none';
+      });
+    }
+    // hover 任意顶部菜单时，恢复被 closeMega 隐藏的 mega 浮层（保证可重新展开）
+    document.addEventListener('mouseover', function (e) {
+      if (e.target.closest && e.target.closest('.layout-header')) {
+        document.querySelectorAll('.v-binder-follower-content').forEach(function (f) {
+          if (f.style.display === 'none' && f.querySelector('.ar-mega')) f.style.display = '';
+        });
+      }
+    }, true);
+    document.addEventListener('click', function (e) {
+      var opt = e.target.closest('.n-dropdown-option');
+      if (opt) {
+        var lblEl = opt.querySelector('.n-dropdown-option-body__label') || opt;
+        var lbl = (lblEl.textContent || '').trim();
+        var rt = LBL2RT[lbl];
+        if (rt && SPECS[rt]) { e.preventDefault(); e.stopImmediatePropagation(); openPage(rt); closeMega(); return; }
+      }
+      var tile = e.target.closest('.ar-wb-tile');
+      if (tile && !e.target.closest('.ar-wb-del')) {
+        var r2 = tile.getAttribute('data-route');
+        if (r2 && SPECS[r2]) { e.preventDefault(); e.stopImmediatePropagation(); openPage(r2); return; }
+      }
+    }, true);
+    window.addEventListener('hashchange', function () { hide(); });
+    // 支持 ?open=<route> 直达注入页（用于本地预览直达链接）
+    (function () {
+      var m = (location.href.match(/[?&]open=([a-zA-Z-]+)/) || [])[1];
+      if (!m) m = 'hub';
+      var tries = 0;
+      (function tryOpen() {
+        if (tries++ > 40) return;
+        if (!document.querySelector('.layout-header')) { setTimeout(tryOpen, 400); return; }
+        if (m === 'hub') { if (window.__arOpenTab) window.__arOpenTab('hub'); return; }
+        if (window.__arOpenTab && window.__arHasPage && window.__arHasPage(m)) { window.__arOpenTab(m); return; }
+        setTimeout(tryOpen, 400);
+      })();
+    })();
+  })();
+  </script>
+  <script>
+  // 注入页多标签：把注入页作为可关闭标签加入真实页签栏（tabs-view），而非弹独立覆盖层
+  (function () {
+    var openTabs = [], active = null;
+    function container() { return document.querySelector('.tabs-card-scroll-inner') || document.querySelector('.tabs-card-scroll'); }
+    function template() { var c = container(); return c ? c.querySelector('.tabs-card-scroll-item:not([data-artab])') : null; }
+    function title(r) { return (window.__arSpecTitle && window.__arSpecTitle(r)) || r; }
+    function build(r) {
+      var tpl = template(); if (!tpl) return null;
+      var el = tpl.cloneNode(true);
+      el.style.display = '';
+      el.classList.remove('active-item');
+      el.setAttribute('data-artab', r);
+      (function setTxt(node) { for (var i = 0; i < node.childNodes.length; i++) { var n = node.childNodes[i]; if (n.nodeType === 3 && n.textContent.trim()) { n.textContent = title(r); return true; } if (n.nodeType === 1 && setTxt(n)) return true; } return false; })(el);
+      // 统一关闭按钮（首页标签无 ✕，克隆后自行补一个；继承文字色）
+      [].slice.call(el.querySelectorAll('i, svg, .n-icon, .ar-x')).forEach(function (n) { n.remove(); });
+      var x = document.createElement('span'); x.className = 'ar-x'; x.textContent = '✕';
+      x.style.cssText = 'margin-left:9px;font-size:11px;line-height:1;opacity:.6;cursor:pointer';
+      el.appendChild(x);
+      return el;
+    }
+    var hiddenReal = { '会员列表': 1 };
+    function tabText(el) { var t = ''; [].slice.call(el.childNodes).forEach(function (n) { if (n.nodeType === 3) t += n.textContent; }); t = t.replace(/[\u2715\u00d7\u2716]/g, '').trim(); if (!t) { var lab = el.querySelector('.n-ellipsis,[class*=label],[class*=Label]'); if (lab) t = lab.textContent.replace(/[\u2715\u00d7\u2716]/g, '').trim(); } if (!t) { t = (el.textContent || '').replace(/[\u2715\u00d7\u2716]/g, '').replace(/\s+/g, ''); } return t; }
+    function addX(el) { if (el.querySelector('.ar-x')) return; var x = document.createElement('span'); x.className = 'ar-x'; x.textContent = '\u2715'; x.style.cssText = 'margin-left:9px;font-size:11px;line-height:1;opacity:.6;cursor:pointer'; el.appendChild(x); }
+    function paint() {
+      var c = container(); if (!c) return;
+      [].slice.call(c.querySelectorAll('[data-artab]')).forEach(function (el) { if (openTabs.indexOf(el.getAttribute('data-artab')) < 0) el.remove(); });
+      openTabs.forEach(function (r) { if (!c.querySelector('[data-artab="' + r + '"]')) { var el = build(r); if (el) c.appendChild(el); } });
+      var all = [].slice.call(c.querySelectorAll('.tabs-card-scroll-item'));
+      all.forEach(function (el) {
+        var r = el.getAttribute('data-artab');
+        if (r) el.classList.toggle('active-item', r === active);
+        else { if (active) el.classList.remove('active-item'); addX(el); if (hiddenReal[tabText(el)]) el.style.display = 'none'; }
+        el.setAttribute('draggable', 'true');
+      });
+      var vis = all.filter(function (el) { return el.style.display !== 'none'; });
+      vis.forEach(function (el) { var x = el.querySelector('.ar-x'); if (x) x.style.display = (vis.length <= 1) ? 'none' : ''; });
+    }
+    function activate(r) { active = r; if (window.__arShowPage) window.__arShowPage(r); paint(); }
+    function closeTab(r) {
+      openTabs = openTabs.filter(function (x) { return x !== r; });
+      var c = container(); var el = c && c.querySelector('[data-artab="' + r + '"]'); if (el) el.remove();
+      if (active === r) { if (openTabs.length) activate(openTabs[openTabs.length - 1]); else { active = null; if (window.__arHidePage) window.__arHidePage(); } }
+      else paint();
+    }
+    window.__arOpenTab = function (r) { if (openTabs.indexOf(r) < 0) openTabs.push(r); activate(r); };
+    document.addEventListener('click', function (e) {
+      var item = e.target.closest && e.target.closest('.tabs-card-scroll-item');
+      // 点 ✕ 关闭（必须保留至少一个可见标签）
+      if (item && e.target.closest('.ar-x')) {
+        e.preventDefault(); e.stopImmediatePropagation();
+        var c = container(); var vis = c ? [].slice.call(c.querySelectorAll('.tabs-card-scroll-item')).filter(function (el) { return el.style.display !== 'none'; }) : [];
+        if (vis.length <= 1) return;
+        var r = item.getAttribute('data-artab');
+        if (r) { closeTab(r); }
+        else { hiddenReal[tabText(item)] = 1; item.style.display = 'none'; if (!active && openTabs.length) activate(openTabs[openTabs.length - 1]); paint(); }
+        return;
+      }
+      // 点注入标签体 → 切换
+      if (item && item.getAttribute('data-artab')) {
+        e.preventDefault(); e.stopImmediatePropagation();
+        activate(item.getAttribute('data-artab')); return;
+      }
+      // 点真实标签体 → 关闭覆盖层显示真实页
+      if (active && item) { active = null; paint(); if (window.__arHidePage) window.__arHidePage(); }
+    }, true);
+    // 页签拖拽排序（注入标签顺序持久到 openTabs）
+    var dragEl = null;
+    document.addEventListener('dragstart', function (e) { var c = container(); var t = e.target.closest && e.target.closest('.tabs-card-scroll-item'); if (t && c && c.contains(t)) { dragEl = t; try { e.dataTransfer.effectAllowed = 'move'; } catch (_) {} } });
+    document.addEventListener('dragover', function (e) { var c = container(); if (!dragEl || !c) return; var t = e.target.closest && e.target.closest('.tabs-card-scroll-item'); if (!t || t === dragEl || !c.contains(t)) return; e.preventDefault(); var rect = t.getBoundingClientRect(); var after = e.clientX > rect.left + rect.width / 2; c.insertBefore(dragEl, after ? t.nextSibling : t); });
+    document.addEventListener('drop', function (e) { if (!dragEl) return; e.preventDefault(); var c = container(); var order = []; [].slice.call(c.querySelectorAll('[data-artab]')).forEach(function (el) { order.push(el.getAttribute('data-artab')); }); if (order.length) openTabs = order; dragEl = null; });
+    document.addEventListener('dragend', function () { dragEl = null; });
+    window.addEventListener('hashchange', function () { active = null; paint(); });
+    // Vue 重渲染 tabs-view 会清掉注入标签 → 监听补回
+    var mo = new MutationObserver(function () { if (openTabs.length) paint(); });
+    (function start() { var c = container(); if (c) mo.observe(c, { childList: true }); else setTimeout(start, 400); })();
+  })();
+  </script>
+  <script>
+  // 预览深链：URL 带 ?armd=member-list / ?armd=member-detail 时，自动打开注入版会员列表（及首行详情），便于一键预览
+  (function () {
+    var m = (location.search || '').match(/[?&]armd=(member-list|member-detail)/);
+    if (!m) return;
+    var mode = m[1], tries = 0, done = false, timer = null;
+    function openNow() {
+      if (done) return; done = true;
+      window.__arOpenTab('member-list');
+      if (mode === 'member-detail') {
+        var t2 = 0;
+        (function openDetail() {
+          t2++;
+          var link = document.querySelector('.arp-page .arp-link[data-act="详情"]');
+          if (link) { link.click(); return; }
+          if (t2 < 40) setTimeout(openDetail, 150);
+        })();
+      }
+    }
+    // 等 Vue 路由 settle 后再开；启动期的 hashchange 只把开场时间往后顺延，避免被框架的 hide() 关掉
+    function schedule() { clearTimeout(timer); timer = setTimeout(openNow, 600); }
+    window.addEventListener('hashchange', function () { if (!done) schedule(); });
+    (function go() {
+      tries++;
+      if (window.__arOpenTab && window.__arHasPage && window.__arHasPage('member-list') && document.querySelector('.header-logo')) { schedule(); return; }
+      if (tries < 120) setTimeout(go, 150);
+    })();
+  })();
+  </script>
+  <script>
+  // 会员详情真实抽屉：在原生布局指定位置注入「新增字段」（红色），布局不变
+  (function () {
+    var st = document.createElement('style'); st.id = 'armd-css';
+    st.textContent = '.armd-new .detail-cell__label,.armd-new .detail-cell__value{color:#d4380d!important}.armd-newsec .detail-section__header{color:#d4380d!important}.armd-new .detail-cell__value .armd-lk{color:#d4380d!important;text-decoration:underline;cursor:pointer}'
+      + '.armd-mask{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9000;display:flex;align-items:center;justify-content:center}.armd-box{background:#fff;border-radius:8px;width:600px;max-width:92vw;max-height:80vh;overflow:auto;box-shadow:0 8px 30px rgba(0,0,0,.2)}.armd-bh{padding:14px 18px;font-weight:700;border-bottom:1px solid #eef0f3;display:flex;justify-content:space-between}.armd-bx{cursor:pointer;color:#94a3b8}.armd-tb{width:100%;border-collapse:collapse;font-size:13px}.armd-tb th,.armd-tb td{padding:9px 14px;text-align:left;border-bottom:1px solid #eef0f3;white-space:nowrap}.armd-tb th{color:#94a3b8;background:#f7f9fc}'
+      + '.armd-chain{display:flex;align-items:stretch;flex-wrap:nowrap;margin:6px 0 14px;overflow-x:auto;padding:2px 0 6px}.armd-chain .cn{position:relative;flex:1 1 0;min-width:110px;background:#fff;border:1.5px solid #f3c9bd;border-radius:10px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.armd-chain .cn .lv{font-size:11px;color:#9aa4b2;white-space:nowrap}.armd-chain .cn .vl{font-size:12px;font-weight:700;color:#d4380d;margin-top:3px;white-space:nowrap}.armd-chain .ar{flex:none;display:flex;align-items:center;color:#e0917c;font-weight:700;font-size:15px;padding:0 6px}.armd-chain .cn.mem{border-color:#2563eb;background:#eff5ff}.armd-chain .cn.mem .vl{color:#1d4ed8}.armd-chain .cn.mem .lv{color:#3b82f6}.armd-chain .cn.grp{border-color:#16a34a;background:#f0fdf4}.armd-chain .cn.grp .vl{color:#15803d}.armd-chain .cn.grp .lv{color:#22c55e}'+ '.armd-toggle{margin:0 0 10px;user-select:none;display:flex;align-items:center;gap:16px}.armd-toggle .armd-tgt{display:inline-flex;align-items:center;gap:4px;color:#94a3b8;font-size:12px;cursor:pointer}.armd-toggle .armd-tgt:hover{color:#2563eb}.armd-more{margin-top:2px}.qm{display:inline-flex;align-items:center;justify-content:center;width:12px;height:12px;border-radius:50%;border:1px solid currentColor;font-size:9px;font-style:normal;line-height:1;margin-left:4px;cursor:help;opacity:.5;vertical-align:middle}.qm:hover{opacity:1}.armd-chain .cn .qm{position:absolute;top:5px;right:6px;margin-left:0;z-index:1}.armd-detail{background:#fcfcfd;border:1px solid #f0f0f3;border-radius:10px;padding:14px 16px}.armd-dsec{font-size:12px;font-weight:700;color:#6b7280;margin-bottom:10px}.armd-dsec.sub{margin-top:14px;padding-top:12px;border-top:1px dashed #eef0f3}.armd-dgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 18px}.armd-d{display:flex;flex-direction:column;gap:3px}.armd-d .adl{font-size:11px;color:#9aa4b2}.armd-d .adv{font-size:13px;color:#d4380d;font-weight:600;word-break:break-all}.armd-d .adv.plain{color:#1f2733}.armd-chain .cn{box-shadow:0 1px 3px rgba(212,56,13,.06);transition:transform .15s,box-shadow .15s}.armd-chain .cn:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(212,56,13,.14)}.armd-chain .ar{color:#f0a58e}'+ '.agpath{cursor:pointer;display:block;margin:6px 0 4px}.agpath .armd-chain{margin:0}.agpath .cn{min-width:60px;padding:5px 4px}.agpath .vl{font-size:11px}.agpath .lv{font-size:9.5px}.agpath .ar{padding:0 2px;font-size:12px}.agpath:hover .cn{border-color:#93c5fd}.agpath-tip{font-size:11px;color:#94a3b8;cursor:pointer}.agpath-tip:hover{color:#2563eb;text-decoration:underline}.agcp{margin-left:5px;font-style:normal;font-size:11.5px;color:#8aa0c4;cursor:pointer;opacity:.75;transition:.12s;vertical-align:baseline}.agcp:hover{opacity:1;color:#2563eb;transform:scale(1.18)}.agpath .cn:hover .agcp{opacity:.95}';
+    document.head.appendChild(st);
+    function cell(tpl, l, v, sub) {
+      var e = tpl.cloneNode(true); e.classList.add('armd-new');
+      var L = e.querySelector('.detail-cell__label'); if (L) L.textContent = l;
+      var V = e.querySelector('.detail-cell__value'); if (V) { V.className = 'detail-cell__value'; if (sub) V.innerHTML = '<span class="armd-lk" data-armdsub="' + sub + '">' + v + '</span>'; else if (/[<]/.test(v)) V.innerHTML = v; else V.textContent = v; }
+      return e;
+    }
+    function add(g, tpl, fs) { fs.forEach(function (f) { g.appendChild(cell(tpl, f[0], f[1], f[2])); }); }
+    function addUniq(g, tpl, fs) { var have = {}; [].slice.call(g.querySelectorAll('.detail-cell__label')).forEach(function (L) { have[L.textContent.trim()] = 1; }); fs.forEach(function (f) { if (!have[f[0]]) g.appendChild(cell(tpl, f[0], f[1], f[2])); }); }
+    function rmCells(g, labels) { [].slice.call(g.querySelectorAll('.detail-cell')).forEach(function (c) { var L = c.querySelector('.detail-cell__label'); if (L && labels.indexOf(L.textContent.trim()) >= 0) c.remove(); }); }
+    function augment(s) {
+      var tpl = s.querySelector('.detail-grid .detail-cell'); if (!tpl) return;
+      var m = {}; [].slice.call(s.querySelectorAll('.detail-section')).forEach(function (x) { var h = x.querySelector('.detail-section__header'); if (h) m[h.textContent.trim()] = x; });
+      var bi = m['基本信息']; if (!bi || !bi.querySelector('.detail-grid')) return;
+      function newSec(t, fs) { var c = bi.cloneNode(true); c.classList.add('armd-newsec'); var h = c.querySelector('.detail-section__header'); if (h) h.textContent = t; var g = c.querySelector('.detail-grid'); g.innerHTML = ''; add(g, tpl, fs); return c; }
+      var s1 = newSec('归因来源', [['主归因', '代理（邀请推荐）'], ['推广平台名称', 'Meta（Facebook）'], ['注册渠道', 'ag010（代理2250100专属链接）'], ['登录渠道', 'ag010（代理2250100专属链接）'], ['搜索引擎', '其他'], ['邀请码', 'AGENT100'], ['邀请类型', '正常邀请（个人邀请）']]);
+      (function () { var ch = document.createElement('div'); ch.className = 'armd-chain'; ch.innerHTML = '<div class="cn mem"><span class="lv">会员</span><span class="vl">本会员</span></div><div class="ar">→</div><div class="cn"><span class="lv">渠道<i class="qm" title="会员注册/登录所用的推广渠道（代理专属链接、广告链接等），用于追踪流量来源。">?</i></span><span class="vl">ag010</span></div><div class="ar">→</div><div class="cn"><span class="lv">直接上级代理<i class="qm" title="直接邀请该会员的上级（一级上线代理）。">?</i></span><span class="vl">2250100（李四）</span></div><div class="ar">→</div><div class="cn"><span class="lv">一级代理<i class="qm" title="会员所在代理线最顶层的代理（总代）。">?</i></span><span class="vl">2250001（总代·Raj）</span></div><div class="ar">→</div><div class="cn"><span class="lv">域名<i class="qm" title="会员访问所用的站点域名（推广域名或主站域名）。">?</i></span><span class="vl">m.sit-inr.com</span></div><div class="ar">→</div><div class="cn"><span class="lv">商户<i class="qm" title="会员归属的商户（站点），是会员与数据的隔离边界。">?</i></span><span class="vl">(2001) sit-inr</span></div><div class="ar">→</div><div class="cn"><span class="lv">市场<i class="qm" title="商户所属的市场，按币种 / 地区 / 语言划分。">?</i></span><span class="vl">印度市场（INR）</span></div><div class="ar">→</div><div class="cn grp"><span class="lv">集团<i class="qm" title="平台最高层级，统管多个市场与商户。">?</i></span><span class="vl">1001（亚太集团）</span></div>'; var g1 = s1.querySelector('.detail-grid'); if (g1) g1.parentNode.insertBefore(ch, g1); })();
+      var s2 = newSec('归属与层级 · 仅研发查看（上线隐藏）', [['集团', '1001（亚太集团）'], ['市场', '印度市场（INR · hi）'], ['商户', '(2001)sit-inr']]);
+      add(bi.querySelector('.detail-grid'), tpl, [['邀请人', '2250100（李四）', 'inviter'], ['访问端', '安卓壳包']]);
+      bi.parentNode.insertBefore(s2, bi.nextSibling); bi.parentNode.insertBefore(s1, bi.nextSibling);
+      if (m['代理数据']) { var g = m['代理数据'].querySelector('.detail-grid'); g.insertBefore(cell(tpl, '一级代理', '2250001（总代·Raj）'), g.firstChild); add(g, tpl, [['直接上级代理', '2250100（李四）'], ['代理层级', '5 / 10'], ['代理路径', '2250001 → … → 2250100 → 本会员', 'agentline'], ['佣金模式', '返佣（投注流水返佣）'], ['返佣等级', 'Lv3（投注流水 0.5%）'], ['是否给上级返佣', '是'], ['代理状态', '生效']]); }
+      var reg = m['注册登陆信息'] || m['注册登录信息']; if (reg) { var rg = reg.querySelector('.detail-grid'); var rh = reg.querySelector('.detail-section__header'); if (rh) rh.textContent = '注册信息'; rmCells(rg, ['注册浏览器指纹', '同指纹注册用户', '同设备账号数']); addUniq(rg, tpl, [['注册端', '安卓壳包'], ['注册设备号/指纹', '设备号 AND-9f3c2a1b7e8d4506<br>指纹 fp_a8c3e91d7b'], ['是否模拟器', '否（真机）'], ['注册域名', 'm.sit-inr.com（推广域名）'], ['同设备注册用户数', '1（仅本账号）'], ['同指纹注册用户数', '1']]); var s3 = newSec('登录信息', [['登录端', '安卓壳包'], ['登录设备号/指纹', '设备号 AND-9f3c2a1b7e8d4506<br>指纹 fp_a8c3e91d7b'], ['登录域名', 'www.sit-inr.com（主站域名）'], ['同设备登录数', '1（仅本账号）'], ['同指纹登录数', '1']]); reg.parentNode.insertBefore(s3, reg.nextSibling); }
+    }
+    var mo = new MutationObserver(function () { var s = document.querySelector('.detail-sections'); if (s && !s.querySelector('.armd-new')) augment(s); });
+    mo.observe(document.documentElement, { childList: true, subtree: true });
+    document.addEventListener('click', function (e) {
+      var t = e.target.closest('[data-armdsub]'); if (!t) return; e.preventDefault(); e.stopPropagation();
+      var kind = t.getAttribute('data-armdsub'), title, body;
+      if (kind === 'inviter') { title = '邀请人详情 · 邀请码 AGENT100'; body = '<table class="armd-tb"><tbody><tr><th>会员ID</th><td>2250100</td></tr><tr><th>昵称</th><td>李四</td></tr><tr><th>商户</th><td>(2001)sit-inr</td></tr><tr><th>账号</th><td>918***456</td></tr><tr><th>专属邀请码</th><td>AGENT100</td></tr><tr><th>代理层级</th><td>4 / 10</td></tr><tr><th>下级数量</th><td>86</td></tr><tr><th>佣金模式</th><td>返佣（投注流水返佣）</td></tr><tr><th>注册时间</th><td>2026-03-20 14:08:22</td></tr><tr><th>用户状态</th><td>启用</td></tr></tbody></table>'; }
+      else { title = '代理线全链路（共 5 级）'; body = '<table class="armd-tb"><thead><tr><th>层级</th><th>代理ID</th><th>昵称</th><th>下级数</th><th>佣金模式</th><th>状态</th></tr></thead><tbody><tr><td>1级·一级代理</td><td>2250001</td><td>Raj（总代）</td><td>312</td><td>返利（亏损分成）</td><td>生效</td></tr><tr><td>2级</td><td>2250050</td><td>王二</td><td>158</td><td>返佣</td><td>生效</td></tr><tr><td>3级</td><td>2250077</td><td>张三</td><td>97</td><td>返佣</td><td>生效</td></tr><tr><td>4级·直接上级</td><td>2250100</td><td>李四</td><td>86</td><td>返佣</td><td>生效</td></tr><tr style="background:#eff6ff;font-weight:600"><td>5级·本会员</td><td>本会员</td><td>本会员</td><td>37</td><td>返佣</td><td>生效</td></tr></tbody></table>'; }
+      var k = document.createElement('div'); k.className = 'armd-mask'; k.innerHTML = '<div class="armd-box"><div class="armd-bh">' + title + '<span class="armd-bx" data-armdc="1">✕</span></div>' + body + '</div>'; document.body.appendChild(k);
+      k.addEventListener('click', function (ev) { if (ev.target === k || ev.target.closest('[data-armdc]')) k.remove(); });
+    }, true);
+  })();
+  </script>
+  <script type="module" crossorigin src="/assets/index-CeZelR0e.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CIvq4F3h.css">
+</head>
+<body>
+  <div id="app"></div>
+<script>
+(function(){var tip=null;
+function show(q){var t=q.getAttribute('data-tip')||q.getAttribute('title');if(!t)return;if(q.getAttribute('title')){q.setAttribute('data-tip',t);q.removeAttribute('title');}if(!tip){tip=document.createElement('div');tip.id='qm-tip';document.body.appendChild(tip);}tip.textContent=t;tip.style.cssText='position:fixed;z-index:5000;background:#1f2937;color:#fff;font-size:12px;line-height:1.6;padding:8px 11px;border-radius:8px;max-width:240px;box-shadow:0 6px 18px rgba(2,6,23,.28);pointer-events:none;white-space:normal';var r=q.getBoundingClientRect();tip.style.left=(r.left+r.width/2)+'px';tip.style.top=(r.top-8)+'px';tip.style.transform='translate(-50%,-100%)';tip.style.display='block';}
+function hide(){if(tip)tip.style.display='none';}
+document.addEventListener('mouseover',function(e){var q=e.target.closest&&e.target.closest('.qm');if(q)show(q);},true);
+document.addEventListener('mouseout',function(e){var q=e.target.closest&&e.target.closest('.qm');if(q)hide();},true);
+})();
+</script>
+</body>
+</html>
