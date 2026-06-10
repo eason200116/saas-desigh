@@ -1105,12 +1105,13 @@
     (function () {
       var m = (location.href.match(/[?&]open=([a-zA-Z-]+)/) || [])[1];
       if (!m) m = 'hub';
-      var tries = 0;
+      var tries = 0, hubOpened = false;
       (function tryOpen() {
         if (tries++ > 40) return;
-        if (!document.querySelector('.layout-header')) { setTimeout(tryOpen, 400); return; }
-        if (m === 'hub') { if (window.__arOpenTab) window.__arOpenTab('hub'); return; }
-        if (window.__arOpenTab && window.__arHasPage && window.__arHasPage(m)) { window.__arOpenTab(m); return; }
+        if (!document.querySelector('.layout-header') || !window.__arOpenTab) { setTimeout(tryOpen, 400); return; }
+        if (!hubOpened) { window.__arOpenTab('hub'); hubOpened = true; }   // 始终先开「快捷工作台」作为第一个标签
+        if (m === 'hub') return;
+        if (window.__arHasPage && window.__arHasPage(m)) { window.__arOpenTab(m); return; }
         setTimeout(tryOpen, 400);
       })();
     })();
@@ -1277,6 +1278,18 @@ function show(q){var t=q.getAttribute('data-tip')||q.getAttribute('title');if(!t
 function hide(){if(tip)tip.style.display='none';}
 document.addEventListener('mouseover',function(e){var q=e.target.closest&&e.target.closest('.qm');if(q)show(q);},true);
 document.addEventListener('mouseout',function(e){var q=e.target.closest&&e.target.closest('.qm');if(q)hide();},true);
+})();
+</script>
+<script>
+(function(){
+  // 把 SIT 自带 PRD 浮标改为打开「二阶段产品文档 PRD」
+  document.addEventListener('click',function(e){
+    var b=e.target&&e.target.closest&&e.target.closest('.prd-bubble');
+    if(b){e.preventDefault();e.stopImmediatePropagation();window.open('../docs/saas-prd-phase2.html','_blank');}
+  },true);
+  function brand(){var b=document.querySelector('.prd-bubble');if(b){b.title='二阶段产品文档 PRD（点击查看）';var t=b.querySelector('.prd-bubble__text');if(t&&t.textContent.trim()==='PRD')t.textContent='二阶段\nPRD';}}
+  new MutationObserver(brand).observe(document.documentElement,{childList:true,subtree:true});
+  setTimeout(brand,1200);setTimeout(brand,3000);
 })();
 </script>
 </body>
