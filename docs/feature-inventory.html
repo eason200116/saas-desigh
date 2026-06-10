@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>V1 全功能点清单（分类）</title>
+<style>
+:root{--brand:#0960bd;--green:#2e7d5b;--orange:#e65100;--purple:#7b1fa2;--border:#e2e6ea;--muted:#7a8494;--text:#1f2927;--bg:#f6f8fb}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+.header{background:linear-gradient(135deg,#1a3a2a,#2e7d5b);color:#fff;padding:28px 32px}
+.header h1{font-size:24px;margin-bottom:6px}
+.header p{opacity:.85;font-size:13px}
+.stats{display:flex;gap:14px;margin-top:16px;flex-wrap:wrap}
+.stat{background:rgba(255,255,255,.12);border-radius:10px;padding:10px 18px}
+.stat b{font-size:24px;display:block}
+.stat small{opacity:.75;font-size:11px}
+.toolbar{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--border);padding:10px 24px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.toolbar input{flex:1;min-width:200px;height:36px;border:1px solid var(--border);border-radius:6px;padding:0 12px;font-size:14px}
+.toolbar .count{color:var(--muted);font-size:13px}
+.legend{display:flex;gap:16px;padding:10px 24px;background:#fff;border-bottom:1px solid var(--border);font-size:12px;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:4px}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:4px}
+.t-admin{background:#e3f2fd;color:#1565c0}
+.t-api{background:#e8f5e9;color:#2e7d32}
+.t-db{background:#f3e5f5;color:#7b1fa2}
+.container{max-width:1400px;margin:0 auto;padding:16px 24px}
+.domain{background:#fff;border:1px solid var(--border);border-radius:12px;margin-bottom:14px;overflow:hidden}
+.domain-head{display:flex;align-items:center;padding:14px 18px;background:#fafbfc;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;gap:10px}
+.domain-head:hover{background:#f0f4f2}
+.domain-head .arr{width:18px;font-size:12px;color:var(--muted);transition:.2s}
+.domain-head.col .arr{transform:rotate(-90deg)}
+.domain-head h2{font-size:16px;margin:0;flex:1}
+.domain-head .dcount{font-size:12px;color:var(--muted)}
+.domain-head.col + .domain-body{display:none}
+.domain-body{padding:0}
+.sub{border-bottom:1px solid #f0f2f5}
+.sub:last-child{border-bottom:0}
+.sub-head{padding:10px 18px;font-weight:700;font-size:14px;color:var(--brand);background:#f9fbfd}
+.layer{padding:8px 18px 8px 32px;display:flex;gap:10px;border-top:1px solid #f5f7fa}
+.layer-label{flex:none;width:64px;padding-top:2px}
+.layer-items{flex:1;font-size:13px;color:#374151;line-height:1.9}
+.layer-items b{color:#1a2332}
+.layer-items .item{display:inline}
+@media(max-width:768px){.layer{flex-direction:column;gap:4px}.layer-label{width:auto}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>V1 全功能点清单（按业务域分类）</h1>
+  <p>检索 Ar_V1_Admin（后台）+ ar_v1_lotteryapi（会员端API/Service）+ Ar_V1_DataBase（数据库）整合</p>
+  <div class="stats">
+    <div class="stat"><b>600+</b><small>后台 Action</small></div>
+    <div class="stat"><b>200+</b><small>会员端 API</small></div>
+    <div class="stat"><b>121</b><small>Service 服务</small></div>
+    <div class="stat"><b>500+</b><small>数据表</small></div>
+    <div class="stat"><b>11</b><small>业务域</small></div>
+  </div>
+</div>
+
+<div class="legend">
+  <span><span class="tag t-admin">后台</span> Ar_V1_Admin 管理后台功能</span>
+  <span><span class="tag t-api">会员端</span> 会员 App/H5 接口</span>
+  <span><span class="tag t-db">数据</span> 数据库表</span>
+  <span style="margin-left:auto;color:var(--muted)">点击业务域标题可折叠</span>
+</div>
+
+<div class="toolbar">
+  <input id="q" placeholder="搜索功能点/表名…" oninput="F()">
+  <span class="count" id="rc"></span>
+</div>
+
+<div class="container" id="root"></div>
+
+<script>
+// 业务域 → 子分类 → 三层（后台admin / 会员端api / 数据db）
+const DATA=[
+{domain:"① 用户 / 会员",subs:[
+  {name:"会员基础",admin:"会员列表(多维筛选)、会员详情(投注统计/资金/活动汇总)、批量操作、用户数据导入、在线会员、用户分组+分组权限、用户有效性设置",api:"注册、登录、获取用户信息、修改昵称、设置语言、忘记密码、搜索用户、心跳",db:"tab_Users(主表)、Users_Safe、Users_Locked、Users_Relative(关系树)、UserGroup、User_Valid、User_RegisterDevice、UserHideSettings"},
+  {name:"实名/认证",admin:"实名认证审核",api:"获取实名信息、获取/设置安全问题、添加安全邮箱、换手机/邮箱、验证码校验",db:"tab_UserRealName、tab_GoogleVerify"},
+  {name:"VIP 体系",admin:"VIP等级配置、VIP奖励记录、VIP经验配置",api:"获取VIP信息、领取VIP奖励、VIP等级详情、VIP奖励列表、会员操作日志",db:"tab_VipUsers、VipLevel、VipRecord、VipRewards、VipUsersExp_Day"},
+  {name:"会员层级/充值等级",admin:"会员层级、充值等级配置",api:"—",db:"tab_Users_Recharge_Level、tab_UserLevel_Recharge、tab_FixUserLevel"},
+]},
+{domain:"② 财务 / 充提",subs:[
+  {name:"充值",admin:"充值列表/审核/审核日志、充值导入、银行卡充值、UPI充值、USDT充值、电子钱包/KBZ/Wave、充值申诉、充值级别、人工充值权限",api:"充值记录、本地银行/UPI/USDT下单、C2C充值(下单/取消/申诉/确认)、三方支付、提交UTR、创建/取消/查询充值订单、首充PIX判断",db:"tab_Recharges、RechargesBank、RechargesUpi、C2C_RechargeOrder、tab_ManualRechargePermission、RechargeDelayedRewardLog"},
+  {name:"提现",admin:"提现审核(自动/手动)、提现日志、提现处理镜像、提现渠道配置、USDT提现设置、提现银行限额、提现黑名单",api:"提现记录、提现大类/账户、新提现、C2C提现(重匹配/取消/改额/申诉/确认)、添加/删除 银行卡/电子钱包/USDT/PIX/UPI/FastUPI/NewUPI、UPI验证码",db:"tab_Withdraw、WithdrawalBankCard、WithdrawType、UserWithdrawBlack、Manual_WithdrawOrder、AutoWithdrawConfig、C2C_WithdrawOrder/Pool、Withdraw_ProcessingMirror"},
+  {name:"资金账变/保险箱",admin:"财务记录(查询/代理/日志/导出)、安全记录、异常资金处理(余额/保险箱/提现/奖励返还)",api:"获取钱包/余额、资金流水、保险箱(转入/转出/余额/记录)",db:"tab_FinancialLog(100分片)、FinancialLog_Day、FinancialRedLog、SafeRecord、Safe_Settings"},
+  {name:"钱包集成",admin:"—",api:"RSN钱包(激活/进入/信息/支付)、ARB钱包(激活/进入/信息/返现)、获取支付地址",db:"tab_Dovecash、tab_UgTransferHistoryLog"},
+]},
+{domain:"③ 支付通道 / 银行",subs:[
+  {name:"支付方式与渠道",admin:"支付方式(PayName)、充值渠道(增删改/密钥/编辑)、提现渠道、第三方银行/支付银行、在线银行SMS、支付测试接口",api:"获取充值渠道/支付大类/银行列表",db:"tab_PayType、PayName、PayingBank、ThirdPayBank、ThirdpartyBank、PaymentGroupConfig、UsdtType"},
+  {name:"银行字典",admin:"银行管理、转账银行、银行代码",api:"获取银行列表",db:"tab_Banks、BankCode、MsgBank"},
+  {name:"内部/回调(API)",admin:"提款通知接收",api:"【内部】代收/代付回调、核实代付、创建缺失充值单、支付IP白名单、按渠道/订单/商户号获取支付类型、同步支付渠道、查询三方余额、手动出款(初始化/新增/更新/记录)",db:"tab_Withdraw_ThirdParty_Record、WithdrawThirdLog、EventApiRecord"},
+]},
+{domain:"④ 游戏（自营彩票）",subs:[
+  {name:"WinGo / TRX-Win",admin:"期号、订单(普通/日志/代理/导出)、类型、控制、玩法、赢额限制",api:"类型/玩法/期号/开奖结果/最近5期、投注、我的投注",db:"tab_Win_Game(+Type/PlayType/Result/Resolve/Control)、Trx_Win_Game*、tab_Win_GameOrder(100分片)"},
+  {name:"K3 / 5D / 4D",admin:"各游戏 期号/订单/类型/控制/玩法/赢额限制",api:"类型/玩法/期号/赔率/开奖、投注、我的投注/历史、撤单(4D)",db:"tab_K3_Game*、5D_Game*、4D_Game*、Trx_5D/K3_Game*"},
+  {name:"Bingo18",admin:"订单、配置、趋势统计",api:"配置/期号/赔率/开奖/最近50期/周开奖/趋势/排行、投注、投注统计",db:"tab_Bingo18_Game*、Bingo18_GameTrendStatistics"},
+  {name:"越南彩 Xoso / F-Xoso",admin:"期号/投注/城市配置/赢率配置(F-Xoso)",api:"基础数据/期号/开奖/投注记录、投注、取消、区域玩法+赔率",db:"tab_Xoso_Game*、FXoso_Game*(Category/Type/Config/Issue/Play/Odds/Betting/Citys)、VN_Game*(North/Center/South)"},
+  {name:"游戏通用",admin:"玩法指南、游戏控制用户、彩种分类",api:"获取游戏类型列表、获取彩票大类/热门彩票",db:"tab_GameCategory、LotteryCategory、NewLottery_Game_*、GameWinLimit、Game_Control_User、tab_GameOrder(分片)"},
+]},
+{domain:"⑤ 游戏（第三方/电子）",subs:[
+  {name:"厂商与游戏",admin:"厂商管理(状态/IP验证)、游戏映射、游戏列表(自定义类型/热门)、同步游戏列表、RTP配置",api:"热门游戏、游戏分类+基础、全部游戏、点击排行、三方游戏登录、按大类获取厂商、电子/视讯厂商、捕鱼小游戏",db:"tab_ThirdGameList、ThirdGameVendor、ThirdGameListCustomType、ThirdGameRTP、tab_GameSlots、SlotsType"},
+  {name:"投注记录",admin:"电子/彩票/直播/体育/棋牌 投注记录(查询/导出/代理)、电子游戏投注奖励、电子赢率外链",api:"—",db:"tab_ThirdGameElectronicBetRecord、LotteryBetRecord、ChessCardBetRecord、SportsBetRecord、VideoBetRecord、LoginRecord、TransferRecord"},
+  {name:"码量/洗码",admin:"码量配置/规则(新旧)/记录",api:"—",db:"tab_CodeWashRecord、CodeWashingRule、CodeWashSumStatistic"},
+  {name:"厂商对接(GamesController)",admin:"老虎机、XB/CQ9/HB/JDB/PG 游戏列表、游戏历史(真人/体育/迷你)、资金回收、转账历史",api:"通过设备/用户获取游戏信息(DoveCash)",db:"tab_GameRealPerson、GameSlotesLog、GameSports"},
+]},
+{domain:"⑥ 活动 / 营销",subs:[
+  {name:"任务(日/周)",admin:"日任务配置/记录、周任务配置/记录",api:"每日奖励(数量/列表/领取/记录)、每周奖励(任务/领取/记录)、新手指引、日访问记录",db:"tab_DailyConfig(+Detail)、WeeklyConfig(+Detail)、DailyUsersRecord、WeeklyUsersRecord"},
+  {name:"礼包",admin:"新手礼包、礼包配置、负盈利奖励(批准/拒绝/锁定)、礼包申请/领取记录",api:"新会员礼包信息、申请/领取礼包、首充负盈利申请、新手礼包领取",db:"tab_NewbieGiftPack(+Progress/Record)、GiftPack_Config(+Award)、GiftPack_NegativeProfitRewardRecord、GiftPack_UserRewardRecord、FirstRechargeManage"},
+  {name:"转盘",admin:"转盘配置/任务/抽奖记录/实物奖励/发货/导入",api:"大转盘(当日存款/旋转次数/信息/记录/抽奖)",db:"tab_Turntable_Config、Turntable_Task、Turntable_LotteryRecord、Turntable_PostUserRotateNum"},
+  {name:"邀请转盘",admin:"邀请转盘配置、出款记录/审核/锁定、导出",api:"邀请转盘信息、抽奖、提现记录、取款、规则",db:"tab_UserInvitedWheel(+Detail)、InvitedWheelSpinRecord、InvitedWheelWithdrawRecord"},
+  {name:"锦标赛/老用户回归/TG",admin:"老用户回归活动/奖励历史、TG活动",api:"锦标赛(入口/列表/加入/详情/排名)、领取回归奖励、TG配置、宝箱、奖金中心",db:"tab_Champion_Task(+ParticipateUser/RankingAwards)、Activity_OldUserReturn、TGActivityRecord/Setting、RewardConfig"},
+  {name:"签到",admin:"签到列表/设置、连续签到日志",api:"签到内容/连续签到/记录、活动列表/详情",db:"tab_SignInLog、SignInRecharges、SignCount、tab_SinIn"},
+  {name:"积分商城/积分彩",admin:"积分抽奖配置/中奖单/发货单、产品/横幅/订单/兑换记录、产品规则",api:"积分商城(开关/商品/记录/订单/规则/兑换/地址)",db:"tab_PointsLottery(+Orders/Tickets)、Product(+List/Types/Orders/Banners)、UserIntegralLog、Integral_Game_Exchange"},
+]},
+{domain:"⑦ 代理 / 返佣",subs:[
+  {name:"返佣体系",admin:"返佣等级/费率配置、手动返佣、用户返利(等级/报表/历史)",api:"用户返佣、推广地址、邀请团队、总返佣规则、推广教程、佣金明细、邀请记录、团队日报、合伙人奖励",db:"tab_Commissions、PartnerRewards(+Config/Detail)、Integral_Invite_Level、tab_Users_Relative"},
+  {name:"代理关系(D/C/M/A四级)",admin:"董事/经理/主任/代理 用户关系列表+导出、关系导入/解绑",api:"—",db:"tab_Users_Relative、Users_Relative_Chart、tb_chart_relative*"},
+  {name:"代理账号(独立库)",admin:"—",api:"—",db:"【Lottery_Agent库】tab_Agent_User、Agent_GoogleVerify、Agent_Locked、Agent_OnLineStatus、Agent_Logs"},
+]},
+{domain:"⑧ 报表 / 统计",subs:[
+  {name:"四级报表(D/C/M/A)",admin:"邀请/财务/游戏/用户/渠道 报表 + 用户游戏/财务报表 + 导出（每类都有董事/经理/主任/代理四个层级）",api:"—",db:"【Lottery_Chart库】通用版 Chart_*、A版 A_Chart_*、商户版 M_Chart_*"},
+  {name:"专项报表",admin:"留存用户报表、邀请转盘统计、用户安全报表、GT游戏报表",api:"中奖人排行、团队日报",db:"tab_Chart_UserKeep、Chart_TimeSharingReport、InvitedWheelStatistics、Chart_User_Safe"},
+  {name:"统计维度",admin:"首页仪表板(D/C/M级)",api:"—",db:"Chart_Finance/Recharge/Withdraw/Lottery/User_Login/Integral/Champion/Turntable/InviteAward 各维度(均有 通用/A/M 三版)"},
+]},
+{domain:"⑨ 风控 / 安全",subs:[
+  {name:"IP风控",admin:"IP黑名单(增删)、白名单IP(增删/启停/批量/绑定用户)、设备IP、注册IP/登录IP查询",api:"获取客户端IP、检查是否允许下注",db:"tab_Ips、IPScanner、BlackIp相关、tab_client_ip"},
+  {name:"设备/指纹",admin:"设备管理、设备日志、浏览器指纹查询、同设备查询",api:"注册设备",db:"tab_User_RegisterDevice、sys_Devices、DeviceLog"},
+  {name:"黑名单/标记",admin:"会员活动黑名单、提现限制名单、刷通道清单、用户标记",api:"—",db:"tab_MemberActivityBlack、UserWithdrawBlack、MarkRecord、UserMarkData"},
+  {name:"安全设置",admin:"安全设置、Google验证、用户隐藏设置",api:"—",db:"tab_Safe_Settings、GoogleVerify、UserHideSettings"},
+]},
+{domain:"⑩ 系统 / 配置",subs:[
+  {name:"权限",admin:"菜单管理、系统用户(Google验证)、角色管理、角色类型",api:"—",db:"sys_Menus、sys_Users、sys_Roles、sys_RoleType、jxc_*(进销存权限)"},
+  {name:"站点/基础配置",admin:"站点设置、提款设置、充值设置、注册赠送/开关、邀请码开关、隐私/风险协议、积分商城开关、代码金额配置",api:"获取隐私政策/风险协议/玩法指引/App下载/首页配置/PWA配置/维护信息、按key获取字典",db:"tab_Sites、tab_Settings、tab_GlobalSiteConfig、QueryConfig、Maintenance、APKPackageManagement、PwaDomain"},
+  {name:"短信/邮件/推送",admin:"短信设置(18商户)、极光推送(Web/App)、Firebase推送配置",api:"短信验证码、邮箱验证码、注册短信开关",db:"tab_SmsSettings、EmailSettings、sys_SetSms"},
+  {name:"多语言/模板/版本",admin:"版本类型、套餐包配置(用户/年度/渠道/专业)、快递类型",api:"多语言、获取字典枚举",db:"tab_MultiLanguage、Template、sys_VersionType、sys_AppVersion"},
+  {name:"日志/导出",admin:"系统日志、Web日志、操作日志、设备日志、导出中心",api:"—",db:"sys_Logs、sys_LoginOutLog、ExportCenterConfig/Log、【Lottery_Log库】ErrorLog、各订单100分片备份"},
+  {name:"CDN/商户(CloudFlareApi)",admin:"—",api:"【CF-API】CF账户/开发者模式/清缓存、IP白名单(增删改)、商户管理(增删改)、操作日志",db:"tab_Mr_Merchant、Mr_Users/Roles/Menus、m_*(移动商户)"},
+]},
+{domain:"⑪ 消息 / 内容 / 渠道",subs:[
+  {name:"消息通知",admin:"消息列表/编辑、推送消息、客服通知、红页",api:"消息列表、设置消息状态(单/批量/全部)、弹框消息/列表、滚动消息、客服群入口/链接",db:"tab_Message、UserMessage、SiteMessage、PushUserMessages、CustomerNotice、CustomerService、Redpage"},
+  {name:"内容/轮播",admin:"横幅管理、新闻、欢迎页",api:"首页轮播图、新闻",db:"tab_Banners、Product_Banners、tab_News"},
+  {name:"渠道/来源",admin:"渠道列表/编辑/批量/推广设置、域名像素配置",api:"—",db:"tab_Channels、Source、SourceUse、LandingPageConfig/Management、EventRegionConfig"},
+  {name:"理财/工单/上传",admin:"财富订单/类型/设置、远程工作(出款仪表板/操作台/组别/报表/调度/转单)",api:"工单(删卡类型/AI订单查询)、文件上传(OSS/图片/视频)",db:"tab_WealthOrder、WealthType、tab_Manual_WithdrawOrder、tab_TaskOrder"},
+]},
+];
+
+function render(){
+  var root=document.getElementById('root');
+  var h='';
+  DATA.forEach(function(d,i){
+    var subCount=d.subs.length;
+    h+='<div class="domain" data-domain><div class="domain-head" onclick="this.classList.toggle(\'col\')"><span class="arr">▼</span><h2>'+d.domain+'</h2><span class="dcount">'+subCount+' 个子类</span></div><div class="domain-body">';
+    d.subs.forEach(function(s){
+      h+='<div class="sub"><div class="sub-head">'+s.name+'</div>';
+      if(s.admin&&s.admin!=='—')h+='<div class="layer"><span class="layer-label"><span class="tag t-admin">后台</span></span><div class="layer-items">'+s.admin+'</div></div>';
+      if(s.api&&s.api!=='—')h+='<div class="layer"><span class="layer-label"><span class="tag t-api">会员端</span></span><div class="layer-items">'+s.api+'</div></div>';
+      if(s.db&&s.db!=='—')h+='<div class="layer"><span class="layer-label"><span class="tag t-db">数据</span></span><div class="layer-items">'+s.db+'</div></div>';
+      h+='</div>';
+    });
+    h+='</div></div>';
+  });
+  root.innerHTML=h;
+  updateCount();
+}
+function updateCount(){
+  var subs=document.querySelectorAll('.sub:not([style*="display: none"])').length;
+  document.getElementById('rc').textContent=DATA.length+' 个业务域 · '+document.querySelectorAll('.sub').length+' 个子分类';
+}
+function F(){
+  var q=document.getElementById('q').value.toLowerCase();
+  document.querySelectorAll('.domain').forEach(function(dom){
+    var anyVisible=false;
+    dom.querySelectorAll('.sub').forEach(function(sub){
+      var match=!q||sub.textContent.toLowerCase().includes(q);
+      sub.style.display=match?'':'none';
+      if(match)anyVisible=true;
+    });
+    dom.style.display=anyVisible?'':'none';
+    if(q&&anyVisible)dom.querySelector('.domain-head').classList.remove('col');
+  });
+}
+render();
+</script>
+</body>
+</html>

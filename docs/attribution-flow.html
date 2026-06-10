@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>会员归因来源 · 判定流程图</title>
+<style>
+  :root{--ink:#1f2733;--muted:#6b7280;--line:#e6e9ef;--bg:#f5f7fb;--blue:#2563eb;--blue-d:#1d4ed8;--red:#d4380d;--green:#16a34a;--amber:#d97706;--violet:#7c3aed}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 22px 64px}
+  .hd{margin-bottom:8px}
+  .hd h1{font-size:23px;font-weight:800}
+  .hd p{color:var(--muted);font-size:13px;margin-top:6px}
+  .legend{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 22px;font-size:12px}
+  .legend span{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 12px}
+  .dot{width:9px;height:9px;border-radius:50%}
+  .flow{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px 24px}
+  .node{margin:0 auto;text-align:center}
+  .start,.end{display:inline-block;background:linear-gradient(120deg,#2563eb,#1d4ed8);color:#fff;font-weight:700;padding:11px 26px;border-radius:999px;box-shadow:0 8px 20px rgba(37,99,235,.22)}
+  .end{background:linear-gradient(120deg,#16a34a,#15803d);box-shadow:0 8px 20px rgba(22,163,74,.22)}
+  .step{display:inline-block;background:#f7faff;border:1px solid #d6e4ff;border-radius:12px;padding:12px 20px;max-width:760px;text-align:left}
+  .step b{color:var(--blue-d)}
+  .step small{color:var(--muted)}
+  .arrow{width:2px;height:26px;background:#cbd5e1;margin:7px auto;position:relative}
+  .arrow:after{content:"";position:absolute;bottom:-1px;left:-4px;border:5px solid transparent;border-top-color:#cbd5e1}
+  .decision{display:inline-block;background:#fff7ed;border:2px dashed var(--amber);border-radius:12px;padding:12px 22px;font-weight:700;color:var(--amber)}
+  .decision small{display:block;font-weight:400;color:var(--muted);margin-top:2px}
+  .branches{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px}
+  .br{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+  .br-h{padding:11px 14px;color:#fff;font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:8px}
+  .br-cond{font-size:11.5px;font-weight:400;opacity:.92;margin-top:2px}
+  .br.c1 .br-h{background:linear-gradient(120deg,#7c3aed,#6d28d9)}
+  .br.c2 .br-h{background:linear-gradient(120deg,#2563eb,#1d4ed8)}
+  .br.c3 .br-h{background:linear-gradient(120deg,#0891b2,#0e7490)}
+  .br.c4 .br-h{background:linear-gradient(120deg,#64748b,#475569)}
+  .br-pri{margin-left:auto;font-size:10px;background:rgba(255,255,255,.22);border-radius:5px;padding:1px 7px}
+  .br-b{padding:12px 14px;font-size:12.5px;flex:1}
+  .fld{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px dashed #f0f2f6}
+  .fld:last-child{border-bottom:0}
+  .fld .k{color:var(--muted);white-space:nowrap}
+  .fld .v{color:var(--red);font-weight:600;text-align:right}
+  .fld .v.n{color:var(--ink);font-weight:400}
+  .converge{width:86%;height:1px;background:var(--line);margin:20px auto 0;position:relative}
+  .note{font-size:12px;color:var(--muted);background:#fff;border:1px dashed #d8dde6;border-radius:10px;padding:13px 16px;margin-top:20px;line-height:1.95}
+  .note b{color:#475569}
+  .glo{margin-top:22px;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .glo h2{font-size:15px;font-weight:800;padding:14px 18px;border-bottom:1px solid var(--line)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:10px 18px;border-bottom:1px solid #f1f4f8;vertical-align:top}
+  th{background:#f8fafc;color:#475569;font-weight:600;white-space:nowrap}
+  td.f{color:var(--red);font-weight:600;white-space:nowrap}
+  @media(max-width:900px){.branches{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hd">
+    <h1>会员归因来源 · 判定流程图</h1>
+    <p>用户注册时，系统按优先级识别其来源并固化为「归因来源」字段，展示于会员详情。示例数据沿用 SIT-INR（代理 2250100 / Meta 投放 / ag010 渠道）。</p>
+  </div>
+
+  <div class="legend">
+    <span><i class="dot" style="background:#2563eb"></i>起点 / 步骤</span>
+    <span><i class="dot" style="background:#d97706"></i>判定（按优先级）</span>
+    <span><i class="dot" style="background:#7c3aed"></i>归因分支</span>
+    <span><i class="dot" style="background:#d4380d"></i>写入的归因字段（红=会员详情新增）</span>
+    <span><i class="dot" style="background:#16a34a"></i>终点</span>
+  </div>
+
+  <div class="flow">
+
+    <div class="node"><span class="start">① 用户点击链接 / 广告 / 搜索 → 进入注册页</span></div>
+    <div class="arrow"></div>
+
+    <div class="node"><span class="step"><b>② 采集来源信号</b><br><small>URL 参数（渠道码 ag010 / 邀请码 AGENT100 / utm_source）· Referrer 来路 · 广告 Pixel（Meta/Google）· 设备指纹 / IP</small></span></div>
+    <div class="arrow"></div>
+
+    <div class="node"><span class="decision">③ 来源识别（优先级 高 → 低）<small>命中即归因，停止后续判定</small></span></div>
+
+    <div class="branches">
+      <div class="br c1">
+        <div class="br-h"><div>🤝 代理邀请推荐<div class="br-cond">URL 带代理专属链接 / 邀请码</div></div><span class="br-pri">P1</span></div>
+        <div class="br-b">
+          <div class="fld"><span class="k">主归因</span><span class="v">代理（邀请推荐）</span></div>
+          <div class="fld"><span class="k">注册渠道</span><span class="v">ag010（代理2250100专属）</span></div>
+          <div class="fld"><span class="k">邀请码</span><span class="v">AGENT100</span></div>
+          <div class="fld"><span class="k">邀请人</span><span class="v">2250100（李四）</span></div>
+          <div class="fld"><span class="k">邀请类型</span><span class="v">正常邀请（个人）</span></div>
+        </div>
+      </div>
+      <div class="br c2">
+        <div class="br-h"><div>📣 付费广告投放<div class="br-cond">命中广告 Pixel / utm=广告平台</div></div><span class="br-pri">P2</span></div>
+        <div class="br-b">
+          <div class="fld"><span class="k">主归因</span><span class="v">广告投放</span></div>
+          <div class="fld"><span class="k">推广平台名称</span><span class="v">Meta（Facebook）</span></div>
+          <div class="fld"><span class="k">注册渠道</span><span class="v">广告系列 / 落地页</span></div>
+          <div class="fld"><span class="k">搜索引擎</span><span class="v n">—</span></div>
+        </div>
+      </div>
+      <div class="br c3">
+        <div class="br-h"><div>🔍 自然搜索 SEO<div class="br-cond">Referrer = 搜索引擎</div></div><span class="br-pri">P3</span></div>
+        <div class="br-b">
+          <div class="fld"><span class="k">主归因</span><span class="v">搜索引擎</span></div>
+          <div class="fld"><span class="k">搜索引擎</span><span class="v">Google / 其他</span></div>
+          <div class="fld"><span class="k">推广平台名称</span><span class="v n">—</span></div>
+        </div>
+      </div>
+      <div class="br c4">
+        <div class="br-h"><div>🌐 自然流量 / 直接<div class="br-cond">无任何来源标识</div></div><span class="br-pri">P4</span></div>
+        <div class="br-b">
+          <div class="fld"><span class="k">主归因</span><span class="v">自然流量（直接访问）</span></div>
+          <div class="fld"><span class="k">注册渠道</span><span class="v n">官网 / 直接</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="converge"></div>
+    <div class="arrow"></div>
+    <div class="node"><span class="step"><b>④ 归因固化</b> ：注册成功时<b>一次性写入</b>会员「归因来源」字段（注册后不可改）；<b>登录端</b>每次登录另记录<span class="v" style="color:var(--red);font-weight:600"> 登录渠道</span>，用于区分注册来源与活跃来源。</span></div>
+    <div class="arrow"></div>
+    <div class="node"><span class="end">⑤ 展示于 会员详情「归因来源」板块 · 可同步至会员列表归因列</span></div>
+
+  </div>
+
+  <div class="glo">
+    <h2>归因字段说明</h2>
+    <table>
+      <thead><tr><th width="130">字段</th><th width="150">示例值</th><th>含义 / 用途</th></tr></thead>
+      <tbody>
+        <tr><td class="f">主归因</td><td>代理（邀请推荐）</td><td>来源的最终归类，按 P1→P4 优先级唯一确定，是归因分析的核心维度。</td></tr>
+        <tr><td class="f">推广平台名称</td><td>Meta（Facebook）</td><td>付费广告来源的投放平台，用于核算各平台拉新成本 / ROI。</td></tr>
+        <tr><td class="f">注册渠道</td><td>ag010（代理2250100专属链接）</td><td>注册时命中的具体渠道码 / 专属链接，定位到代理或广告系列。</td></tr>
+        <tr><td class="f">登录渠道</td><td>ag010（代理2250100专属链接）</td><td>每次登录记录的渠道，与注册渠道对比可看用户活跃入口是否漂移。</td></tr>
+        <tr><td class="f">搜索引擎</td><td>其他 / Google</td><td>自然搜索来源时记录具体搜索引擎。</td></tr>
+        <tr><td class="f">邀请码</td><td>AGENT100</td><td>代理 / 活动邀请码，关联邀请人与返佣关系。</td></tr>
+        <tr><td class="f">邀请类型</td><td>正常邀请（个人邀请）</td><td>区分个人邀请 / 活动邀请 / 系统派发等，影响奖励与风控规则。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <b>判定要点：</b><br>
+    · <b>优先级唯一归因</b>：一个用户只归一个「主归因」，按 P1 代理邀请 → P2 付费广告 → P3 自然搜索 → P4 自然流量 自上而下命中即止，避免重复计数。<br>
+    · <b>注册 vs 登录</b>：归因字段在<b>注册时固化</b>；登录渠道每次更新，便于分析「拉新来源」与「活跃来源」差异。<br>
+    · 与会员详情「归因来源」板块、会员列表归因红列一一对应；「归属与层级」（集团/市场/商户）属组织维度，不在归因流程内。
+  </div>
+
+</div>
+</body>
+</html>

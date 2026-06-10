@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>SaaS 后台 · 功能总览与预览中枢</title>
+<style>
+  :root{--blue:#2563eb;--blue-d:#1d4ed8;--ink:#1f2733;--muted:#6b7280;--line:#eef0f3;--bg:#f5f7fb;--green:#16a34a;--red:#d4380d}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 22px 60px}
+  .hero{background:linear-gradient(120deg,#2563eb,#1d4ed8);color:#fff;border-radius:18px;padding:30px 34px;box-shadow:0 16px 40px rgba(37,99,235,.25)}
+  .hero h1{font-size:26px;font-weight:800;letter-spacing:.5px}
+  .hero p{opacity:.92;margin-top:8px;font-size:14px}
+  .hero p b{font-weight:800}
+  .hero .meta{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;font-size:12px}
+  .hero .pill{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:3px 12px}
+  .cta{display:inline-flex;align-items:center;gap:8px;margin-top:18px;background:#fff;color:var(--blue-d);font-weight:700;border-radius:10px;padding:11px 20px;text-decoration:none;box-shadow:0 6px 16px rgba(0,0,0,.12)}
+  .cta:hover{transform:translateY(-1px)}
+  .band{display:flex;align-items:baseline;gap:10px;margin:28px 2px 14px;font-size:15px;font-weight:800;color:var(--ink)}
+  .band:first-of-type{margin-top:22px}
+  .band .bic{width:30px;height:30px;border-radius:9px;background:#eaf1ff;display:flex;align-items:center;justify-content:center;font-size:16px;align-self:center}
+  .band .bsub{font-size:12px;font-weight:600;color:var(--muted)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 22px}
+  .card h2{font-size:16px;font-weight:800;display:flex;align-items:center;gap:9px;margin-bottom:4px}
+  .card h2 .ic{width:26px;height:26px;border-radius:8px;background:#eaf1ff;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .card .sub{color:var(--muted);font-size:12.5px;margin-bottom:14px}
+  .sec-title{font-size:13px;font-weight:700;color:var(--blue-d);margin:16px 0 8px;display:flex;align-items:center;gap:7px}
+  .sec-title:first-of-type{margin-top:6px}
+  ul.feat{list-style:none;display:flex;flex-direction:column;gap:7px}
+  ul.feat li{display:flex;gap:9px;align-items:flex-start;font-size:13px}
+  ul.feat li::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--green);margin-top:7px}
+  ul.feat li.new::before{background:var(--red)}
+  ul.feat li b{font-weight:700}
+  ul.feat li span{color:var(--muted)}
+  .doclist{display:flex;flex-direction:column;gap:9px;margin-top:4px}
+  .doclist.cols2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .doclist a{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;text-decoration:none;color:var(--ink);transition:.12s}
+  .doclist a:hover{border-color:#bcd0ff;background:#f7faff}
+  .doclist a .di{width:22px;height:22px;border-radius:6px;background:#eef4ff;display:flex;align-items:center;justify-content:center;font-size:13px;flex:none}
+  .doclist a .dt{font-weight:600;font-size:13px}
+  .doclist a .dd{color:var(--muted);font-size:12px;margin-left:auto;white-space:nowrap}
+  .full{grid-column:1/3}
+  .note{font-size:12px;color:var(--muted);background:#fff;border:1px dashed #d8dde6;border-radius:10px;padding:12px 16px;margin-top:22px;line-height:1.9}
+  .note a{color:var(--blue-d);text-decoration:none}
+  .note a:hover{text-decoration:underline}
+  .tag{font-size:10px;font-weight:700;border-radius:5px;padding:1px 6px;margin-left:6px}
+  .tag.red{background:#fde8e2;color:var(--red)}
+  .tag.blue{background:#e8f0ff;color:var(--blue-d)}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr}.full{grid-column:auto}.doclist.cols2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <h1>SaaS 多商户后台 · 功能总览与预览中枢</h1>
+    <p>一条链接整合 <b>数据源</b>（迁移依据 / 全功能清单）、<b>交互设计</b>（一阶段落地 + 二阶段设计，已合并为一体）与全部 <b>原型 / 文档</b>。这里是唯一入口，下方直达各功能、原型与数据。</p>
+    <div class="meta">
+      <span class="pill">最后更新 2026-06-10</span>
+      <span class="pill">实现后台 localhost:8200</span>
+      <span class="pill">文档预览 localhost:8753</span>
+      <span class="pill">迁移来源 SitINR</span>
+    </div>
+    <a class="cta" href="http://localhost:8200/?open=hub" target="_blank">▶ 打开实现后台 · 快捷工作台总览</a>
+  </div>
+
+  <!-- ========== 数据源 ========== -->
+  <div class="band"><span class="bic">🗄</span>数据源 · 迁移依据与数据层 <span class="bsub">SitINR 源系统 → SaaS 对照，是交互设计的功能依据</span></div>
+  <div class="grid2">
+    <div class="card full">
+      <h2><span class="ic">📊</span>迁移依据 · 全功能清单</h2>
+      <div class="sub">SaaS 后台的功能从 SitINR 源系统迁移而来，下列为对照依据与数据层入口</div>
+      <div class="doclist cols2">
+        <a href="http://localhost:8753/docs/feature-inventory.html" target="_blank"><span class="di">📋</span><span class="dt">V1 全功能点清单</span><span class="dd">11 业务域·可搜索</span></a>
+        <a href="http://localhost:8753/docs/sitinr-feature-map.html" target="_blank"><span class="di">🗺</span><span class="dt">SitINR 功能图谱</span><span class="dd">源系统 700+ 功能点</span></a>
+        <a href="http://localhost:8753/docs/migration-progress.html" target="_blank"><span class="di">📊</span><span class="dt">迁移对照进度</span><span class="dd">SitINR ↔ SaaS</span></a>
+        <a href="http://localhost:8753/KNOWLEDGE-BASE.md" target="_blank"><span class="di">📚</span><span class="dt">项目知识库</span><span class="dd">MD 源文件·上下文</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 交互设计（一阶段 + 二阶段，已合并） ========== -->
+  <div class="band"><span class="bic">🧩</span>交互设计 · 一阶段落地 + 二阶段设计（已合并） <span class="bsub">实现后台 + 设计文档 + 独立原型，统一为一套交互</span></div>
+  <div class="grid2">
+
+    <!-- 实现后台·可点击原型 -->
+    <div class="card full">
+      <h2><span class="ic">🧩</span>实现后台 · 可点击交互原型 <span class="tag blue">localhost:8200</span></h2>
+      <div class="sub">交互设计已落地为可点击原型；下列功能均真实可用（非占位）。总览入口：<a href="http://localhost:8200/?open=hub" target="_blank">localhost:8200/?open=hub</a>（快捷工作台聚合全部）</div>
+      <div style="background:#f7faff;border:1px solid #e1ebff;border-radius:9px;padding:10px 14px;font-size:12.5px;color:#1d4ed8;margin:2px 0 16px;line-height:1.75">📐 <b>二阶段新建页面：38 项</b> · <b>5 模块 · 14 子分类</b> —— 会员管理 8 / 运营管理 18 / 风控管理 5 / 配置中心 6 / 系统管理 1。详见 <a href="http://localhost:8753/docs/saas-prd-phase2.html" target="_blank" style="color:#1d4ed8;font-weight:700;text-decoration:underline">🆕 二阶段产品文档 · PRD</a>；进度以 <a href="http://localhost:8753/docs/saas-workplan.html#member" target="_blank" style="color:#1d4ed8;text-decoration:underline">工作计划书</a> 为准。</div>
+
+      <div class="sec-title">▸ 导航与框架</div>
+      <ul class="feat">
+        <li><b>8 大主 Tab</b> <span>会员 / 运营 / 风控 / 配置中心 / 财务 / 游戏 / 报表 / 系统，多列分组下拉</span></li>
+        <li><b>多标签页签栏</b> <span>子页作为可关闭标签加入页签栏，多页并存、切换、关闭</span></li>
+        <li><b>快捷工作台</b> <span>Logo 入口 + 全部功能磁贴，可增删 / 拖拽排序（本地持久）</span></li>
+      </ul>
+
+      <div class="sec-title">▸ 会员管理</div>
+      <ul class="feat">
+        <li><b>会员列表</b> <span>17 筛选 + 14 批量操作（拉黑/拉白/禁用/启用/转代理/分组/隐藏/转渠道/导入/导出…）+ 操作列</span></li>
+        <li class="new"><b>会员列表 · 返佣配置开关</b> <span>「领取返佣」「对上级返佣」做成行内 toggle 开关，切换需二次确认；详情新增红字字段同步为红色列（可自定义列显隐）</span></li>
+        <li class="new"><b>会员详情 · 新增字段</b> <span>真实抽屉按指定位置注入红字字段（归因来源/归属层级/代理数据/注册登录），布局不变，邀请人·代理路径可点</span></li>
+        <li><b>下级会员列表 / 会员层级</b> <span>对齐 SitINR：批量禁用/启用/拉白/拉黑、解除代理、统计列</span></li>
+        <li><b>用户分组 / 分组表单</b> <span>居中卡片表单，保存即在下方生成记录（带 ID/保存时间/删除）</span></li>
+        <li><b>CPF 认证 · 登录日志 · 短信验证码 · 代理关系(DCMA)</b></li>
+      </ul>
+
+      <div class="sec-title">▸ 运营 / 风控 / 配置中心</div>
+      <ul class="feat">
+        <li><b>运营</b> <span>站内消息·公告消息、轮播图·TG频道、连续签到、VIP奖励/等级人数、合伙人奖励、返佣报表、昨日返佣等级、充值奖励发放、邀请奖励领取</span></li>
+        <li class="new"><b>运营 · 推广分发配置</b> <span><b>配置向导</b>（5 阶段分步：域名→打包→渠道→埋点→投放）、PWA配置、域名管理（主/推广/落地/防封页 + 防封救援）、打包管理（iOS/安卓 包·壳包 渠道包上传）、埋点管理（FB/TikTok/谷歌/Kwai 平台页签 + Click/CAPI 回传）、渠道管理</span></li>
+        <li><b>风控</b> <span>异常会员处理、互刷名单、相同IP、提现限制名单、刷通道清单、IP黑名单</span></li>
+        <li><b>配置中心</b> <span>VIP等级/经验、充值等级、会员返佣等级、代理审核机制、分组权限</span></li>
+      </ul>
+
+      <div class="sec-title">▸ 游戏管理</div>
+      <ul class="feat">
+        <li><b>三方游戏记录</b> <span>5 Tab：彩票 / 视讯 / 体育 / 电子 / 棋牌，左侧游戏分类导航</span></li>
+      </ul>
+
+      <div class="sec-title">▸ 通用交互（所有列表页真实可用）</div>
+      <ul class="feat">
+        <li><span>查询（按条件过滤、保留输入）· 重置 · 导出 CSV · 翻页 · 排序 · 时间快捷 · 说明</span></li>
+        <li><span>批量操作（勾选拦截 + 二次确认 + 执行）· 新增/编辑弹窗 · 详情弹窗 · 删除 · 状态切换</span></li>
+        <li class="new"><b>已对齐真实会员列表</b> <span>商户蓝 pill、会员ID/IP 蓝链接+复制、金额右对齐+表头点击排序、页面合计/总计双汇总行、快捷时间、<b>高级筛选</b>(前5主筛选+其余折叠) / <b>收起</b>、<b>自定义列</b>(勾选实时显隐)、全选当前页 + 跳至页</span></li>
+        <li class="new"><b>表单弹窗 · 简洁自适应</b> <span>新增/编辑/详情弹窗统一为自适应尺寸（贴合内容、不留白）；<b>图片字段</b>（图片/封面/图标等）自动渲染为<b>上传控件</b>：点击选图 → 即时预览缩略图 → ✕ 移除</span></li>
+      </ul>
+    </div>
+
+    <!-- 设计文档 -->
+    <div class="card">
+      <h2><span class="ic">📐</span>设计文档</h2>
+      <div class="sub">体系流程 · 字段规格 · 计划书</div>
+      <div class="doclist">
+        <a href="http://localhost:8753/docs/saas-prd-phase2.html" target="_blank" style="background:#eff6ff;border-color:#bfdbfe"><span class="di">🆕</span><span class="dt">二阶段产品文档 · PRD</span><span class="dd">38页面·推广分发·验收</span></a>
+        <a href="http://localhost:8753/docs/saas-workplan.html" target="_blank"><span class="di">📘</span><span class="dt">SaaS 工作计划书</span><span class="dd">进度权威·含一/二/三阶段</span></a>
+        <a href="http://localhost:8753/docs/group-to-member-hierarchy.html" target="_blank"><span class="di">🏛</span><span class="dt">集团→会员 层级体系</span><span class="dd">已对外发布</span></a>
+        <a href="http://localhost:8753/docs/v2-core-flows.html" target="_blank"><span class="di">🔀</span><span class="dt">V2 核心业务流程</span></a>
+        <a href="http://localhost:8753/docs/member-detail-field-glossary-full.html?new" target="_blank"><span class="di">🟥</span><span class="dt">会员详情 · 新增字段</span><span class="dd">红字=新增</span></a>
+        <a href="http://localhost:8753/docs/member-detail-fields.html" target="_blank"><span class="di">📋</span><span class="dt">会员详情 · 字段补充</span></a>
+        <a href="http://localhost:8753/docs/member-detail-field-glossary.html" target="_blank"><span class="di">📖</span><span class="dt">会员详情 · 新增字段名词解释</span></a>
+        <a href="http://localhost:8753/docs/member-detail-field-glossary-full.html" target="_blank"><span class="di">📚</span><span class="dt">会员详情 · 全字段说明</span><span class="dd">名词/场景/异常</span></a>
+        <a href="http://localhost:8753/docs/attribution-flow.html" target="_blank"><span class="di">📊</span><span class="dt">归因来源 · 判定流程图</span><span class="dd">来源归因逻辑</span></a>
+        <a href="http://localhost:8753/docs/promo-distribution-config.html" target="_blank"><span class="di">📦</span><span class="dt">推广分发配置 · 完整说明</span><span class="dd">SOP/矩阵/回传</span></a>
+      </div>
+    </div>
+
+    <!-- 独立原型 -->
+    <div class="card">
+      <h2><span class="ic">🎨</span>独立原型</h2>
+      <div class="sub">早期 / 专题交互原型</div>
+      <div class="doclist">
+        <a href="http://localhost:8753/prototypes/member-migration-flat.html" target="_blank"><span class="di">🧭</span><span class="dt">会员/运营/配置 导航结构</span></a>
+        <a href="http://localhost:8753/prototypes/group-admin.html" target="_blank"><span class="di">🏢</span><span class="dt">集团后台</span></a>
+        <a href="http://localhost:8753/prototypes/risk-config-center.html" target="_blank"><span class="di">🛡</span><span class="dt">风控配置中心</span></a>
+        <a href="http://localhost:8753/prototypes/vip-config-center.html" target="_blank"><span class="di">💎</span><span class="dt">VIP 配置中心</span></a>
+        <a href="http://localhost:8753/prototypes/finance-local-payment-account.html" target="_blank"><span class="di">🏦</span><span class="dt">本地收款账号管理</span></a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="note">
+    <b>使用说明：</b><br>
+    · <b>实现后台（localhost:8200）</b>是可点击的交互原型 —— 交互设计的落地。改动后用<b>普通刷新（Cmd+R）</b>，勿用 Cmd+Shift+R（会触发登录态过期需重登 admin/123456）。<br>
+    · <b>会员详情新增字段</b>：在任意会员列表点「详情」或点会员ID，打开详情抽屉即可见红字新增字段（按文档指定位置插入，原生布局不变）。<br>
+    · 本页与所有文档由 <b>localhost:8753</b> 提供；实现后台由 <b>localhost:8200</b> 提供，两个本地服务需保持运行。<br>
+    · <b>对外只读发布（GitHub Pages）：</b>
+      <a href="https://eason200116.github.io/saas-desigh/docs/group-to-member-hierarchy.html" target="_blank">层级体系</a>（短链 <a href="https://tinyurl.com/2bfqszhx" target="_blank">tinyurl.com/2bfqszhx</a>）
+      · <a href="https://eason200116.github.io/saas-desigh/docs/member-detail-field-glossary-full.html?new" target="_blank">会员详情新增字段</a>（短链 <a href="https://tinyurl.com/276bbqmx" target="_blank">tinyurl.com/276bbqmx</a>）
+  </div>
+
+</div>
+</body>
+</html>

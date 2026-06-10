@@ -100,7 +100,7 @@
       menu.__armega = true;
       injectCss();
       var cols = [], cur = null;
-      var HIDE = { '登录日志(代理)': 1, '登录日志（代理）': 1, '活动任务': 1, '任务活动': 1, '任务活动配置': 1, '任务订单': 1, 'KW认证': 1, '会员洗码管理': 1, '洗码记录': 1, '洗码规则说明': 1, '会员活动黑名单': 1, '签到配置': 1 };
+      var HIDE = { '登录日志列表': 1, '登录日志(代理)': 1, '登录日志（代理）': 1, '活动任务': 1, '任务活动': 1, '任务活动配置': 1, '任务订单': 1, 'KW认证': 1, '会员洗码管理': 1, '洗码记录': 1, '洗码规则说明': 1, '会员活动黑名单': 1, '签到配置': 1 };
       var hideGrp = false;
       arr.forEach(function (o) {
         var groupTitle = o.querySelector('.n-dropdown-option-body--group');
@@ -194,7 +194,6 @@
       ['用户分组','user-group','会员管理 / 会员分组','mem',1],
       ['分组表单','user-group-form','会员管理 / 会员分组','mem',1],
       ['CPF认证','cpf-auth','会员管理 / 认证·银行卡','mem',1],
-      ['登录日志列表','login-log-list','会员管理 / 登录·验证','mem',1],
       ['登录日志','login-log','会员管理 / 登录·验证','mem',1],
       ['短信验证码查询','sms-code','会员管理 / 登录·验证','mem',1],
       ['代理关系(D/C/M/A)','agent-relation','会员管理 / 代理关系','mem',1],
@@ -256,8 +255,10 @@
         + '.ar-wb-desc{font-size:13px;color:#94a3b8}'
         + '.ar-wb-count{float:right;background:#f1f5f9;color:#475569;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600}'
         + '.ar-wb-sec{font-size:18px;font-weight:700;color:#1f2937}'
-        + '.ar-wb-grid{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px}'
-        + '.ar-wb-tile{display:flex;flex:1 1 248px;max-width:480px;align-items:center;gap:10px;padding:11px 12px;border:1px solid #eef2f7;border-radius:12px;cursor:pointer;background:#fff;transition:.15s}'
+        + '.ar-wb-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:14px}'
+        + '.ar-wb-tile{display:flex;align-items:center;gap:10px;padding:13px 16px;border:1px solid #eef2f7;border-radius:12px;cursor:pointer;background:#fff;transition:.15s;min-width:0}'
+        + '.ar-wb-tile .ar-wb-tx{min-width:0;flex:1}'
+        + '.ar-wb-tile .ar-wb-nm,.ar-wb-tile .ar-wb-pt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
         + '.ar-wb-tile:hover{border-color:#bcd0ff;box-shadow:0 6px 16px rgba(37,99,235,.1);transform:translateY(-1px)}'
         + '.ar-wb-ic{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}'
         + '.ar-wb-tx{min-width:0;flex:1}'
@@ -465,7 +466,7 @@
       'cpf-auth': { t: 'CPF认证', f: ['用户ID','钱包类型','CPF','PIX','姓名'], c: [['用户ID','id'],['钱包类型','PIX'],['姓名','name'],['CPF','123.***.***-01'],['账号','acct'],['认证状态','on']], tb: ['新增','导出'], ra: ['修改','删除'], n: 16 },
       'kw-auth': { t: 'KW认证', f: ['用户ID','钱包类型','账号'], c: [['用户ID','id'],['钱包类型','KW'],['姓名','name'],['账号','acct'],['认证状态','on']], tb: ['新增','导出'], ra: ['修改','删除'], n: 14 },
       'login-log-list': { t: '登录日志列表', f: ['IP','商户'], c: [['登录IP','ip'],['相同登录数','int'],['关联会员数','int'],['代表会员','acct'],['最近登录','time']], tb: ['导出'], ra: ['查看会员'], n: 20 },
-      'login-log': { t: '登录日志', f: ['会员ID','IP','设备ID','浏览器指纹','开始时间','结束时间'], c: [['登录ID','id'],['会员ID','id'],['登录设备','dev'],['设备ID','devid'],['浏览器指纹','fp'],['登录时间','time'],['登录IP/登录地区','ip']], tb: ['导出'], ra: [], n: 48 },
+      'login-log': { t: '登录日志', loglog: 1, f: ['会员ID','IP','设备ID','浏览器指纹','开始时间','结束时间'], c: [['登录ID','id'],['会员ID','id'],['登录设备','dev'],['设备ID','devid'],['浏览器指纹','fp'],['登录时间','time'],['登录IP/登录地区','ip']], tb: ['导出'], ra: [], n: 48 },
       'sms-code': { t: '短信验证码查询', f: ['手机号码','验证码'], c: [['手机号码','138****88'],['验证码','8842'],['业务类型','登录验证'],['内容','验证码8842'],['发送时间','time'],['状态','on'],['发送IP','ip']], tb: ['导出'], ra: [], n: 44 },
       'agent-relation': { t: '代理关系(D/C/M/A)', f: ['会员ID','代理类型','绝对层级','日期','邀请码'], c: [['会员ID','id'],['账号','acct'],['上级ID','id'],['层级','int'],['直属下级','int'],['全部下级','int'],['代理','内部代理'],['注册时间','time'],['投注(金额/次/人)','m3'],['中奖(金额/次/人)','m3'],['佣金','money'],['充值(金额/次/人)','m3'],['提现(金额/次/人)','m3'],['红包','money'],['签到','money'],['代理红包','money'],['充值赠送','money'],['注册送金','money'],['彩金充值','money'],['首充满赠送','money']], tb: ['导出','绑定邀请码','批量解除代理'], ra: ['下级列表','返佣明细','解除代理关系','详情'], n: 40 },
       'agent-relation-import': { t: '代理关系导入', form: [['导入文件','file'],['商户','select'],['绑定方式','select'],['Excel 批量导入 / 解绑代理关系，请先下载模板按格式上传。','note']] },
@@ -604,6 +605,7 @@
         + '.arp-note{grid-column:1/3;font-size:12px;color:#94a3b8;background:#f8fafc;border:1px dashed #e5e7eb;border-radius:8px;padding:10px 12px}'
         + '.arp-file{height:40px;border:1px dashed #cbd5e1;border-radius:8px;display:flex;align-items:center;padding:0 12px;color:#94a3b8;font-size:13px;cursor:pointer}'
         + '.arp-upload{position:relative;width:118px;height:94px;border:1.5px dashed #cbd5e1;border-radius:10px;background:#fafbfc center/cover no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;color:#94a3b8;font-size:12px;cursor:pointer;transition:.15s}.arp-upload:hover{border-color:#93b4ff;color:#2563eb;background-color:#f5f8ff}.arp-up-plus{font-size:24px;line-height:1;color:#cbd5e1}.arp-upload:hover .arp-up-plus{color:#93b4ff}.arp-upload.has{border-style:solid;border-color:#e5e7eb}.arp-upload.has .arp-up-txt{display:none}.arp-up-rm{position:absolute;top:-7px;right:-7px;width:19px;height:19px;border-radius:50%;background:#ef4444;color:#fff;font-size:11px;line-height:19px;text-align:center;display:none;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.25)}.arp-upload.has .arp-up-rm{display:block}'
+        + '.wiz-pc{border:1.5px solid #c7dbff;border-radius:12px;background:#f7faff;padding:14px 16px;margin:10px 0 18px}.wiz-pc-h{display:flex;align-items:center;font-weight:800;color:#1d4ed8;font-size:14px;margin-bottom:8px}.wiz-pc-tip{font-size:12px;color:#64748b;background:#fff;border:1px solid #e1ebff;border-radius:8px;padding:8px 11px;margin-bottom:10px;line-height:1.6}.wiz-pc-row{display:flex;gap:14px;padding:7px 2px;border-bottom:1px dashed #dbe6fb;font-size:13px}.wiz-pc-k{color:#64748b;min-width:210px;flex:none}.wiz-pc-v{color:#1f2937;font-weight:600;word-break:break-all}.wiz-pc-v code{background:#eef2f7;padding:1px 6px;border-radius:4px;color:#7c3aed;font-size:12px;font-weight:400}.wiz-cp{cursor:pointer;color:#1d4ed8}.wiz-cp i{font-style:normal;opacity:.55;font-size:11px}.wiz-cp:hover{text-decoration:underline}.wiz-cp:hover i{opacity:1}.wiz-pc-evt{margin-top:12px}.wiz-pc-evt-h{font-weight:700;color:#1d4ed8;font-size:12.5px;margin-bottom:6px}.wiz-pc-tbl{border-collapse:collapse;font-size:12.5px}.wiz-pc-tbl td{border:1px solid #e1ebff;padding:4px 12px;background:#fff}.wiz-pc-tbl td.en{color:#7c3aed;font-family:monospace;font-size:11.5px}.wiz-pc-opt{font-size:12px;color:#64748b;margin-top:6px}.wiz-pc-doc{display:inline-block;margin-top:10px;color:#2563eb;text-decoration:none;font-size:12.5px}.wiz-r-sech{font-weight:700;color:#334155;font-size:13px;margin:4px 0 8px}'
         + '.arp-sw{position:relative;width:42px;height:23px;display:inline-block}.arp-sw input{display:none}.arp-sw span{position:absolute;inset:0;background:#cbd5e1;border-radius:23px;transition:.2s}.arp-sw span:before{content:"";position:absolute;width:19px;height:19px;left:2px;top:2px;background:#fff;border-radius:50%;transition:.2s}.arp-sw input:checked+span{background:#2563eb}.arp-sw input:checked+span:before{transform:translateX(19px)}'+ '.arp-mmask{position:fixed;inset:0;background:rgba(15,23,42,.42);z-index:3300;display:flex;align-items:center;justify-content:center}'+ '.arp-modal{background:#fff;border-radius:14px;width:min(1480px,96vw);height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 64px rgba(2,6,23,.3)}.arp-modal.sm{width:min(440px,92vw);height:auto;max-height:84vh}.arp-modal.form{width:min(760px,94vw);height:auto;max-height:86vh}'+ '.arp-mh{display:flex;flex:none;align-items:center;padding:15px 20px;border-bottom:1px solid #eef2f7;font-size:16px;font-weight:700;color:#1f2937}.arp-mh .x{margin-left:auto;cursor:pointer;color:#94a3b8}'+ '.arp-mb{padding:18px 20px;flex:1;overflow:auto;min-height:0}.arp-mf{display:flex;flex:none;justify-content:flex-end;gap:8px;padding:14px 20px;border-top:1px solid #eef2f7}'+ '.arp-dl{display:grid;grid-template-columns:130px 1fr;gap:10px 14px;font-size:13px}.arp-dl dt{color:#94a3b8}.arp-dl dd{color:#1f2937;margin:0;word-break:break-all}'+ '.arp-dl dt.arp-new,.arp-dl dd.arp-new{color:#d4380d}.arp-dl dd.arp-new .arp-link{color:#d4380d;text-decoration:underline}.arp-dl .arp-dl-sec{grid-column:1/3;margin-top:6px;padding-top:10px;border-top:1px dashed #f0c4b8;color:#d4380d;font-weight:700}'
         + '.arp-subtbl{width:100%;border-collapse:collapse;font-size:13px}.arp-subtbl th,.arp-subtbl td{padding:8px 12px;border-bottom:1px solid #eef2f7;text-align:left;white-space:nowrap}.arp-subtbl th{color:#94a3b8;font-weight:600;background:#f8fafc}'
         + '.md-wrap{font-size:13px}.md-sec{font-size:14px;font-weight:700;padding:13px 18px;color:#1f2733;border-bottom:1px solid #eef2f7}.md-sec.new{color:#d4380d}'
@@ -646,14 +648,22 @@
         var ptab = el.closest('[data-plat]'); if (ptab) { var pv = ptab.getAttribute('data-plat'); cur.platSel = (pv === '__all') ? null : pv; var ps = cur.s, pci = -1; ps.c.forEach(function (c, ix) { if (c[0].indexOf('平台') >= 0) pci = ix; }); cur.view = (cur.platSel && pci >= 0) ? cur.all.filter(function (r) { return strip(r[pci]).indexOf(cur.platSel) >= 0; }) : cur.all; cur.page = 1; paintTable(); return; }
         var csw = el.closest('[data-csw]'); if (csw) { var cName = csw.getAttribute('data-csw'), cRi = +csw.getAttribute('data-i'), cCi = +csw.getAttribute('data-ci'), cOn = csw.classList.contains('on'), cTo = cOn ? '关闭' : '开启'; openConfirm('确认要' + cTo + '该会员的「' + cName + '」吗？', function () { cur.all[cRi][cCi] = cOn ? '否' : '是'; csw.classList.toggle('on'); tip(cName + ' 已' + cTo); }); return; }
         var pwt=el.closest('[data-pwatab]'); if(pwt){pwaState.tab=+pwt.getAttribute('data-pwatab');renderPwaConfig();return;}
-        var wst=el.closest('[data-wstep]'); if(wst){saveStepData();wizState.step=+wst.getAttribute('data-wstep');renderWizard();return;}
+        var llt=el.closest('[data-loglogtab]'); if(llt){loginState.tab=+llt.getAttribute('data-loglogtab');renderLoginLog();return;}
+        var wjp=el.closest('[data-wjump]'); if(wjp){var _tc=document.getElementById('wcard-'+wjp.getAttribute('data-wjump'));if(_tc)_tc.scrollIntoView({behavior:'smooth',block:'start'});return;}
         var wgo=el.closest('[data-wgoto]'); if(wgo){var gr=wgo.getAttribute('data-wgoto');if(gr&&window.__arOpenTab)window.__arOpenTab(gr);return;}
+        var wtt=el.closest('[data-wtest]'); if(wtt){var _tev=(document.getElementById('wiztest-ev')||{}).value||'首充',_tcid=(document.getElementById('wiztest-cid')||{}).value||'',_tmd=(document.getElementById('wiztest-mode')||{}).value||'沙盒测试',_tpl=(function(){var c=document.getElementById('wiztest-ev');c=c&&c.closest('.wiz-card');var s=c&&c.querySelector('.wiz-form select');return s&&s.value?s.value:((wizState.data[3]||{})['投放平台']||'Facebook');})();wizTestResult=window.__wizTestBody(_tev,_tcid,_tmd,_tpl);var _trb=document.getElementById('wiztest-result');if(_trb)_trb.innerHTML=wizTestResult;tip('测试回传已发起');return;}
         var wsv=el.closest('[data-wsave]'); if(wsv){saveStepData();tip('本阶段配置已保存（演示）');return;}
-        var wdn=el.closest('[data-wdone]'); if(wdn){saveStepData();wizState.done[wizState.step]=!wizState.done[wizState.step];renderWizard();return;}
-        var wnx=el.closest('[data-wnext]'); if(wnx){saveStepData();if(!wizState.done[wizState.step]){tip('请先勾选确认本阶段检查点');return;}if(wizState.step<WIZ.length-1){wizState.step++;renderWizard();}else{openConfirm('5 个阶段已全部完成，确认生成配置结果？',function(){renderResult();});}return;}
+        var wdn=el.closest('[data-wdone]'); if(wdn){var _di=+wdn.getAttribute('data-wdone');saveAllStepData();wizState.done[_di]=!wizState.done[_di];renderWizard();return;}
+        var wsa=el.closest('[data-wsaveall]'); if(wsa){saveAllStepData();openConfirm('确认保存全部 4 个阶段的推广配置？',function(){window.__wizAddRecord&&window.__wizAddRecord();renderResult();});return;}
+        var wvw=el.closest('[data-wview]'); if(wvw){wizState.view=wvw.getAttribute('data-wview');renderWizard();return;}
+        var wrv=el.closest('[data-wrecview]'); if(wrv){window.__wizRecView&&window.__wizRecView(+wrv.getAttribute('data-wrecview'));return;}
+        var wru=el.closest('[data-wrecuse]'); if(wru){var _rui=+wru.getAttribute('data-wrecuse'),_rur=wizRecords[_rui];if(_rur&&_rur.data)wizState.data=JSON.parse(JSON.stringify(_rur.data));wizState.view='wizard';renderWizard();tip('已复用配置「'+(_rur?_rur.name:'')+'」，可修改后重新保存');return;}
+        var wrd=el.closest('[data-wrecdel]'); if(wrd){var _rdi=+wrd.getAttribute('data-wrecdel');openConfirm('确认删除该配置记录？',function(){wizRecords.splice(_rdi,1);renderWizard();tip('已删除');});return;}
         var wpv=el.closest('[data-wprev]'); if(wpv){saveStepData();if(wizState.step>0){wizState.step--;renderWizard();}return;}
         var wrs=el.closest('[data-wreset]'); if(wrs){wizState.step=0;renderWizard();return;}
-        var wex=el.closest('[data-wexport]'); if(wex){tip('配置结果已导出（演示）');return;}
+        var wex=el.closest('[data-wexport]'); if(wex){try{var _b=new Blob([window.__wizCfgText||''],{type:'text/plain'});var _a=document.createElement('a');_a.href=URL.createObjectURL(_b);_a.download='投放平台配置.txt';document.body.appendChild(_a);_a.click();_a.remove();}catch(_){}tip('配置已导出为 投放平台配置.txt');return;}
+        var wcp=el.closest('[data-wcp]'); if(wcp){try{navigator.clipboard&&navigator.clipboard.writeText(wcp.getAttribute('data-wcp'));}catch(_){}tip('已复制');return;}
+        var wca=el.closest('[data-wcpall]'); if(wca){try{navigator.clipboard&&navigator.clipboard.writeText(window.__wizCfgText||'');}catch(_){}tip('全部配置已复制，可粘贴给投放平台');return;}
         var act = el.closest('[data-act]'); if (act) { doRowAction(act.getAttribute('data-act'), +act.getAttribute('data-i')); return; }
       });
       page.addEventListener('change', function (e) { if (e.target.classList && e.target.classList.contains('arp-jumpi')) { var mx = Math.max(1, Math.ceil(cur.view.length / 10)); cur.page = Math.max(1, Math.min(mx, +e.target.value || 1)); paintTable(); } });
@@ -721,13 +731,13 @@
     function sumCol(rows,ci){var t=0;rows.forEach(function(r){var n=parseFloat(strip(r[ci]).replace(/,/g,''));if(!isNaN(n))t+=n;});return t;}
     function doSort(ci){if(cur.sortCi!==ci){cur.sortCi=ci;cur.sortDir=-1;}else cur.sortDir=-cur.sortDir;cur.view=cur.view.slice().sort(function(a,b){var na=parseFloat(strip(a[ci]).replace(/,/g,''))||0,nb=parseFloat(strip(b[ci]).replace(/,/g,''))||0;return (na-nb)*cur.sortDir;});cur.page=1;paintTable();}
     var WIZ=[
-     {t:'域名准备',icon:'🌐',mod:'域名管理',route:'domain-mgmt',color:'#3b82f6',roles:[['运营','#3b82f6'],['技术','#8b5cf6']],desc:'配置主域名 + 推广域名 + 防封救援，产出对外可访问的推广 URL。',form:[['商户','select',['请选择商户','AR062-diuwin','just888','ar066']],['主域名','text','如 m.sit-inr.com'],['推广域名','text','如 go.sit-inr.com'],['域名类型','select',['主域名','推广域名','防封谷歌页','防封苹果页']]],check:'域名解析生效、推广 URL 可访问、防封救援弹窗测试通过',out:'可访问的推广 URL'},
-     {t:'物料打包 / PWA',icon:'📦',mod:'打包管理',route:'apk-package',color:'#06b6d4',roles:[['技术','#8b5cf6'],['运营','#3b82f6']],desc:'按分发形态准备物料：原生 / 壳包打渠道包，PWA 走 PWA 管理发布，H5 免打包。',form:[['分发形态','select',['安卓 APK','iOS 原生','安卓壳包','iOS 壳包','H5 链接','PWA']],['应用名称','text','如 XGAME'],['关联渠道','select',['请选择渠道','ag010','FB-印度-01','TG-频道-02']],['版本号','text','如 v2.3.1']],check:'包可安装 / PWA 可添加到主屏、渠道码正确、页面与推送配置生效',out:'带渠道码的安装包 / PWA / H5'},
-     {t:'渠道绑定',icon:'🔗',mod:'渠道管理',route:'channel-config',color:'#f59e0b',roles:[['运营','#3b82f6']],desc:'新建渠道，绑定落地指向并关联埋点，生成带渠道码的推广链接。',form:[['渠道名称','text','如 FB-印度-01'],['落地指向','select',['请选择','推广域名','安装包','PWA','仿商店页']],['埋点类型','select',['常规推广','APK上架包','Facebook-click','Facebook-API','TikTok-click','TikTok-click-API','GTM-click','Kwai-click','Kwai-API']],['渠道码','text','自动生成 / 自定义']],check:'链接可正常打开、渠道码随链接携带、归因来源写入测试通过',out:'可投放的带渠道码链接'},
-     {t:'埋点回传',icon:'📊',mod:'埋点管理',route:'tracking-mgmt',color:'#10b981',roles:[['技术','#8b5cf6'],['优化师','#10b981']],desc:'配置广告平台回传：Click 上报 + API 回传，绑定必传基础事件。',form:[['投放平台','select',['Facebook','TikTok','谷歌 Google Ads','Kwai 快手']],['回传方式','select',['Click + API','Click 上报','API 回传']],['Pixel / 像素 ID','text','如 PX-88420917'],['回传 Token','text','服务端 API Token']],events:['激活','注册','登录','首充','付费'],check:'测试回传成功、事件到达广告平台、clickid 参数匹配',out:'广告平台回传闭环'},
-     {t:'投放监控',icon:'🚀',mod:'报表管理 / 渠道数据',route:'',color:'#8b5cf6',roles:[['优化师','#10b981']],desc:'在广告平台投放，监控回传数据，查看渠道 ROI 与会员归因，放量 / 降本。',form:[],check:'转化数据回流、会员归因正确、渠道 ROI 可见',out:'持续跑量与优化闭环'}
+     {t:'域名准备',icon:'🌐',mod:'域名管理',route:'domain-mgmt',color:'#3b82f6',roles:[['运营','#3b82f6'],['技术','#8b5cf6']],desc:'配置主域名 + 推广域名 + 防封救援，产出对外可访问的推广 URL。',form:[['商户','select',['请选择商户','AR062-diuwin','just888','ar066']],['主域名','select',['请选择（来源：域名管理）','m.sit-inr.com','ad.sit-inr.com','sitweb03.22889.club']],['推广域名','select',['请选择（来源：域名管理）','go.sit-inr.com','app-in.co','pwa.22889.club']],['域名类型','select',['主域名','推广域名','防封谷歌页','防封苹果页']]],check:'域名解析生效、推广 URL 可访问、防封救援弹窗测试通过',out:'可访问的推广 URL'},
+     {t:'物料打包 / PWA',icon:'📦',mod:'打包管理',route:'apk-package',color:'#06b6d4',roles:[['技术','#8b5cf6'],['运营','#3b82f6']],desc:'按分发形态准备物料：原生 / 壳包打渠道包，PWA 走 PWA 管理发布，H5 免打包。',pkg:1,form:[['分发形态','select',['安卓 APK','iOS 原生','安卓壳包','iOS 壳包','H5 链接','PWA']],['关联渠道','select',['请选择渠道','ag010','FB-印度-01','TG-频道-02']]],check:'包可安装 / PWA 可添加到主屏、渠道码正确、页面与推送配置生效',out:'带渠道码的安装包 / PWA / H5'},
+     {t:'渠道绑定',icon:'🔗',mod:'渠道管理',route:'channel-config',color:'#f59e0b',roles:[['运营','#3b82f6']],desc:'新建渠道，绑定落地指向并关联埋点，生成带渠道码的推广链接。',form:[['渠道名称','select',['请选择（来源：渠道管理）','FB-印度-01','TG-频道-02','ag010']],['推广域名','select',['请选择（来源：域名管理）','go.sit-inr.com','app-in.co','pwa.22889.club']],['落地指向','select',['请选择','推广域名','安装包','PWA','仿商店页']],['埋点类型','select',['常规推广','APK上架包','Facebook-click','Facebook-API','TikTok-click','TikTok-click-API','GTM-click','Kwai-click','Kwai-API']],['渠道码','text','自动生成 / 自定义']],check:'链接可正常打开、渠道码随链接携带、归因来源写入测试通过',out:'可投放的带渠道码链接'},
+     {t:'埋点回传',icon:'📊',mod:'埋点管理',route:'tracking-mgmt',color:'#10b981',roles:[['技术','#8b5cf6'],['优化师','#10b981']],desc:'配置广告平台回传：Click 上报 + API 回传，绑定必传基础事件。',form:[['投放平台','select',['Facebook','TikTok','谷歌 Google Ads','Kwai 快手']],['回传方式','select',['Click + API','Click 上报','API 回传']],['Pixel / 像素 ID','text','如 PX-88420917'],['回传 Token','text','服务端 API Token'],['关联域名','select',['请选择（来源：域名管理）','ad.sit-inr.com','go.sit-inr.com','pwa.22889.club']]],events:['激活','注册','登录','首充','付费'],check:'测试回传成功、事件到达广告平台、clickid 参数匹配',out:'广告平台回传闭环'}
     ];
-    var wizState={step:0,done:[false,false,false,false,false],data:{}};
+    var wizState={step:0,done:[false,false,false,false],data:{},view:'wizard'};
+    var wizTestResult='';
     function openChannelForm(act){
       var base='<div class="arp-ff"><label><span style="color:#ef4444">* </span>渠道名称</label><input class="arp-ipt" placeholder="请输入渠道名称"></div>'
         +'<div class="arp-ff"><label><span style="color:#ef4444">* </span>绑定域名</label><select class="arp-ipt"><option>请选择推广域名</option><option>go.sit-inr.com</option><option>ad.sit-inr.com</option></select></div>'
@@ -808,6 +818,16 @@
       page.querySelector('.arp-body').innerHTML='<div class="arp-card">'+tabs+filterHtml+'<div class="arp-tablecard"></div></div>';
       paintTable();
     }
+    var loginState={tab:0};
+    function renderLoginLog(){
+      var sub=loginState.tab===1?SPECS['login-log-list']:SPECS['login-log'];
+      cur={route:'login-log',s:sub,all:buildRows(sub),page:1};cur.view=cur.all;
+      var tabs='<div class="pwa-tabs">'+[['登录明细',0],['相同 IP 聚合',1]].map(function(t){return '<div class="pwa-tab'+(loginState.tab===t[1]?' on':'')+'" data-loglogtab="'+t[1]+'">'+t[0]+'</div>';}).join('')+'</div>';
+      var flt=sub.f.map(function(l){var ctl;if(/时间|日期/.test(l))ctl='<input class="arp-ipt" type="date">';else if(/商户/.test(l))ctl='<select class="arp-ipt"><option>请选择商户</option><option>AR062-diuwin</option><option>just888</option><option>ar066</option></select>';else ctl='<input class="arp-ipt arp-fi" placeholder="请输入'+l+'">';return '<div class="arp-f"><label>'+l+'</label>'+ctl+'</div>';}).join('');
+      var filterHtml='<div class="arp-fltwrap"><div class="arp-flt">'+flt+'</div></div><div class="arp-btns"><button class="arp-btn pri arp-search">🔍 查询</button><button class="arp-btn arp-reset">↻ 重置</button></div><div class="arp-sep"></div>';
+      page.querySelector('.arp-body').innerHTML='<div class="arp-card">'+tabs+filterHtml+'<div class="arp-tablecard"></div></div>';
+      paintTable();
+    }
     function openPwaForm(act){
       var f='<div class="arp-form">'
         +'<div class="arp-ff"><label><span style="color:#ef4444">* </span>请选择商户</label><select class="arp-ipt"><option>请选择商户</option><option>AR062-diuwin</option><option>just888</option><option>ar066</option></select></div>'
@@ -827,43 +847,68 @@
       openModal(act,body,function(){tip(act+'已保存（演示）');},'保存');
     }
 
+    var wizRecords=[
+     {id:'CFG260609-01',name:'FB-印度-安卓-01 · 安卓 APK',merchant:'AR062-diuwin',domain:'go.sit-inr.com',channel:'ag010',plat:'Facebook',form:'安卓 APK',status:'已启用',by:'sysadmin',time:'2026-06-09 14:20',data:{0:{'商户':'AR062-diuwin','主域名':'m.sit-inr.com','推广域名':'go.sit-inr.com','域名类型':'推广域名'},1:{'分发形态':'安卓 APK','应用名称':'XGAME','版本号':'v2.3.1'},2:{'渠道名称':'FB-印度-安卓-01','落地指向':'官网首页','渠道码':'ag010'},3:{'投放平台':'Facebook','回传方式':'Click + API','必传事件':'激活 / 注册 / 登录 / 首充 / 付费','优化事件':'加入购物车'}}},
+     {id:'CFG260608-02',name:'TikTok-BR-H5 · H5 链接',merchant:'just888',domain:'ad.sit-inr.com',channel:'tt205',plat:'TikTok',form:'H5 链接',status:'已启用',by:'sysadmin',time:'2026-06-08 10:05',data:{0:{'商户':'just888','推广域名':'ad.sit-inr.com','域名类型':'推广域名'},1:{'分发形态':'H5 链接'},2:{'渠道名称':'TikTok-BR-H5','落地指向':'仿谷歌页','渠道码':'tt205'},3:{'投放平台':'TikTok','回传方式':'Click + API','必传事件':'激活 / 注册 / 登录 / 首充 / 付费','优化事件':'（未选）'}}},
+     {id:'CFG260606-03',name:'Kwai-PWA-复充 · PWA',merchant:'ar066',domain:'go.sit-inr.com',channel:'kw118',plat:'Kwai',form:'PWA',status:'已停用',by:'admin01',time:'2026-06-06 16:40',data:{0:{'商户':'ar066','推广域名':'go.sit-inr.com','域名类型':'推广域名'},1:{'分发形态':'PWA'},2:{'渠道名称':'Kwai-PWA-复充','渠道码':'kw118'},3:{'投放平台':'Kwai 快手','回传方式':'Click + API','必传事件':'激活 / 注册 / 登录 / 首充 / 付费','优化事件':'首日复充 / 次日付费'}}}
+    ];
+    function renderWizRecords(vtab){
+      cur={route:'pkg-wizard',s:SPECS['pkg-wizard'],wizard:1};
+      var rows=wizRecords.length?wizRecords.map(function(r,i){var stCol=r.status==='已启用'?'#16a34a':'#94a3b8';return '<tr><td><b style="color:#475569">'+r.id+'</b></td><td>'+r.name+'</td><td>'+r.merchant+'</td><td>'+r.domain+'</td><td>'+r.channel+'</td><td>'+r.plat+'</td><td>'+r.form+'</td><td><span style="color:'+stCol+'">● </span>'+r.status+'</td><td>'+r.by+'</td><td>'+r.time+'</td><td style="white-space:nowrap"><span class="arp-link" data-wrecview="'+i+'">查看</span> <span class="arp-link" data-wrecuse="'+i+'">复用</span> <span class="arp-link" data-wrecdel="'+i+'">删除</span></td></tr>';}).join(''):'<tr><td colspan="11" class="arp-empty">暂无配置记录，完成一次向导配置并点「🎉 保存配置」后将自动归档</td></tr>';
+      page.querySelector('.arp-body').innerHTML='<div class="arp-card" style="padding:18px 20px">'+vtab+'<div style="font-size:13px;color:#64748b;margin-bottom:12px">历史推广配置记录 —— 每次在「配置向导」完成并保存后自动归档；可<b>查看</b>明细、<b>复用</b>为新配置或<b>删除</b>。</div><div class="arp-wrap"><table class="arp-tbl"><thead><tr><th>记录ID</th><th>配置名称</th><th>商户</th><th>主域名/推广域名</th><th>渠道</th><th>投放平台</th><th>分发形态</th><th>状态</th><th>配置人</th><th>配置时间</th><th>操作</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+    }
+    window.__wizAddRecord=function(){var D=function(i){return wizState.data[i]||{};};var d=new Date(),p=function(n){return(n<10?'0':'')+n;};var time=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());var id='CFG'+(''+d.getFullYear()).slice(2)+p(d.getMonth()+1)+p(d.getDate())+'-'+p(wizRecords.length+1);var name=(D(2)['渠道名称']||D(2)['渠道码']||'未命名渠道')+' · '+(D(1)['分发形态']||'-');var rec={id:id,name:name,merchant:D(0)['商户']||'-',domain:D(0)['推广域名']||D(0)['主域名']||'-',channel:D(2)['渠道码']||D(2)['渠道名称']||'-',plat:wizPlatKey(D(3)['投放平台']||'Facebook'),form:D(1)['分发形态']||'-',status:'已启用',by:'sysadmin',time:time,data:JSON.parse(JSON.stringify(wizState.data))};wizRecords.unshift(rec);};
+    window.__wizRecView=function(i){var r=wizRecords[i];if(!r)return;var STEPN=['域名准备','物料打包 / PWA','渠道绑定','埋点回传'];var sec=Object.keys(r.data||{}).map(function(k){var dd=r.data[k]||{},ks=Object.keys(dd);if(!ks.length)return '';var items=ks.map(function(kk){return '<div style="display:flex;justify-content:space-between;gap:14px;padding:4px 0;border-bottom:1px dashed #eef2f7;font-size:12.5px"><span style="color:#64748b">'+kk+'</span><b style="color:#1f2937;text-align:right">'+dd[kk]+'</b></div>';}).join('');return '<div style="margin-bottom:10px"><div style="font-weight:700;color:#1d4ed8;font-size:13px;margin-bottom:4px">'+(STEPN[k]||('阶段 '+k))+'</div>'+items+'</div>';}).join('');var head='<div style="background:#f8fafc;border:1px solid #eef2f7;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:12.5px;line-height:1.9">记录ID：<b>'+r.id+'</b>　投放平台：<b>'+r.plat+'</b>　分发形态：<b>'+r.form+'</b><br>商户：<b>'+r.merchant+'</b>　配置人：<b>'+r.by+'</b>　配置时间：<b>'+r.time+'</b></div>';openModal('配置记录 · '+r.name,head+(sec||'<div style="color:#94a3b8">无明细</div>'),false);};
     function renderWizard(){
       cur={route:'pkg-wizard',s:SPECS['pkg-wizard'],wizard:1};
-      var ws=wizState,w=WIZ[ws.step],color=w.color;
+      var vtab='<div class="pwa-tabs" style="margin-bottom:14px"><div class="pwa-tab'+(wizState.view!=='records'?' on':'')+'" data-wview="wizard">⚙ 配置向导</div><div class="pwa-tab'+(wizState.view==='records'?' on':'')+'" data-wview="records">🗂 配置记录（'+wizRecords.length+'）</div></div>';
+      if(wizState.view==='records'){renderWizRecords(vtab);return;}
       var bar='<div class="wiz-steps">';
       WIZ.forEach(function(x,i){
-        var st=ws.done[i]?'done':(i===ws.step?'on':'');
-        bar+='<div class="wiz-step '+st+'" data-wstep="'+i+'"><div class="wiz-num">'+(ws.done[i]?'✓':(i+1))+'</div><div class="wiz-lab">'+x.t+'</div></div>';
-        if(i<WIZ.length-1)bar+='<div class="wiz-line'+(ws.done[i]?' done':'')+'"></div>';
+        bar+='<div class="wiz-step '+(wizState.done[i]?'done':'')+'" data-wjump="'+i+'"><div class="wiz-num">'+(wizState.done[i]?'✓':(i+1))+'</div><div class="wiz-lab">'+x.t+'</div></div>';
+        if(i<WIZ.length-1)bar+='<div class="wiz-line'+(wizState.done[i]?' done':'')+'"></div>';
       });
       bar+='</div>';
-      var roles='';
-      var formHtml='';
-      if(w.form&&w.form.length){
-        formHtml='<div class="wiz-form">'+w.form.map(function(f){
-          var ctl,sv=(wizState.data[ws.step]||{})[f[0]]||'';
-          if(f[1]==='select')ctl='<select class="arp-ipt"'+(f[0]==='投放平台'?' onchange="window.__wizPlat&&window.__wizPlat(this.value)"':'')+'>'+f[2].map(function(o){return '<option'+(o===sv?' selected':'')+'>'+o+'</option>';}).join('')+'</select>';
-          else ctl='<input class="arp-ipt" placeholder="'+f[2]+'" value="'+sv+'">';
-          return '<div class="wiz-ff"><label>'+f[0]+'</label>'+ctl+'</div>';
-        }).join('')+'</div>';
-      }
-      var evHtml='';
-      if(w.events){var _pv=(wizState.data[ws.step]||{})['投放平台']||(w.form&&w.form[0]&&w.form[0][2]&&w.form[0][2][0])||'Facebook';evHtml=wizEvHtml(_pv);}
-      var done=ws.done[ws.step];
-      var checkHtml='<div class="wiz-check'+(done?' on':'')+'" data-wdone="1"><span class="wiz-ck">'+(done?'✓':'')+'</span> 我已确认本阶段检查点：'+w.check+'</div>';
-      var gotoBtn=w.route?'<button class="arp-btn" data-wgoto="'+w.route+'">去「'+w.mod.split(' / ')[0]+'」完整配置 ↗</button>':'';
-      var saveBtn=(w.form&&w.form.length)?'<button class="arp-btn pri" data-wsave="1">保存本阶段配置</button>':'';
-      var prevBtn=ws.step>0?'<button class="arp-btn" data-wprev="1">← 上一步</button>':'<span></span>';
-      var nextBtn=ws.step<WIZ.length-1?'<button class="arp-btn pri" data-wnext="1">下一步 →</button>':'<button class="arp-btn pri" data-wnext="1">🎉 完成配置</button>';
-      var card='<div class="wiz-card" style="border-top:3px solid '+color+'"><div class="wiz-h"><span class="wiz-icon">'+w.icon+'</span><b>第 '+(ws.step+1)+' 步 · '+w.t+'</b>'+roles+'<span class="wiz-mod">（'+w.mod+'）</span></div><div class="wiz-desc">'+w.desc+'</div>'+formHtml+evHtml+'<div class="wiz-ops">'+saveBtn+gotoBtn+'</div>'+checkHtml+'<div class="wiz-out" style="color:'+color+'">📤 本阶段产出：'+w.out+'</div></div>';
-      var nav='<div class="wiz-nav">'+prevBtn+nextBtn+'</div>';
-      var intro='<div style="font-size:13px;color:#64748b;margin-bottom:10px">按 5 个阶段依次配置，每步勾选检查点后进入下一步；可点「去完整配置」跳到对应功能页操作。</div>';
-      page.querySelector('.arp-body').innerHTML='<div class="arp-card" style="padding:18px 20px">'+intro+bar+card+nav+'</div>';
+      var intro='<div style="font-size:13px;color:#64748b;margin-bottom:10px"><b>推广分发配置</b> —— 拉新投放的基础链路：把 域名管理 → 打包管理 → 渠道配置 → 埋点管理 串成一条主配置链，打通 安卓 / iOS / 壳包 / H5 / PWA 多种分发形态；从域名准备到上线投放端到端贯通，让每个会员来源都经「渠道码 + 埋点」写入归因来源、闭环到渠道 ROI。</div>';
+      var cards=WIZ.map(function(w,i){
+        var color=w.color,formHtml='';
+        if(w.form&&w.form.length){
+          formHtml='<div class="wiz-form">'+w.form.map(function(f){
+            var ctl,sv=(wizState.data[i]||{})[f[0]]||'';
+            if(f[1]==='select')ctl='<select class="arp-ipt"'+(f[0]==='投放平台'?' onchange="window.__wizPlat&&window.__wizPlat(this.value)"':(f[0]==='分发形态'?' onchange="window.__pkgCfg&&window.__pkgCfg(this.value)"':''))+'>'+f[2].map(function(o){return '<option'+(o===sv?' selected':'')+'>'+o+'</option>';}).join('')+'</select>';
+            else ctl='<input class="arp-ipt" placeholder="'+f[2]+'" value="'+sv+'">';
+            return '<div class="wiz-ff"><label>'+f[0]+'</label>'+ctl+'</div>';
+          }).join('')+'</div>';
+        }
+        var evHtml='';if(w.events){var _pv=(wizState.data[i]||{})['投放平台']||(w.form&&w.form[0]&&w.form[0][2]&&w.form[0][2][0])||'Facebook';evHtml=wizEvHtml(_pv);}
+        var testHtml='';if(w.events){testHtml='<div class="wiz-test" style="margin-top:12px;border:1px solid #cdeee2;border-radius:10px;background:#f6fbf9;padding:12px 14px"><div style="font-weight:700;color:#0f766e;font-size:13px;margin-bottom:8px">🧪 测试回传 <span style="font-weight:400;color:#64748b;font-size:12px">配置测试事件 → 保存并发起测试回传 → 查看回传效果（验证 Click/API 链路）</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin-bottom:8px"><div class="wiz-ff"><label>测试事件</label><select class="arp-ipt" id="wiztest-ev"><option>激活</option><option>注册</option><option>登录</option><option selected>首充</option><option>付费</option></select></div><div class="wiz-ff"><label>测试标识(clickid)</label><input class="arp-ipt" id="wiztest-cid" placeholder="fbclid/gclid/ttclid（留空用沙盒值）"></div><div class="wiz-ff" style="grid-column:1 / -1"><label>测试模式</label><select class="arp-ipt" id="wiztest-mode"><option>沙盒测试（不计入正式）</option><option>正式回传</option></select></div></div><div class="wiz-ops"><button class="arp-btn pri" data-wtest="1">💾 保存并测试回传</button></div><div id="wiztest-result">'+(wizTestResult||'<div style="font-size:12px;color:#94a3b8;padding:8px 0">点击「保存并测试回传」查看回传效果</div>')+'</div></div>';}
+        var pkgHtml='';if(w.pkg){var _fv=(wizState.data[i]||{})['分发形态']||(w.form&&w.form[0]&&w.form[0][2]&&w.form[0][2][0])||'安卓 APK';pkgHtml='<div id="pkg-cfg">'+window.__pkgCfgBody(_fv)+'</div>';}
+        var gotoBtn=w.route?'<div class="wiz-ops"><button class="arp-btn" data-wgoto="'+w.route+'">去「'+w.mod.split(' / ')[0]+'」完整配置 ↗</button></div>':'';
+        return '<div class="wiz-card" data-wcard="'+i+'" id="wcard-'+i+'" style="border-top:3px solid '+color+';margin-bottom:14px"><div class="wiz-h"><span class="wiz-icon">'+w.icon+'</span><b>'+(i+1)+' · '+w.t+'</b><span class="wiz-mod">（'+w.mod+'）</span></div><div class="wiz-desc">'+w.desc+'</div>'+formHtml+evHtml+pkgHtml+gotoBtn+'<div class="wiz-out" style="color:'+color+'">📤 本阶段产出：'+w.out+'</div></div>';
+      }).join('');
+      var saveBar='<div class="wiz-nav"><span></span><button class="arp-btn pri" data-wsaveall="1">🎉 保存配置</button></div>';
+      page.querySelector('.arp-body').innerHTML='<div class="arp-card" style="padding:18px 20px">'+vtab+intro+bar+cards+saveBar+'</div>';
+    }
+    function saveAllStepData(){
+      page.querySelectorAll('.wiz-card[data-wcard]').forEach(function(card){
+        var i=+card.getAttribute('data-wcard'),d={};
+        card.querySelectorAll('.wiz-form .wiz-ff').forEach(function(ff){var lab=ff.querySelector('label'),ctl=ff.querySelector('input,select');if(lab&&ctl&&ctl.value&&ctl.value.indexOf('请选择')<0&&ctl.value.indexOf('请输入')<0)d[lab.textContent.trim()]=ctl.value;});
+        var bs=[];card.querySelectorAll('[data-wevbox] .wiz-ev.locked').forEach(function(l){bs.push(l.getAttribute('data-ev'));});
+        if(bs.length)d['必传事件']=bs.join(' / ');
+        var os=[];card.querySelectorAll('[data-wevbox] .wiz-ev.opt input:checked').forEach(function(cb){var lb=cb.closest('.wiz-ev');if(lb)os.push(lb.getAttribute('data-ev'));});
+        if(bs.length)d['优化事件']=os.length?os.join(' / '):'（未选）';
+        wizState.data[i]=d;
+      });
     }
     var WIZEV={base:['激活','注册','登录','首充','付费'],name:{'Facebook':{'激活':'Activate App','注册':'CompleteRegistration','登录':'Login','首充':'Purchase(首充)','付费':'Purchase'},'TikTok':{'激活':'LaunchAPP','注册':'Registration','登录':'Login','首充':'CompletePayment(首充)','付费':'CompletePayment'},'谷歌':{'激活':'first_open','注册':'sign_up','登录':'login','首充':'first_deposit','付费':'purchase'},'Kwai':{'激活':'active','注册':'register','登录':'login','首充':'firstRecharge','付费':'recharge'}},opt:{'Facebook':[['开始游戏','StartTrial'],['加入购物车','AddToCart'],['拉起订单','InitiateCheckout']],'TikTok':[['加入购物车','AddToCart'],['拉起订单','InitiateCheckout'],['下载','Download']],'谷歌':[['注册点击','registerClick'],['登出','logout'],['开始游戏','enterGame'],['加入购物车','addToCart']],'Kwai':[['加入购物车','addToCart'],['首日复充','EVENT_PURCHASE_1_DAY'],['次日付费','EVENT_PURCHASE_2_DAY'],['三日付费','EVENT_PURCHASE_3_DAY'],['七日付费','EVENT_PURCHASE_7_DAY']]}};
     function wizPlatKey(v){v=v||'';if(v.indexOf('TikTok')>=0)return 'TikTok';if(v.indexOf('谷歌')>=0||v.indexOf('Google')>=0)return '谷歌';if(v.indexOf('Kwai')>=0||v.indexOf('快手')>=0)return 'Kwai';return 'Facebook';}
     function wizEvHtml(platVal){var k=wizPlatKey(platVal),nm=WIZEV.name[k]||WIZEV.name['Facebook'];var baseItems=WIZEV.base.map(function(e){return '<label class="wiz-ev locked" data-ev="'+e+'" title="必传事件，系统强制上报，不可取消"><input type="checkbox" checked disabled> '+e+' <span class="wiz-ev-en">'+(nm[e]||'')+'</span></label>';}).join('');var opts=WIZEV.opt[k]||[];var optItems=opts.length?opts.map(function(o){return '<label class="wiz-ev opt" data-ev="'+o[0]+'"><input type="checkbox" data-wopt="1"> '+o[0]+' <span class="wiz-ev-en">'+o[1]+'</span></label>';}).join(''):'<span style="font-size:12px;color:#94a3b8">该平台暂无可选优化事件</span>';return '<div class="wiz-events" data-wevbox="1" style="position:relative"><span class="wiz-evhelp" onclick="window.__wizHelp&&window.__wizHelp(\''+k+'\')" title="查看该平台埋点说明">?</span><div class="wiz-evlbl">必传基础事件 · '+k+'（系统强制上报，不可取消）</div><div class="wiz-evrow">'+baseItems+'</div><div class="wiz-evlbl" style="margin-top:12px">优化事件 · 来源：埋点管理（非必选项 · 可多选，默认不选）</div><div class="wiz-evrow">'+optItems+'</div></div>';}
+    var PKGCFG={'安卓 APK':{fields:[['应用名称','如 XGAME'],['版本号','如 v2.3.1'],['打包域名','m.sit-inr.com']],files:['安卓包（.apk）']},'iOS 原生':{fields:[['应用名称','如 XGAME'],['版本号','如 v2.3.1']],files:['iOS包（.ipa）']},'安卓壳包':{fields:[['壳访问 URL（推广域名）','如 go.sit-inr.com']],files:['安卓壳包（WebView 套壳）']},'iOS 壳包':{fields:[['壳访问 URL（推广域名）','如 go.sit-inr.com']],files:['iOS壳包（WebView 套壳）']},'H5 链接':{tip:'H5 无需打包，配好推广域名即可在浏览器直接打开；可在「渠道配置」开启安装引导弹窗，引导用户升级 PWA / APK。'},'PWA':{tip:'PWA 无需打包，前往 PWA 管理完成：域名(内外链) → 页面配置 → 推送配置 → 发布。',goto:'pwa-config',gotoName:'PWA 管理'}};
+    window.__pkgCfgBody=function(v){var c=PKGCFG[v]||PKGCFG['安卓 APK'];if(c.tip){var g=c.goto?'<button class="arp-btn" data-wgoto="'+c.goto+'" style="margin-top:10px">去「'+c.gotoName+'」↗</button>':'';return '<div style="border:1px dashed #cbd5e1;border-radius:8px;padding:12px 14px;background:#fafbfc;font-size:13px;color:#64748b;line-height:1.7;margin-top:6px">💡 '+c.tip+'<br>'+g+'</div>';}var ff=(c.fields||[]).map(function(f){var ctl=/域名|URL/.test(f[0])?'<select class="arp-ipt"><option>请选择（来源：域名管理）</option><option>m.sit-inr.com</option><option>go.sit-inr.com</option><option>ad.sit-inr.com</option></select>':'<input class="arp-ipt" placeholder="'+f[1]+'">';return '<div class="wiz-ff"><label>'+f[0]+'</label>'+ctl+'</div>';}).join('');var fl=(c.files||[]).map(function(f){return '<div class="wiz-ff" style="grid-column:1 / -1"><label>'+f+'</label><div class="arp-file">📦 点击上传 '+f+'</div></div>';}).join('');return '<div style="font-weight:700;color:#06b6d4;font-size:13px;margin:8px 0 8px">「'+v+'」打包配置</div><div class="wiz-form">'+ff+fl+'</div>';};
+    window.__pkgCfg=function(v){var box=document.getElementById('pkg-cfg');if(box)box.innerHTML=window.__pkgCfgBody(v);};
     window.__wizPlat=function(v){var b=document.querySelector('[data-wevbox]');if(b)b.outerHTML=wizEvHtml(v);};
+    window.__wizTestHtml=function(){return '<div class="wiz-test" style="border:1px solid #cdeee2;border-radius:10px;background:#f6fbf9;padding:12px 14px"><div style="font-weight:700;color:#0f766e;font-size:13px;margin-bottom:8px">🧪 测试回传 <span style="font-weight:400;color:#64748b;font-size:12px">配置已保存，发起测试回传验证 Click / API 链路是否打通</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin-bottom:8px"><div class="wiz-ff"><label>测试事件</label><select class="arp-ipt" id="wiztest-ev"><option>激活</option><option>注册</option><option>登录</option><option selected>首充</option><option>付费</option></select></div><div class="wiz-ff"><label>测试标识(clickid)</label><input class="arp-ipt" id="wiztest-cid" placeholder="fbclid/gclid/ttclid（留空用沙盒值）"></div><div class="wiz-ff" style="grid-column:1 / -1"><label>测试模式</label><select class="arp-ipt" id="wiztest-mode"><option>沙盒测试（不计入正式）</option><option>正式回传</option></select></div></div><div class="wiz-ops"><button class="arp-btn pri" data-wtest="1">💾 发起测试回传</button></div><div id="wiztest-result">'+(wizTestResult||'<div style="font-size:12px;color:#94a3b8;padding:8px 0">点击「发起测试回传」查看回传效果</div>')+'</div></div>';};
+    window.__wizTestBody=function(ev,cid,mode,plat){var k=wizPlatKey(plat),nm=(WIZEV.name[k]||WIZEV.name['Facebook']),pe=nm[ev]||ev;var full=({'Facebook':'Facebook（Meta CAPI）','TikTok':'TikTok Events API','谷歌':'Google Ads API','Kwai':'Kwai API'})[k]||'Facebook';var cn=({'Facebook':'fbclid','TikTok':'ttclid','谷歌':'gclid','Kwai':'callback'})[k]||'fbclid';var _c=cid||(cn+'_sandbox_8842xx');var rows=[['投放平台',full],['测试事件',ev+' → <span style="color:#7c3aed;font-family:monospace">'+pe+'</span>'],['回传方式','Click 上报 + API 回传（按 event_id 去重）'],['平台响应','<span style="color:#16a34a">HTTP 200</span> · {"events_received":1,"fbtrace_id":"A8x...c2"}'],[cn+' 匹配','<span style="color:#16a34a">✓ 已匹配</span> · '+_c],['event_id 去重','已生成 evt_'+(ev.length+7)+'8f3a（Click/API 同 id）'],['到达耗时','312 ms'],['匹配质量 EMQ','8.4 / 10'],['测试模式',mode]];var tr=rows.map(function(r){return '<div style="display:flex;justify-content:space-between;gap:14px;padding:5px 0;border-bottom:1px dashed #e2eee9;font-size:12.5px"><span style="color:#64748b;white-space:nowrap">'+r[0]+'</span><b style="color:#1f2937;text-align:right">'+r[1]+'</b></div>';}).join('');return '<div style="margin-top:10px;border:1px solid #bbf7d0;border-radius:8px;background:#fff;padding:10px 14px"><div style="font-weight:700;color:#16a34a;font-size:13px;margin-bottom:4px">✅ 测试回传成功 · 链路已打通</div>'+tr+'</div>';};
     var WIZHELP={'Facebook':{full:'Facebook（Meta）',click:'fbclid / fbp',way:'Pixel（Click 前端像素）＋ CAPI（转化 API 服务端回传）',key:'CAPI 服务端回传绕过 iOS ATT 与浏览器丢包，是 FB 跑量命脉；Click 与 API 并行、按 event_id 去重。',doc:'https://developers.facebook.com/docs/marketing-api/conversions-api/'},'TikTok':{full:'TikTok Ads',click:'ttclid',way:'Pixel（Click）＋ Events API（服务端）',key:'ttclid 服务端回传，支持事件匹配（EMA）。',doc:'https://business-api.tiktok.com/portal/docs?id=1771101027431425'},'谷歌':{full:'谷歌 Google Ads',click:'gclid / gbraid / wbraid',way:'GTM（Click）＋ Google Ads API',key:'iOS 用 gbraid / wbraid，安卓配合 GAID；gclid 失效时用 braid 系列。',doc:'https://developers.google.com/google-ads/api/docs/conversions/overview'},'Kwai':{full:'Kwai 快手',click:'callback / clickid',way:'Pixel（Click）＋ Kwai API（多日归因）',key:'支持多日归因窗口，适合长转化周期（首日/次日/三日/七日复充）。',doc:'https://developers.kwai.com/'}};
     window.__wizHelpBody=function(k){var h=WIZHELP[k]||WIZHELP['Facebook'],nm=WIZEV.name[k]||{};function rows(arr){return arr.map(function(e){var c=Array.isArray(e)?e[0]:e,en=Array.isArray(e)?e[1]:(nm[e]||'');return '<tr><td style="padding:6px 10px;border:1px solid #e5e7eb">'+c+'</td><td style="padding:6px 10px;border:1px solid #e5e7eb;color:#7c3aed;font-family:monospace;font-size:12px">'+en+'</td></tr>';}).join('');}var th='<thead><tr><th style="padding:6px 10px;border:1px solid #e5e7eb;background:#f1f5f9;text-align:left">业务事件</th><th style="padding:6px 10px;border:1px solid #e5e7eb;background:#f1f5f9;text-align:left">平台事件名</th></tr></thead>';var optA=WIZEV.opt[k]||[],optR=optA.length?rows(optA):'<tr><td colspan="2" style="padding:6px 10px;border:1px solid #e5e7eb;color:#94a3b8">该平台暂无可选优化事件</td></tr>';var body='<div style="font-size:13px;color:#475569;line-height:1.85"><div style="font-size:15px;font-weight:800;color:#1f2937;margin-bottom:6px">'+h.full+' · 埋点说明</div><div style="background:#f8fafc;border:1px solid #eef2f7;border-radius:8px;padding:8px 12px;margin-bottom:10px">📡 <b>回传方式</b>：'+h.way+'<br>🔖 <b>点击参数</b>：<span style="color:#7c3aed;font-family:monospace">'+h.click+'</span><br>💡 <b>关键说明</b>：'+h.key+'</div><div style="font-weight:700;color:#1d4ed8;margin:8px 0 4px">必传基础事件（系统强制上报，不可取消）</div><table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;font-size:13px">'+th+'<tbody>'+rows(WIZEV.base)+'</tbody></table><div style="font-weight:700;color:#1d4ed8;margin:12px 0 4px">优化事件（来源：埋点管理，可多选）</div><table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;font-size:13px">'+th+'<tbody>'+optR+'</tbody></table><div style="margin-top:10px"><a href="'+h.doc+'" target="_blank" rel="noopener" style="color:#2563eb;text-decoration:none">📄 '+h.full+' 开发文档 ↗</a></div></div>';return body;};
     window.__wizHelp=function(k){var PL=[['Facebook','Facebook'],['TikTok','TikTok'],['谷歌','谷歌 Google'],['Kwai','Kwai 快手']];var tabs='<div class="wiz-htabs">'+PL.map(function(p){return '<span class="wiz-htab'+(p[0]===k?' on':'')+'" data-whtab="'+p[0]+'" onclick="window.__wizHelpSwitch(&#39;'+p[0]+'&#39;)">'+p[1]+'</span>';}).join('')+'</div>';openModal('埋点说明 · 按投放平台查看',tabs+'<div id="wizhelp-body">'+window.__wizHelpBody(k)+'</div>',false);};
@@ -880,25 +925,44 @@
       if(bs.length)d['优化事件']=os.length?os.join(' / '):'（未选）';
       wizState.data[wizState.step]=d;
     }
+    function genPlatformConfig(){
+      var D=function(i){return wizState.data[i]||{};};
+      var k=wizPlatKey(D(3)['投放平台']||'Facebook');
+      var h=WIZHELP[k]||WIZHELP['Facebook'], nm=WIZEV.name[k]||WIZEV.name['Facebook'];
+      var dom=(D(0)['推广域名']||'go.sit-inr.com').replace(/^https?:\/\//,'').replace(/\/$/,'');
+      var ch=D(2)['渠道码']||D(2)['渠道名称']||'ag010';
+      var form=D(1)['分发形态']||'安卓 APK';
+      var cidn=({'Facebook':'fbclid','TikTok':'ttclid','谷歌':'gclid','Kwai':'callback'})[k];
+      var link='https://'+dom+'/?ch='+ch+'&'+cidn+'={'+cidn+'}';
+      var pixel=({'Facebook':'PX-88420917','TikTok':'CTK-88420917','谷歌':'AW-884209170','Kwai':'KW-88420917'})[k];
+      var apiUrl=({'Facebook':'https://graph.facebook.com/v19.0/'+pixel+'/events','TikTok':'https://business-api.tiktok.com/open_api/v1.3/event/track/','谷歌':'GoogleAdsService.UploadClickConversions','Kwai':'https://www.adkwai.com/rest/n/mediartlog/conversion'})[k];
+      var optA=WIZEV.opt[k]||[]; var optTxt=optA.length?optA.map(function(o){return o[0]+'='+o[1];}).join('，'):'（未选）';
+      var evMap=WIZEV.base.map(function(e){return e+'→'+(nm[e]||'');}).join('，');
+      window.__wizCfgText=['【投放平台配置 · '+h.full+'】','投放端/形态：'+form,'推广链接：'+link,'点击参数 clickid：'+h.click,'回传方式：'+h.way,'Pixel/像素 ID：'+pixel,'API 回传地址：'+apiUrl,'Access Token：（由投放平台后台分配后填入）','回传事件映射（基础必传）：'+evMap,'优化事件：'+optTxt,'开发文档：'+h.doc].join(String.fromCharCode(10));
+      function cp(v){return '<span class="wiz-cp" data-wcp="'+String(v).replace(/"/g,'&quot;')+'" title="点击复制">'+v+' <i>⧉</i></span>';}
+      var rows=[['投放平台',h.full],['投放端 / 分发形态',form],['推广链接（带渠道码 + clickid 宏）',cp(link)],['点击参数 clickid','<code>'+h.click+'</code>'],['回传方式',h.way],['像素 / Pixel ID',cp(pixel)],['API 回传地址（CAPI / S2S）',cp(apiUrl)],['Access Token','<i style="color:#94a3b8">由投放平台后台分配后填入</i>']];
+      var rowHtml=rows.map(function(r){return '<div class="wiz-pc-row"><span class="wiz-pc-k">'+r[0]+'</span><span class="wiz-pc-v">'+r[1]+'</span></div>';}).join('');
+      var evRows=WIZEV.base.map(function(e){return '<tr><td>'+e+'</td><td class="en">'+(nm[e]||'')+'</td></tr>';}).join('');
+      return '<div class="wiz-pc"><div class="wiz-pc-h">📦 投放平台配置内容 · 提供给【'+h.full+'】<button class="arp-btn pri" data-wcpall="1" style="margin-left:auto;padding:5px 14px;font-size:12px">⧉ 复制全部配置</button></div><div class="wiz-pc-tip">把以下配置交给投放平台 / 广告优化师：用「推广链接」建广告，用 Pixel + API 回传地址 + Token 配置转化回传，按「事件映射」对应平台事件名。</div><div class="wiz-pc-rows">'+rowHtml+'</div><div class="wiz-pc-evt"><div class="wiz-pc-evt-h">回传事件映射（基础必传 → '+k+' 平台事件名）</div><table class="wiz-pc-tbl">'+evRows+'</table><div class="wiz-pc-opt">优化事件：'+optTxt+'</div></div><a class="wiz-pc-doc" href="'+h.doc+'" target="_blank" rel="noopener">📄 '+h.full+' 回传开发文档 ↗</a></div>';
+    }
     function renderResult(){
       cur={route:'pkg-wizard',s:SPECS['pkg-wizard'],wizard:1};
       var doneN=wizState.done.filter(function(x){return x;}).length;
       var cards=WIZ.map(function(w,i){
         var d=wizState.data[i]||{},keys=Object.keys(d);
         var items=keys.length?keys.map(function(k){return '<div class="wiz-r-item"><span>'+k+'</span><b>'+d[k]+'</b></div>';}).join(''):'<div class="wiz-r-empty">（未填写）</div>';
-        var ck=wizState.done[i]?'<span class="wiz-r-ok">✓ 已确认</span>':'<span class="wiz-r-no">○ 未确认</span>';
-        return '<div class="wiz-r-card" style="border-left:3px solid '+w.color+'"><div class="wiz-r-ch"><b style="color:'+w.color+'">'+w.icon+' 第 '+(i+1)+' 步 · '+w.t+'</b>'+ck+'</div><div class="wiz-r-items">'+items+'</div><div class="wiz-r-out" style="color:'+w.color+'">📤 '+w.out+'</div></div>';
+        return '<div class="wiz-r-card" style="border-left:3px solid '+w.color+'"><div class="wiz-r-ch"><b style="color:'+w.color+'">'+w.icon+' 第 '+(i+1)+' 步 · '+w.t+'</b></div><div class="wiz-r-items">'+items+'</div><div class="wiz-r-out" style="color:'+w.color+'">📤 '+w.out+'</div></div>';
       }).join('');
       var html='<div class="arp-card" style="padding:24px 22px">'
-        +'<div class="wiz-r-top"><div class="wiz-r-badge">🎉</div><div><div class="wiz-r-title">推广配置全流程已完成</div><div class="wiz-r-sub">以下为 5 个阶段的配置结果汇总（检查点完成 '+doneN+'/5）</div></div></div>'
+        +'<div class="wiz-r-top"><div class="wiz-r-badge">🎉</div><div><div class="wiz-r-title">推广配置已完成 · 已生成投放平台配置</div><div class="wiz-r-sub">下方为可直接提供给投放平台的配置内容，并附各阶段配置汇总</div></div></div>'+genPlatformConfig()+'<div class="wiz-r-sech" style="margin-top:16px">🧪 回传测试 · 验证 Click / API 链路（配置已保存）</div>'+window.__wizTestHtml()+'<div class="wiz-r-sech" style="margin-top:16px">▸ 各阶段配置结果汇总</div>'
         +'<div class="wiz-r-grid">'+cards+'</div>'
-        +'<div class="wiz-r-chain">🔗 <b>全链路闭环</b>：域名 → 物料 / PWA → 渠道（渠道码）→ 埋点回传 → 投放监控；来源写入会员「归因来源」，闭环到渠道 ROI。</div>'
+        +'<div class="wiz-r-chain">🔗 <b>全链路闭环</b>：域名 → 物料 / PWA → 渠道（渠道码）→ 埋点回传；来源写入会员「归因来源」，闭环到渠道 ROI。</div>'
         +'<div class="wiz-r-ops"><button class="arp-btn" data-wreset="1">← 返回重新配置</button><button class="arp-btn pri" data-wexport="1">📄 导出配置结果</button></div>'
         +'</div>';
       page.querySelector('.arp-body').innerHTML=html;
     }
     var FOPT={'广告平台':['全部','Facebook','TikTok','谷歌 Google','Kwai 快手'],'回传类型':['全部','Click 上报','API 回传'],'状态':['全部','启用','停用'],'解析状态':['全部','生效','检测中','失效'],'域名类型':['全部','主域名','推广域名','防封谷歌页','防封苹果页'],'链接类型':['全部','内链','外链'],'语言切换':['全部','English','Português'],'发布语言':['全部','English','Português'],'平台':['全部','安卓包','iOS包','安卓壳包','iOS壳包'],'落地指向':['全部','仿谷歌页','官网首页','官网注册页'],'渠道分组':['全部','自然量','付费投放','代理推广'],'会员状态':['全部','正常','禁用'],'代理状态':['全部','正常','禁用'],'会员分组':['全部','默认','大客户','高风险'],'会员类型':['全部','真实用户','测试用户'],'注册设备':['全部','Android','iOS','PC'],'黑名单状态':['全部','正常','拉黑'],'活动黑名单':['全部','正常','黑名单'],'VIP等级':['全部','VIP0','VIP1','VIP2','VIP3','VIP4','VIP5'],'在线状态':['全部','在线','离线'],'渠道':['全部','CH001','CH002','CH003','CH005']};
-    function render(route){var s=SPECS[route];if(!s)return;tabEl.textContent=s.t;if(s.wizard){renderWizard();return;}if(s.pwa){renderPwaConfig();return;}if(s.html){page.querySelector('.arp-body').innerHTML=s.html;return;}if(s.form){cur={route:route,s:s};renderForm(s);return;}cur={route:route,s:s,all:buildRows(s),page:1};cur.view=cur.all;
+    function render(route){var s=SPECS[route];if(!s)return;tabEl.textContent=s.t;if(s.wizard){renderWizard();return;}if(s.pwa){renderPwaConfig();return;}if(s.loglog){renderLoginLog();return;}if(s.html){page.querySelector('.arp-body').innerHTML=s.html;return;}if(s.form){cur={route:route,s:s};renderForm(s);return;}cur={route:route,s:s,all:buildRows(s),page:1};cur.view=cur.all;
       var flt=s.f.map(function(l,fi){var req=/^代理ID$/.test(l),ctl;if(/时间|日期/.test(l))ctl='<input class="arp-ipt" type="date" value="2026-06-08">';else if(/商户/.test(l))ctl='<select class="arp-ipt"><option>请选择商户</option><option>AR062-diuwin</option><option>just888</option><option>ar066</option></select>';else if(/号$|名称$|来源$/.test(l))ctl='<input class="arp-ipt arp-fi" placeholder="'+(req?'必填':'请输入'+l)+'">';else if(/状态|类型|层级|设备$|排序|等级|平台|渠道|通道|分组|方式|活动$|指向|语言|名单|VIP|在线/.test(l)){var _fo=FOPT[l]||['请选择','选项 A','选项 B'];ctl='<select class="arp-ipt">'+_fo.map(function(_o){return '<option>'+_o+'</option>';}).join('')+'</select>';}else ctl='<input class="arp-ipt arp-fi" placeholder="'+(req?'必填':'请输入'+l)+'">';return '<div class="arp-f'+(fi>=6?' arp-adv-item':'')+'"><label>'+(req?'<span style="color:#ef4444">* </span>':'')+l+'</label>'+ctl+'</div>';}).join('');
       var hasTime=s.f.some(function(l){return /时间|日期/.test(l);});
       var quick=hasTime?'<div class="arp-quick"><span class="ql">快捷</span>'+['今天','昨天','本周','上周','本月','上月','所有'].map(function(q){return '<button class="arp-chip" data-quick="'+q+'">'+q+'</button>';}).join('')+'</div>':'';
@@ -1079,7 +1143,7 @@
     function paint() {
       var c = container(); if (!c) return;
       [].slice.call(c.querySelectorAll('[data-artab]')).forEach(function (el) { if (openTabs.indexOf(el.getAttribute('data-artab')) < 0) el.remove(); });
-      openTabs.forEach(function (r) { if (!c.querySelector('[data-artab="' + r + '"]')) { var el = build(r); if (el) c.appendChild(el); } });
+      openTabs.forEach(function (r) { if (!c.querySelector('[data-artab="' + r + '"]')) { var el = build(r); if (el) { if (r === 'hub') c.insertBefore(el, c.firstChild); else c.appendChild(el); } } });
       var all = [].slice.call(c.querySelectorAll('.tabs-card-scroll-item'));
       all.forEach(function (el) {
         var r = el.getAttribute('data-artab');

@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>集团后台 - 商户挂靠与统一配置</title>
+<style>
+  :root{
+    --green:#13a884;--green-d:#0f8e6f;--green-l:#e8f7f2;
+    --bg:#f0f2f5;--card:#fff;--text:#2c3344;--muted:#8b93a3;
+    --border:#e8ebf1;--link:#2f74e6;--danger:#e0524d;--warn:#d97706;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);font-size:13px}
+  /* top nav */
+  .nav{background:#0960bd;height:58px;display:flex;align-items:center;padding:0 18px;border-bottom:1px solid #084e98;gap:20px;position:relative;color:#fff}
+  .nav .brand{display:flex;align-items:center;gap:10px}
+  .nav .brand .lg{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.2);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+  .nav .clock{font-size:13px;line-height:1.25;color:#fff}.nav .clock small{color:rgba(255,255,255,.72)}
+  .nav .site{display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.78);font-size:11.5px;margin-top:2px}
+  .nav .site .pill{background:rgba(255,255,255,.22);color:#fff;padding:1px 8px;border-radius:10px;font-weight:600}
+  .nav .menus{display:flex;gap:2px;position:absolute;left:50%;transform:translateX(-50%)}
+  .nav .menus a{padding:7px 13px;border-radius:8px;color:rgba(255,255,255,.92);text-decoration:none;font-size:13px;cursor:pointer;white-space:nowrap}
+  .nav .menus a.active,.nav .menus a:hover{background:rgba(255,255,255,.18);color:#fff;font-weight:600}
+  .nav .right{margin-left:auto;display:flex;align-items:center;gap:16px}
+  .nav .kpi{text-align:center;position:relative;font-size:11px;color:rgba(255,255,255,.78);cursor:pointer}
+  .nav .kpi b{display:block;color:#fff;font-size:13px}
+  .nav .kpi .badge{position:absolute;top:-6px;right:-10px;background:var(--danger);color:#fff;border-radius:10px;font-size:10px;padding:0 5px;line-height:15px}
+  .nav .me{display:flex;align-items:center;gap:8px}
+  .nav .me .av{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.22);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+  /* mega dropdown menu */
+  .megamenu{display:none;position:absolute;left:0;right:0;top:58px;background:#fff;border-bottom:1px solid var(--border);box-shadow:0 14px 34px rgba(0,0,0,.10);z-index:50;padding:18px 22px}
+  .megamenu.show{display:block}
+  .megamenu .cols{display:grid;grid-template-columns:repeat(4,1fr);gap:18px 26px}
+  .megamenu .col h4{font-size:12px;color:var(--green-d);font-weight:700;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+  .megamenu .col a{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;border-radius:6px;color:var(--text);text-decoration:none;font-size:12.5px;cursor:pointer}
+  .megamenu .col a:hover{background:var(--green-l);color:var(--green-d)}
+  .megamenu .col a.active{background:var(--green-l);color:var(--green-d);font-weight:600}
+  .st{font-size:10px;padding:0 6px;border-radius:8px;line-height:15px;flex-shrink:0}
+  .st.done{background:var(--green-l);color:var(--green-d)}
+  .st.todo{background:#fff3e0;color:var(--warn)}
+  .st.plan{background:#eef1f5;color:var(--muted)}
+  /* tab bar */
+  .tabbar{background:#fff;display:flex;align-items:center;gap:2px;padding:0 12px;border-bottom:1px solid var(--border);overflow-x:auto}
+  .tabbar .tab{padding:10px 14px;font-size:12.5px;color:var(--text);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:9px}
+  .tabbar .tab.active{color:var(--green-d);border-bottom-color:var(--green);font-weight:600;background:#fafffd}
+  .tabbar .tab .x{color:#b8bfcc;font-size:14px;line-height:1}
+  .tabbar .tab .x:hover{color:var(--danger)}
+  /* content */
+  .content{overflow:auto;padding:14px}
+  .pagehead{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .pagehead h2{font-size:17px}.pagehead .desc{color:var(--muted);font-size:12.5px}
+  .pagehead .badge2{font-size:11px}
+  .card{background:#fff;border-radius:10px;border:1px solid var(--border);padding:14px 16px}
+  .filters{display:grid;grid-template-columns:repeat(4,1fr);gap:11px 16px}
+  .field{display:flex;align-items:center;gap:8px}
+  .field label{width:70px;text-align:right;color:#5a6275;flex-shrink:0;font-size:12.5px}
+  .field label .req{color:var(--danger)}
+  .field .ctl{flex:1;min-width:0}
+  input,select{width:100%;height:32px;border:1px solid var(--border);border-radius:6px;padding:0 9px;font-size:12.5px;background:#fff;color:var(--text);outline:none}
+  input::placeholder{color:#b8bfcc}
+  input:focus,select:focus{border-color:var(--green)}
+  .range{display:flex;align-items:center;gap:6px}.range span{color:var(--muted)}
+  .filter-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:12px}
+  .btn{height:32px;padding:0 15px;border:1px solid var(--border);background:#fff;color:var(--text);border-radius:6px;cursor:pointer;font-size:12.5px;display:inline-flex;align-items:center;gap:6px}
+  .btn:hover{border-color:var(--green);color:var(--green-d)}
+  .btn.primary{background:var(--green);border-color:var(--green);color:#fff}
+  .btn.primary:hover{background:var(--green-d)}
+  .btn.sm{height:26px;padding:0 9px;font-size:12px}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn:disabled:hover{border-color:var(--border);color:var(--text)}
+  .btn.primary:disabled{background:#aacfc4;border-color:#aacfc4;color:#fff}
+  .btn.primary:disabled:hover{background:#aacfc4;color:#fff}
+  .table-card{margin-top:12px;background:#fff;border-radius:10px;border:1px solid var(--border);overflow:hidden}
+  .table-top{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-bottom:1px solid var(--border)}
+  .table-top h3{font-size:14px}
+  .table-scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:10px 12px;font-size:12.5px;white-space:nowrap;border-bottom:1px solid var(--border);text-align:left}
+  th{background:#f7f9fb;color:#5a6275;font-weight:600}
+  tbody tr:hover{background:#f6fbfa}
+  td.money{font-variant-numeric:tabular-nums;font-weight:600}
+  .link{color:var(--link);cursor:pointer;text-decoration:none}
+  .merchant{color:var(--link);cursor:pointer}
+  .badge2{display:inline-block;padding:1px 9px;border-radius:4px;font-size:12px;font-weight:600}
+  .badge2.ok{background:var(--green-l);color:var(--green-d)}
+  .badge2.bad{background:#fdeceb;color:var(--danger)}
+  .badge2.gray{background:#eef1f5;color:#69748a}
+  .badge2.warn{background:#fff3e0;color:var(--warn)}
+  .ops a{margin-right:10px}
+  .pager{display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:13px 16px;color:#5a6275}
+  .pager .pages{display:flex;gap:4px}
+  .pager .pages button{min-width:30px;height:30px;border:1px solid var(--border);background:#fff;border-radius:6px;cursor:pointer;font-size:12.5px;color:var(--text)}
+  .pager .pages button.active{background:var(--green);border-color:var(--green);color:#fff}
+  .pager .pages button:disabled{opacity:.4;cursor:not-allowed}
+  .pager select{width:auto;height:30px}.pager input{width:46px;height:30px;text-align:center}
+  .empty{padding:60px;text-align:center;color:var(--muted)}
+  .plan-box{padding:50px;text-align:center;color:var(--muted)}
+  .plan-box .big{font-size:40px;margin-bottom:10px}
+  .note{background:#fffbe9;border:1px solid #f6e4a8;color:#8a6d1c;padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:12px}
+  .mask{position:fixed;inset:0;background:rgba(20,30,40,.45);display:none;align-items:flex-start;justify-content:center;z-index:60;padding-top:6vh}
+  .mask.show{display:flex}
+  .modal{background:#fff;border-radius:10px;width:640px;max-width:95vw;max-height:86vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+  .modal .mh{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+  .modal .mh b{font-size:15px}.modal .mh .x{cursor:pointer;color:var(--muted);font-size:20px}
+  .modal .mb{padding:16px 18px}
+  .dl{display:grid;grid-template-columns:110px 1fr 110px 1fr;gap:11px 16px;font-size:13px}
+  .dl dt{color:var(--muted);text-align:right}.dl dd{font-weight:500}
+  .modal .mf{padding:12px 18px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
+  .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#2c3344;color:#fff;padding:9px 18px;border-radius:8px;font-size:13px;opacity:0;transition:.25s;z-index:99;pointer-events:none}
+  .toast.show{opacity:1}
+  /* config editor (VIP配置) — 分组卡片布局 */
+  .cfg-group{border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden}
+  .cfg-group:last-child{margin-bottom:0}
+  .cfg-group .cg-head{display:flex;justify-content:space-between;align-items:center;background:#fafbfc;border-bottom:1px solid var(--border);padding:11px 16px}
+  .cfg-group .cg-head h4{font-size:14px;margin:0;color:#182522}
+  .cfg-group .cg-head span{font-size:12px;color:var(--muted)}
+  .cfg-row{display:grid;grid-template-columns:minmax(200px,1fr) 210px 200px;gap:16px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border)}
+  .cfg-row:last-child{border-bottom:0}
+  .cfg-name strong{display:block;color:#1f2927;font-size:13.5px;font-weight:700}
+  .cfg-name strong .risk-tag{display:inline-block;background:#fff3e0;color:var(--warn);font-size:10px;font-weight:700;padding:1px 7px;border-radius:8px;margin-left:6px;vertical-align:middle}
+  .cfg-name span{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+  .cfg-cur{color:var(--muted);font-size:12px;text-align:right}
+  .cfg-ctl .range{width:100%}
+  .cfg-ctl .range input{flex:1;width:auto}
+  /* group scope (集团多商户统一配置) */
+  .scope-bar{display:grid;gap:10px;padding:12px 16px;background:#f0f7f4;border:1px solid #cfe6db;border-radius:10px;margin-bottom:12px}
+  .scope-row2{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .scope-row2>label{font-size:12.5px;color:#3a4256;font-weight:700;min-width:64px}
+  .scope-row2 select{width:auto;min-width:160px}
+  .msel{display:flex;flex-wrap:wrap;gap:8px;max-height:200px;overflow:auto;width:100%}
+  .mchk{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border);border-radius:8px;padding:6px 11px;font-size:12px;cursor:pointer;background:#fff;white-space:nowrap;line-height:1.2}
+  .mchk:hover{border-color:var(--green-d)}
+  .mchk.on{border-color:var(--green);background:var(--green-l);color:var(--green-d);font-weight:600}
+  .mchk input[type="checkbox"]{width:15px;height:15px;margin:0;flex:none;accent-color:var(--green);cursor:pointer}
+  .scope-count{font-size:12.5px;color:var(--green-d);font-weight:700;margin-left:auto}
+  .affil-tag{display:inline-block;background:#eef1f5;color:#69748a;border-radius:6px;padding:1px 8px;font-size:11px;font-weight:600}
+  /* 模板使用概览（按模板分组展示商户） */
+  .usage-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .usage-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+  .usage-card.custom{border-color:#f6e4a8;background:#fffdf5}
+  .usage-card .uh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .usage-card .uh strong{font-size:14px;color:#182522}
+  .usage-mlist{display:flex;flex-wrap:wrap;gap:6px}
+  .usage-mlist .mtag{display:inline-flex;align-items:center;gap:5px;background:#f6f8fb;border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px;color:#3a4256;cursor:pointer;white-space:nowrap}
+  .usage-mlist .mtag:hover{border-color:var(--green)}
+  .usage-mlist .mtag code{color:var(--muted);font-size:10px}
+  @media (max-width:1024px){.usage-grid{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+  <div class="nav">
+    <div class="brand"><div class="lg">A</div>
+      <div><div class="clock"><b id="clk">2026-06-03 11:57:19</b> <small>(UTC +5.5)</small></div>
+        <div class="site">视角：<select id="perspSel" onchange="UI.switchPersp(this.value)" style="height:24px;border-radius:6px;border:1px solid var(--border);font-size:12px;padding:0 6px"></select></div></div></div>
+    <div class="menus"><a class="active" id="nav-member" onclick="UI.toggleModuleMenu('member',event)">👥 会员管理 ▾</a><a id="nav-ops" onclick="UI.toggleModuleMenu('ops',event)">📣 运营管理 ▾</a><a id="nav-config" onclick="UI.toggleModuleMenu('config',event)">⚙ 配置中心 ▾</a><a id="nav-sys" onclick="UI.toggleModuleMenu('sys',event)">🛠 系统管理 ▾</a><a onclick="UI.toast('财务管理：资金账变、钱包查询(USDT/电子/PIX)已归入此模块')">💳 财务管理</a><a onclick="UI.toast('游戏管理：本期聚焦集团配置')">🎮 游戏管理</a><a onclick="UI.toast('报表管理：本期聚焦集团配置')">📊 报表管理</a></div>
+    <div class="right">
+      <div class="kpi">👥<b>5000</b>在线</div>
+      <div class="kpi">💸<b>60</b>出入款<span class="badge">60</span></div>
+      <div class="kpi">✉<b>11</b>消息<span class="badge">11</span></div>
+      <div class="me"><div class="av">A</div>sysadmin</div></div>
+  </div>
+
+  <div class="megamenu" id="megamenu"></div>
+  <div class="tabbar" id="tabbar"></div>
+  <main class="content" id="content"></main>
+
+  <div class="mask" id="m-detail"><div class="modal">
+    <div class="mh"><b>会员详情</b><span class="x" onclick="UI.close()">×</span></div>
+    <div class="mb"><dl class="dl" id="detailBody"></dl></div>
+    <div class="mf"><button class="btn" onclick="UI.close()">关闭</button></div>
+  </div></div>
+  <div class="mask" id="g-modal" onclick="if(event.target.id==='g-modal')UI.gmClose()"><div class="modal" style="width:760px;max-width:96vw">
+    <div class="mh"><b id="gmTitle"></b><span class="x" onclick="UI.gmClose()">×</span></div>
+    <div class="mb" id="gmBody"></div>
+    <div class="mf" id="gmFoot"></div>
+  </div></div>
+  <div class="toast" id="toast"></div>
+
+<script>
+/* ---------- shared faker ---------- */
+const MERCHANTS=["(1050) daman","(1040) 66bet","(1048) 91club"];
+const DEVICES=["Android","iOS","PC","未知"];
+const CHANNELS=["CH001","CH002","CH003","CH005"];
+const VIPS=["VIP0","VIP1","VIP2","VIP3","VIP4"];
+const rnd=(n)=>Math.floor(Math.random()*n);
+const pick=(a)=>a[rnd(a.length)];
+const money=(max)=>+(Math.random()*max).toFixed(2);
+const n2=(v)=>Number(v).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const acc=(id)=>"member"+id;
+const ip=()=> "8."+(200+rnd(55))+".x.x";
+const dt=(daysBack)=>{const d=new Date(Date.now()-rnd(daysBack)*864e5-rnd(86400)*1000);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;};
+const C=(t,c,html)=>({t,c:c||"",html:!!html});           // cell
+const badge=(t,kind)=>C(`<span class="badge2 ${kind}">${t}</span>`,"",true);
+const stCell=(ok,a,b)=>badge(ok?a:b, ok?"ok":"bad");
+
+/* ---------- menu (from mind map) ---------- */
+const MENU=[
+  {g:"账号",items:[
+    {k:"member-list",t:"会员列表",s:"done",d:"查询会员汇总信息和基本操作"},
+    {k:"login-log",t:"登录日志",s:"todo",d:"查询会员登录情况"},
+    {k:"sms-query",t:"短信验证码查询",s:"todo",d:"查询手机验证码信息"},
+    {k:"kyc",t:"实名认证",s:"done",d:"查询用户实名认证信息"},
+    {k:"group-mgmt",t:"分组管理",s:"todo",d:"编辑用户分组权限"},
+    {k:"ip-black",t:"IP黑名单",s:"todo",d:"对指定IP所对应所有用户进行限制操作"},
+    {k:"abnormal-member",t:"异常会员处理",s:"done",d:"异常账户冻结/解冻/限制操作（迁移自 SitINR）"},
+  ]},
+  {g:"会员层级",items:[
+    {k:"level",t:"会员层级",s:"done",d:"查看和编辑会员层级"},
+    {k:"recharge-level",t:"充值等级",s:"todo",d:"编辑会员层级对应充值权限"},
+  ]},
+  {g:"风控",items:[
+    {k:"same-reg-ip",t:"注册IP",s:"todo",d:"查询同IP批量注册"},
+    {k:"same-login-ip",t:"登录IP",s:"todo",d:"查询同IP批量登录（新增）"},
+    {k:"fingerprint",t:"浏览器指纹",s:"todo",d:"查询同浏览器指纹注册（新增）"},
+    {k:"same-device",t:"同设备",s:"plan",d:"待定"},
+    {k:"brush-channel",t:"刷通道用户清单",s:"todo",d:"查询充值通道刷单情况，或指定会员刷单情况"},
+  ]},
+  {g:"活动",items:[
+    {k:"partner-reward",t:"合伙人奖励",s:"todo",d:"查询分享合伙人下属信息及所贡献奖励"},
+    {k:"act-black",t:"会员活动黑名单",s:"todo",d:"操作限制会员参与指定活动"},
+    {k:"recharge-reward",t:"充值奖励发放记录",s:"todo",d:"查询用户充值返利活动领取情况"},
+  ]},
+  {g:"资金",items:[
+    {k:"bankcard",t:"银行卡查询",s:"done",d:"查询银行卡绑定信息"},
+    {k:"withdraw-limit",t:"会员提现限制名单",s:"todo",d:"修改会员每日和总提现上限"},
+    {k:"abnormal-fund",t:"异常资金处理",s:"todo",d:"操作回收会员金币和驳回提现"},
+  ]},
+  {g:"代理",items:[
+    {k:"sub-members",t:"下级会员列表",s:"todo",d:"查询代理旗下会员"},
+    {k:"rebate-level",t:"会员返佣等级",s:"todo",d:"修改会员层级，查看会员等级"},
+    {k:"rebate-yesterday",t:"昨日返佣等级",s:"todo",d:"查询代理汇总信息"},
+    {k:"agent-audit",t:"代理审核机制",s:"todo",d:"查询代理层级汇总信息"},
+  ]},
+  {g:"vip",items:[
+    {k:"vip-level",t:"VIP等级",s:"done",d:"查看和编辑 VIP 等级体系（迁移自 SitINR）"},
+    {k:"vip-count",t:"VIP人数",s:"done",d:"各 VIP 等级会员人数统计（迁移自 SitINR）"},
+    {k:"vip-exp",t:"经验值配置",s:"done",d:"VIP 经验值与升级规则配置（迁移自 SitINR）"},
+    {k:"vip-log",t:"VIP操作日志",s:"done",d:"VIP 等级变更操作日志（迁移自 SitINR）"},
+    {k:"vip-reward",t:"VIP升级奖励记录",s:"todo",d:"查询会员VIP升级奖励派彩记录"},
+  ]},
+  {g:"洗码",items:[
+    {k:"wash-record",t:"洗码记录",s:"done",d:"查询会员打码/洗码量记录（迁移自 SitINR）"},
+    {k:"wash-rule",t:"洗码规则说明",s:"done",d:"洗码量计算规则（迁移自 SitINR）"},
+  ]},
+];
+
+/* ---------- per-page specs: filters + columns + row generator ---------- */
+const merchantFilter={label:"商户",req:true,type:"select",opts:MERCHANTS};
+const kwFilter=(label,ph)=>({label,type:"text",ph});
+const PAGES={
+  "login-log":{filters:[merchantFilter,kwFilter("会员账号"),kwFilter("登录IP"),{label:"登录设备",type:"select",opts:DEVICES},{label:"登录时间",type:"daterange"},{label:"状态",type:"select",opts:["成功","失败"]}],
+    cols:["商户","会员ID","会员账号","登录IP","登录设备","登录地区","登录时间","状态"],
+    gen:(i)=>{const id=70001+i,ok=Math.random()<.85;return[C(pick(MERCHANTS),"merchant"),C(id),C(acc(id)),C(ip()),C(pick(DEVICES)),C(pick(["印度-孟买","印度-德里","孟加拉-达卡","未知"])),C(dt(20)),stCell(ok,"成功","失败")];}},
+  "sms-query":{filters:[merchantFilter,kwFilter("会员账号"),kwFilter("手机号"),{label:"验证码类型",type:"select",opts:["注册","登录","提现","绑卡"]},{label:"发送时间",type:"daterange"},{label:"状态",type:"select",opts:["已使用","未使用","已过期"]}],
+    cols:["商户","会员账号","手机号","类型","验证码","发送时间","状态"],
+    gen:(i)=>{const id=70001+i,st=pick(["已使用","未使用","已过期"]);return[C(pick(MERCHANTS),"merchant"),C(acc(id)),C("+91 "+(70000+rnd(20000))+"xxxx"),C(pick(["注册","登录","提现","绑卡"])),C(String(100000+rnd(900000))),C(dt(10)),badge(st,st==="已使用"?"ok":st==="已过期"?"gray":"warn")];}},
+  "kyc":{filters:[merchantFilter,kwFilter("会员ID"),kwFilter("会员账号"),kwFilter("真实姓名"),{label:"认证状态",type:"select",opts:["已认证","待审核","驳回"]},{label:"认证时间",type:"daterange"}],
+    cols:["商户","会员ID","会员账号","真实姓名","证件号","认证状态","认证时间"],
+    gen:(i)=>{const id=60001+i,st=pick(["已认证","已认证","待审核","驳回"]);return[C(pick(MERCHANTS),"merchant"),C(id),C(acc(id)),C(pick(["Raj K.","Amit S.","Priya R.","Mohan L.","Sita D."])),C("XXXXXX"+(1000+rnd(9000))),badge(st,st==="已认证"?"ok":st==="驳回"?"bad":"warn"),C(dt(120))];}},
+  "group-mgmt":{filters:[merchantFilter,kwFilter("分组名称")],
+    cols:["分组ID","商户","分组名称","成员数","权限说明","创建时间","操作"],
+    gen:(i)=>{return[C("G"+(101+i)),C(pick(MERCHANTS),"merchant"),C(pick(["默认","高价值","风险观察","内部测试","VIP专属"])),C(rnd(5000).toLocaleString()),C("可参与活动/提现/游戏权限组合"),C(dt(200)),C('<a class="link" onclick="UI.toast(\'编辑权限\')">编辑权限</a>',"ops",true)];}},
+  "ip-black":{filters:[merchantFilter,kwFilter("IP"),{label:"限制类型",type:"select",opts:["注册","登录","全部"]}],
+    cols:["IP","商户","关联用户数","限制类型","添加人","添加时间","操作"],
+    gen:(i)=>{return[C(ip()),C(pick(MERCHANTS),"merchant"),C(1+rnd(40)),badge(pick(["注册","登录","全部"]),"warn"),C("sysadmin"),C(dt(90)),C('<a class="link" onclick="UI.toast(\'已解除\')">解除</a>',"ops",true)];}},
+  "level":{filters:[merchantFilter,kwFilter("层级名称")],
+    cols:["层级ID","商户","层级名称","升级打码量","返佣比例","会员数","操作"],
+    gen:(i)=>{const lv=["L0 普通","L1 白银","L2 黄金","L3 铂金","L4 钻石"][i%5];return[C("LV"+i),C(pick(MERCHANTS),"merchant"),C(lv),C((i*50000).toLocaleString()),C((0.2+i*0.15).toFixed(2)+"%"),C((5000-i*600).toLocaleString()),C('<a class="link" onclick="UI.toast(\'编辑层级\')">编辑</a>',"ops",true)];},rows:5},
+  "recharge-level":{filters:[merchantFilter,kwFilter("等级名称")],
+    cols:["等级","商户","充值门槛","对应权限","赠送比例","操作"],
+    gen:(i)=>{return[C("R"+i),C(pick(MERCHANTS),"merchant"),C("¥"+((i+1)*1000).toLocaleString()),C("提现额度/专属客服/活动加成"),C((i*2)+"%"),C('<a class="link" onclick="UI.toast(\'编辑\')">编辑</a>',"ops",true)];},rows:6},
+  "same-reg-ip":{filters:[merchantFilter,kwFilter("注册IP"),{label:"注册数≥",type:"text",ph:"如 5"},{label:"注册时间",type:"daterange"}],
+    cols:["注册IP","商户","注册数量","关联会员","首次注册","最近注册","操作"],
+    gen:(i)=>{const c=2+rnd(30);return[C(ip()),C(pick(MERCHANTS),"merchant"),badge(c+" 个",c>10?"bad":"warn"),C("member"+(70001+i)+" 等"),C(dt(180)),C(dt(20)),C('<a class="link" onclick="UI.toast(\'查看名单\')">查看名单</a>',"ops",true)];}},
+  "same-login-ip":{filters:[merchantFilter,kwFilter("登录IP"),{label:"账号数≥",type:"text",ph:"如 5"},{label:"登录时间",type:"daterange"}],
+    cols:["登录IP","商户","登录账号数","关联会员","最近登录","操作"],
+    gen:(i)=>{const c=2+rnd(25);return[C(ip()),C(pick(MERCHANTS),"merchant"),badge(c+" 个",c>10?"bad":"warn"),C("member"+(70001+i)+" 等"),C(dt(10)),C('<a class="link" onclick="UI.toast(\'查看名单\')">查看名单</a>',"ops",true)];}},
+  "fingerprint":{filters:[merchantFilter,kwFilter("浏览器指纹"),{label:"账号数≥",type:"text",ph:"如 3"}],
+    cols:["浏览器指纹","商户","注册账号数","关联会员","最近时间","操作"],
+    gen:(i)=>{const c=2+rnd(15);return[C("fp_"+Math.random().toString(16).slice(2,12)),C(pick(MERCHANTS),"merchant"),badge(c+" 个",c>8?"bad":"warn"),C("member"+(70001+i)+" 等"),C(dt(15)),C('<a class="link" onclick="UI.toast(\'查看名单\')">查看名单</a>',"ops",true)];}},
+  "same-device":{plan:true},
+  "partner-reward":{filters:[merchantFilter,kwFilter("合伙人账号"),{label:"结算周期",type:"select",opts:["日","周","月"]}],
+    cols:["商户","合伙人ID","合伙人账号","下属人数","贡献奖励","结算周期","状态"],
+    gen:(i)=>{const id=50001+i;return[C(pick(MERCHANTS),"merchant"),C(id),C(acc(id)),C(rnd(500).toLocaleString()),C(n2(money(50000)),"money"),C(pick(["日","周","月"])),stCell(Math.random()<.8,"正常","暂停")];}},
+  "act-black":{filters:[merchantFilter,kwFilter("会员账号"),kwFilter("限制活动")],
+    cols:["商户","会员ID","会员账号","限制活动","限制原因","操作人","添加时间","操作"],
+    gen:(i)=>{const id=80001+i;return[C(pick(MERCHANTS),"merchant"),C(id),C(acc(id)),C(pick(["首充返利","签到","转盘","邀请奖励"])),C(pick(["薅羊毛","多账号","风控命中"])),C("sysadmin"),C(dt(60)),C('<a class="link" onclick="UI.toast(\'已解除\')">解除</a>',"ops",true)];}},
+  "recharge-reward":{filters:[merchantFilter,kwFilter("会员账号"),kwFilter("活动名称"),{label:"发放时间",type:"daterange"},{label:"状态",type:"select",opts:["已发放","待发放","已驳回"]}],
+    cols:["商户","会员账号","活动名称","充值金额","返利金额","发放时间","状态"],
+    gen:(i)=>{const id=80001+i,st=pick(["已发放","已发放","待发放","已驳回"]);return[C(pick(MERCHANTS),"merchant"),C(acc(id)),C(pick(["首充100%","二充50%","周末加赠","节日红包"])),C(n2(money(8000)),"money"),C(n2(money(2000)),"money"),C(dt(45)),badge(st,st==="已发放"?"ok":st==="已驳回"?"bad":"warn")];}},
+  "bankcard":{filters:[merchantFilter,kwFilter("会员账号"),kwFilter("持卡人"),{label:"银行",type:"select",opts:["SBI","HDFC","ICICI","Axis","其他"]}],
+    cols:["商户","会员账号","持卡人","银行","卡号","绑定时间","状态"],
+    gen:(i)=>{const id=60001+i;return[C(pick(MERCHANTS),"merchant"),C(acc(id)),C(pick(["Raj K.","Amit S.","Priya R.","Mohan L."])),C(pick(["SBI","HDFC","ICICI","Axis"])),C("**** **** "+(1000+rnd(9000))),C(dt(150)),stCell(Math.random()<.92,"正常","已停用")];}},
+  "usdt":{filters:[merchantFilter,kwFilter("会员账号"),{label:"链",type:"select",opts:["TRC20","ERC20"]}],
+    cols:["商户","会员账号","链","钱包地址","绑定时间","状态"],
+    gen:(i)=>{const id=60001+i;return[C(pick(MERCHANTS),"merchant"),C(acc(id)),badge(pick(["TRC20","ERC20"]),"gray"),C("T"+Math.random().toString(16).slice(2,12)+"..."),C(dt(150)),stCell(Math.random()<.9,"正常","已停用")];}},
+  "ewallet":{filters:[merchantFilter,kwFilter("会员账号"),{label:"钱包类型",type:"select",opts:["Paytm","PhonePe","GPay","UPI"]}],
+    cols:["商户","会员账号","钱包类型","账户","绑定时间","状态"],
+    gen:(i)=>{const id=60001+i;return[C(pick(MERCHANTS),"merchant"),C(acc(id)),badge(pick(["Paytm","PhonePe","GPay","UPI"]),"gray"),C("user"+id+"@upi"),C(dt(150)),stCell(Math.random()<.9,"正常","已停用")];}},
+  "pix":{filters:[merchantFilter,kwFilter("会员账号"),{label:"PIX类型",type:"select",opts:["CPF","邮箱","手机","随机键"]}],
+    cols:["商户","会员账号","PIX类型","PIX键","绑定时间","状态"],
+    gen:(i)=>{const id=60001+i;return[C(pick(MERCHANTS),"merchant"),C(acc(id)),badge(pick(["CPF","邮箱","手机","随机键"]),"gray"),C("***"+rnd(99999)),C(dt(150)),stCell(Math.random()<.9,"正常","已停用")];}},
+  "withdraw-limit":{filters:[merchantFilter,kwFilter("会员账号")],
+    cols:["商户","会员账号","每日上限","总上限","修改人","更新时间","操作"],
+    gen:(i)=>{const id=60001+i;return[C(pick(MERCHANTS),"merchant"),C(acc(id)),C("¥"+(10000*(1+rnd(10))).toLocaleString()),C("¥"+(100000*(1+rnd(10))).toLocaleString()),C("sysadmin"),C(dt(30)),C('<a class="link" onclick="UI.toast(\'编辑上限\')">编辑</a>',"ops",true)];}},
+  "abnormal-fund":{filters:[merchantFilter,kwFilter("会员账号"),{label:"异常类型",type:"select",opts:["异常加币","重复到账","风控拦截"]},{label:"状态",type:"select",opts:["待处理","已回收","已驳回"]}],
+    cols:["商户","会员账号","异常类型","涉及金额","处理动作","状态","处理时间","操作"],
+    gen:(i)=>{const id=60001+i,st=pick(["待处理","已回收","已驳回"]);return[C(pick(MERCHANTS),"merchant"),C(acc(id)),C(pick(["异常加币","重复到账","风控拦截"])),C(n2(money(30000)),"money"),C(pick(["回收金币","驳回提现"])),badge(st,st==="已回收"?"ok":st==="已驳回"?"bad":"warn"),C(dt(20)),C('<a class="link" onclick="UI.toast(\'处理\')">处理</a>',"ops",true)];}},
+  "brush-channel":{filters:[merchantFilter,kwFilter("会员账号"),{label:"充值通道",type:"select",opts:["通道A","通道B","通道C"]}],
+    cols:["商户","会员账号","充值通道","刷单次数","涉及金额","标记时间","操作"],
+    gen:(i)=>{const id=60001+i,c=2+rnd(40);return[C(pick(MERCHANTS),"merchant"),C(acc(id)),C(pick(["通道A","通道B","通道C"])),badge(c+" 次",c>15?"bad":"warn"),C(n2(money(80000)),"money"),C(dt(25)),C('<a class="link" onclick="UI.toast(\'查看明细\')">明细</a>',"ops",true)];}},
+  "sub-members":{filters:[merchantFilter,kwFilter("代理账号"),kwFilter("下级账号")],
+    cols:["商户","代理ID","代理账号","下级会员ID","下级账号","层级","注册时间"],
+    gen:(i)=>{const ag=40001+rnd(200),id=60001+i;return[C(pick(MERCHANTS),"merchant"),C(ag),C(acc(ag)),C(id),C(acc(id)),badge(pick(VIPS),"gray"),C(dt(180))];}},
+  "rebate-level":{filters:[merchantFilter,kwFilter("会员账号")],
+    cols:["商户","会员账号","当前层级","返佣比例","累计返佣","操作"],
+    gen:(i)=>{const id=60001+i;return[C(pick(MERCHANTS),"merchant"),C(acc(id)),badge(pick(VIPS),"gray"),C((0.2+rnd(20)/10).toFixed(2)+"%"),C(n2(money(40000)),"money"),C('<a class="link" onclick="UI.toast(\'修改层级\')">修改层级</a>',"ops",true)];}},
+  "rebate-yesterday":{filters:[merchantFilter,kwFilter("代理账号")],
+    cols:["商户","代理ID","代理账号","昨日返佣","下级活跃数","下级总数","汇总"],
+    gen:(i)=>{const ag=40001+i;return[C(pick(MERCHANTS),"merchant"),C(ag),C(acc(ag)),C(n2(money(15000)),"money"),C(rnd(300).toLocaleString()),C((300+rnd(2000)).toLocaleString()),C('<a class="link" onclick="UI.toast(\'查看汇总\')">查看</a>',"ops",true)];}},
+  "agent-audit":{filters:[merchantFilter,kwFilter("申请账号"),{label:"审核状态",type:"select",opts:["待审核","通过","驳回"]}],
+    cols:["商户","申请账号","申请层级","当前层级","审核状态","提交时间","操作"],
+    gen:(i)=>{const id=40001+i,st=pick(["待审核","通过","驳回"]);return[C(pick(MERCHANTS),"merchant"),C(acc(id)),badge(pick(VIPS),"gray"),badge(pick(VIPS),"gray"),badge(st,st==="通过"?"ok":st==="驳回"?"bad":"warn"),C(dt(30)),C('<a class="link" onclick="UI.toast(\'通过\')">通过</a><a class="link" onclick="UI.toast(\'驳回\')">驳回</a>',"ops",true)];}},
+  "vip-reward":{filters:[merchantFilter,kwFilter("会员账号"),{label:"升级时间",type:"daterange"},{label:"派彩状态",type:"select",opts:["已派彩","待派彩"]}],
+    cols:["商户","会员账号","原VIP","新VIP","奖励金额","派彩状态","升级时间"],
+    gen:(i)=>{const id=60001+i,o=rnd(4);return[C(pick(MERCHANTS),"merchant"),C(acc(id)),badge("VIP"+o,"gray"),badge("VIP"+(o+1),"warn"),C(n2(money(5000)),"money"),stCell(Math.random()<.85,"已派彩","待派彩"),C(dt(60))];}},
+  "fund-change":{note:"建议迁移至「财务管理」模块统一管理。",
+    filters:[merchantFilter,kwFilter("会员账号"),{label:"变动类型",type:"select",opts:["充值","提现","打码返还","活动奖励","系统调整"]},{label:"变动时间",type:"daterange"}],
+    cols:["商户","会员账号","变动类型","变动金额","变动后余额","关联单号","时间"],
+    gen:(i)=>{const id=60001+i,plus=Math.random()<.55,amt=money(5000);return[C(pick(MERCHANTS),"merchant"),C(acc(id)),C(pick(["充值","提现","打码返还","活动奖励","系统调整"])),C((plus?"+":"-")+n2(amt),"money"),C(n2(money(20000)),"money"),C("OD"+(202600000+rnd(999999))),C(dt(30))];}},
+  "abnormal-member":{filters:[merchantFilter,kwFilter("会员账号"),{label:"异常类型",type:"select",opts:["多账号关联","薅羊毛","风控命中","违规投注"]},{label:"处理状态",type:"select",opts:["待处理","已冻结","已限制","已解除"]},{label:"标记时间",type:"daterange"}],
+    cols:["商户","会员ID","会员账号","异常类型","风险等级","当前状态","操作人","处理时间","操作"],
+    gen:(i)=>{const id=60001+i,st=pick(["待处理","已冻结","已限制","已解除"]),risk=pick(["高","中","低"]);return[C(pick(MERCHANTS),"merchant"),C(id),C(acc(id)),C(pick(["多账号关联","薅羊毛","风控命中","违规投注"])),badge(risk,risk==="高"?"bad":risk==="中"?"warn":"gray"),badge(st,st==="已解除"?"ok":st==="待处理"?"warn":"bad"),C(pick(["sysadmin","风控01"])),C(dt(30)),C('<a class="link" onclick="UI.toast(\'冻结\')">冻结</a><a class="link" onclick="UI.toast(\'限制\')">限制</a><a class="link" onclick="UI.toast(\'解除\')">解除</a>',"ops",true)];}},
+  "vip-level":{filters:[merchantFilter,kwFilter("等级名称")],
+    cols:["VIP等级","商户","等级名称","升级所需经验","专属返水","升级奖励","专属客服","会员数","操作"],
+    gen:(i)=>{const names=["VIP0 新手","VIP1 白银","VIP2 黄金","VIP3 铂金","VIP4 钻石","VIP5 王者","VIP6 至尊"];return[badge("VIP"+i,"gray"),C(pick(MERCHANTS),"merchant"),C(names[i]||("VIP"+i)),C((i*100000).toLocaleString()),C((0.2+i*0.15).toFixed(2)+"%"),C(n2(i*500),"money"),stCell(i>=2,"是","否"),C((6000-i*700).toLocaleString()),C('<a class="link" onclick="UI.toast(\'编辑等级\')">编辑</a>',"ops",true)];},rows:7},
+  "vip-count":{filters:[merchantFilter,{label:"统计日期",type:"daterange"}],
+    cols:["VIP等级","商户","会员人数","占比","昨日新增","本月升级","环比"],
+    gen:(i)=>{const total=12000,c=Math.max(20,Math.round(total*Math.pow(.5,i)));return[badge("VIP"+i,"gray"),C(pick(MERCHANTS),"merchant"),C(c.toLocaleString()),C((c/total*100).toFixed(1)+"%"),C("+"+rnd(80)),C("+"+rnd(40)),stCell(Math.random()<.7,"↑ 上升","↓ 下降")];},rows:7},
+  "vip-exp":{filters:[merchantFilter],
+    cols:["VIP等级","商户","充值经验比例","投注经验比例","升级所需经验","保级要求","降级规则","操作"],
+    gen:(i)=>{return[badge("VIP"+i,"gray"),C(pick(MERCHANTS),"merchant"),C("1 元 = "+(1+i)+" 经验"),C("1 元 = 1 经验"),C((i*100000).toLocaleString()),C("月投注 ≥ "+(i*5000).toLocaleString()),C(pick(["不降级","季度降1级","保级失败降1级"])),C('<a class="link" onclick="UI.toast(\'编辑经验规则\')">编辑</a>',"ops",true)];},rows:7},
+  "vip-log":{filters:[merchantFilter,kwFilter("会员账号"),{label:"操作类型",type:"select",opts:["手动升级","手动降级","系统升级","经验调整"]},{label:"操作时间",type:"daterange"}],
+    cols:["商户","会员账号","操作类型","原VIP","新VIP","变更经验","操作人","操作时间"],
+    gen:(i)=>{const id=60001+i,o=rnd(5),up=Math.random()<.7,ty=pick(["手动升级","手动降级","系统升级","经验调整"]);return[C(pick(MERCHANTS),"merchant"),C(acc(id)),badge(ty,ty.includes("降")?"bad":"ok"),badge("VIP"+o,"gray"),badge("VIP"+(up?o+1:Math.max(0,o-1)),up?"warn":"gray"),C((up?"+":"-")+(1000+rnd(9000))),C(pick(["sysadmin","客服01","系统"])),C(dt(60))];}},
+  "wash-record":{filters:[merchantFilter,kwFilter("会员账号"),{label:"游戏厂商",type:"select",opts:["真人","电子","彩票","体育","棋牌"]},{label:"结算时间",type:"daterange"},{label:"结算状态",type:"select",opts:["已结算","待结算"]}],
+    cols:["商户","会员账号","游戏厂商","有效投注","洗码比例","洗码金额","结算状态","结算时间"],
+    gen:(i)=>{const id=60001+i,bet=money(200000),rate=pick([0.3,0.5,0.6,0.8,1.0]);return[C(pick(MERCHANTS),"merchant"),C(acc(id)),C(pick(["真人","电子","彩票","体育","棋牌"])),C(n2(bet),"money"),C(rate.toFixed(1)+"%"),C(n2(bet*rate/100),"money"),stCell(Math.random()<.8,"已结算","待结算"),C(dt(30))];}},
+  "wash-rule":{filters:[merchantFilter,{label:"游戏类型",type:"select",opts:["真人","电子","彩票","体育","棋牌"]}],
+    cols:["游戏类型","商户","洗码比例","最低有效投注","结算周期","生效状态","更新时间","操作"],
+    gen:(i)=>{const g=["真人","电子","彩票","体育","棋牌"][i%5],rate=pick([0.3,0.5,0.6,0.8,1.0]);return[C(g),C(pick(MERCHANTS),"merchant"),C(rate.toFixed(1)+"%"),C(n2(money(1000)),"money"),C(pick(["实时","日结(T+1)","周结"])),stCell(Math.random()<.85,"生效","停用"),C(dt(90)),C('<a class="link" onclick="UI.toast(\'编辑规则\')">编辑</a>',"ops",true)];},rows:5},
+};
+
+/* ---------- 运营管理 / 配置中心：菜单 + 模块 + 页面 ---------- */
+const ACTS=["首充返利","二充50%","每日签到","幸运转盘","邀请奖励","周末红包","节日礼金","VIP专享"];
+const CURRENCIES=["INR","PKR","BRL","VND","MYR","MMK"];
+const editOp=(t)=>C(`<a class="link" onclick="UI.toast('${t}')">${t}</a>`,"ops",true);
+
+const OPS_MENU=[
+  {g:"活动数据",items:[
+    {k:"act-overview",t:"活动总览",s:"done",d:"查询全部活动的参与与发放概况"},
+    {k:"act-detail",t:"活动参与明细",s:"done",d:"按会员查询活动参与明细"},
+    {k:"act-cost",t:"活动成本报表",s:"done",d:"按活动统计成本与 ROI"},
+  ]},
+  {g:"发放查询",items:[
+    {k:"grant-reward",t:"奖励发放记录",s:"done",d:"查询活动奖励发放情况"},
+    {k:"grant-redpack",t:"红包发放记录",s:"done",d:"查询红包发放情况"},
+    {k:"grant-rebate",t:"返水发放记录",s:"done",d:"查询返水发放情况"},
+    {k:"grant-gift",t:"礼金发放记录",s:"done",d:"查询礼金发放情况"},
+  ]},
+  {g:"领取查询",items:[
+    {k:"claim-activity",t:"活动领取记录",s:"done",d:"查询会员活动领取情况"},
+    {k:"claim-signin",t:"签到领取记录",s:"done",d:"查询签到领取情况"},
+    {k:"claim-wheel",t:"转盘领取记录",s:"done",d:"查询转盘抽奖领取情况"},
+    {k:"claim-vip",t:"VIP奖励领取",s:"done",d:"查询 VIP 奖励领取情况"},
+  ]},
+];
+
+const CONFIG_MENU=[
+  {g:"规则配置",items:[
+    {k:"cfg-vip",t:"VIP规则配置",s:"done",d:"套用市场模板或自行配置 VIP 规则，与市场配置中心联动，保存后发布"},
+    {k:"cfg-risk-rule",t:"风控规则配置",s:"done",d:"配置风控拦截规则"},
+    {k:"cfg-withdraw-rule",t:"提现规则配置",s:"done",d:"配置提现额度与审核规则"},
+    {k:"cfg-recharge-rule",t:"充值规则配置",s:"done",d:"配置充值限额与赠送规则"},
+    {k:"cfg-wager-rule",t:"打码规则配置",s:"done",d:"配置打码倍数与解锁规则"},
+  ]},
+  {g:"基础配置",items:[
+    {k:"cfg-merchant",t:"商户配置",s:"done",d:"配置商户基础信息"},
+    {k:"cfg-currency",t:"币种配置",s:"done",d:"配置市场币种口径"},
+    {k:"cfg-channel",t:"渠道配置",s:"done",d:"配置推广渠道"},
+    {k:"cfg-bank",t:"银行卡配置",s:"done",d:"配置可用银行与绑定规则"},
+    {k:"cfg-payment",t:"支付通道配置",s:"done",d:"配置充值/提现支付通道"},
+  ]},
+];
+
+const SYS_MENU=[
+  {g:"组织架构",items:[
+    {k:"sys-affiliation",t:"商户市场挂靠",s:"done",d:"为商户指定归属市场，决定可用的市场模板",scope:"group"},
+    {k:"sys-merchant",t:"商户管理",s:"done",d:"创建商户并分配后台账号",scope:"group"},
+    {k:"sys-channel",t:"渠道管理",s:"done",d:"生成推广渠道链接与管理",scope:"merchant"},
+  ]},
+  {g:"权限与安全",items:[
+    {k:"sys-perm",t:"权限管理",s:"done",d:"集团与商户两级角色权限分配，控制各模块操作范围",scope:"group"},
+    {k:"sys-log",t:"操作日志",s:"todo",d:"集团级操作审计日志"},
+  ]},
+];
+
+const MODULES={
+  member:{navId:"nav-member",label:"会员管理",menu:MENU},
+  ops:{navId:"nav-ops",label:"运营管理",menu:OPS_MENU},
+  config:{navId:"nav-config",label:"配置中心",menu:CONFIG_MENU},
+  sys:{navId:"nav-sys",label:"系统管理",menu:SYS_MENU},
+};
+
+Object.assign(PAGES,{
+  /* 运营管理 · 活动数据 */
+  "act-overview":{filters:[merchantFilter,kwFilter("活动名称"),{label:"活动类型",type:"select",opts:["充值","签到","转盘","邀请","红包"]},{label:"活动状态",type:"select",opts:["进行中","已结束","未开始"]},{label:"时间",type:"daterange"}],
+    cols:["商户","活动ID","活动名称","活动类型","参与人数","发放总额","状态","开始时间","结束时间"],
+    gen:(i)=>{const st=pick(["进行中","进行中","已结束","未开始"]);return[C(pick(MERCHANTS),"merchant"),C("ACT"+(1001+i)),C(pick(ACTS)),C(pick(["充值","签到","转盘","邀请","红包"])),C(rnd(20000).toLocaleString()),C(n2(money(500000)),"money"),badge(st,st==="进行中"?"ok":st==="未开始"?"warn":"gray"),C(dt(60)),C(dt(10))];}},
+  "act-detail":{filters:[merchantFilter,kwFilter("会员账号"),kwFilter("活动名称"),{label:"参与时间",type:"daterange"}],
+    cols:["商户","会员ID","会员账号","活动名称","参与次数","累计奖励","最近参与","状态"],
+    gen:(i)=>{const id=80001+i;return[C(pick(MERCHANTS),"merchant"),C(id),C(acc(id)),C(pick(ACTS)),C(1+rnd(30)),C(n2(money(6000)),"money"),C(dt(30)),stCell(Math.random()<.85,"有效","已失效")];}},
+  "act-cost":{filters:[merchantFilter,{label:"活动类型",type:"select",opts:["充值","签到","转盘","邀请","红包"]},{label:"统计周期",type:"select",opts:["日","周","月"]},{label:"时间",type:"daterange"}],
+    cols:["商户","活动名称","活动类型","参与人数","发放金额","人均成本","回收流水","ROI"],
+    gen:(i)=>{const give=money(400000);return[C(pick(MERCHANTS),"merchant"),C(pick(ACTS)),C(pick(["充值","签到","转盘","邀请","红包"])),C(rnd(15000).toLocaleString()),C(n2(give),"money"),C(n2(money(200)),"money"),C(n2(give*(2+Math.random()*4)),"money"),badge((1+rnd(400))+"%",Math.random()<.6?"ok":"warn")];}},
+  /* 运营管理 · 发放查询 */
+  "grant-reward":{filters:[merchantFilter,kwFilter("会员账号"),kwFilter("活动名称"),{label:"发放状态",type:"select",opts:["已发放","待发放","已驳回"]},{label:"发放时间",type:"daterange"}],
+    cols:["商户","会员账号","活动名称","奖励类型","发放金额","发放方式","发放时间","状态"],
+    gen:(i)=>{const id=80001+i,st=pick(["已发放","已发放","待发放","已驳回"]);return[C(pick(MERCHANTS),"merchant"),C(acc(id)),C(pick(ACTS)),C(pick(["现金","彩金","积分","免费旋转"])),C(n2(money(5000)),"money"),C(pick(["自动","手动"])),C(dt(40)),badge(st,st==="已发放"?"ok":st==="已驳回"?"bad":"warn")];}},
+  "grant-redpack":{filters:[merchantFilter,kwFilter("会员账号"),kwFilter("红包名称"),{label:"发放时间",type:"daterange"}],
+    cols:["商户","会员账号","红包名称","红包金额","领取状态","发放时间"],
+    gen:(i)=>{const id=80001+i;return[C(pick(MERCHANTS),"merchant"),C(acc(id)),C(pick(["每日红包","节日红包","回归红包","专属红包"])),C(n2(money(500)),"money"),stCell(Math.random()<.7,"已领取","未领取"),C(dt(30))];}},
+  "grant-rebate":{filters:[merchantFilter,kwFilter("会员账号"),{label:"返水周期",type:"select",opts:["日","周","月"]},{label:"发放时间",type:"daterange"}],
+    cols:["商户","会员账号","返水周期","有效流水","返水比例","返水金额","发放时间","状态"],
+    gen:(i)=>{const id=80001+i;return[C(pick(MERCHANTS),"merchant"),C(acc(id)),C(pick(["日","周","月"])),C(n2(money(200000)),"money"),C((0.3+rnd(15)/10).toFixed(2)+"%"),C(n2(money(3000)),"money"),C(dt(20)),stCell(Math.random()<.9,"已发放","待发放")];}},
+  "grant-gift":{filters:[merchantFilter,kwFilter("会员账号"),kwFilter("礼金名称"),{label:"发放时间",type:"daterange"}],
+    cols:["商户","会员账号","礼金名称","礼金金额","解锁打码","发放时间","状态"],
+    gen:(i)=>{const id=80001+i;return[C(pick(MERCHANTS),"merchant"),C(acc(id)),C(pick(["新手礼金","升级礼金","生日礼金","活动礼金"])),C(n2(money(2000)),"money"),C((1+rnd(20))+" 倍"),C(dt(35)),stCell(Math.random()<.88,"已发放","待发放")];}},
+  /* 运营管理 · 领取查询 */
+  "claim-activity":{filters:[merchantFilter,kwFilter("会员账号"),kwFilter("活动名称"),{label:"领取时间",type:"daterange"}],
+    cols:["商户","会员账号","活动名称","领取金额","领取方式","领取时间","状态"],
+    gen:(i)=>{const id=80001+i;return[C(pick(MERCHANTS),"merchant"),C(acc(id)),C(pick(ACTS)),C(n2(money(4000)),"money"),C(pick(["主动领取","自动到账"])),C(dt(30)),stCell(Math.random()<.92,"成功","失败")];}},
+  "claim-signin":{filters:[merchantFilter,kwFilter("会员账号"),{label:"领取时间",type:"daterange"}],
+    cols:["商户","会员账号","连续签到","本次奖励","累计奖励","领取时间"],
+    gen:(i)=>{const id=80001+i;return[C(pick(MERCHANTS),"merchant"),C(acc(id)),C((1+rnd(30))+" 天"),C(n2(money(200)),"money"),C(n2(money(3000)),"money"),C(dt(20))];}},
+  "claim-wheel":{filters:[merchantFilter,kwFilter("会员账号"),kwFilter("转盘名称"),{label:"领取时间",type:"daterange"}],
+    cols:["商户","会员账号","转盘名称","消耗次数","中奖奖品","奖励金额","领取时间"],
+    gen:(i)=>{const id=80001+i;return[C(pick(MERCHANTS),"merchant"),C(acc(id)),C(pick(["幸运转盘","邀请转盘","充值转盘"])),C((1+rnd(10))+" 次"),C(pick(["现金","彩金","免费旋转","谢谢参与","实物奖"])),C(n2(money(1000)),"money"),C(dt(15))];}},
+  "claim-vip":{filters:[merchantFilter,kwFilter("会员账号"),{label:"VIP等级",type:"select",opts:VIPS},{label:"领取时间",type:"daterange"}],
+    cols:["商户","会员账号","VIP等级","奖励类型","奖励金额","领取时间","状态"],
+    gen:(i)=>{const id=80001+i;return[C(pick(MERCHANTS),"merchant"),C(acc(id)),badge(pick(VIPS),"gray"),C(pick(["升级礼金","生日礼金","周礼金","月礼金"])),C(n2(money(5000)),"money"),C(dt(40)),stCell(Math.random()<.9,"已领取","待领取")];}},
+
+  /* 配置中心 · 规则配置（VIP配置为独立编辑器 VipConfig，不在此表格列表中） */
+  "cfg-act-rule":{filters:[merchantFilter,kwFilter("活动名称"),{label:"状态",type:"select",opts:["启用","停用"]}],
+    cols:["商户","活动名称","活动类型","奖励规则","参与条件","状态","操作"],
+    gen:(i)=>{return[C(pick(MERCHANTS),"merchant"),C(pick(ACTS)),C(pick(["充值","签到","转盘","邀请","红包"])),C(pick(["按比例返利","固定金额","阶梯奖励"])),C(pick(["首充","每日一次","邀请≥3人","充值≥1000"])),stCell(Math.random()<.8,"启用","停用"),editOp("编辑")];}},
+  "cfg-redpack-rule":{filters:[merchantFilter,kwFilter("红包名称")],
+    cols:["商户","红包名称","金额区间","发放方式","每日上限","状态","操作"],
+    gen:(i)=>{return[C(pick(MERCHANTS),"merchant"),C(pick(["每日红包","节日红包","回归红包"])),C("¥"+(10+rnd(90))+" ~ ¥"+(100+rnd(900))),C(pick(["随机","固定"])),C((1+rnd(5))+" 次"),stCell(Math.random()<.85,"启用","停用"),editOp("编辑")];}},
+  "cfg-wheel-rule":{filters:[merchantFilter,kwFilter("转盘名称")],
+    cols:["商户","转盘名称","奖品数量","中奖概率","每次消耗","状态","操作"],
+    gen:(i)=>{return[C(pick(MERCHANTS),"merchant"),C(pick(["幸运转盘","邀请转盘","充值转盘"])),C((6+rnd(6))+" 个"),C((10+rnd(80))+"%"),C(pick(["1 抽奖券","¥10","积分 100"])),stCell(Math.random()<.85,"启用","停用"),editOp("编辑")];}},
+  "cfg-signin-rule":{filters:[merchantFilter],
+    cols:["商户","签到周期","每日奖励","连签奖励","补签规则","状态","操作"],
+    gen:(i)=>{return[C(pick(MERCHANTS),"merchant"),C(pick(["7 天循环","30 天循环"])),C("¥"+(5+rnd(50))),C("第 7 天 ¥"+(100+rnd(400))),C(pick(["允许补签","不允许"])),stCell(Math.random()<.9,"启用","停用"),editOp("编辑")];}},
+  "cfg-firstrecharge-rule":{filters:[merchantFilter],
+    cols:["商户","充值门槛","返利比例","封顶金额","解锁打码","状态","操作"],
+    gen:(i)=>{return[C(pick(MERCHANTS),"merchant"),C("¥"+((i+1)*100)),C((50+rnd(100))+"%"),C(n2(money(5000)),"money"),C((1+rnd(15))+" 倍"),stCell(Math.random()<.9,"启用","停用"),editOp("编辑")];},rows:8},
+  "cfg-risk-rule":{filters:[merchantFilter,kwFilter("规则名称"),{label:"状态",type:"select",opts:["启用","停用"]}],
+    cols:["商户","规则名称","风险维度","触发条件","处置动作","状态","操作"],
+    gen:(i)=>{return[C(pick(MERCHANTS),"merchant"),C(pick(["多账号检测","刷量检测","异常提现","对打检测","代理欺诈"])),C(pick(["IP","设备","行为","资金"])),C(pick(["同IP≥5账号","短时大额","胜率异常"])),C(pick(["拦截","标记","人工复核"])),stCell(Math.random()<.85,"启用","停用"),editOp("编辑")];}},
+  "cfg-withdraw-rule":{filters:[merchantFilter],
+    cols:["商户","会员层级","单笔上限","每日上限","每日次数","审核方式","操作"],
+    gen:(i)=>{return[C(pick(MERCHANTS),"merchant"),badge(pick(VIPS),"gray"),C(n2(money(50000)),"money"),C(n2(money(200000)),"money"),C((1+rnd(10))+" 次"),C(pick(["自动","人工","混合"])),editOp("编辑")];}},
+  "cfg-recharge-rule":{filters:[merchantFilter],
+    cols:["商户","会员层级","单笔下限","单笔上限","每日上限","赠送比例","操作"],
+    gen:(i)=>{return[C(pick(MERCHANTS),"merchant"),badge(pick(VIPS),"gray"),C("¥"+(100+rnd(100))),C(n2(money(100000)),"money"),C(n2(money(500000)),"money"),C(rnd(20)+"%"),editOp("编辑")];}},
+  "cfg-wager-rule":{filters:[merchantFilter],
+    cols:["商户","奖励类型","打码倍数","计算口径","封顶倍数","状态","操作"],
+    gen:(i)=>{return[C(pick(MERCHANTS),"merchant"),C(pick(["充值赠送","活动彩金","返水","红包"])),C((1+rnd(20))+" 倍"),C(pick(["本金","本金 + 赠金","赠金"])),C((20+rnd(30))+" 倍"),stCell(Math.random()<.9,"启用","停用"),editOp("编辑")];}},
+  /* 配置中心 · 基础配置 */
+  "cfg-merchant":{filters:[merchantFilter,kwFilter("商户名称")],
+    cols:["商户ID","商户名称","所属市场","币种","状态","创建时间","操作"],
+    gen:(i)=>{const m=pick(MERCHANTS),code=(m.match(/\((\d+)\)/)||[])[1]||(1000+i);return[C(code),C(m),C(pick(["印度","巴基斯坦","巴西","越南","马来西亚","缅甸"])),C(pick(CURRENCIES)),stCell(Math.random()<.9,"运营中","停用"),C(dt(400)),editOp("编辑")];}},
+  "cfg-currency":{filters:[merchantFilter],
+    cols:["币种","币种名称","符号","小数位","汇率口径","状态","操作"],
+    gen:(i)=>{const c=CURRENCIES[i%CURRENCIES.length];return[C(c),C({INR:"印度卢比",PKR:"巴基斯坦卢比",BRL:"巴西雷亚尔",VND:"越南盾",MYR:"马来西亚林吉特",MMK:"缅甸元"}[c]),C({INR:"₹",PKR:"₨",BRL:"R$",VND:"₫",MYR:"RM",MMK:"K"}[c]),C(pick(["2","0"])),C("不折算直接计"),stCell(true,"启用","停用"),editOp("编辑")];},rows:6},
+  "cfg-channel":{filters:[merchantFilter,kwFilter("渠道号")],
+    cols:["商户","渠道号","渠道名称","渠道类型","关联域名","状态","操作"],
+    gen:(i)=>{return[C(pick(MERCHANTS),"merchant"),C(pick(CHANNELS)),C(pick(["投放-FB","投放-Google","代理推广","官方直推","自然流量"])),C(pick(["投放","代理","自流量"])),C("d-"+(8000+rnd(900))),stCell(Math.random()<.9,"启用","关闭注册"),editOp("编辑")];}},
+  "cfg-bank":{filters:[merchantFilter,kwFilter("银行")],
+    cols:["商户","银行","银行编码","绑卡上限","状态","操作"],
+    gen:(i)=>{return[C(pick(MERCHANTS),"merchant"),C(pick(["SBI","HDFC","ICICI","Axis","Kotak"])),C("BK"+(100+rnd(900))),C((1+rnd(5))+" 张"),stCell(Math.random()<.9,"启用","停用"),editOp("编辑")];}},
+  "cfg-payment":{filters:[merchantFilter,{label:"类型",type:"select",opts:["充值","提现"]},{label:"状态",type:"select",opts:["启用","停用"]}],
+    cols:["商户","通道名称","类型","支持方式","费率","限额","状态","操作"],
+    gen:(i)=>{return[C(pick(MERCHANTS),"merchant"),C(pick(["通道A-UPI","通道B-PIX","通道C-银行","通道D-USDT"])),C(pick(["充值","提现"])),C(pick(["UPI","PIX","银行卡","USDT"])),C((0.5+rnd(30)/10).toFixed(1)+"%"),C("¥"+(100+rnd(900))+" ~ ¥"+(50000+rnd(50000))),stCell(Math.random()<.85,"启用","停用"),editOp("编辑")];}},
+});
+
+/* ---------- 配置中心 · VIP配置（套用市场模板 / 自行配置 · 保存后发布） ---------- */
+/* 通用配置编辑器工厂：分组表单 + 套用市场模板 + 保存后发布（VIP 与其他规则配置共用） */
+/* ===== 集团视角：共享数据（市场 / 商户挂靠 / 各类配置存储） ===== */
+const G_MARKETS=[
+  {id:"IN",country:"印度",currency:"INR"},{id:"PK",country:"巴基斯坦",currency:"PKR"},
+  {id:"BR",country:"巴西",currency:"BRL"},{id:"VN",country:"越南",currency:"VND"},
+  {id:"MY",country:"马来西亚",currency:"MYR"},{id:"MM",country:"缅甸",currency:"MMK"}
+];
+let GMERCHANTS=[
+  {id:"in2001",name:"sit-inr",code:"2001",marketId:"IN"},{id:"in2005",name:"in-pro-a",code:"2005",marketId:"IN"},
+  {id:"in2006",name:"in-pro-b",code:"2006",marketId:"IN"},{id:"in2007",name:"in-pro-c",code:"2007",marketId:"IN"},
+  {id:"in2008",name:"in-pro-d",code:"2008",marketId:"IN"},{id:"pk3001",name:"pk-web",code:"3001",marketId:"PK"},
+  {id:"pk3002",name:"pk-app",code:"3002",marketId:"PK"},{id:"br4001",name:"br-main",code:"4001",marketId:"BR"},
+  {id:"br4002",name:"br-vip",code:"4002",marketId:"BR"},{id:"br4003",name:"br-new",code:"4003",marketId:"BR"},
+  {id:"vn5001",name:"vn-main",code:"5001",marketId:"VN"},{id:"vn5002",name:"vn-test",code:"5002",marketId:"VN"},
+  {id:"my6001",name:"my-main",code:"6001",marketId:"MY"},{id:"my6002",name:"my-vip",code:"6002",marketId:"MY"},
+  {id:"mm7001",name:"mm-main",code:"7001",marketId:"MM"}
+];
+const G_CFG={};   // G_CFG[type][merchantId] = values（各规则当前生效）
+const G_ACT={};   // G_ACT[merchantId][activityId] = values（活动规则当前生效）
+
+/* ===== 集团统一配置编辑器工厂（多商户 / 单商户统一配置） ===== */
+/* 全局视角：集团 / 单商户（商户视角参考原商户后台） */
+const PERSP={mode:"group",merchantId:null};
+
+function makeGroupEditor(def){
+  return {
+    name:def.varName, type:def.type, title:def.title, panelTitle:def.panelTitle, templates:def.templates, groups:def.groups,
+    state:null, bEdit:null, mEdit:null, mEditId:null,
+    get fields(){return this.groups.flatMap(g=>g.items);},
+    cfg(id){ if(!G_CFG[this.type])G_CFG[this.type]={}; if(!G_CFG[this.type][id]){ const i=GMERCHANTS.findIndex(m=>m.id===id); G_CFG[this.type][id]={...this.templates[(i+this.type.length)%this.templates.length].values}; } return G_CFG[this.type][id]; },
+    init(){ if(this.state) return; this.state={market:G_MARKETS[0].id, selected:new Set(), mode:"overview"}; },
+    marketMerchants(){return GMERCHANTS.filter(m=>m.marketId===this.state.market);},
+    marketCur(){return (G_MARKETS.find(m=>m.id===this.state.market)||{}).currency;},
+    countryOf(mid){return (G_MARKETS.find(m=>m.id===mid)||{}).country||"";},
+    tplLabel(t,mid){return t.name;},
+    curOf(id){const m=GMERCHANTS.find(x=>x.id===id);return (G_MARKETS.find(k=>k.id===m.marketId)||{}).currency;},
+    eq(a,b){return this.fields.every(f=>String(a[f.key])===String(b[f.key]));},
+    tplById(id){return this.templates.find(t=>t.id===id);},
+    templatesForMarket(mid){return this.templates.filter(t=>!t.marketId||t.marketId===mid);},
+    matchTpl(vals,mid){const t=this.templatesForMarket(mid||this.state.market).find(t=>this.eq(t.values,vals));return t?t.id:"__custom__";},
+    fmtV(f,v,cur){if(f.type==="number"){const n=Number(v).toLocaleString();return f.cur?n+" "+cur:n+(f.unit||"");}return v;},
+    control(f,v,setter,cur){
+      if(f.type==="select") return `<select onchange="${setter}('${f.key}',this.value)">${f.opts.map(o=>`<option ${o===v?"selected":""}>${o}</option>`).join("")}</select>`;
+      return `<div class="range"><input type="number" value="${v}" onchange="${setter}('${f.key}',this.value)"><span>${f.cur?cur:(f.unit||"")}</span></div>`;
+    },
+    formHTML(working,setter,cur,curFn){
+      return this.groups.map(g=>`<div class="cfg-group"><div class="cg-head"><h4>${g.group}</h4><span>${g.note}</span></div>
+        ${g.items.map(f=>`<div class="cfg-row">
+          <div class="cfg-name"><strong>${f.name}${f.risk?'<span class="risk-tag">高风险</span>':''}</strong><span>${f.desc}</span></div>
+          <div class="cfg-ctl">${this.control(f,working[f.key],setter,cur)}</div>
+          <div class="cfg-cur">${curFn(f)}</div></div>`).join("")}
+      </div>`).join("");
+    },
+    render(){
+      this.init();
+      if(PERSP.mode==="merchant") return this.renderMerchant();
+      if(this.state.mode==="batch") return this.renderBatch();
+      if(this.state.mode==="preview") return this.renderPreview();
+      return this.renderOverview();
+    },
+    /* ===== 集团视角 · 使用概览（按模板分组；每模板可预览 + 指定商户挂靠） ===== */
+    renderOverview(){
+      const n=this.name, s=this.state, mhs=this.marketMerchants();
+      const mchip=(m)=>`<span class="mtag" title="点击进入该商户定制配置" onclick="${n}.openMerchant('${m.id}')">${m.name} <code>${m.code}</code></span>`;
+      const cards=this.templatesForMarket(s.market).map(t=>{const ms=mhs.filter(m=>this.matchTpl(this.cfg(m.id))===t.id);
+        return `<div class="usage-card"><div class="uh"><strong>${this.tplLabel(t)}</strong><span style="display:flex;align-items:center;gap:6px"><span class="badge2 ok">${ms.length} 个商户使用</span><button class="btn sm" onclick="${n}.openTplEditor('${t.id}')">编辑</button><button class="btn sm primary" onclick="${n}.openTplModal('${t.id}')">查看 / 指定商户</button></span></div><div class="usage-mlist">${ms.length?ms.map(mchip).join(""):'<span class="desc">暂无商户使用</span>'}</div></div>`;}).join("");
+      const customMs=mhs.filter(m=>this.matchTpl(this.cfg(m.id))==="__custom__");
+      const customCard=`<div class="usage-card custom"><div class="uh"><strong>自定义配置（未套用模板）</strong><span class="badge2 warn">${customMs.length} 个商户</span></div><div class="usage-mlist">${customMs.length?customMs.map(mchip).join(""):'<span class="desc">暂无</span>'}</div></div>`;
+      document.getElementById("content").innerHTML=`
+        <div class="pagehead"><h2>${this.title}</h2><span class="badge2 ok">集团视角 · 使用概览</span><span class="desc">集团级模板，所有市场共用；点「编辑」改模板、「查看/指定商户」预览并挂靠套用、点商户名进入该商户定制配置；右上「新增集团模板」可新增</span></div>
+        <div class="card"><div class="scope-row2" style="justify-content:space-between"><div style="display:flex;align-items:center;gap:10px"><label>市场</label>
+          <select onchange="${n}.setMarket(this.value)">${G_MARKETS.map(mk=>`<option value="${mk.id}" ${mk.id===s.market?"selected":""}>${mk.country}（${GMERCHANTS.filter(x=>x.marketId===mk.id).length}）</option>`).join("")}</select></div><button class="btn sm primary" onclick="${n}.openTplEditor()">＋ 新增集团模板</button></div></div>
+        <div class="usage-grid">${cards}${customCard}</div>`;
+    },
+    toggle(id){const s=this.state;if(s.selected.has(id))s.selected.delete(id);else s.selected.add(id);if(this.bEdit)this.bEdit.published=false;this.render();},
+    selAllMarket(){this.marketMerchants().forEach(m=>this.state.selected.add(m.id));if(this.bEdit)this.bEdit.published=false;this.render();},
+    selNone(){this.state.selected=new Set();if(this.bEdit)this.bEdit.published=false;this.render();},
+    setMarket(id){this.state.market=id;this.state.selected=new Set();this.state.mode="overview";this.render();},
+    /* 集团模板：新增 / 编辑（弹窗展示） */
+    teClone(o){return {name:o.name,values:{...o.values}};},
+    teEq(a,b){return a.name===b.name && this.fields.every(f=>String(a.values[f.key])===String(b.values[f.key]));},
+    tplUsing(tid){return GMERCHANTS.filter(m=>this.matchTpl(this.cfg(m.id),m.marketId)===tid).length;},
+    openTplEditor(tid){
+      if(tid){const t=this.tplById(tid);const o={name:t.name,values:{...t.values}};this.tplEdit={id:tid,market:this.state.market,w:this.teClone(o),s:this.teClone(o),p:this.teClone(o)};}
+      else{const o={name:"",values:{...this.templates[0].values}};this.tplEdit={id:null,market:this.state.market,w:this.teClone(o),s:this.teClone(o),p:this.teClone(o)};}
+      this.renderTplEditor();document.getElementById("g-modal").classList.add("show");
+    },
+    renderTplEditor(){
+      const n=this.name,e=this.tplEdit,isNew=!e.id,savedUnpub=!this.teEq(e.s,e.p),using=isNew?0:this.tplUsing(e.id);
+      document.getElementById("gmTitle").textContent=isNew?"新增集团模板":"编辑集团模板";
+      const baseRow2=isNew
+        ? `<div class="cfg-row" style="grid-template-columns:minmax(160px,1fr) 1fr"><div class="cfg-name"><strong>市场</strong><span>新增成功后跳转至该市场板块</span></div><div class="cfg-ctl"><select onchange="${n}.teMarket(this.value)">${G_MARKETS.map(mk=>`<option value="${mk.id}" ${mk.id===e.market?"selected":""}>${mk.country}</option>`).join("")}</select></div></div>`
+        : `<div class="cfg-row" style="grid-template-columns:minmax(160px,1fr) 1fr"><div class="cfg-name"><strong>使用情况</strong><span>有商户在用时不可删除</span></div><div class="cfg-ctl"><span class="badge2 ${using?'ok':'gray'}">${using} 个商户在用</span></div></div>`;
+      document.getElementById("gmBody").innerHTML=`
+        <div class="cfg-group" style="margin:0 0 14px"><div class="cg-head"><h4>模板基础</h4><span>集团级模板 · 所有市场共用</span></div>
+          <div class="cfg-row" style="grid-template-columns:minmax(160px,1fr) 1fr"><div class="cfg-name"><strong>模板名称</strong><span>例如：标准模板、高价值模板</span></div><div class="cfg-ctl"><input type="text" value="${e.w.name}" onchange="${n}.teName(this.value)" placeholder="输入模板名称"></div></div>
+          ${baseRow2}
+        </div>
+        ${this.groups.map(g=>`<div class="cfg-group" style="margin:0 0 14px"><div class="cg-head"><h4>${g.group}</h4><span>${g.note}</span></div>
+          ${g.items.map(f=>`<div class="cfg-row" style="grid-template-columns:minmax(160px,1fr) 220px"><div class="cfg-name"><strong>${f.name}${f.risk?'<span class="risk-tag">高风险</span>':''}</strong><span>${f.desc}</span></div><div class="cfg-ctl">${this.control(f,e.w.values[f.key],n+".teVal","")}</div></div>`).join("")}
+        </div>`).join("")}`;
+      const delBtn=isNew?"":`<button class="btn" ${using?'disabled':'style="border-color:#e0524d;color:#e0524d"'} onclick="${n}.teDelete()">🗑 删除模板${using?'（'+using+' 在用）':''}</button>`;
+      document.getElementById("gmFoot").innerHTML=`<button class="btn" onclick="UI.gmClose()">取消</button>${delBtn}<span style="flex:1"></span><button class="btn primary" onclick="${n}.teSave()">💾 保存</button><button class="btn primary" ${savedUnpub?'':'disabled'} onclick="${n}.tePublish()">🚀 发布</button>`;
+    },
+    teName(v){this.tplEdit.w.name=v;},
+    teMarket(v){this.tplEdit.market=v;},
+    teVal(k,v){const f=this.fields.find(x=>x.key===k);this.tplEdit.w.values[k]=f.type==="number"?Number(v):v;},
+    teSave(){const e=this.tplEdit;if(!(e.w.name||"").trim()){UI.toast("请填写模板名称");return;}e.s=this.teClone(e.w);this.renderTplEditor();UI.toast(this.teEq(e.s,e.p)?"已保存（无改动）":"已保存草稿，可发布");},
+    tePublish(){
+      const e=this.tplEdit;if(this.teEq(e.s,e.p)){UI.toast("请先保存后再发布");return;}
+      if(e.id){const using=GMERCHANTS.filter(m=>this.matchTpl(this.cfg(m.id))===e.id);const t=this.tplById(e.id);t.name=e.s.name;t.values={...e.s.values};using.forEach(m=>{G_CFG[this.type][m.id]={...e.s.values};});e.p=this.teClone(e.s);UI.gmClose();this.render();UI.toast("已发布：模板「"+e.s.name+"」更新，"+using.length+" 个在用商户已同步");}
+      else{const id="GT"+Math.floor(Math.random()*1e6);this.templates.push({id,name:e.s.name,values:{...e.s.values},marketId:e.market});e.p=this.teClone(e.s);this.state.market=e.market;this.state.selected=new Set();this.state.mode="overview";UI.gmClose();this.render();UI.toast("已新增集团模板「"+e.s.name+"」，已跳转至"+((G_MARKETS.find(m=>m.id===e.market)||{}).country||"")+"市场");}
+    },
+    teDelete(){const e=this.tplEdit;if(!e.id)return;const using=this.tplUsing(e.id);if(using){UI.toast("该模板有 "+using+" 个商户在用，不能删除");return;}this.templates=this.templates.filter(t=>t.id!==e.id);UI.gmClose();this.render();UI.toast("已删除模板");},
+    /* 合并弹窗：模板预览 + 勾选指定商户挂靠 */
+    openTplModal(tid){const t=this.tplById(tid)||this.templates[0];this.modal={tid:t.id,sel:new Set(this.marketMerchants().filter(m=>this.matchTpl(this.cfg(m.id))===t.id).map(m=>m.id)),savedSel:null,view:"select"};this.renderModal();document.getElementById("g-modal").classList.add("show");},
+    sameSet(a,b){if(!b||a.size!==b.size)return false;for(const x of a)if(!b.has(x))return false;return true;},
+    modalAffected(){const t=this.tplById(this.modal.tid),base=this.modal.savedSel||this.modal.sel;return [...base].filter(id=>this.matchTpl(this.cfg(id))!==t.id).map(id=>{const cur=this.matchTpl(this.cfg(id)),m=GMERCHANTS.find(x=>x.id===id);return {id,name:m.name,code:m.code,from:cur==="__custom__"?"自定义配置":this.tplLabel(this.tplById(cur)),to:this.tplLabel(t)};});},
+    renderModal(){ if(this.modal.view==="confirm") return this.renderModalConfirm(); this.renderModalSelect(); },
+    renderModalSelect(){
+      const n=this.name,t=this.tplById(this.modal.tid),cur=this.marketCur(),mhs=this.marketMerchants(),sel=this.modal.sel;
+      const unsaved=!this.sameSet(sel,this.modal.savedSel), affected=this.modalAffected().length;
+      const hint=unsaved?'● 选择有改动，请先保存':(this.modal.savedSel?(affected?('● 已保存，待发布（'+affected+' 个商户将变更）'):'已保存 · 所选商户均已使用该模板'):'勾选商户后点保存');
+      document.getElementById("gmTitle").textContent="模板："+this.tplLabel(t);
+      document.getElementById("gmBody").innerHTML=`
+        <div class="cfg-group" style="margin:0 0 14px"><div class="cg-head"><h4>模板内容预览</h4><span>只读 · 币种 ${cur}</span></div>
+          <table style="width:100%;border-collapse:collapse">${this.groups.map(g=>g.items.map(f=>`<tr><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:#5a6275;width:170px">${f.name}${f.risk?' <span class="badge2 warn" style="font-size:10px">高风险</span>':''}</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:600">${this.fmtV(f,t.values[f.key],cur)}</td></tr>`).join("")).join("")}</table>
+        </div>
+        <div class="cfg-group" style="margin:0"><div class="cg-head"><h4>指定商户挂靠</h4><span>勾选商户套用此模板（已选 ${sel.size} / ${mhs.length}）</span></div>
+          <div style="padding:10px 12px;display:flex;gap:8px;align-items:center"><button class="btn sm" onclick="${n}.modalAll()">全选本市场</button><button class="btn sm" onclick="${n}.modalNone()">清空</button><span class="desc" style="margin-left:auto">${hint}</span></div>
+          <div class="msel" style="padding:0 12px 12px">${mhs.map(m=>`<label class="mchk ${sel.has(m.id)?"on":""}"><input type="checkbox" ${sel.has(m.id)?"checked":""} onchange="${n}.modalToggle('${m.id}')">${m.name} <code style="color:var(--muted);font-size:11px">${m.code}</code></label>`).join("")}</div>
+        </div>`;
+      document.getElementById("gmFoot").innerHTML=`<button class="btn" onclick="UI.gmClose()">取消</button><button class="btn ${unsaved?'primary':''}" ${unsaved?'':'disabled'} onclick="${n}.tplSave()">💾 保存</button><button class="btn primary" ${(!unsaved&&this.modal.savedSel&&affected)?'':'disabled'} onclick="${n}.tplPublish()">🚀 发布</button>`;
+    },
+    modalToggle(id){const x=this.modal.sel;if(x.has(id))x.delete(id);else x.add(id);this.renderModal();},
+    modalAll(){this.modal.sel=new Set(this.marketMerchants().map(m=>m.id));this.renderModal();},
+    modalNone(){this.modal.sel=new Set();this.renderModal();},
+    tplSave(){this.modal.savedSel=new Set(this.modal.sel);this.renderModal();UI.toast("已保存所选商户，可发布");},
+    tplPublish(){if(this.modal.savedSel===null||!this.sameSet(this.modal.sel,this.modal.savedSel)){UI.toast("请先保存后再发布");return;}if(!this.modalAffected().length){UI.toast("所选商户均已使用该模板，无需发布");return;}this.modal.view="confirm";this.renderModal();},
+    renderModalConfirm(){
+      const n=this.name,t=this.tplById(this.modal.tid),aff=this.modalAffected();
+      document.getElementById("gmTitle").textContent="确认发布：套用「"+this.tplLabel(t)+"」";
+      document.getElementById("gmBody").innerHTML=`
+        <div class="note" style="margin:0 0 12px">⚠ 以下 <b>${aff.length}</b> 个商户的 ${this.title} 将由原模板调整为「<b>${this.tplLabel(t)}</b>」，请确认是否操作：</div>
+        <div class="table-card" style="box-shadow:none"><div class="table-scroll"><table><thead><tr><th>商户</th><th>站点号</th><th>原模板</th><th></th><th>现模板</th></tr></thead><tbody>
+          ${aff.map(a=>`<tr><td><strong>${a.name}</strong></td><td>${a.code}</td><td><span class="badge2 gray">${a.from}</span></td><td style="color:var(--muted)">→</td><td><span class="badge2 ok">${a.to}</span></td></tr>`).join("")}
+        </tbody></table></div></div>`;
+      document.getElementById("gmFoot").innerHTML=`<button class="btn" onclick="${n}.tplBack()">← 返回修改</button><button class="btn primary" onclick="${n}.tplConfirm()">✅ 确认操作</button>`;
+    },
+    tplBack(){this.modal.view="select";this.renderModal();},
+    tplConfirm(){const t=this.tplById(this.modal.tid),aff=this.modalAffected();if(!G_CFG[this.type])G_CFG[this.type]={};aff.forEach(a=>{G_CFG[this.type][a.id]={...t.values};});UI.gmClose();this.render();UI.toast("已发布："+aff.length+" 个商户套用「"+this.tplLabel(t)+"」");},
+    backToGroup(){PERSP.mode="group";PERSP.merchantId=null;if(window.UI&&UI.syncPersp)UI.syncPersp();this.render();},
+    /* ===== 模板预览（只读） ===== */
+    previewTpl(tid){this.pTid=tid;this.state.mode="preview";this.render();},
+    exitPreview(){this.state.mode="overview";this.render();},
+    renderPreview(){
+      const n=this.name, t=this.tplById(this.pTid)||this.templates[0], cur=this.marketCur();
+      document.getElementById("content").innerHTML=`
+        <div class="pagehead"><h2>${this.title}</h2><span class="badge2 ok">模板预览</span><span class="desc">${t.name}（只读）</span></div>
+        <div class="table-card">
+          <div class="table-top"><h3><a class="link" onclick="${n}.exitPreview()">← 返回使用概览</a>　|　模板预览：${t.name}</h3>
+            <button class="btn sm primary" onclick="${n}.enterBatch('${t.id}')">📥 指定商户套用此模板</button></div>
+          <div class="table-scroll"><table><thead><tr><th>分组</th><th>配置项</th><th>说明</th><th>模板值</th></tr></thead><tbody>
+            ${this.groups.map(g=>g.items.map(f=>`<tr><td>${g.group}</td><td><strong>${f.name}</strong>${f.risk?' <span class="badge2 warn" style="font-size:10px">高风险</span>':''}</td><td style="color:var(--muted)">${f.desc}</td><td><strong>${this.fmtV(f,t.values[f.key],cur)}</strong></td></tr>`).join("")).join("")}
+          </tbody></table></div>
+        </div>`;
+    },
+    /* ===== 指定商户挂靠 + 统一配置（按模板进入，可多选商户） ===== */
+    enterBatch(tid){ const t=this.tplById(tid)||this.templates[0]; this.bTid=t.id; this.state.selected=new Set(this.marketMerchants().filter(m=>this.matchTpl(this.cfg(m.id))===t.id).map(m=>m.id)); this.bEdit={working:{...t.values},saved:{...t.values},tplSel:t.id,published:false}; this.state.mode="batch"; this.render(); },
+    exitBatch(){this.state.mode="overview";this.bEdit=null;this.render();},
+    batchStatus(f){const ids=[...this.state.selected];if(!ids.length)return "—";const vals=[...new Set(ids.map(id=>String(this.cfg(id)[f.key])))];if(vals.length===1)return this.fmtV(f,this.cfg(ids[0])[f.key],this.marketCur());return `差异（${vals.length} 种取值）`;},
+    renderBatch(){
+      const n=this.name, e=this.bEdit, cur=this.marketCur(), ids=[...this.state.selected], mhs=this.marketMerchants();
+      const unsaved=!this.eq(e.working,e.saved), canPublish=!unsaved && !e.published && ids.length>0;
+      const stateText=unsaved?'● 有未保存修改，请先保存':(e.published?'✓ 已发布，无待办':(ids.length?'● 已保存，待发布到所选商户':'请先勾选商户'));
+      const tplName=this.bTid?(this.tplById(this.bTid)||{}).name:"";
+      document.getElementById("content").innerHTML=`
+        <div class="pagehead"><h2>${this.title}</h2><span class="badge2 ok">集团视角 · 指定商户挂靠</span><span class="desc">${tplName?("模板："+tplName+" · "):""}勾选商户后统一套用 / 自定义，保存发布</span></div>
+        <div class="card"><div class="scope-bar">
+          <div class="scope-row2"><label>挂靠商户</label>
+            <button class="btn sm" onclick="${n}.selAllMarket()">全选本市场</button>
+            <button class="btn sm" onclick="${n}.selNone()">清空</button>
+            <span class="scope-count">已选 ${ids.length} / ${mhs.length} 个商户</span></div>
+          <div class="msel">${mhs.map(m=>`<label class="mchk ${this.state.selected.has(m.id)?"on":""}"><input type="checkbox" ${this.state.selected.has(m.id)?"checked":""} onchange="${n}.toggle('${m.id}')">${m.name} <code style="color:var(--muted);font-size:11px">${m.code}</code></label>`).join("")}</div>
+        </div></div>
+        <div class="table-card">
+          <div class="table-top"><h3><a class="link" onclick="${n}.exitBatch()">← 返回使用概览</a>　|　${this.panelTitle}</h3>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="desc">套用模板</span>
+              <select onchange="${n}.bPickTpl(this.value)" style="width:auto;min-width:150px">${this.templatesForMarket(this.state.market).map(t=>`<option value="${t.id}" ${t.id===e.tplSel?"selected":""}>${this.tplLabel(t)}</option>`).join("")}<option value="__custom__" ${e.tplSel==="__custom__"?"selected":""}>自定义模板</option></select>
+              <button class="btn sm primary" onclick="${n}.bApplyTpl()">📥 套用</button></div>
+          </div>
+          <div style="padding:12px 16px">${this.formHTML(e.working,`${n}.bSetVal`,cur,(f)=>`所选商户现状：<b>${this.batchStatus(f)}</b>`)}</div>
+          <div class="filter-actions" style="padding:13px 16px">
+            <span class="desc" style="margin-right:auto">${stateText}　·　发布将统一写入所选 ${ids.length} 个商户</span>
+            <button class="btn ${unsaved?"primary":""}" ${unsaved?"":"disabled"} onclick="${n}.bSave()">💾 保存</button>
+            <button class="btn primary" ${canPublish?"":"disabled"} onclick="${n}.bPublish()">🚀 发布到所选商户</button>
+          </div>
+        </div>`;
+    },
+    bPickTpl(id){this.bEdit.tplSel=id;this.render();},
+    bApplyTpl(){if(this.bEdit.tplSel==="__custom__"){UI.toast("请先选择一个模板再套用");return;}const t=this.tplById(this.bEdit.tplSel);this.bEdit.working={...t.values};this.render();UI.toast("已套用 "+t.name+"，可再修改后保存");},
+    bSetVal(k,v){const f=this.fields.find(x=>x.key===k);this.bEdit.working[k]=f.type==="number"?Number(v):v;this.bEdit.tplSel=this.matchTpl(this.bEdit.working);this.bEdit.published=false;this.render();},
+    bSave(){if(this.eq(this.bEdit.working,this.bEdit.saved)){UI.toast("没有需要保存的修改");return;}this.bEdit.saved={...this.bEdit.working};this.bEdit.published=false;this.render();UI.toast("已保存草稿，可发布");},
+    bPublish(){if(!this.state.selected.size){UI.toast("请先勾选商户");return;}if(!this.eq(this.bEdit.working,this.bEdit.saved)){UI.toast("请先保存修改后再发布");return;}if(this.bEdit.published){UI.toast("没有待发布的内容");return;}[...this.state.selected].forEach(id=>{G_CFG[this.type][id]={...this.bEdit.saved};});this.bEdit.published=true;this.render();UI.toast("已发布到 "+this.state.selected.size+" 个商户");},
+    /* ===== 商户视角 · 单商户定制配置（参考商户后台） ===== */
+    openMerchant(id){PERSP.mode="merchant";PERSP.merchantId=id;this.mEditId=null;if(window.UI&&UI.syncPersp)UI.syncPersp();this.render();},
+    renderMerchant(){
+      const n=this.name, id=PERSP.merchantId, m=GMERCHANTS.find(x=>x.id===id), cur=this.curOf(id);
+      if(this.mEditId!==id){const c={...this.cfg(id)};this.mEdit={working:{...c},saved:{...c},published:{...c},tplSel:this.matchTpl(c,m.marketId)};this.mEditId=id;}
+      const e=this.mEdit, unsaved=!this.eq(e.working,e.saved), savedUnpub=!this.eq(e.saved,e.published);
+      const src=this.matchTpl(e.published,m.marketId); const srcTxt=src==="__custom__"?"商户自定义配置":("集团模板（"+this.tplLabel(this.tplById(src))+"）");
+      const stateText=unsaved?'● 有未保存修改，请先保存':savedUnpub?'● 已保存，待发布':'✓ 已发布，无待办';
+      document.getElementById("content").innerHTML=`
+        <div class="pagehead"><h2>${this.title}</h2><span class="badge2 ok">商户视角 · ${m.name}</span><span class="desc">对该商户进行定制配置（参考商户后台）</span></div>
+        <div class="note">⚙ 当前视角：<b>商户 ${m.name}（${m.code}）</b>　|　生效来源：<b>${srcTxt}</b>　|　可在左上角切回集团视角。套用模板或自定义，必须保存后才能发布。</div>
+        <div class="table-card">
+          <div class="table-top"><h3><a class="link" onclick="${n}.backToGroup()">← 返回上一级</a>　|　${this.panelTitle}</h3>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="desc">套用模板</span>
+              <select onchange="${n}.mPickTpl(this.value)" style="width:auto;min-width:150px">${this.templatesForMarket(m.marketId).map(t=>`<option value="${t.id}" ${t.id===e.tplSel?"selected":""}>${this.tplLabel(t,m.marketId)}</option>`).join("")}<option value="__custom__" ${e.tplSel==="__custom__"?"selected":""}>自定义模板</option></select>
+              <button class="btn sm primary" onclick="${n}.mApplyTpl()">📥 套用</button></div>
+          </div>
+          <div style="padding:12px 16px">${this.formHTML(e.working,`${n}.mSetVal`,cur,(f)=>`当前生效：<b>${this.fmtV(f,e.published[f.key],cur)}</b>`)}</div>
+          <div class="filter-actions" style="padding:13px 16px">
+            <span class="desc" style="margin-right:auto">${stateText}</span>
+            <button class="btn" onclick="${n}.mRevert()">↻ 还原</button>
+            <button class="btn ${unsaved?"primary":""}" ${unsaved?"":"disabled"} onclick="${n}.mSave()">💾 保存</button>
+            <button class="btn primary" ${(savedUnpub&&!unsaved)?"":"disabled"} onclick="${n}.mPublish()">🚀 发布</button>
+          </div>
+        </div>`;
+    },
+    mPickTpl(id){this.mEdit.tplSel=id;this.render();},
+    mApplyTpl(){if(this.mEdit.tplSel==="__custom__"){UI.toast("请先选择一个模板再套用");return;}const t=this.tplById(this.mEdit.tplSel);this.mEdit.working={...t.values};this.render();UI.toast("已套用 "+t.name+"，可再修改后保存");},
+    mSetVal(k,v){const f=this.fields.find(x=>x.key===k);this.mEdit.working[k]=f.type==="number"?Number(v):v;this.mEdit.tplSel=this.matchTpl(this.mEdit.working,GMERCHANTS.find(x=>x.id===PERSP.merchantId).marketId);this.render();},
+    mRevert(){this.mEdit.working={...this.mEdit.saved};this.mEdit.tplSel=this.matchTpl(this.mEdit.saved,GMERCHANTS.find(x=>x.id===PERSP.merchantId).marketId);this.render();UI.toast("已还原到最近保存");},
+    mSave(){if(this.eq(this.mEdit.working,this.mEdit.saved)){UI.toast("没有需要保存的修改");return;}this.mEdit.saved={...this.mEdit.working};this.render();UI.toast("已保存草稿，可发布");},
+    mPublish(){if(!this.eq(this.mEdit.working,this.mEdit.saved)){UI.toast("请先保存修改后再发布");return;}if(this.eq(this.mEdit.saved,this.mEdit.published)){UI.toast("没有待发布的内容");return;}G_CFG[this.type][PERSP.merchantId]={...this.mEdit.saved};this.mEdit.published={...this.mEdit.saved};this.render();UI.toast("已发布，"+GMERCHANTS.find(x=>x.id===PERSP.merchantId).name+" 的配置已生效");}
+  };
+}
+const VIP_GROUPS=[
+  {group:"等级与晋级",note:"会员等级、计算周期和晋级口径",items:[
+    {key:"vipPlan",name:"VIP 等级方案",desc:"等级数量与等级名称",type:"select",opts:["轻量 6 级","标准 10 级","高价值 12 级"],risk:false},
+    {key:"calcCycle",name:"晋级统计周期",desc:"计算充值、投注或流水的周期",type:"select",opts:["自然日","自然周","自然月"],risk:false},
+    {key:"upgradeMetric",name:"晋级指标",desc:"玩家达到晋级条件的统计口径",type:"select",opts:["有效投注","充值 + 有效投注","净输赢"],risk:true},
+    {key:"keepCycle",name:"保级周期",desc:"保级判断窗口",type:"select",opts:["不保级","30 天","60 天","90 天"],risk:false}
+  ]},
+  {group:"奖励与返水",note:"生日礼金、返水周期和基础奖励",items:[
+    {key:"rebateCycle",name:"返水结算周期",desc:"返水计算和发放频率",type:"select",opts:["每日","每周","每月"],risk:true},
+    {key:"birthdayBonus",name:"生日礼金",desc:"按玩家 VIP 等级发放的基础金额",type:"number",cur:true,risk:false}
+  ]},
+  {group:"资金边界",note:"VIP 关联资金权益与复核开关",items:[
+    {key:"withdrawTimes",name:"每日提款次数",desc:"VIP 权益中的提款次数上限",type:"number",unit:"次",risk:true},
+    {key:"withdrawLimit",name:"单日提款额度",desc:"VIP 权益中的提款额度上限",type:"number",cur:true,risk:true},
+    {key:"highRiskReview",name:"高风险复核",desc:"高价值权益变更是否要求复核",type:"select",opts:["开启","关闭"],risk:true}
+  ]}
+];
+const VIP_TPLS=[
+  {id:"VT-1",name:"标准模板",values:{vipPlan:"标准 10 级",calcCycle:"自然月",upgradeMetric:"有效投注",keepCycle:"30 天",rebateCycle:"每日",birthdayBonus:500,withdrawTimes:5,withdrawLimit:100000,highRiskReview:"开启"}},
+  {id:"VT-2",name:"高价值模板",values:{vipPlan:"高价值 12 级",calcCycle:"自然月",upgradeMetric:"充值 + 有效投注",keepCycle:"60 天",rebateCycle:"每日",birthdayBonus:1000,withdrawTimes:8,withdrawLimit:200000,highRiskReview:"开启"}},
+  {id:"VT-3",name:"新客模板",values:{vipPlan:"轻量 6 级",calcCycle:"自然周",upgradeMetric:"有效投注",keepCycle:"不保级",rebateCycle:"每周",birthdayBonus:300,withdrawTimes:3,withdrawLimit:50000,highRiskReview:"关闭"}}
+];
+const GroupVip=makeGroupEditor({varName:"GroupVip",type:"vip",title:"VIP规则配置",panelTitle:"VIP 规则项",templates:VIP_TPLS,groups:VIP_GROUPS});
+
+const RP_GROUPS=[
+  {group:"金额规则",note:"红包类型与金额区间",items:[
+    {key:"redpackType",name:"红包类型",desc:"随机金额或固定金额",type:"select",opts:["随机红包","固定红包"],risk:false},
+    {key:"minAmount",name:"最小金额",desc:"单个红包最小金额",type:"number",cur:true,risk:false},
+    {key:"maxAmount",name:"最大金额",desc:"单个红包最大金额",type:"number",cur:true,risk:true}
+  ]},
+  {group:"发放规则",note:"领取次数与解锁条件",items:[
+    {key:"dailyTimes",name:"每日可领次数",desc:"单个会员每日可领红包数",type:"number",unit:"次",risk:false},
+    {key:"unlockWager",name:"解锁打码",desc:"红包提现所需打码倍数",type:"number",unit:"倍",risk:true},
+    {key:"expireDays",name:"有效期",desc:"红包未领取的过期天数",type:"number",unit:"天",risk:false}
+  ]}
+];
+const RP_TPLS=[
+  {id:"RT-1",name:"标准模板",values:{redpackType:"随机红包",minAmount:10,maxAmount:200,dailyTimes:3,unlockWager:5,expireDays:7}},
+  {id:"RT-2",name:"大额模板",values:{redpackType:"随机红包",minAmount:50,maxAmount:1000,dailyTimes:2,unlockWager:8,expireDays:3}},
+  {id:"RT-3",name:"保守模板",values:{redpackType:"固定红包",minAmount:10,maxAmount:100,dailyTimes:1,unlockWager:3,expireDays:1}}
+];
+const GroupRedpack=makeGroupEditor({varName:"GroupRedpack",type:"redpack",title:"红包规则配置",panelTitle:"红包规则项",templates:RP_TPLS,groups:RP_GROUPS});
+
+const WH_GROUPS=[
+  {group:"转盘规则",note:"奖品与中奖设置",items:[
+    {key:"prizeCount",name:"奖品数量",desc:"转盘上的奖品格数",type:"number",unit:"个",risk:false},
+    {key:"winRate",name:"中奖概率",desc:"非空奖的总中奖概率",type:"number",unit:"%",risk:true},
+    {key:"costPerSpin",name:"每次消耗",desc:"单次抽奖消耗的资源",type:"select",opts:["1 抽奖券","积分 100","¥10"],risk:false}
+  ]},
+  {group:"奖励与风控",note:"奖品额度与风控",items:[
+    {key:"maxPrize",name:"最高奖品金额",desc:"单次最高奖品金额",type:"number",cur:true,risk:true},
+    {key:"dailyFreeSpins",name:"每日免费次数",desc:"每个会员每日免费抽奖次数",type:"number",unit:"次",risk:false},
+    {key:"riskCheck",name:"风控校验",desc:"中奖派彩前是否触发风控",type:"select",opts:["开启","关闭"],risk:true}
+  ]}
+];
+const WH_TPLS=[
+  {id:"WT-1",name:"标准模板",values:{prizeCount:8,winRate:40,costPerSpin:"1 抽奖券",maxPrize:1000,dailyFreeSpins:1,riskCheck:"开启"}},
+  {id:"WT-2",name:"高奖模板",values:{prizeCount:12,winRate:30,costPerSpin:"¥10",maxPrize:5000,dailyFreeSpins:0,riskCheck:"开启"}},
+  {id:"WT-3",name:"保守模板",values:{prizeCount:6,winRate:60,costPerSpin:"积分 100",maxPrize:500,dailyFreeSpins:2,riskCheck:"开启"}}
+];
+const GroupWheel=makeGroupEditor({varName:"GroupWheel",type:"wheel",title:"转盘规则配置",panelTitle:"转盘规则项",templates:WH_TPLS,groups:WH_GROUPS});
+
+/* ===== 集团 · 活动规则配置（汇总页 + 每活动对所选商户统一配置） ===== */
+const ACT_TEMPLATES=[
+  {id:"AT-1",name:"活动标准模板",values:{rewardMode:"按比例返利",joinCondition:"每日一次",bonusRate:50,maxBonus:2000,dailyBudget:100000,perUserLimit:3,riskCheck:"开启"}},
+  {id:"AT-2",name:"活动激进模板",values:{rewardMode:"阶梯奖励",joinCondition:"充值达标",bonusRate:100,maxBonus:5000,dailyBudget:300000,perUserLimit:5,riskCheck:"开启"}},
+  {id:"AT-3",name:"活动保守模板",values:{rewardMode:"固定金额",joinCondition:"首充",bonusRate:20,maxBonus:800,dailyBudget:50000,perUserLimit:1,riskCheck:"开启"}}
+];
+const ACT_GROUPS=[
+  {group:"奖励规则",note:"活动奖励方式与额度",items:[
+    {key:"rewardMode",name:"奖励方式",desc:"活动奖励的计算方式",type:"select",opts:["按比例返利","固定金额","阶梯奖励"],risk:false},
+    {key:"joinCondition",name:"参与条件",desc:"玩家参与活动的门槛",type:"select",opts:["首充","每日一次","邀请达标","充值达标"],risk:false},
+    {key:"bonusRate",name:"奖励比例",desc:"按比例返利时的比例",type:"number",unit:"%",risk:false},
+    {key:"maxBonus",name:"单次奖励上限",desc:"单次活动奖励封顶金额",type:"number",cur:true,risk:true}
+  ]},
+  {group:"预算与风控",note:"活动成本与风控开关",items:[
+    {key:"dailyBudget",name:"每日预算上限",desc:"活动每日发放预算封顶",type:"number",cur:true,risk:true},
+    {key:"perUserLimit",name:"每人每日次数",desc:"单个会员每日可参与次数",type:"number",unit:"次",risk:false},
+    {key:"riskCheck",name:"风控校验",desc:"领取前是否触发风控校验",type:"select",opts:["开启","关闭"],risk:true}
+  ]}
+];
+const GroupActivity={
+  name:"GroupActivity", templates:ACT_TEMPLATES, groups:ACT_GROUPS,
+  activities:[
+    {id:"a1",name:"首充奖励",type:"充值活动",source:"充值"},{id:"a2",name:"充值返利",type:"充值活动",source:"充值"},
+    {id:"a3",name:"每日签到",type:"签到活动",source:"登录"},{id:"a4",name:"大转盘",type:"转盘活动",source:"充值 / 积分"},
+    {id:"a5",name:"邀请转盘",type:"邀请活动",source:"邀请"},{id:"a6",name:"新手礼包",type:"礼包活动",source:"注册"},
+    {id:"a7",name:"注册送金",type:"注册活动",source:"注册"},{id:"a8",name:"节日红包",type:"红包活动",source:"运营"},
+    {id:"a9",name:"回归奖励",type:"留存活动",source:"回归"},{id:"a10",name:"锦标赛奖励",type:"竞赛活动",source:"投注"},
+    {id:"a11",name:"TG频道活动",type:"渠道活动",source:"Telegram"},{id:"a12",name:"每周/日奖励",type:"周期活动",source:"投注"}
+  ],
+  state:null,
+  get fields(){return this.groups.flatMap(g=>g.items);},
+  init(){ if(this.state) return; const market=G_MARKETS[0].id; this.state={market, selected:new Set(GMERCHANTS.filter(m=>m.marketId===market).map(m=>m.id)), editing:null, edit:null}; },
+  marketCur(){return (G_MARKETS.find(m=>m.id===this.state.market)||{}).currency;},
+  marketMerchants(){return GMERCHANTS.filter(m=>m.marketId===this.state.market);},
+  selectedList(){return [...this.state.selected];},
+  actById(id){return this.activities.find(a=>a.id===id);},
+  eq(a,b){return this.fields.every(f=>String(a[f.key])===String(b[f.key]));},
+  tplById(id){return this.templates.find(t=>t.id===id);},
+  matchTpl(vals){const t=this.templates.find(t=>this.eq(t.values,vals));return t?t.id:"__custom__";},
+  fmt(f,v){if(f.type==="number"){const n=Number(v).toLocaleString();return f.cur?n+" "+this.marketCur():n+(f.unit||"");}return v;},
+  actCfg(mid,aid){ if(!G_ACT[mid])G_ACT[mid]={}; if(!G_ACT[mid][aid])G_ACT[mid][aid]={...this.templates[0].values}; return G_ACT[mid][aid]; },
+  fieldStatus(aid,key){ const ids=this.selectedList(); if(!ids.length)return "—";
+    const vals=[...new Set(ids.map(id=>String(this.actCfg(id,aid)[key])))];
+    if(vals.length===1){const f=this.fields.find(x=>x.key===key);return this.fmt(f,this.actCfg(ids[0],aid)[key]);}
+    return `差异（${vals.length} 种取值）`; },
+  scopeBar(){ const s=this.state, mhs=this.marketMerchants();
+    return `<div class="card"><div class="scope-bar">
+      <div class="scope-row2"><label>作用市场</label>
+        <select onchange="GroupActivity.setMarket(this.value)">${G_MARKETS.map(mk=>`<option value="${mk.id}" ${mk.id===s.market?"selected":""}>${mk.country}（${mk.currency}）· ${GMERCHANTS.filter(x=>x.marketId===mk.id).length} 商户</option>`).join("")}</select>
+        <button class="btn sm" onclick="GroupActivity.selAll()">全选</button><button class="btn sm" onclick="GroupActivity.selNone()">清空</button>
+        <span class="scope-count">已选 ${s.selected.size} / ${mhs.length} 个商户</span></div>
+      <div class="msel">${mhs.map(m=>`<label class="mchk ${s.selected.has(m.id)?"on":""}"><input type="checkbox" ${s.selected.has(m.id)?"checked":""} onchange="GroupActivity.toggle('${m.id}')">${m.name} <code style="color:var(--muted);font-size:11px">${m.code}</code></label>`).join("")}</div>
+    </div></div>`; },
+  render(){ this.init(); if(PERSP.mode==="merchant"){const m=GMERCHANTS.find(x=>x.id===PERSP.merchantId);this.state.market=m.marketId;this.state.selected=new Set([m.id]);} if(this.state.editing) return this.renderEditor(); this.renderList(); },
+  renderList(){
+    document.getElementById("content").innerHTML=`
+      <div class="pagehead"><h2>活动规则配置</h2><span class="badge2 ok">规则配置 · 集团统一配置</span><span class="desc">所有活动汇总；每个活动可对所选的多个 / 单个商户统一套用模板或自定义</span></div>
+      <div class="note">⚙ 集团可统一为多个或单个商户配置活动规则：先在下方选定作用市场与商户范围，再点活动「配置」。</div>
+      ${this.scopeBar()}
+      <div class="table-card"><div class="table-top"><h3>活动汇总（${this.activities.length}）</h3><span class="desc">点「配置」对所选 ${this.state.selected.size} 个商户统一配置该活动</span></div>
+      <div class="table-scroll"><table><thead><tr><th>活动名称</th><th>活动类型</th><th>来源</th><th>应用范围</th><th>操作</th></tr></thead><tbody>
+        ${this.activities.map(a=>`<tr><td><strong>${a.name}</strong></td><td>${a.type}</td><td>${a.source}</td><td><span class="badge2 ${this.state.selected.size?"ok":"warn"}">${this.state.selected.size} 个商户</span></td><td class="ops"><a class="link" onclick="GroupActivity.open('${a.id}')">配置</a></td></tr>`).join("")}
+      </tbody></table></div></div>`;
+  },
+  renderEditor(){
+    const a=this.actById(this.state.editing), e=this.edit, n="GroupActivity";
+    const unsaved=!this.eq(e.working,e.saved), canPublish=!unsaved && this.state.selected.size>0 && !e.published;
+    const stateText=unsaved?'● 有未保存修改，请先保存':(e.published?'✓ 已发布，无待办':(this.state.selected.size?'● 已保存，待发布到所选商户':'请先选择商户'));
+    document.getElementById("content").innerHTML=`
+      <div class="pagehead"><h2>活动规则配置</h2><span class="badge2 ok">规则配置 · 集团统一配置</span><span class="desc">配置活动：${a.name}（${a.type} / 来源 ${a.source}）</span></div>
+      ${this.scopeBar()}
+      <div class="table-card">
+        <div class="table-top"><h3><a class="link" onclick="GroupActivity.back()">← 返回活动列表</a>　|　${a.name} 规则项</h3>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="desc">套用市场模板</span>
+            <select onchange="GroupActivity.pickTpl(this.value)" style="width:auto;min-width:170px">${this.templates.map(t=>`<option value="${t.id}" ${t.id===e.tplSel?"selected":""}>${t.name}</option>`).join("")}<option value="__custom__" ${e.tplSel==="__custom__"?"selected":""}>自定义模板</option></select>
+            <button class="btn sm primary" onclick="GroupActivity.applyTpl()">📥 套用</button></div>
+        </div>
+        <div style="padding:12px 16px">
+          ${this.groups.map(g=>`<div class="cfg-group"><div class="cg-head"><h4>${g.group}</h4><span>${g.note}</span></div>
+            ${g.items.map(f=>`<div class="cfg-row">
+              <div class="cfg-name"><strong>${f.name}${f.risk?'<span class="risk-tag">高风险</span>':''}</strong><span>${f.desc}</span></div>
+              <div class="cfg-ctl">${this.control(f,e.working[f.key])}</div>
+              <div class="cfg-cur">所选商户现状：<b>${this.fieldStatus(a.id,f.key)}</b></div></div>`).join("")}
+          </div>`).join("")}
+        </div>
+        <div class="filter-actions" style="padding:13px 16px">
+          <span class="desc" style="margin-right:auto">${stateText}　·　发布将统一写入所选 ${this.state.selected.size} 个商户</span>
+          <button class="btn" onclick="GroupActivity.revert()">↻ 还原</button>
+          <button class="btn ${unsaved?"primary":""}" ${unsaved?"":"disabled"} onclick="GroupActivity.save()">💾 保存</button>
+          <button class="btn primary" ${canPublish?"":"disabled"} onclick="GroupActivity.publish()">🚀 发布到所选商户</button>
+        </div>
+      </div>`;
+  },
+  control(f,v){const n="GroupActivity";
+    if(f.type==="select") return `<select onchange="${n}.setVal('${f.key}',this.value)">${f.opts.map(o=>`<option ${o===v?"selected":""}>${o}</option>`).join("")}</select>`;
+    return `<div class="range"><input type="number" value="${v}" onchange="${n}.setVal('${f.key}',this.value)"><span>${f.cur?this.marketCur():(f.unit||"")}</span></div>`;
+  },
+  setMarket(id){this.state.market=id;this.state.selected=new Set(this.marketMerchants().map(m=>m.id));if(this.edit)this.edit.published=true;this.render();},
+  selAll(){this.state.selected=new Set(this.marketMerchants().map(m=>m.id));if(this.edit)this.edit.published=false;this.render();},
+  selNone(){this.state.selected=new Set();if(this.edit)this.edit.published=false;this.render();},
+  toggle(id){const s=this.state;if(s.selected.has(id))s.selected.delete(id);else s.selected.add(id);if(this.edit)this.edit.published=false;this.render();},
+  open(id){const base=this.templates[0];this.state.editing=id;this.edit={tplSel:base.id,working:{...base.values},saved:{...base.values},published:true};this.render();},
+  back(){this.state.editing=null;this.edit=null;this.render();},
+  pickTpl(id){this.edit.tplSel=id;this.render();},
+  applyTpl(){if(this.edit.tplSel==="__custom__"){UI.toast("请先选择一个市场模板再套用");return;}const t=this.tplById(this.edit.tplSel);this.edit.working={...t.values};this.render();UI.toast("已套用 "+t.name+"，可再修改后保存");},
+  setVal(k,v){const f=this.fields.find(x=>x.key===k);this.edit.working[k]=f.type==="number"?Number(v):v;this.edit.tplSel=this.matchTpl(this.edit.working);this.render();},
+  revert(){this.edit.working={...this.edit.saved};this.edit.tplSel=this.matchTpl(this.edit.saved);this.render();UI.toast("已还原到最近保存");},
+  save(){if(this.eq(this.edit.working,this.edit.saved)){UI.toast("没有需要保存的修改");return;}this.edit.saved={...this.edit.working};this.edit.published=false;this.render();UI.toast("已保存草稿，可发布到所选商户");},
+  publish(){ if(!this.eq(this.edit.working,this.edit.saved)){UI.toast("请先保存修改后再发布");return;} if(!this.state.selected.size){UI.toast("请先选择商户");return;}
+    const aid=this.state.editing; this.selectedList().forEach(id=>{this.actCfg(id,aid);G_ACT[id][aid]={...this.edit.saved};});
+    this.edit.published=true;this.render();UI.toast("活动「"+this.actById(aid).name+"」已发布到 "+this.state.selected.size+" 个商户"); }
+};
+
+/* ===== 系统管理 · 商户市场挂靠（集团最高权限：调整商户归属市场） ===== */
+const MarketAffil={
+  pending:{}, saved:{},
+  curMarket(m){return this.pending[m.id]!==undefined?this.pending[m.id]:m.marketId;},
+  sameMap(a,b){const ka=Object.keys(a),kb=Object.keys(b);return ka.length===kb.length&&ka.every(k=>a[k]===b[k]);},
+  rowStatus(m){const eff=this.curMarket(m);if(eff===m.marketId)return ["已挂靠","gray"];if(this.saved[m.id]===eff)return ["待发布","warn"];return ["待保存","bad"];},
+  pendingCount(){return GMERCHANTS.filter(m=>this.curMarket(m)!==m.marketId).length;},
+  render(){
+    const unsaved=!this.sameMap(this.pending,this.saved);
+    const savedPending=Object.keys(this.saved).some(id=>{const m=GMERCHANTS.find(x=>x.id===id);return m && this.saved[id]!==m.marketId;});
+    const canPublish=savedPending && !unsaved;
+    const n=this.pendingCount();
+    const stateText=unsaved?`● ${n} 个挂靠改动未保存，请先保存`:savedPending?`● ${n} 个挂靠待发布`:'✓ 无待办';
+    document.getElementById("content").innerHTML=`
+      <div class="pagehead"><h2>商户市场挂靠</h2><span class="badge2 ok">系统管理</span><span class="desc">为商户指定归属市场；改动需保存后发布</span></div>
+      <div class="note">⚙ 集团权限：调整商户的归属市场，挂靠决定该商户可用的市场模板。<strong>改动先进草稿，必须保存后才能发布。</strong>本页仅做挂靠，不含其它配置。</div>
+      <div class="table-card">
+        <div class="table-top"><h3>商户挂靠（${GMERCHANTS.length}）</h3><span class="desc">修改下拉即调整归属市场</span></div>
+        <div class="table-scroll"><table><thead><tr><th>商户</th><th>站点号</th><th>归属市场</th><th>币种</th><th>状态</th></tr></thead><tbody>
+          ${GMERCHANTS.map(m=>{const eff=this.curMarket(m);const mk=G_MARKETS.find(x=>x.id===eff);const rs=this.rowStatus(m);return `<tr>
+            <td><strong>${m.name}</strong></td><td>${m.code}</td>
+            <td><select onchange="MarketAffil.change('${m.id}',this.value)">${G_MARKETS.map(k=>`<option value="${k.id}" ${k.id===eff?"selected":""}>${k.country}</option>`).join("")}</select></td>
+            <td><span class="affil-tag">${mk.currency}</span></td>
+            <td><span class="badge2 ${rs[1]}">${rs[0]}</span></td>
+          </tr>`;}).join("")}
+        </tbody></table></div>
+        <div class="filter-actions" style="padding:13px 16px">
+          <span class="desc" style="margin-right:auto">${stateText}</span>
+          <button class="btn" onclick="MarketAffil.discard()">↻ 放弃改动</button>
+          <button class="btn ${unsaved?"primary":""}" ${unsaved?"":"disabled"} onclick="MarketAffil.save()">💾 保存</button>
+          <button class="btn primary" ${canPublish?"":"disabled"} onclick="MarketAffil.publish()">🚀 发布</button>
+        </div>
+      </div>`;
+  },
+  change(id,marketId){const m=GMERCHANTS.find(x=>x.id===id);if(marketId===m.marketId)delete this.pending[id];else this.pending[id]=marketId;this.render();},
+  discard(){this.pending={};this.saved={};this.render();UI.toast("已放弃挂靠改动");},
+  save(){if(this.sameMap(this.pending,this.saved)){UI.toast("没有需要保存的改动");return;}this.saved={...this.pending};this.render();UI.toast("已保存挂靠草稿，可发布");},
+  publish(){
+    if(!this.sameMap(this.pending,this.saved)){UI.toast("请先保存改动后再发布");return;}
+    const ids=Object.keys(this.saved).filter(id=>{const m=GMERCHANTS.find(x=>x.id===id);return m&&this.saved[id]!==m.marketId;});
+    if(!ids.length){UI.toast("没有待发布的挂靠改动");return;}
+    ids.forEach(id=>{GMERCHANTS.find(x=>x.id===id).marketId=this.saved[id];});
+    this.pending={};this.saved={};this.render();UI.toast("已发布 "+ids.length+" 个商户的市场挂靠");
+  }
+};
+
+/* ===== 系统管理 · 权限管理（集团→商户两级角色与权限分配） ===== */
+const PERM_ACTS=["查看","编辑","删除","导出"];
+const PERM_MODULES=[
+  {k:"member",label:"会员管理",children:[
+    {k:"member.list",label:"会员列表"},{k:"member.login",label:"登录日志"},{k:"member.sms",label:"短信验证码"},
+    {k:"member.kyc",label:"实名认证"},{k:"member.group",label:"分组管理"},{k:"member.ipblack",label:"IP黑名单"},
+    {k:"member.level",label:"会员层级"},{k:"member.recharge-lv",label:"充值等级"},
+  ]},
+  {k:"member-risk",label:"会员风控",children:[
+    {k:"risk.reg-ip",label:"注册IP"},{k:"risk.login-ip",label:"登录IP"},{k:"risk.finger",label:"浏览器指纹"},
+    {k:"risk.device",label:"同设备"},{k:"risk.brush",label:"刷通道清单"},
+  ]},
+  {k:"member-act",label:"会员活动",children:[
+    {k:"mact.partner",label:"合伙人奖励"},{k:"mact.black",label:"活动黑名单"},
+    {k:"mact.recharge",label:"充值奖励记录"},{k:"mact.vip",label:"VIP升级奖励"},
+  ]},
+  {k:"member-fund",label:"会员资金",children:[
+    {k:"mfund.bank",label:"银行卡查询"},{k:"mfund.withdraw",label:"提现限制"},
+    {k:"mfund.abnormal",label:"异常资金处理"},{k:"mfund.change",label:"资金账变"},
+  ]},
+  {k:"member-agent",label:"代理管理",children:[
+    {k:"agent.sub",label:"下级会员"},{k:"agent.rebate",label:"返佣等级"},
+    {k:"agent.yesterday",label:"昨日返佣"},{k:"agent.audit",label:"代理审核"},
+  ]},
+  {k:"ops",label:"运营管理",children:[
+    {k:"ops.overview",label:"活动总览"},{k:"ops.detail",label:"活动参与明细"},{k:"ops.cost",label:"活动成本报表"},
+    {k:"ops.reward",label:"奖励发放"},{k:"ops.redpack",label:"红包发放"},
+    {k:"ops.rebate",label:"返水发放"},{k:"ops.gift",label:"礼金发放"},
+    {k:"ops.claim-act",label:"活动领取"},{k:"ops.claim-sign",label:"签到领取"},
+    {k:"ops.claim-wheel",label:"转盘领取"},{k:"ops.claim-vip",label:"VIP奖励领取"},
+  ]},
+  {k:"config",label:"配置中心",children:[
+    {k:"cfg.vip",label:"VIP规则"},{k:"cfg.risk",label:"风控规则"},
+    {k:"cfg.withdraw",label:"提现规则"},{k:"cfg.recharge",label:"充值规则"},{k:"cfg.wager",label:"打码规则"},
+    {k:"cfg.merchant",label:"商户配置"},{k:"cfg.currency",label:"币种配置"},
+    {k:"cfg.channel",label:"渠道配置"},{k:"cfg.bank",label:"银行卡配置"},{k:"cfg.payment",label:"支付通道"},
+  ]},
+  {k:"finance",label:"财务管理",children:[
+    {k:"fin.wallet",label:"钱包查询"},{k:"fin.deposit",label:"充值订单"},
+    {k:"fin.withdraw",label:"提现订单"},{k:"fin.audit",label:"财务审核"},
+  ]},
+  {k:"game",label:"游戏管理",children:[
+    {k:"game.vendor",label:"厂商管理"},{k:"game.list",label:"游戏列表"},{k:"game.category",label:"分类管理"},
+  ]},
+  {k:"report",label:"报表管理",children:[
+    {k:"rpt.daily",label:"日报表"},{k:"rpt.merchant",label:"商户报表"},
+    {k:"rpt.game",label:"游戏报表"},{k:"rpt.channel",label:"渠道报表"},
+  ]},
+  {k:"sys",label:"系统管理",children:[
+    {k:"sys.affil",label:"商户市场挂靠"},{k:"sys.merchant",label:"商户管理"},
+    {k:"sys.channel",label:"渠道管理"},{k:"sys.perm",label:"权限管理"},{k:"sys.log",label:"操作日志"},
+  ]},
+];
+const PERM_ALL_ITEMS=PERM_MODULES.flatMap(m=>m.children);
+function allPerms(on){return Object.fromEntries(PERM_ALL_ITEMS.map(c=>[c.k,on?PERM_ACTS.slice():[]]));}
+function viewOnlyPerms(){return Object.fromEntries(PERM_ALL_ITEMS.map(c=>[c.k,["查看"]]));}
+const PERM_ROLES=[
+  {id:"r1",name:"超级管理员",level:"group",desc:"集团最高权限，拥有全部操作",builtin:true,accounts:2,perms:allPerms(true)},
+  {id:"r4",name:"集团只读",level:"group",desc:"仅查看，不可操作",builtin:false,accounts:8,perms:viewOnlyPerms()},
+  {id:"r5",name:"商户管理员",level:"merchant",desc:"单商户最高权限，管理商户全部功能",builtin:true,accounts:15,perms:allPerms(true)},
+  {id:"r7",name:"商户客服",level:"merchant",desc:"会员查询与基本操作",builtin:false,accounts:30,perms:(()=>{const p=allPerms(false);["member.list","member.login","member.kyc","member.group"].forEach(k=>{p[k]=["查看","编辑"];});["ops.overview","ops.detail"].forEach(k=>{p[k]=["查看"];});["rpt.daily"].forEach(k=>{p[k]=["查看"];});return p;})()},
+];
+
+const PermMgmt={
+  tab:"group",
+  editing:null,
+  roles(){return PERM_ROLES.filter(r=>r.level===this.tab);},
+  render(){
+    const roles=this.roles();
+    const levelLabel=this.tab==="group"?"集团":"商户";
+    document.getElementById("content").innerHTML=`
+      <div class="pagehead"><h2>权限管理</h2><span class="badge2 ok">系统管理</span><span class="desc">管理集团与商户两级角色权限</span></div>
+      <div class="note">⚙ 权限层级：<strong>集团角色</strong>拥有跨商户操作能力；<strong>商户角色</strong>仅作用于所属商户范围内。账号能力 = 角色权限 × 商户归属 × 动作边界。</div>
+      <div class="table-card">
+        <div class="table-top" style="flex-wrap:wrap;gap:10px">
+          <div style="display:flex;gap:6px">
+            <button class="btn sm ${this.tab==="group"?"primary":""}" onclick="PermMgmt.switchTab('group')">集团角色</button>
+            <button class="btn sm ${this.tab==="merchant"?"primary":""}" onclick="PermMgmt.switchTab('merchant')">商户角色</button>
+          </div>
+          <span class="desc">${levelLabel}角色 ${roles.length} 个</span>
+          <button class="btn sm primary" style="margin-left:auto" onclick="PermMgmt.openAdd()">＋ 新增${levelLabel}角色</button>
+        </div>
+        <div class="table-scroll"><table><thead><tr>
+          <th>角色名称</th><th>层级</th><th>说明</th><th>关联账号数</th><th>类型</th><th>操作</th>
+        </tr></thead><tbody>
+          ${roles.map(r=>`<tr>
+            <td><strong>${r.name}</strong></td>
+            <td><span class="badge2 ${r.level==="group"?"ok":"gray"}">${r.level==="group"?"集团":"商户"}</span></td>
+            <td style="color:var(--muted);font-size:12px">${r.desc}</td>
+            <td>${r.accounts}</td>
+            <td>${r.builtin?'<span class="badge2 warn">内置</span>':'<span class="badge2 gray">自定义</span>'}</td>
+            <td class="ops">
+              <a class="link" onclick="PermMgmt.viewPerms('${r.id}')">权限矩阵</a>
+              <a class="link" onclick="PermMgmt.viewAccounts('${r.id}')">关联账号</a>
+              ${r.builtin?'':'<a class="link" style="color:var(--red)" onclick="UI.toast(\'确认删除角色「'+r.name+'」？需先解除所有关联账号\')">删除</a>'}
+            </td>
+          </tr>`).join("")}
+        </tbody></table></div>
+      </div>`;
+  },
+  switchTab(t){this.tab=t;this.render();},
+  permTableHTML(rid,editable){
+    const r=rid?PERM_ROLES.find(x=>x.id===rid):null;
+    return PERM_MODULES.map(m=>{
+      const childRows=m.children.map(c=>{
+        const perms=r?(r.perms[c.k]||[]):[];
+        return `<tr style="border-bottom:1px solid #f0f2f5">
+          <td style="padding:6px 10px 6px 28px;font-size:12px;color:#3a4256">${c.label}</td>
+          ${PERM_ACTS.map(a=>{
+            const on=perms.includes(a);
+            if(editable) return `<td style="text-align:center"><input type="checkbox" ${on?"checked":""} data-ck="${c.k}" data-act="${a}" onchange="PermMgmt.togglePerm('${rid||""}','${c.k}','${a}',this.checked)" style="width:14px;height:14px;accent-color:var(--green);cursor:pointer"></td>`;
+            return `<td style="text-align:center">${on?'<span style="color:var(--green)">✓</span>':'<span style="color:#ddd">—</span>'}</td>`;
+          }).join("")}
+        </tr>`;
+      }).join("");
+      const groupCheckAll=editable?PERM_ACTS.map(a=>`<td style="text-align:center"><input type="checkbox" onchange="PermMgmt.toggleGroup('${rid||""}','${m.k}','${a}',this.checked)" style="width:14px;height:14px;accent-color:var(--green-d);cursor:pointer;opacity:.7"></td>`).join("")
+        :PERM_ACTS.map(()=>'<td></td>').join("");
+      return `<tr style="background:#f6f8fb;border-bottom:1px solid var(--border)">
+        <td style="padding:8px 10px;font-weight:700;font-size:13px">${m.label}<span style="color:var(--muted);font-weight:400;font-size:11px;margin-left:6px">(${m.children.length})</span></td>
+        ${groupCheckAll}
+      </tr>${childRows}`;
+    }).join("");
+  },
+  viewPerms(rid){
+    const r=PERM_ROLES.find(x=>x.id===rid);if(!r)return;
+    this.editing=rid;
+    const html=`
+      <div style="margin-bottom:12px;display:flex;align-items:center;gap:10px">
+        <strong style="font-size:14px">${r.name}</strong>
+        <span class="badge2 ${r.level==="group"?"ok":"gray"}">${r.level==="group"?"集团":"商户"}</span>
+        ${r.builtin?'<span class="badge2 warn">内置角色 · 不可删除</span>':''}
+        <span style="color:var(--muted);font-size:12px;margin-left:auto">${r.desc}</span>
+      </div>
+      <div style="max-height:56vh;overflow:auto">
+      <table style="width:100%;font-size:12.5px;border-collapse:collapse">
+        <thead><tr style="background:#eef1f5;position:sticky;top:0;z-index:1">
+          <th style="text-align:left;padding:8px 10px">功能模块 / 子功能</th>
+          ${PERM_ACTS.map(a=>`<th style="padding:8px 6px;text-align:center;min-width:46px">${a}</th>`).join("")}
+        </tr></thead>
+        <tbody>${this.permTableHTML(rid,true)}</tbody>
+      </table></div>`;
+    document.getElementById("gmTitle").textContent="权限矩阵 — "+r.name;
+    document.getElementById("gmBody").innerHTML=html;
+    document.getElementById("gmFoot").innerHTML=`
+      <button class="btn" onclick="UI.gmClose()">关闭</button>
+      <button class="btn primary" onclick="PermMgmt.savePerms()">保存权限</button>`;
+    document.getElementById("g-modal").classList.add("show");
+  },
+  togglePerm(rid,ck,action,checked){
+    const r=PERM_ROLES.find(x=>x.id===rid);if(!r)return;
+    if(!r.perms[ck])r.perms[ck]=[];
+    if(checked&&!r.perms[ck].includes(action))r.perms[ck].push(action);
+    if(!checked)r.perms[ck]=r.perms[ck].filter(a=>a!==action);
+  },
+  toggleGroup(rid,mk,action,checked){
+    const r=PERM_ROLES.find(x=>x.id===rid);
+    const mod=PERM_MODULES.find(m=>m.k===mk);if(!r||!mod)return;
+    mod.children.forEach(c=>{
+      if(!r.perms[c.k])r.perms[c.k]=[];
+      if(checked&&!r.perms[c.k].includes(action))r.perms[c.k].push(action);
+      if(!checked)r.perms[c.k]=r.perms[c.k].filter(a=>a!==action);
+    });
+    this.viewPerms(rid);
+  },
+  savePerms(){UI.gmClose();UI.toast("权限矩阵已保存");this.render();},
+  viewAccounts(rid){
+    const r=PERM_ROLES.find(x=>x.id===rid);if(!r)return;
+    const fakeAccounts=Array.from({length:Math.min(r.accounts,8)},(_, i)=>{
+      const merchant=r.level==="merchant"?pick(MERCHANTS):"—（集团）";
+      return `<tr>
+        <td>admin${1001+i}</td><td>${r.name}</td><td>${merchant}</td>
+        <td>${dt(90)}</td><td><span class="badge2 ok">正常</span></td>
+        <td class="ops"><a class="link" onclick="UI.toast('移除该账号的角色绑定')">解除绑定</a></td>
+      </tr>`;
+    });
+    document.getElementById("gmTitle").textContent="关联账号 — "+r.name+"（"+r.accounts+"）";
+    document.getElementById("gmBody").innerHTML=`
+      <table style="width:100%;font-size:12.5px;border-collapse:collapse">
+        <thead><tr style="background:#f6f8fb">
+          <th style="text-align:left;padding:8px 10px">账号</th><th style="text-align:left;padding:8px 10px">角色</th>
+          <th style="text-align:left;padding:8px 10px">归属商户</th><th style="text-align:left;padding:8px 10px">最后登录</th>
+          <th style="padding:8px 10px">状态</th><th style="padding:8px 10px">操作</th>
+        </tr></thead>
+        <tbody>${fakeAccounts.join("")}</tbody>
+      </table>
+      ${r.accounts>8?`<div style="text-align:center;padding:10px;color:var(--muted);font-size:12px">… 仅展示前 8 条，共 ${r.accounts} 个关联账号</div>`:""}`;
+    document.getElementById("gmFoot").innerHTML=`
+      <button class="btn" onclick="UI.gmClose()">关闭</button>
+      <button class="btn primary" onclick="UI.toast('选择账号并绑定到「${r.name}」角色')">＋ 添加账号</button>`;
+    document.getElementById("g-modal").classList.add("show");
+  },
+  openAdd(){
+    const levelLabel=this.tab==="group"?"集团":"商户";
+    this._newPerms=allPerms(false);
+    document.getElementById("gmTitle").textContent="新增"+levelLabel+"角色";
+    document.getElementById("gmBody").innerHTML=`
+      <div style="display:grid;grid-template-columns:80px 1fr;gap:12px 14px;font-size:13px;align-items:center">
+        <label style="text-align:right;color:var(--muted)">角色名称</label>
+        <input id="perm-new-name" placeholder="输入角色名称" style="width:100%">
+        <label style="text-align:right;color:var(--muted)">层级</label>
+        <span><span class="badge2 ${this.tab==="group"?"ok":"gray"}">${levelLabel}</span></span>
+        <label style="text-align:right;color:var(--muted)">说明</label>
+        <input id="perm-new-desc" placeholder="角色职责说明" style="width:100%">
+      </div>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+        <div style="font-weight:600;margin-bottom:10px;font-size:13px">初始权限（创建后可编辑）</div>
+        <div style="max-height:44vh;overflow:auto">
+        <table style="width:100%;font-size:12.5px;border-collapse:collapse">
+          <thead><tr style="background:#eef1f5;position:sticky;top:0;z-index:1">
+            <th style="text-align:left;padding:7px 10px">功能模块 / 子功能</th>
+            ${PERM_ACTS.map(a=>'<th style="padding:7px 4px;text-align:center;font-weight:600;min-width:42px">'+a+'</th>').join("")}
+          </tr></thead>
+          <tbody>${this.addPermTableHTML()}</tbody>
+        </table></div>
+      </div>`;
+    document.getElementById("gmFoot").innerHTML=`
+      <button class="btn" onclick="UI.gmClose()">取消</button>
+      <button class="btn primary" onclick="PermMgmt.confirmAdd()">创建角色</button>`;
+    document.getElementById("g-modal").classList.add("show");
+  },
+  addPermTableHTML(){
+    return PERM_MODULES.map(m=>{
+      const groupRow=`<tr style="background:#f6f8fb;border-bottom:1px solid var(--border)">
+        <td style="padding:8px 10px;font-weight:700;font-size:13px">${m.label}<span style="color:var(--muted);font-weight:400;font-size:11px;margin-left:6px">(${m.children.length})</span></td>
+        ${PERM_ACTS.map(a=>`<td style="text-align:center"><input type="checkbox" onchange="PermMgmt.toggleAddGroup('${m.k}','${a}',this.checked)" style="width:14px;height:14px;accent-color:var(--green-d);cursor:pointer;opacity:.7"></td>`).join("")}
+      </tr>`;
+      const childRows=m.children.map(c=>`<tr style="border-bottom:1px solid #f0f2f5">
+        <td style="padding:6px 10px 6px 28px;font-size:12px;color:#3a4256">${c.label}</td>
+        ${PERM_ACTS.map(a=>`<td style="text-align:center"><input type="checkbox" data-ck="${c.k}" data-act="${a}" style="width:14px;height:14px;accent-color:var(--green);cursor:pointer"></td>`).join("")}
+      </tr>`).join("");
+      return groupRow+childRows;
+    }).join("");
+  },
+  toggleAddGroup(mk,action,checked){
+    const mod=PERM_MODULES.find(m=>m.k===mk);if(!mod)return;
+    mod.children.forEach(c=>{
+      const cb=document.querySelector(`input[data-ck="${c.k}"][data-act="${action}"]`);
+      if(cb)cb.checked=checked;
+    });
+  },
+  confirmAdd(){
+    const name=document.getElementById("perm-new-name").value.trim();
+    if(!name){UI.toast("请输入角色名称");return;}
+    const perms=allPerms(false);
+    document.querySelectorAll('#gmBody input[data-ck]').forEach(cb=>{
+      if(cb.checked){const ck=cb.dataset.ck,act=cb.dataset.act;if(!perms[ck])perms[ck]=[];if(!perms[ck].includes(act))perms[ck].push(act);}
+    });
+    PERM_ROLES.push({id:"r"+(PERM_ROLES.length+1),name,level:this.tab,desc:document.getElementById("perm-new-desc").value.trim()||"自定义角色",builtin:false,accounts:0,perms});
+    UI.gmClose();this.render();UI.toast("角色「"+name+"」已创建");
+  },
+};
+
+/* ===== 系统管理 · 商户管理（集团视角：创建商户、分配后台账号密码） ===== */
+const MerchantMgmt={
+  list:[
+    {id:"M2001",name:"sit-inr",code:"2001",marketId:"IN",contact:"Raj",phone:"+91 9000xxxx",status:"正常",admin:"boss2001",created:"2026-01-15 10:30"},
+    {id:"M2005",name:"in-pro-a",code:"2005",marketId:"IN",contact:"Amit",phone:"+91 9100xxxx",status:"正常",admin:"mgr_inpro",created:"2026-02-08 14:20"},
+    {id:"M3001",name:"pk-web",code:"3001",marketId:"PK",contact:"Ali",phone:"+92 300xxxx",status:"正常",admin:"pk_admin",created:"2026-03-01 09:00"},
+    {id:"M4001",name:"br-main",code:"4001",marketId:"BR",contact:"Lucas",phone:"+55 11xxxx",status:"正常",admin:"lucas_br",created:"2026-03-20 16:45"},
+    {id:"M5001",name:"vn-main",code:"5001",marketId:"VN",contact:"Minh",phone:"+84 90xxxx",status:"停用",admin:"minh_vn",created:"2026-04-10 11:30"},
+  ],
+  draft:{},saved:{},
+  mkLabel(mid){const m=G_MARKETS.find(x=>x.id===mid);return m?m.country:"—";},
+  mkCur(mid){const m=G_MARKETS.find(x=>x.id===mid);return m?m.currency:"";},
+  cur(id){const d=this.draft[id];const m=this.list.find(x=>x.id===id);return d?{...m,...d}:m;},
+  rowSt(id){const d=this.draft[id];if(!d)return["已发布","gray"];if(this.saved[id]&&JSON.stringify(this.saved[id])===JSON.stringify(d))return["待发布","warn"];return["待保存","bad"];},
+  hasDraft(){return Object.keys(this.draft).length>0;},
+  unsaved(){return Object.keys(this.draft).some(id=>!this.saved[id]||JSON.stringify(this.saved[id])!==JSON.stringify(this.draft[id]));},
+  canPublish(){return Object.keys(this.saved).length>0&&!this.unsaved();},
+  render(){
+    const stText=this.unsaved()?"● 有未保存的编辑":Object.keys(this.saved).length?"● 有待发布的改动":"✓ 无待办";
+    document.getElementById("content").innerHTML=`
+      <div class="pagehead"><h2>商户管理</h2><span class="badge2 ok">系统管理</span><span class="desc">创建和管理集团旗下商户</span></div>
+      <div class="note">⚙ 集团权限：创建/编辑商户信息。改动需<strong>先保存再发布</strong>；创建商户时可自行指定管理员账号。</div>
+      <div class="table-card">
+        <div class="table-top">
+          <h3>商户列表（${this.list.length}）</h3>
+          <button class="btn sm primary" style="margin-left:auto" onclick="MerchantMgmt.openCreate()">＋ 创建商户</button>
+        </div>
+        <div class="table-scroll"><table><thead><tr>
+          <th>商户ID</th><th>商户名称</th><th>站点号</th><th>归属市场</th><th>管理员账号</th><th>联系人</th><th>状态</th><th>编辑状态</th><th>操作</th>
+        </tr></thead><tbody>
+          ${this.list.map(m=>{const c=this.cur(m.id);const rs=this.rowSt(m.id);return `<tr>
+            <td>${m.id}</td>
+            <td><strong>${c.name}</strong></td>
+            <td>${c.code}</td>
+            <td>${this.mkLabel(c.marketId)}</td>
+            <td><code style="background:#f0f7f4;padding:2px 6px;border-radius:4px;font-size:12px">${c.admin}</code></td>
+            <td style="font-size:12px">${c.contact||"—"}</td>
+            <td><span class="badge2 ${c.status==="正常"?"ok":"bad"}">${c.status}</span></td>
+            <td><span class="badge2 ${rs[1]}">${rs[0]}</span></td>
+            <td class="ops">
+              <a class="link" onclick="MerchantMgmt.openEdit('${m.id}')">编辑</a>
+              <a class="link" onclick="MerchantMgmt.viewAccount('${m.id}')">账号</a>
+              <a class="link" onclick="MerchantMgmt.resetPwd('${m.id}')">重置密码</a>
+            </td>
+          </tr>`;}).join("")}
+        </tbody></table></div>
+        <div class="filter-actions" style="padding:13px 16px">
+          <span class="desc" style="margin-right:auto">${stText}</span>
+          <button class="btn" onclick="MerchantMgmt.discard()">↻ 放弃改动</button>
+          <button class="btn ${this.unsaved()?"primary":""}" ${this.unsaved()?"":"disabled"} onclick="MerchantMgmt.save()">💾 保存</button>
+          <button class="btn primary" ${this.canPublish()?"":"disabled"} onclick="MerchantMgmt.publish()">🚀 发布</button>
+        </div>
+      </div>`;
+  },
+  openCreate(){
+    document.getElementById("gmTitle").textContent="创建商户";
+    document.getElementById("gmBody").innerHTML=`
+      <div style="display:grid;grid-template-columns:90px 1fr;gap:14px 16px;font-size:13px;align-items:center">
+        <label style="text-align:right;color:var(--muted)">商户名称</label>
+        <input id="mc-name" placeholder="输入商户名称（英文/数字）" style="width:100%">
+        <label style="text-align:right;color:var(--muted)">站点号</label>
+        <input id="mc-code" placeholder="输入站点编号" style="width:100%">
+        <label style="text-align:right;color:var(--muted)">归属市场</label>
+        <select id="mc-market" style="width:100%">${G_MARKETS.map(m=>`<option value="${m.id}">${m.country}（${m.currency}）</option>`).join("")}</select>
+        <label style="text-align:right;color:var(--muted)">联系人</label>
+        <input id="mc-contact" placeholder="商户负责人姓名" style="width:100%">
+        <label style="text-align:right;color:var(--muted)">联系方式</label>
+        <input id="mc-phone" placeholder="手机号或Telegram" style="width:100%">
+      </div>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+        <div style="font-weight:600;font-size:13px;margin-bottom:10px">后台管理员账号</div>
+        <div style="display:grid;grid-template-columns:90px 1fr;gap:12px 16px;font-size:13px;align-items:center">
+          <label style="text-align:right;color:var(--muted)">登录账号</label>
+          <input id="mc-admin" placeholder="自定义管理员账号（如 boss_2001）" style="width:100%">
+          <label style="text-align:right;color:var(--muted)">登录密码</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="mc-pwd" placeholder="输入初始密码或点击随机生成" style="flex:1">
+            <button class="btn sm" onclick="document.getElementById('mc-pwd').value='Abc@'+Math.random().toString(36).slice(2,10)">随机生成</button>
+          </div>
+        </div>
+      </div>`;
+    document.getElementById("gmFoot").innerHTML=`
+      <button class="btn" onclick="UI.gmClose()">取消</button>
+      <button class="btn primary" onclick="MerchantMgmt.confirmCreate()">确认创建</button>`;
+    document.getElementById("g-modal").classList.add("show");
+  },
+  confirmCreate(){
+    const name=document.getElementById("mc-name").value.trim();
+    const code=document.getElementById("mc-code").value.trim();
+    const admin=document.getElementById("mc-admin").value.trim();
+    const pwd=document.getElementById("mc-pwd").value.trim();
+    if(!name||!code){UI.toast("请填写商户名称和站点号");return;}
+    if(!admin){UI.toast("请输入管理员账号");return;}
+    if(!pwd){UI.toast("请输入或生成初始密码");return;}
+    const mkId=document.getElementById("mc-market").value;
+    const mk=G_MARKETS.find(m=>m.id===mkId);
+    const contact=document.getElementById("mc-contact").value.trim();
+    const phone=document.getElementById("mc-phone").value.trim();
+    this.list.push({id:"M"+code,name,code,marketId:mkId,contact,phone,status:"正常",admin,created:new Date().toISOString().slice(0,16).replace("T"," ")});
+    document.getElementById("gmBody").innerHTML=`
+      <div style="text-align:center;padding:10px 0">
+        <div style="font-size:40px;margin-bottom:8px">✅</div>
+        <div style="font-size:15px;font-weight:700;margin-bottom:16px">商户「${name}」创建成功</div>
+      </div>
+      <div style="background:#f6f8fb;border-radius:8px;padding:16px;font-size:13px">
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:10px 12px">
+          <span style="color:var(--muted);text-align:right">商户名称</span><strong>${name}</strong>
+          <span style="color:var(--muted);text-align:right">站点号</span><strong>${code}</strong>
+          <span style="color:var(--muted);text-align:right">归属市场</span><strong>${mk.country}（${mk.currency}）</strong>
+          <span style="color:var(--muted);text-align:right">管理员账号</span><code style="background:#e8f5e9;padding:3px 8px;border-radius:4px;font-weight:700;font-size:13px">${admin}</code>
+          <span style="color:var(--muted);text-align:right">初始密码</span><code style="background:#fff3e0;padding:3px 8px;border-radius:4px;font-weight:700;font-size:13px;color:#e65100">${pwd}</code>
+          <span style="color:var(--muted);text-align:right">登录地址</span><code style="background:#e3f2fd;padding:3px 8px;border-radius:4px;font-size:12px">https://${name}.admin.example.com</code>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding:10px 12px;background:#fff3e0;border-radius:8px;font-size:12px;color:#e65100">
+        ⚠ 请立即复制账号密码并通知商户负责人。商户首次登录后须修改密码。
+      </div>`;
+    this._lastCreated={name,code,market:mk.country+"（"+mk.currency+"）",admin,pwd,url:"https://"+name+".admin.example.com"};
+    document.getElementById("gmFoot").innerHTML=`
+      <button class="btn" onclick="MerchantMgmt.copyInfo()">📋 一键复制</button>
+      <button class="btn primary" onclick="UI.gmClose();MerchantMgmt.render()">完成</button>`;
+  },
+  copyInfo(){
+    const d=this._lastCreated;if(!d)return;
+    const text=`商户后台账号信息\n——————————\n商户名称：${d.name}\n站点号：${d.code}\n归属市场：${d.market}\n管理员账号：${d.admin}\n初始密码：${d.pwd}\n登录地址：${d.url}\n——————————\n⚠ 首次登录后请立即修改密码`;
+    navigator.clipboard.writeText(text).then(()=>UI.toast("已复制到剪贴板，可直接发送给商户负责人")).catch(()=>UI.toast("复制失败，请手动选择复制"));
+  },
+  openEdit(id){
+    const m=this.cur(id);
+    document.getElementById("gmTitle").textContent="编辑商户 — "+m.name;
+    document.getElementById("gmBody").innerHTML=`
+      <div style="display:grid;grid-template-columns:90px 1fr;gap:14px 16px;font-size:13px;align-items:center">
+        <label style="text-align:right;color:var(--muted)">商户ID</label>
+        <span style="font-weight:600">${m.id}</span>
+        <label style="text-align:right;color:var(--muted)">商户名称</label>
+        <input id="me-name" value="${m.name}" style="width:100%">
+        <label style="text-align:right;color:var(--muted)">站点号</label>
+        <span style="font-weight:600;color:var(--muted)">${m.code}（不可修改）</span>
+        <label style="text-align:right;color:var(--muted)">归属市场</label>
+        <select id="me-market" style="width:100%">${G_MARKETS.map(mk=>`<option value="${mk.id}" ${mk.id===m.marketId?"selected":""}>${mk.country}（${mk.currency}）</option>`).join("")}</select>
+        <label style="text-align:right;color:var(--muted)">联系人</label>
+        <input id="me-contact" value="${m.contact||""}" style="width:100%">
+        <label style="text-align:right;color:var(--muted)">联系方式</label>
+        <input id="me-phone" value="${m.phone||""}" style="width:100%">
+        <label style="text-align:right;color:var(--muted)">状态</label>
+        <select id="me-status" style="width:100%"><option value="正常" ${m.status==="正常"?"selected":""}>正常</option><option value="停用" ${m.status==="停用"?"selected":""}>停用</option></select>
+      </div>`;
+    document.getElementById("gmFoot").innerHTML=`
+      <button class="btn" onclick="UI.gmClose()">取消</button>
+      <button class="btn primary" onclick="MerchantMgmt.applyEdit('${id}')">确认修改</button>`;
+    document.getElementById("g-modal").classList.add("show");
+  },
+  applyEdit(id){
+    const d={
+      name:document.getElementById("me-name").value.trim(),
+      marketId:document.getElementById("me-market").value,
+      contact:document.getElementById("me-contact").value.trim(),
+      phone:document.getElementById("me-phone").value.trim(),
+      status:document.getElementById("me-status").value,
+    };
+    const m=this.list.find(x=>x.id===id);
+    const changed=Object.keys(d).some(k=>d[k]!==m[k]);
+    if(!changed){UI.toast("没有改动");UI.gmClose();return;}
+    this.draft[id]=d;
+    UI.gmClose();this.render();UI.toast("商户「"+d.name+"」已修改，请保存后发布");
+  },
+  discard(){this.draft={};this.saved={};this.render();UI.toast("已放弃所有改动");},
+  save(){
+    if(!this.unsaved()){UI.toast("没有需要保存的改动");return;}
+    this.saved={...this.draft};this.render();UI.toast("已保存草稿，可发布");
+  },
+  publish(){
+    if(this.unsaved()){UI.toast("请先保存改动后再发布");return;}
+    const ids=Object.keys(this.saved);
+    if(!ids.length){UI.toast("没有待发布的改动");return;}
+    const changes=ids.map(id=>{const m=this.list.find(x=>x.id===id);const d=this.saved[id];return {id,from:m.name,to:d.name,fields:Object.keys(d).filter(k=>d[k]!==m[k])};});
+    document.getElementById("gmTitle").textContent="发布确认";
+    document.getElementById("gmBody").innerHTML=`
+      <div style="font-size:13px;margin-bottom:12px">以下 <strong>${changes.length}</strong> 个商户的信息将被更新：</div>
+      <table style="width:100%;font-size:12.5px;border-collapse:collapse">
+        <thead><tr style="background:#f6f8fb"><th style="text-align:left;padding:8px 10px">商户</th><th style="text-align:left;padding:8px 10px">变更字段</th></tr></thead>
+        <tbody>${changes.map(c=>`<tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px"><strong>${c.from}</strong>${c.from!==c.to?" → "+c.to:""}</td><td style="padding:8px 10px;color:var(--muted);font-size:12px">${c.fields.join("、")}</td></tr>`).join("")}</tbody>
+      </table>`;
+    document.getElementById("gmFoot").innerHTML=`
+      <button class="btn" onclick="UI.gmClose()">取消</button>
+      <button class="btn primary" onclick="MerchantMgmt.doPublish()">确认发布</button>`;
+    document.getElementById("g-modal").classList.add("show");
+  },
+  doPublish(){
+    Object.keys(this.saved).forEach(id=>{const m=this.list.find(x=>x.id===id);Object.assign(m,this.saved[id]);});
+    const n=Object.keys(this.saved).length;
+    this.draft={};this.saved={};UI.gmClose();this.render();UI.toast("已发布 "+n+" 个商户的信息变更");
+  },
+  viewAccount(id){
+    const m=this.cur(id);
+    document.getElementById("gmTitle").textContent="账号信息 — "+m.name;
+    document.getElementById("gmBody").innerHTML=`
+      <div style="background:#f6f8fb;border-radius:8px;padding:16px;font-size:13px">
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:10px 12px">
+          <span style="color:var(--muted);text-align:right">商户ID</span><strong>${m.id}</strong>
+          <span style="color:var(--muted);text-align:right">商户名称</span><strong>${m.name}</strong>
+          <span style="color:var(--muted);text-align:right">站点号</span><strong>${m.code}</strong>
+          <span style="color:var(--muted);text-align:right">归属市场</span><strong>${this.mkLabel(m.marketId)}（${this.mkCur(m.marketId)}）</strong>
+          <span style="color:var(--muted);text-align:right">管理员账号</span><code style="background:#e8f5e9;padding:3px 8px;border-radius:4px;font-weight:700">${m.admin}</code>
+          <span style="color:var(--muted);text-align:right">登录地址</span><code style="background:#e3f2fd;padding:3px 8px;border-radius:4px;font-size:12px">https://${m.name}.admin.example.com</code>
+          <span style="color:var(--muted);text-align:right">状态</span><span class="badge2 ${m.status==="正常"?"ok":"bad"}">${m.status}</span>
+          <span style="color:var(--muted);text-align:right">创建时间</span><span>${m.created}</span>
+        </div>
+      </div>`;
+    document.getElementById("gmFoot").innerHTML=`
+      <button class="btn" onclick="UI.gmClose()">关闭</button>
+      <button class="btn" onclick="MerchantMgmt.resetPwd('${m.id}')">重置密码</button>`;
+    document.getElementById("g-modal").classList.add("show");
+  },
+  resetPwd(id){
+    const m=this.list.find(x=>x.id===id);if(!m)return;
+    const pwd="Abc@"+Math.random().toString(36).slice(2,10);
+    document.getElementById("gmTitle").textContent="重置密码 — "+m.name;
+    document.getElementById("gmBody").innerHTML=`
+      <div style="text-align:center;padding:10px 0;font-size:14px">确认为商户「<strong>${m.name}</strong>」（账号：${m.admin}）重置密码？</div>
+      <div id="mc-reset-result"></div>`;
+    document.getElementById("gmFoot").innerHTML=`
+      <button class="btn" onclick="UI.gmClose()">取消</button>
+      <button class="btn primary" onclick="document.getElementById('mc-reset-result').innerHTML='<div style=\\'margin-top:12px;padding:14px;background:#fff3e0;border-radius:8px;text-align:center\\'>新密码：<code style=\\'font-size:14px;font-weight:700;color:#e65100\\'>${pwd}</code><br><small style=\\'color:#e65100\\'>⚠ 仅显示一次，请立即复制</small></div>';this.disabled=true;this.textContent='已重置'">确认重置</button>`;
+    document.getElementById("g-modal").classList.add("show");
+  },
+};
+
+/* ===== 系统管理 · 渠道管理（商户视角：生成推广渠道链接） ===== */
+const ChannelMgmt={
+  channels:[
+    {id:"CH001",name:"官方推广",domain:"www.site-a.com",code:"ch001",status:"启用",members:1250,clicks:8600,created:"2026-02-10"},
+    {id:"CH002",name:"代理-张三",domain:"www.site-a.com",code:"ch002",status:"启用",members:680,clicks:4200,created:"2026-03-05"},
+    {id:"CH003",name:"Facebook投放",domain:"m.site-a.com",code:"ch003",status:"启用",members:320,clicks:12000,created:"2026-03-18"},
+    {id:"CH004",name:"TikTok投放",domain:"m.site-a.com",code:"ch004",status:"停用",members:95,clicks:3100,created:"2026-04-02"},
+    {id:"CH005",name:"线下地推",domain:"www.site-a.com",code:"ch005",status:"启用",members:410,clicks:2800,created:"2026-04-15"},
+  ],
+  domains:["www.site-a.com","m.site-a.com","app.site-a.com"],
+  render(){
+    document.getElementById("content").innerHTML=`
+      <div class="pagehead"><h2>渠道管理</h2><span class="badge2 ok">系统管理</span><span class="desc">管理推广渠道与生成推广链接</span></div>
+      <div class="note">⚙ 渠道用于标记会员注册来源；每个渠道绑定一个域名生成唯一推广链接。渠道启停不改写已注册会员的来源归因。</div>
+      <div class="table-card">
+        <div class="table-top">
+          <h3>渠道列表（${this.channels.length}）</h3>
+          <button class="btn sm primary" style="margin-left:auto" onclick="ChannelMgmt.openCreate()">＋ 新增渠道</button>
+        </div>
+        <div class="table-scroll"><table><thead><tr>
+          <th>渠道ID</th><th>渠道名称</th><th>绑定域名</th><th>推广链接</th><th>注册人数</th><th>点击量</th><th>状态</th><th>创建时间</th><th>操作</th>
+        </tr></thead><tbody>
+          ${this.channels.map(c=>{
+            const link="https://"+c.domain+"/r/"+c.code;
+            return `<tr>
+            <td>${c.id}</td>
+            <td><strong>${c.name}</strong></td>
+            <td style="font-size:12px">${c.domain}</td>
+            <td><code style="background:#e3f2fd;padding:2px 6px;border-radius:4px;font-size:11px;cursor:pointer" onclick="ChannelMgmt.copyLink('${link}')" title="点击复制">${link}</code></td>
+            <td>${c.members.toLocaleString()}</td>
+            <td>${c.clicks.toLocaleString()}</td>
+            <td><span class="badge2 ${c.status==="启用"?"ok":"bad"}">${c.status}</span></td>
+            <td style="color:var(--muted);font-size:12px">${c.created}</td>
+            <td class="ops">
+              <a class="link" onclick="ChannelMgmt.copyLink('${link}')">复制链接</a>
+              <a class="link" onclick="ChannelMgmt.toggleStatus('${c.id}')">${c.status==="启用"?"停用":"启用"}</a>
+              <a class="link" onclick="ChannelMgmt.openEdit('${c.id}')">编辑</a>
+            </td>
+          </tr>`;}).join("")}
+        </tbody></table></div>
+      </div>`;
+  },
+  openCreate(){
+    document.getElementById("gmTitle").textContent="新增推广渠道";
+    document.getElementById("gmBody").innerHTML=`
+      <div style="display:grid;grid-template-columns:90px 1fr;gap:14px 16px;font-size:13px;align-items:center">
+        <label style="text-align:right;color:var(--muted)">渠道名称</label>
+        <input id="ch-name" placeholder="如：代理-李四、Google投放" style="width:100%">
+        <label style="text-align:right;color:var(--muted)">绑定域名</label>
+        <select id="ch-domain" style="width:100%">${this.domains.map(d=>`<option value="${d}">${d}</option>`).join("")}</select>
+        <label style="text-align:right;color:var(--muted)">渠道编码</label>
+        <input id="ch-code" placeholder="英文/数字，如 agent_lisi" style="width:100%">
+        <label style="text-align:right;color:var(--muted)">备注</label>
+        <input id="ch-remark" placeholder="可选" style="width:100%">
+      </div>
+      <div id="ch-preview" style="margin-top:14px;padding:12px;background:#f0f7f4;border-radius:8px;font-size:12px;color:#3a6b52">
+        <strong>🔗 推广链接预览：</strong><br>
+        <code id="ch-link-preview" style="font-size:13px;margin-top:4px;display:inline-block">https://${this.domains[0]}/r/___</code>
+      </div>`;
+    document.getElementById("gmFoot").innerHTML=`
+      <button class="btn" onclick="UI.gmClose()">取消</button>
+      <button class="btn primary" onclick="ChannelMgmt.confirmCreate()">创建渠道</button>`;
+    document.getElementById("g-modal").classList.add("show");
+    const updatePreview=()=>{const d=document.getElementById("ch-domain").value;const c=document.getElementById("ch-code").value||"___";document.getElementById("ch-link-preview").textContent="https://"+d+"/r/"+c;};
+    document.getElementById("ch-domain").onchange=updatePreview;
+    document.getElementById("ch-code").oninput=updatePreview;
+  },
+  confirmCreate(){
+    const name=document.getElementById("ch-name").value.trim();
+    const code=document.getElementById("ch-code").value.trim();
+    const domain=document.getElementById("ch-domain").value;
+    if(!name||!code){UI.toast("请填写渠道名称和编码");return;}
+    if(this.channels.some(c=>c.code===code)){UI.toast("渠道编码已存在");return;}
+    const id="CH"+String(this.channels.length+1).padStart(3,"0");
+    this.channels.push({id,name,domain,code,status:"启用",members:0,clicks:0,created:new Date().toISOString().slice(0,10)});
+    const link="https://"+domain+"/r/"+code;
+    document.getElementById("gmBody").innerHTML=`
+      <div style="text-align:center;padding:10px 0">
+        <div style="font-size:40px;margin-bottom:8px">✅</div>
+        <div style="font-size:15px;font-weight:700;margin-bottom:16px">渠道「${name}」创建成功</div>
+      </div>
+      <div style="background:#f6f8fb;border-radius:8px;padding:16px;font-size:13px">
+        <div style="display:grid;grid-template-columns:90px 1fr;gap:10px 12px">
+          <span style="color:var(--muted);text-align:right">渠道ID</span><strong>${id}</strong>
+          <span style="color:var(--muted);text-align:right">渠道名称</span><strong>${name}</strong>
+          <span style="color:var(--muted);text-align:right">绑定域名</span><strong>${domain}</strong>
+          <span style="color:var(--muted);text-align:right">推广链接</span><code style="background:#e3f2fd;padding:3px 8px;border-radius:4px;font-size:13px;font-weight:700">${link}</code>
+        </div>
+      </div>
+      <div style="margin-top:12px;text-align:center">
+        <button class="btn sm" onclick="ChannelMgmt.copyLink('${link}')">📋 复制推广链接</button>
+      </div>`;
+    document.getElementById("gmFoot").innerHTML=`<button class="btn primary" onclick="UI.gmClose();ChannelMgmt.render()">完成</button>`;
+  },
+  toggleStatus(id){
+    const c=this.channels.find(x=>x.id===id);if(!c)return;
+    c.status=c.status==="启用"?"停用":"启用";
+    this.render();UI.toast("渠道「"+c.name+"」已"+(c.status==="启用"?"启用":"停用"));
+  },
+  openEdit(id){
+    const c=this.channels.find(x=>x.id===id);if(!c)return;
+    document.getElementById("gmTitle").textContent="编辑渠道 — "+c.name;
+    document.getElementById("gmBody").innerHTML=`
+      <div style="display:grid;grid-template-columns:90px 1fr;gap:14px 16px;font-size:13px;align-items:center">
+        <label style="text-align:right;color:var(--muted)">渠道ID</label>
+        <span style="font-weight:600">${c.id}</span>
+        <label style="text-align:right;color:var(--muted)">渠道名称</label>
+        <input id="ch-edit-name" value="${c.name}" style="width:100%">
+        <label style="text-align:right;color:var(--muted)">绑定域名</label>
+        <select id="ch-edit-domain" style="width:100%">${this.domains.map(d=>`<option value="${d}" ${d===c.domain?"selected":""}>${d}</option>`).join("")}</select>
+        <label style="text-align:right;color:var(--muted)">渠道编码</label>
+        <span style="font-weight:600;color:var(--muted)">${c.code}（不可修改）</span>
+        <label style="text-align:right;color:var(--muted)">推广链接</label>
+        <code style="background:#e3f2fd;padding:3px 8px;border-radius:4px;font-size:12px">https://${c.domain}/r/${c.code}</code>
+      </div>`;
+    document.getElementById("gmFoot").innerHTML=`
+      <button class="btn" onclick="UI.gmClose()">取消</button>
+      <button class="btn primary" onclick="ChannelMgmt.saveEdit('${c.id}')">保存</button>`;
+    document.getElementById("g-modal").classList.add("show");
+  },
+  saveEdit(id){
+    const c=this.channels.find(x=>x.id===id);if(!c)return;
+    c.name=document.getElementById("ch-edit-name").value.trim()||c.name;
+    c.domain=document.getElementById("ch-edit-domain").value;
+    UI.gmClose();this.render();UI.toast("渠道「"+c.name+"」已更新");
+  },
+  copyLink(link){UI.toast("已复制："+link);},
+};
+
+const PAGE_OBJECTS={"cfg-vip":GroupVip,"cfg-act-rule":GroupActivity,"cfg-redpack-rule":GroupRedpack,"cfg-wheel-rule":GroupWheel,"sys-affiliation":MarketAffil,"sys-perm":PermMgmt,"sys-merchant":MerchantMgmt,"sys-channel":ChannelMgmt};
+
+/* ---------- member-list: full featured ---------- */
+const MemberList={
+  store:[],page:1,size:10,data:[],
+  init(){
+    if(this.store.length) return;
+    const seed=[
+      ["(1050) daman",5001,0.50,2340.00,1280,125.50,"INVITE2024","CH001","8.211.x.x","Android",125340,0],
+      ["(1040) 66bet",5002,0.30,5680.30,850,50.00,"INVITE2025","CH002","8.212.x.x","iOS",68500,0],
+      ["(1048) 91club",5003,0.00,1200.00,420,20.00,"INVITE2026","CH003","8.213.x.x","PC",35200,0],
+      ["(1048) 91club",5004,0.80,8920.50,2150,380.00,"INVITE2027","CH001","8.214.x.x","Android",185600,1],
+      ["(1040) 66bet",5005,0.20,450.00,180,0.00,"INVITE2028","CH005","8.215.x.x","未知",12500,0],
+    ];
+    for(let i=0;i<328;i++){
+      const id=5001+i,black=Math.random()<.07;
+      let m={merchant:MERCHANTS[i%3],id,account:acc(id),balance:money(1000),safe:money(9000),
+        points:rnd(3000),redpack:money(400),invite:"INVITE"+(2024+i%50),channel:pick(CHANNELS),
+        ip:ip(),device:pick(DEVICES),bet:rnd(200000),group:Math.random()<.85?"默认":"高价值",
+        type:Math.random()<.9?"真实用户":"测试用户",vip:pick(VIPS),agent:Math.random()<.3,
+        status:Math.random()<.94?1:0,black:black?1:0,regAt:dt(420),lastAt:dt(30)};
+      if(i<5){const s=seed[i];Object.assign(m,{merchant:s[0],id:s[1],account:acc(s[1]),balance:s[2],safe:s[3],points:s[4],redpack:s[5],invite:s[6],channel:s[7],ip:s[8],device:s[9],bet:s[10],black:s[11],group:"默认",type:"真实用户",status:1});}
+      this.store.push(m);
+    }
+    this.data=this.store.slice();
+  },
+  filters(){return[merchantFilter,kwFilter("会员ID"),kwFilter("代理ID"),kwFilter("会员账号"),kwFilter("注册IP"),kwFilter("备注"),
+    {label:"渠道",type:"select",opts:CHANNELS},{label:"注册设备",type:"select",opts:DEVICES},
+    {label:"会员状态",type:"select",opts:["正常","冻结"]},{label:"代理状态",type:"select",opts:["是","否"]},
+    kwFilter("邀请码"),{label:"VIP等级",type:"select",opts:VIPS},{label:"会员分组",type:"select",opts:["默认","高价值"]},
+    kwFilter("注册指纹"),{label:"黑名单状态",type:"select",opts:["正常","拉黑"]},{label:"活动黑名单",type:"select",opts:["正常","拉黑"]},
+    {label:"注册时间",type:"daterange"},{label:"在线时间",type:"daterange"}];},
+  search(){
+    const v=(id)=>{const el=document.getElementById(id);return el?el.value.trim():"";};
+    const m=v("flt-0"),id=v("flt-1"),accv=v("flt-3").toLowerCase(),ipv=v("flt-4"),
+      ch=v("flt-6"),dev=v("flt-7"),st=v("flt-8"),inv=v("flt-10"),vip=v("flt-11"),bl=v("flt-14");
+    this.data=this.store.filter(x=>{
+      if(m && x.merchant!==m) return false;
+      if(id && String(x.id)!==id) return false;
+      if(accv && !x.account.toLowerCase().includes(accv)) return false;
+      if(ipv && !x.ip.includes(ipv)) return false;
+      if(ch && x.channel!==ch) return false;
+      if(dev && x.device!==dev) return false;
+      if(st && (st==="正常"?x.status!==1:x.status!==0)) return false;
+      if(inv && !x.invite.includes(inv)) return false;
+      if(vip && x.vip!==vip) return false;
+      if(bl && (bl==="拉黑"?x.black!==1:x.black!==0)) return false;
+      return true;});
+    this.page=1; this.renderTable(); UI.toast("查询到 "+this.data.length+" 条");
+  },
+  reset(){ for(let i=0;i<18;i++){const el=document.getElementById("flt-"+i);if(el)el.value="";} this.data=this.store.slice();this.page=1;this.renderTable();},
+  render(){
+    this.init();
+    const c=document.getElementById("content");
+    c.innerHTML=`
+      <div class="pagehead"><h2>会员列表</h2><span class="badge2 ok">已完成</span><span class="desc">查询会员汇总信息和基本操作</span></div>
+      <div class="card">${UI.filtersHTML(this.filters())}
+        <div class="filter-actions"><button class="btn primary" onclick="MemberList.search()">🔍 搜索</button>
+          <button class="btn" onclick="MemberList.reset()">↻ 重置</button></div></div>
+      <div class="table-card">
+        <div class="table-top"><h3>会员列表</h3><div>
+          <button class="btn sm" onclick="MemberList.exportCsv()">导出</button>
+          <button class="btn sm primary" onclick="UI.toast('新增会员表单待接入')">+ 新增会员</button></div></div>
+        <div class="table-scroll"><table><thead><tr>
+          ${["商户","会员ID","余额","保险箱余额","积分","红包剩余金额","邀请码","渠道号","注册IP","注册设备","打码量","会员分组","会员类型","黑名单","操作"].map(h=>`<th>${h}</th>`).join("")}
+        </tr></thead><tbody id="mtbody"></tbody></table></div>
+        <div class="pager" id="mpager"></div></div>`;
+    this.renderTable();
+  },
+  renderTable(){
+    const tot=this.data.length,pages=Math.max(1,Math.ceil(tot/this.size));
+    if(this.page>pages)this.page=pages;
+    const rows=this.data.slice((this.page-1)*this.size,this.page*this.size);
+    document.getElementById("mtbody").innerHTML=rows.map(m=>`<tr>
+      <td class="merchant" onclick="MemberList.detail(${m.id})">${m.merchant}</td>
+      <td class="link" onclick="MemberList.detail(${m.id})">${m.id}</td>
+      <td class="money">${n2(m.balance)}</td><td class="money">${n2(m.safe)}</td>
+      <td>${m.points.toLocaleString()}</td><td class="money">${n2(m.redpack)}</td>
+      <td>${m.invite}</td><td>${m.channel}</td><td>${m.ip}</td><td>${m.device}</td>
+      <td class="money">${m.bet.toLocaleString()}</td>
+      <td><span class="badge2 gray">${m.group}</span></td><td>${m.type}</td>
+      <td><span class="badge2 ${m.black?'bad':'ok'}">${m.black?'拉黑':'正常'}</span></td>
+      <td class="ops"><a class="link" onclick="MemberList.detail(${m.id})">详情</a>
+        <a class="link" onclick="UI.toast('修改密码请由本人在生产环境操作')">修改密码</a>
+        <a class="link" onclick="MemberList.toggleBlack(${m.id})">${m.black?'解封':'拉黑'}</a></td></tr>`).join("");
+    UI.pager("mpager",tot,this.page,pages,(p)=>{MemberList.page=p;MemberList.renderTable();},this.size,(s)=>{MemberList.size=s;MemberList.page=1;MemberList.renderTable();});
+  },
+  detail(id){const m=this.store.find(x=>x.id===id);
+    document.getElementById("detailBody").innerHTML=`
+      <dt>商户</dt><dd>${m.merchant}</dd><dt>会员ID</dt><dd>${m.id}</dd>
+      <dt>会员账号</dt><dd>${m.account}</dd><dt>VIP等级</dt><dd>${m.vip}</dd>
+      <dt>余额</dt><dd>${n2(m.balance)}</dd><dt>保险箱余额</dt><dd>${n2(m.safe)}</dd>
+      <dt>积分</dt><dd>${m.points.toLocaleString()}</dd><dt>红包剩余</dt><dd>${n2(m.redpack)}</dd>
+      <dt>打码量</dt><dd>${m.bet.toLocaleString()}</dd><dt>邀请码</dt><dd>${m.invite}</dd>
+      <dt>渠道号</dt><dd>${m.channel}</dd><dt>注册设备</dt><dd>${m.device}</dd>
+      <dt>注册IP</dt><dd>${m.ip}</dd><dt>会员分组</dt><dd>${m.group}</dd>
+      <dt>会员类型</dt><dd>${m.type}</dd><dt>是否代理</dt><dd>${m.agent?'是':'否'}</dd>
+      <dt>会员状态</dt><dd>${m.status?'正常':'冻结'}</dd><dt>黑名单</dt><dd>${m.black?'拉黑':'正常'}</dd>
+      <dt>注册时间</dt><dd>${m.regAt}</dd><dt>最后在线</dt><dd>${m.lastAt}</dd>`;
+    UI.open();},
+  toggleBlack(id){const m=this.store.find(x=>x.id===id);m.black=m.black?0:1;this.renderTable();UI.toast(m.black?"已拉黑":"已解封");},
+  exportCsv(){
+    const head=["商户","会员ID","会员账号","余额","保险箱余额","积分","红包剩余","邀请码","渠道号","注册IP","注册设备","打码量","会员分组","会员类型","VIP","黑名单","注册时间"];
+    const rows=this.data.map(m=>[m.merchant,m.id,m.account,m.balance,m.safe,m.points,m.redpack,m.invite,m.channel,m.ip,m.device,m.bet,m.group,m.type,m.vip,m.black?"拉黑":"正常",m.regAt]);
+    UI.downloadCsv("member-list.csv",head,rows);
+  }
+};
+
+/* ---------- generic page renderer ---------- */
+const Generic={
+  cache:{},page:1,size:10,key:null,
+  render(key){
+    const spec=PAGES[key],meta=UI.metaOf(key);
+    this.key=key;this.page=1;
+    const c=document.getElementById("content");
+    if(spec.plan){
+      c.innerHTML=`<div class="pagehead"><h2>${meta.t}</h2><span class="badge2 gray">规划中</span><span class="desc">${meta.d}</span></div>
+        <div class="card"><div class="plan-box"><div class="big">🚧</div>该功能在脑图中标记为「待定」，需求待确认后排期。</div></div>`;
+      return;
+    }
+    if(!this.cache[key]){const rows=[],n=spec.rows||(40+rnd(120));for(let i=0;i<n;i++)rows.push(spec.gen(i));this.cache[key]=rows;}
+    const stMap={done:["已完成","ok"],todo:["待迁移","warn"],plan:["规划中","gray"]};
+    const st=stMap[meta.s];
+    c.innerHTML=`
+      <div class="pagehead"><h2>${meta.t}</h2><span class="badge2 ${st[1]}">${st[0]}</span><span class="desc">${meta.d}</span></div>
+      ${spec.note?`<div class="note">⚠ ${spec.note}</div>`:""}
+      <div class="card">${UI.filtersHTML(spec.filters)}
+        <div class="filter-actions"><button class="btn primary" onclick="Generic.search()">🔍 搜索</button>
+          <button class="btn" onclick="Generic.reset()">↻ 重置</button></div></div>
+      <div class="table-card">
+        <div class="table-top"><h3>${meta.t}</h3><button class="btn sm" onclick="Generic.exportCsv()">导出</button></div>
+        <div class="table-scroll"><table><thead><tr>${spec.cols.map(h=>`<th>${h}</th>`).join("")}</tr></thead>
+          <tbody id="gtbody"></tbody></table></div>
+        <div class="pager" id="gpager"></div></div>`;
+    this.view=this.cache[key];this.renderTable();
+  },
+  search(){
+    const spec=PAGES[this.key];
+    const m=document.getElementById("flt-0")?document.getElementById("flt-0").value.trim():"";
+    let kw="";spec.filters.forEach((f,i)=>{if(f.type==="text"&&!kw){const el=document.getElementById("flt-"+i);if(el&&el.value.trim())kw=el.value.trim().toLowerCase();}});
+    this.view=this.cache[this.key].filter(r=>{
+      const text=r.map(c=>String(c.t).replace(/<[^>]+>/g,"")).join(" ").toLowerCase();
+      if(m && !text.includes(m.toLowerCase())) return false;
+      if(kw && !text.includes(kw)) return false;
+      return true;});
+    this.page=1;this.renderTable();UI.toast("查询到 "+this.view.length+" 条");
+  },
+  reset(){const spec=PAGES[this.key];spec.filters.forEach((f,i)=>{const el=document.getElementById("flt-"+i);if(el)el.value="";});this.view=this.cache[this.key];this.page=1;this.renderTable();},
+  renderTable(){
+    const tot=this.view.length,pages=Math.max(1,Math.ceil(tot/this.size));
+    if(this.page>pages)this.page=pages;
+    const rows=this.view.slice((this.page-1)*this.size,this.page*this.size);
+    document.getElementById("gtbody").innerHTML= rows.length? rows.map(r=>"<tr>"+r.map(c=>`<td class="${c.c}">${c.t}</td>`).join("")+"</tr>").join("")
+      : `<tr><td colspan="${PAGES[this.key].cols.length}" class="empty">暂无数据</td></tr>`;
+    UI.pager("gpager",tot,this.page,pages,(p)=>{Generic.page=p;Generic.renderTable();},this.size,(s)=>{Generic.size=s;Generic.page=1;Generic.renderTable();});
+  },
+  exportCsv(){const spec=PAGES[this.key];const rows=this.view.map(r=>r.map(c=>String(c.t).replace(/<[^>]+>/g,"").trim()));UI.downloadCsv(this.key+".csv",spec.cols,rows);}
+};
+
+/* ---------- UI helpers / router ---------- */
+const UI={
+  current:"member-list",
+  metaOf(key){for(const mk in MODULES)for(const g of MODULES[mk].menu)for(const it of g.items)if(it.k===key)return it;},
+  moduleOf(key){for(const mk in MODULES)for(const g of MODULES[mk].menu)for(const it of g.items)if(it.k===key)return mk;return "member";},
+  filtersHTML(filters){
+    return `<div class="filters">`+filters.map((f,i)=>{
+      let ctl;
+      if(f.type==="select") ctl=`<select id="flt-${i}"><option value="">请选择${f.label}</option>${f.opts.map(o=>`<option>${o}</option>`).join("")}</select>`;
+      else if(f.type==="daterange") ctl=`<div class="range"><input type="date"><span>→</span><input type="date"></div>`;
+      else ctl=`<input id="flt-${i}" placeholder="${f.ph||f.label}">`;
+      return `<div class="field"${f.type==="daterange"?' style="grid-column:span 2"':''}><label>${f.req?'<span class="req">*</span>':''}${f.label}</label><div class="ctl">${ctl}</div></div>`;
+    }).join("")+`</div>`;
+  },
+  pager(elId,tot,page,pages,go,size,setSize){
+    let h=`<span>共 ${tot} 条</span><div class="pages"><button onclick="(${go})(${page-1})" ${page<=1?'disabled':''}>‹</button>`;
+    const win=[];for(let p=1;p<=pages;p++){if(p===1||p===pages||Math.abs(p-page)<=2)win.push(p);else if(win[win.length-1]!=="…")win.push("…");}
+    win.forEach(p=>h+= p==="…"?`<button disabled>…</button>`:`<button class="${p===page?'active':''}" onclick="(${go})(${p})">${p}</button>`);
+    h+=`<button onclick="(${go})(${page+1})" ${page>=pages?'disabled':''}>›</button></div>
+      <select onchange="(${setSize})(+this.value)">${[10,20,50].map(s=>`<option ${s===size?'selected':''}>${s}</option>`).join("")}</select>
+      <span>条/页</span>`;
+    document.getElementById(elId).innerHTML=h;
+  },
+  downloadCsv(name,head,rows){
+    const csv="﻿"+[head,...rows].map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
+    const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download=name;a.click();UI.toast("已导出 "+rows.length+" 条");
+  },
+  tabs:["member-list"],
+  stLabel(s){return s==="done"?"完成":s==="plan"?"待定":"迁移";},
+  menuModule:"member",
+  buildMenu(moduleKey){
+    this.menuModule=moduleKey;
+    let menu=MODULES[moduleKey].menu;
+    // 视角过滤：按 scope 字段隐藏不属于当前视角的菜单项
+    if(moduleKey==="sys"){
+      const mode=PERSP.mode;
+      menu=menu.map(g=>({g:g.g,items:g.items.filter(it=>!it.scope||it.scope===mode)})).filter(g=>g.items.length);
+    }
+    document.getElementById("megamenu").innerHTML=`<div class="cols">`+menu.map(g=>`
+      <div class="col"><h4>${g.g}</h4>${g.items.map(it=>
+        `<a data-k="${it.k}" onclick="UI.goto('${it.k}')">${it.t}${it.s==="plan"?'<span class="st plan">待定</span>':""}</a>`).join("")}</div>`).join("")+`</div>`;
+    this.renderActiveMenu();
+  },
+  toggleModuleMenu(moduleKey,e){
+    if(e)e.stopPropagation();
+    const mm=document.getElementById("megamenu");
+    if(mm.classList.contains("show") && this.menuModule===moduleKey){ this.closeMenu(); return; }
+    this.buildMenu(moduleKey);
+    mm.classList.add("show");
+  },
+  closeMenu(){ document.getElementById("megamenu").classList.remove("show"); },
+  goto(key){
+    this.current=key;
+    if(!this.tabs.includes(key)) this.tabs.push(key);
+    this.closeMenu();
+    this.renderTabs();
+    this.renderActiveNav();
+    this.renderActiveMenu();
+    if(key==="member-list") MemberList.render(); else if(PAGE_OBJECTS[key]) PAGE_OBJECTS[key].render(); else Generic.render(key);
+    document.getElementById("content").scrollTop=0;
+  },
+  renderActiveNav(){
+    const mod=this.moduleOf(this.current);
+    for(const mk in MODULES){const el=document.getElementById(MODULES[mk].navId);if(el)el.classList.toggle("active",mk===mod);}
+  },
+  buildPersp(){const el=document.getElementById("perspSel");if(!el)return;const opts=GMERCHANTS.map(m=>`<option value="m:${m.id}">${m.name}（${m.code}）</option>`).join("");el.innerHTML=`<option value="group">集团视角（全部商户）</option><optgroup label="商户视角">${opts}</optgroup>`;this.syncPersp();},
+  syncPersp(){const el=document.getElementById("perspSel");if(!el)return;el.value=PERSP.mode==="merchant"?("m:"+PERSP.merchantId):"group";},
+  switchPersp(val){if(val==="group"){PERSP.mode="group";PERSP.merchantId=null;}else{PERSP.mode="merchant";PERSP.merchantId=val.slice(2);}this.syncPersp();const k=this.current;if(k==="member-list")MemberList.render();else if(PAGE_OBJECTS[k])PAGE_OBJECTS[k].render();else Generic.render(k);},
+  renderActiveMenu(){ document.querySelectorAll("#megamenu a").forEach(a=>a.classList.toggle("active",a.dataset.k===this.current)); },
+  renderTabs(){
+    document.getElementById("tabbar").innerHTML=this.tabs.map(k=>{const m=this.metaOf(k);
+      return `<div class="tab ${k===this.current?'active':''}" onclick="UI.goto('${k}')">${m.t}<span class="x" onclick="event.stopPropagation();UI.closeTab('${k}')">×</span></div>`;}).join("");
+  },
+  closeTab(key){
+    if(this.tabs.length<=1) return;
+    const i=this.tabs.indexOf(key); this.tabs.splice(i,1);
+    if(this.current===key) this.goto(this.tabs[Math.max(0,i-1)]);
+    else this.renderTabs();
+  },
+  open(){document.getElementById("m-detail").classList.add("show");},
+  close(){document.getElementById("m-detail").classList.remove("show");},
+  gmClose(){document.getElementById("g-modal").classList.remove("show");},
+  toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(this._t);this._t=setTimeout(()=>t.classList.remove("show"),1800);},
+  start(){
+    this.buildPersp();
+    this.buildMenu("member");
+    this.renderTabs();
+    this.renderActiveNav();
+    this.renderActiveMenu();
+    MemberList.render();
+    document.addEventListener("click",(e)=>{
+      const mm=document.getElementById("megamenu");
+      const onNav=["nav-member","nav-ops","nav-config","nav-sys"].some(id=>{const el=document.getElementById(id);return el&&el.contains(e.target);});
+      if(mm.classList.contains("show") && !mm.contains(e.target) && !onNav) this.closeMenu();
+    });
+    setInterval(()=>{const d=new Date();const p=(n)=>String(n).padStart(2,"0");
+      document.getElementById("clk").textContent=`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;},1000);
+  }
+};
+UI.start();
+</script>
+</body>
+</html>

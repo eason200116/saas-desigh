@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SitINR ↔ SaaS 迁移对比</title>
+<style>
+:root{--green:#2e7d5b;--blue:#1565c0;--border:#e2e6ea;--muted:#7a8494;--text:#1f2927;--bg:#f6f8fb}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.7}
+.header{background:linear-gradient(135deg,#1a3a2a,#2e7d5b);color:#fff;padding:32px 36px}
+.header h1{font-size:26px;margin-bottom:6px}
+.header p{opacity:.85;font-size:14px}
+.summary{display:flex;gap:14px;margin-top:18px;flex-wrap:wrap}
+.sc{background:rgba(255,255,255,.12);border-radius:12px;padding:14px 22px;min-width:110px}
+.sc b{font-size:30px;display:block;line-height:1.2}
+.sc small{opacity:.75;font-size:12px}
+.sc.done{background:rgba(46,125,91,.5)}.sc.new{background:rgba(33,150,243,.4)}.sc.todo{background:rgba(198,40,40,.25)}
+.pbar{margin-top:16px;height:12px;background:rgba(255,255,255,.15);border-radius:6px;overflow:hidden;display:flex}
+.pbar .s{height:100%}.s-d{background:#4caf50}.s-n{background:#2196f3}.s-t{background:rgba(255,255,255,.2)}
+.toolbar{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--border);padding:12px 28px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.toolbar input,.toolbar select{height:40px;border:1px solid var(--border);border-radius:8px;padding:0 14px;font-size:14px}
+.toolbar input{flex:1;min-width:180px}
+.toolbar .ct{margin-left:auto;color:var(--muted);font-size:14px}
+.container{max-width:1440px;margin:0 auto;padding:18px 28px}
+.mod{background:#fff;border:1px solid var(--border);border-radius:12px;margin-bottom:14px;overflow:hidden}
+.mh{display:flex;align-items:center;padding:14px 20px;background:#fafbfc;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;gap:10px}
+.mh:hover{background:#f0f4f2}
+.mh .arr{width:20px;font-size:13px;color:var(--muted);transition:.2s}
+.mh.col .arr{transform:rotate(-90deg)}
+.mh h2{font-size:17px;margin:0;flex:1}
+.mh.col+.mb{display:none}
+.mp{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+.mp .d{width:10px;height:10px;border-radius:50%;flex:none}.d1{background:#4caf50}.d2{background:#2196f3}.d3{background:#ccc}
+table{width:100%;border-collapse:collapse;font-size:14px}
+thead{background:#f6f8fb}
+th{text-align:left;padding:10px 16px;font-weight:700;font-size:14px;border-bottom:2px solid var(--border)}
+td{padding:10px 16px;border-bottom:1px solid #f0f2f5;vertical-align:top}
+tr:hover{background:#f9fbfa}
+tr[data-s="done"]{background:#f6fdf8}
+tr[data-s="new"]{background:#f0f7ff}
+.st{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:10px}
+.st-done{background:#e8f5e9;color:#2e7d32}
+.st-new{background:#e3f2fd;color:#1565c0}
+.st-todo{background:#f5f5f5;color:#9e9e9e}
+.st-na{background:#fce4ec;color:#c62828}
+.fn{font-weight:700;font-size:14px;color:#1a2332}
+.sub{padding-left:22px;color:#475569;font-size:13.5px}
+.sub::before{content:"└ ";color:#bbb}
+.route{font-size:12px;color:var(--blue);font-family:monospace;margin-top:2px}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:6px;margin-top:4px}
+.tag-done{background:#e8f5e9;color:#2e7d32}
+.tag-new{background:#e3f2fd;color:#1565c0}
+.tag-opt{background:#fff3e0;color:#e65100}
+.nt{font-size:13px;color:var(--muted);font-style:italic;margin-top:2px}
+.sg{background:#f0f4f8}
+.sg td{padding:10px 16px;font-weight:700;font-size:15px;border-bottom:2px solid var(--border);color:var(--blue)}
+.legend{display:flex;gap:20px;padding:12px 28px;background:#fff;border-bottom:1px solid var(--border);font-size:14px;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.diff-section{margin-top:20px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px 24px}
+.diff-section h3{font-size:16px;margin-bottom:12px}
+.diff-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.diff-card{border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.diff-card h4{font-size:14px;margin-bottom:8px}
+.diff-card.opt{border-color:#fff3e0;background:#fffcf5}
+.diff-card.add{border-color:#e3f2fd;background:#f8fbff}
+.diff-list{font-size:13px;line-height:2}
+.diff-list li{list-style:none;padding-left:16px;position:relative}
+.diff-list li::before{content:"•";position:absolute;left:0;color:var(--green)}
+.diff-list li.new::before{content:"+";color:#1565c0;font-weight:700}
+@media(max-width:900px){.diff-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>SitINR ↔ SaaS 迁移对比报告</h1>
+  <p>基于 54 张 SaaS 后台截图 + SitINR 源代码深度分析</p>
+  <p style="opacity:.7;font-size:12px;margin-top:6px;background:rgba(255,255,255,.15);display:inline-block;padding:4px 12px;border-radius:6px">⚠ 本文件为早期简化版（86 项），详细数据请查看 <b>saas-workplan.html</b>「迁移对照表」（163 项，权威来源）</p>
+  <div class="summary">
+    <div class="sc done"><b id="sd">0</b><small>已迁移</small></div>
+    <div class="sc new"><b id="sn2">0</b><small>SaaS 新增</small></div>
+    <div class="sc todo"><b id="st2">0</b><small>待迁移</small></div>
+    <div class="sc"><b id="sna">0</b><small>不迁移</small></div>
+  </div>
+  <div class="pbar" id="pb"></div>
+</div>
+<div class="legend">
+  <span><span class="st st-done">已迁移</span> SitINR 功能已在 SaaS 实现</span>
+  <span><span class="st st-new">SaaS新增</span> SaaS 独有，SitINR 无</span>
+  <span><span class="st st-todo">待迁移</span> SitINR 有但 SaaS 未做</span>
+  <span><span class="st st-na">不迁移</span> 不需要</span>
+</div>
+<div class="toolbar">
+  <input id="q" placeholder="搜索…" oninput="F()">
+  <select id="sf" onchange="F()"><option value="">全部状态</option><option value="done">已迁移</option><option value="new">SaaS新增</option><option value="todo">待迁移</option><option value="na">不迁移</option></select>
+  <select id="mf" onchange="F()"><option value="">全部模块</option></select>
+  <span class="ct" id="rc"></span>
+</div>
+<div class="container" id="root"></div>
+
+<!-- ===== 差异化分析 ===== -->
+<div class="container">
+<div class="diff-section">
+  <h3>迁移差异化分析</h3>
+
+  <div class="diff-grid">
+    <div class="diff-card opt">
+      <h4>迁移中的优化（SaaS 对 SitINR 的改进）</h4>
+      <ul class="diff-list">
+        <li>会员银行卡管理从 SitINR 的 1 个页面拆分为 <strong>6 个独立 Tab</strong>（银行卡/USDT/PIX/电子钱包/UPI/实名认证），结构更清晰</li>
+        <li>提现订单管理整合了 SitINR 分散的 RemoteWork 出款模块，统一为 <strong>6 个 Tab</strong>（出款看板/员工操作台/组别配置/员工报表/当前提现/全部记录）</li>
+        <li>充值订单管理整合为 <strong>4 个 Tab</strong>（三方待入款/本地待入款/全部入款记录/直充短信），原 SitINR 分散在多个页面</li>
+        <li>充值/提现类型管理各新增「通道」子 Tab，原 SitINR 充值通道和充值类型是两个独立页面</li>
+        <li>三方游戏记录重构为 <strong>5 大类 Tab</strong>（彩票/视讯/体育/电子/棋牌）+ 左侧游戏分类导航，原 SitINR 仅按数据视图切换</li>
+        <li>系统用户详情改为 <strong>4 Tab 弹窗</strong>（基本信息/归属商户配置/出款权限配置/人工充值权限配置），原 SitINR 仅编辑表单</li>
+        <li>支代付通道预警新增 <strong>预警统计卡片</strong>（5 类预警汇总）+ 详情弹窗 + 标记处理/忽略，原 SitINR 无此功能</li>
+        <li>数据统计升级为 <strong>5 个 Tab</strong>（24小时报表/数据概况/商户报表/通道报表/三方商户号报表）+ 实时图表 + 自动刷新，原 SitINR 仅单页报表</li>
+        <li>会员列表新增「高级筛选」折叠面板，支持更多维度筛选</li>
+        <li>全部列表页统一支持「自定义列」配置，原 SitINR 列固定不可调</li>
+        <li>全部列表页统一支持「快捷时间按钮」（今天/昨天/本周/上周/本月/上月/所有），原 SitINR 仅日期选择器</li>
+      </ul>
+    </div>
+    <div class="diff-card add">
+      <h4>SaaS 新增功能（SitINR 完全没有）</h4>
+      <ul class="diff-list">
+        <li class="new"><strong>集团/商户切换</strong>：顶栏支持集团→商户视角切换，SitINR 仅单站点</li>
+        <li class="new"><strong>多商户架构</strong>：所有页面支持商户下拉筛选，SitINR 为单站点</li>
+        <li class="new"><strong>快捷工作台</strong>：按权限展示 24 个快捷入口，SitINR 无此设计</li>
+        <li class="new"><strong>多 Tab 页签导航</strong>：支持同时打开多个功能页签，SitINR 为单页面切换</li>
+        <li class="new"><strong>PIX 钱包管理</strong>：巴西 PIX 支付方式独立 Tab，SitINR 无</li>
+        <li class="new"><strong>出款看板</strong>：员工状态/订单状态/24小时订单/预警统计实时面板</li>
+        <li class="new"><strong>出款员工实时状态</strong>：在线/暂停/未上班状态监控</li>
+        <li class="new"><strong>批量指派组长</strong>：提现订单批量指派功能</li>
+        <li class="new"><strong>直充短信</strong>：充值订单管理新增直充短信 Tab</li>
+        <li class="new"><strong>通道预警规则配置</strong>：可自定义预警阈值</li>
+        <li class="new"><strong>三方商户号报表</strong>：按三方商户号维度的独立报表</li>
+        <li class="new"><strong>通道报表</strong>：按支付通道维度的独立报表</li>
+        <li class="new"><strong>24小时实时走势图</strong>：代收/代付金额+笔数+成功率分时图表</li>
+        <li class="new"><strong>充提权限搜索</strong>：系统用户列表新增充提权限快速搜索</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const SL={done:"已迁移",new:"SaaS新增",todo:"待迁移",na:"不迁移"};
+const D=[
+// ===== 会员管理 =====
+{m:"会员管理",g:"会员列表",sit:"会员列表",saas:"会员列表",s:"done"},
+{m:"会员管理",g:"会员列表",sit:"多条件筛选",sub:1,saas:"筛选+高级筛选",s:"done",n:"SaaS 新增高级筛选折叠面板"},
+{m:"会员管理",g:"会员列表",sit:"批量拉黑/拉白/禁用/启用",sub:1,saas:"批量操作",s:"done"},
+{m:"会员管理",g:"会员列表",sit:"批量转代理/分组/添加用户",sub:1,saas:"批量操作",s:"done"},
+{m:"会员管理",g:"会员列表",sit:"导出/导入",sub:1,saas:"导入批量操作",s:"done"},
+{m:"会员管理",g:"会员列表",sit:"行操作：红包充值/修改密码/删除/修改用户名",sub:1,saas:"修改密码（行操作）",s:"done"},
+{m:"会员管理",g:"会员列表",sit:"—",saas:"自定义列配置",s:"new",n:"SitINR 列固定不可调"},
+{m:"会员管理",g:"会员列表",sit:"—",saas:"快捷时间按钮",s:"new",n:"今天/昨天/本周/上周/本月/上月/所有"},
+{m:"会员管理",g:"会员详情",sit:"会员详情（6区域+银行卡管理）",saas:"会员详情（6个Tab）",s:"done",n:"SaaS 拆分为独立 Tab，更清晰"},
+{m:"会员管理",g:"会员详情",sit:"基本信息+数据统计+活动奖励+代理+VIP+保险箱+打码",sub:1,saas:"基本信息 Tab",s:"done"},
+{m:"会员管理",g:"会员详情",sit:"最近3次充提+注册登录信息",sub:1,saas:"充提信息 Tab",s:"done",n:"SaaS 拆为独立 Tab"},
+{m:"会员管理",g:"会员详情",sit:"投注统计（按游戏汇总行）",sub:1,saas:"投注信息 Tab",s:"done",n:"SaaS 改为可筛选列表+分页"},
+{m:"会员管理",g:"会员详情",sit:"银行卡管理（5种支付方式）",sub:1,saas:"钱包信息 Tab（4种+新增）",s:"done"},
+{m:"会员管理",g:"会员详情",sit:"—",sub:1,saas:"账变记录 Tab",s:"new",n:"SitINR 详情页无账变"},
+{m:"会员管理",g:"会员详情",sit:"—",sub:1,saas:"操作日志 Tab（前台+平台）",s:"new",n:"SitINR 详情页无操作日志"},
+{m:"会员管理",g:"会员层级",sit:"会员层级（VIP等级编辑）",saas:"会员层级（代理维度列表）",s:"done",n:"SaaS 增加代理类型/层级/投注统计列"},
+{m:"会员管理",g:"下级会员",sit:"下级会员列表",saas:"下级会员",s:"done"},
+{m:"会员管理",g:"会员银行卡",sit:"会员银行卡（单页）",saas:"会员银行卡管理（6个Tab）",s:"done",n:"SaaS 拆为银行卡/USDT/PIX/电子钱包/UPI/实名认证"},
+{m:"会员管理",g:"会员银行卡",sit:"—",saas:"PIX钱包 Tab",s:"new",n:"巴西 PIX 支付方式"},
+{m:"会员管理",g:"会员银行卡",sit:"—",saas:"实名认证 Tab",s:"new",n:"SitINR 实名认证是独立页面"},
+{m:"会员管理",g:"在线人数",sit:"在线会员（首页顶栏数字）",saas:"在线人数（独立列表页）",s:"done",n:"SaaS 升级为完整列表"},
+{m:"会员管理",g:"其他",sit:"异常会员处理",saas:"—",s:"todo"},
+{m:"会员管理",g:"其他",sit:"登录日志",saas:"—",s:"todo"},
+{m:"会员管理",g:"其他",sit:"短信验证码查询",saas:"—",s:"todo"},
+{m:"会员管理",g:"其他",sit:"用户分组+权限",saas:"—",s:"todo"},
+{m:"会员管理",g:"其他",sit:"VIP奖励/经验/签到",saas:"—",s:"todo"},
+{m:"会员管理",g:"其他",sit:"返佣/合伙人/代理关系/审核",saas:"—",s:"todo"},
+{m:"会员管理",g:"其他",sit:"任务活动/首充/消息",saas:"—",s:"todo"},
+{m:"会员管理",g:"其他",sit:"C2C管理",saas:"—",s:"na",n:"SaaS不含C2C"},
+
+// ===== 财务管理 =====
+{m:"财务管理",g:"资金账变",sit:"财务记录（3视图）",saas:"资金账变",s:"done"},
+{m:"财务管理",g:"资金账变",sit:"导出/修改备注",sub:1,saas:"导出+修改备注",s:"done"},
+{m:"财务管理",g:"人工充值",sit:"人工充值（查询+手动补单）",saas:"人工充值（查询+充值表单+批量导入）",s:"done",n:"SaaS 增加批量人工充值导入"},
+{m:"财务管理",g:"人工充值",sit:"人工充值审核",saas:"人工充值审核列表",s:"done"},
+{m:"财务管理",g:"人工充值",sit:"审核日志",saas:"人工充值审核记录",s:"done",n:"SaaS 增加审核状态筛选+审核时间"},
+{m:"财务管理",g:"收款账号",sit:"收款银行卡（单页）",saas:"本地收款账号管理（4个Tab）",s:"done",n:"SaaS 拆为银行卡/UPI/USDT/EWallet"},
+{m:"财务管理",g:"三方管理",sit:"第三方支付（单页）",saas:"支代付三方管理",s:"done",n:"SaaS 增加关联商户、三方余额列"},
+{m:"财务管理",g:"充值管理",sit:"充值渠道+支付方式（2个独立页面）",saas:"充值类型管理（充值大类+充值通道 2个Tab）",s:"done",n:"SaaS 合并为一个页面2Tab"},
+{m:"财务管理",g:"充值管理",sit:"充值通道（简单列表）",sub:1,saas:"充值通道（含成功率统计+代收测试）",s:"done",n:"SaaS 新增成功率实时统计"},
+{m:"财务管理",g:"提现管理",sit:"提现列表+渠道（分散）",saas:"提现类型管理（提现大类+提现通道 2个Tab）",s:"done",n:"SaaS 合并+新增代付测试"},
+{m:"财务管理",g:"充值订单",sit:"充值列表（单页）",saas:"充值订单管理（4个Tab）",s:"done",n:"SaaS 拆为三方待入款/本地待入款/全部入款/直充短信"},
+{m:"财务管理",g:"充值订单",sit:"—",sub:1,saas:"直充短信 Tab",s:"new"},
+{m:"财务管理",g:"提现订单",sit:"提现审核+RemoteWork出款（分散6个页面）",saas:"提现订单管理（6个Tab整合）",s:"done",n:"SaaS 整合为统一模块"},
+{m:"财务管理",g:"提现订单",sit:"出款看板（RemoteWork仪表板）",sub:1,saas:"出款看板",s:"done",n:"SaaS 增加员工实时状态子Tab"},
+{m:"财务管理",g:"提现订单",sit:"出款员工操作台",sub:1,saas:"出款员工操作台",s:"done",n:"SaaS 新增批量指派组长"},
+{m:"财务管理",g:"提现订单",sit:"出款组别配置",sub:1,saas:"出款组别配置",s:"done"},
+{m:"财务管理",g:"提现订单",sit:"出款员工报表",sub:1,saas:"出款员工报表",s:"done"},
+{m:"财务管理",g:"提现订单",sit:"当前提现+全部记录",sub:1,saas:"当前提现订单+全部提现记录",s:"done"},
+{m:"财务管理",g:"银行字典",sit:"银行管理",saas:"银行字典",s:"done",n:"SaaS 增加状态开关"},
+{m:"财务管理",g:"通道预警",sit:"—",saas:"支代付通道预警",s:"new",n:"5类预警统计+详情弹窗+处理/忽略"},
+{m:"财务管理",g:"通道预警",sit:"—",sub:1,saas:"预警规则配置",s:"new"},
+{m:"财务管理",g:"其他",sit:"代理财务记录",saas:"—",s:"todo"},
+{m:"财务管理",g:"其他",sit:"保险箱记录",saas:"—",s:"todo"},
+
+// ===== 游戏管理 =====
+{m:"游戏管理",g:"三方游戏",sit:"游戏历史（3视图切换）",saas:"三方游戏记录（5大类Tab+左侧分类）",s:"done",n:"SaaS 按彩票/视讯/体育/电子/棋牌分类"},
+{m:"游戏管理",g:"三方游戏",sit:"—",sub:1,saas:"左侧游戏分类导航（WinGo/K3/5D/TRX/XOSO/新彩种）",s:"new",n:"SitINR 无分类导航"},
+{m:"游戏管理",g:"自营游戏",sit:"WinGo/K3/5D/4D/Bingo18/TRX/XOSO 期号+订单+控制",saas:"—",s:"todo",n:"SaaS 彩票投注订单Tab已覆盖查询，但无期号/控制"},
+{m:"游戏管理",g:"第三方接入",sit:"厂商管理/游戏列表/码量/RTP",saas:"—",s:"todo"},
+
+// ===== 系统管理 =====
+{m:"系统管理",g:"系统用户",sit:"后台用户列表（简单CRUD）",saas:"系统用户（4Tab详情弹窗+批量操作）",s:"done",n:"SaaS 详情弹窗含基本信息/归属商户/出款权限/充值权限"},
+{m:"系统管理",g:"系统用户",sit:"—",sub:1,saas:"批量调整出款权限/变更状态/赋权/Google操作",s:"new"},
+{m:"系统管理",g:"系统用户",sit:"—",sub:1,saas:"充提权限搜索",s:"new"},
+{m:"系统管理",g:"系统角色",sit:"角色权限（菜单+按钮级）",saas:"系统角色",s:"done"},
+{m:"系统管理",g:"IP白名单",sit:"IP白名单",saas:"IP白名单",s:"done"},
+{m:"系统管理",g:"日志",sit:"操作日志（单页）",saas:"平台日志",s:"done",n:"SaaS 增加日志类型+状态筛选"},
+{m:"系统管理",g:"日志",sit:"Web日志（单页）",saas:"中台日志",s:"done",n:"SaaS 操作详情可展开查看"},
+{m:"系统管理",g:"待迁移",sit:"站点/H5/参数/API/CloudFlare/FB/OSS配置",saas:"—",s:"todo"},
+{m:"系统管理",g:"待迁移",sit:"消息管理（弹窗/滚动/推送）",saas:"—",s:"todo"},
+{m:"系统管理",g:"待迁移",sit:"短信/邮件配置",saas:"—",s:"todo"},
+{m:"系统管理",g:"待迁移",sit:"设备管理/安全/APP/APK",saas:"—",s:"todo"},
+{m:"系统管理",g:"待迁移",sit:"充值/提现/打码全局规则",saas:"—",s:"todo"},
+{m:"系统管理",g:"待迁移",sit:"注册/首充/活动/轮播/客服/域名像素",saas:"—",s:"todo"},
+
+// ===== 报表管理 =====
+{m:"报表管理",g:"数据统计",sit:"实时统计（单页）",saas:"数据统计（5个Tab）",s:"done",n:"SaaS 大幅升级"},
+{m:"报表管理",g:"数据统计",sit:"—",sub:1,saas:"24小时报表（充提差+代收代付+走势图+自动刷新）",s:"new"},
+{m:"报表管理",g:"数据统计",sit:"—",sub:1,saas:"商户报表 Tab",s:"new"},
+{m:"报表管理",g:"数据统计",sit:"—",sub:1,saas:"通道报表 Tab",s:"new"},
+{m:"报表管理",g:"数据统计",sit:"—",sub:1,saas:"三方商户号报表 Tab",s:"new"},
+{m:"报表管理",g:"待迁移",sit:"邀请/渠道/财务/游戏/用户/留存报表",saas:"—",s:"todo"},
+
+// ===== 平台架构 =====
+{m:"平台架构",g:"SaaS新增",sit:"—",saas:"集团/商户视角切换",s:"new",n:"顶栏支持集团→商户切换"},
+{m:"平台架构",g:"SaaS新增",sit:"—",saas:"多商户下拉筛选",s:"new",n:"所有页面支持按商户筛选"},
+{m:"平台架构",g:"SaaS新增",sit:"—",saas:"快捷工作台（24个快捷入口）",s:"new"},
+{m:"平台架构",g:"SaaS新增",sit:"—",saas:"多Tab页签导航",s:"new",n:"同时打开多个功能页签"},
+{m:"平台架构",g:"SaaS新增",sit:"—",saas:"全局自定义列配置",s:"new"},
+{m:"平台架构",g:"SaaS新增",sit:"—",saas:"全局快捷时间按钮",s:"new"},
+
+// ===== 活动/代理 =====
+{m:"活动营销",g:"—",sit:"转盘/邀请转盘/每日周任务/礼包/老用户回归/积分",saas:"—",s:"todo"},
+{m:"代理管理",g:"—",sit:"返佣等级/比例/手动返佣/邀请报表",saas:"—",s:"todo"},
+
+// ===== 其他 =====
+{m:"其他",g:"—",sit:"理财管理",saas:"—",s:"na"},
+{m:"其他",g:"—",sit:"远程工作（已整合到提现订单管理）",saas:"—",s:"na",n:"功能已整合"},
+{m:"其他",g:"—",sit:"测试数据",saas:"—",s:"na"},
+];
+
+function R(){
+  const ms=[...new Set(D.map(x=>x.m))];
+  const sel=document.getElementById("mf");
+  if(sel.options.length<=1)ms.forEach(m=>{const o=document.createElement("option");o.value=m;o.textContent=m;sel.appendChild(o);});
+  let h="";
+  ms.forEach(m=>{
+    const its=D.filter(x=>x.m===m);
+    const d=its.filter(x=>x.s==="done").length,nw=its.filter(x=>x.s==="new").length,t=its.filter(x=>x.s==="todo").length,na=its.filter(x=>x.s==="na").length;
+    const gs=[...new Set(its.map(x=>x.g))];
+    let rows="";
+    gs.forEach(g=>{
+      const gi=its.filter(x=>x.g===g);
+      if(g&&g!=="—")rows+=`<tr class="sg"><td colspan="2">▸ ${g}</td></tr>`;
+      gi.forEach(x=>{
+        const saasTag=x.saas&&x.saas!=="—"?`<span class="tag tag-${x.s==="new"?"new":"done"}">→ ${x.saas}</span>`:"";
+        rows+=`<tr data-s="${x.s}"><td style="width:56px"><span class="st st-${x.s}">${SL[x.s]}</span></td><td>
+          <div class="${x.sub?"sub":"fn"}">${x.sit||"—"}</div>
+          ${saasTag}${x.n?`<div class="nt">${x.n}</div>`:""}
+        </td></tr>`;
+      });
+    });
+    h+=`<div class="mod" data-m="${m}"><div class="mh" onclick="this.classList.toggle('col')">
+      <span class="arr">▼</span><h2>${m}</h2>
+      <div class="mp">${d?`<span class="d d1"></span>${d}迁移 `:""}${nw?`<span class="d d2"></span>${nw}新增 `:""}${t?`<span class="d d3"></span>${t}待做`:""}${na?` · ${na}不迁移`:""}</div>
+    </div><div class="mb"><table><thead><tr><th width="56">状态</th><th>SitINR 功能 → SaaS 对应</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  });
+  document.getElementById("root").innerHTML=h;U();
+}
+function U(){
+  let d=0,n=0,t=0,na=0;
+  document.querySelectorAll("tr[data-s]:not([style*='display: none'])").forEach(r=>{
+    const s=r.dataset.s;if(s==="done")d++;else if(s==="new")n++;else if(s==="todo")t++;else na++;
+  });
+  document.getElementById("sd").textContent=d;document.getElementById("sn2").textContent=n;
+  document.getElementById("st2").textContent=t;document.getElementById("sna").textContent=na;
+  const a=d+n+t;
+  if(a)document.getElementById("pb").innerHTML=`<div class="s s-d" style="width:${d/a*100}%"></div><div class="s s-n" style="width:${n/a*100}%"></div><div class="s s-t" style="width:${t/a*100}%"></div>`;
+  document.getElementById("rc").textContent=`${d+n+t+na} 项`;
+}
+function F(){
+  const q=document.getElementById("q").value.toLowerCase(),s=document.getElementById("sf").value,m=document.getElementById("mf").value;
+  document.querySelectorAll(".mod").forEach(el=>{
+    if(m&&el.dataset.m!==m){el.style.display="none";return;}
+    el.style.display="";let any=false;
+    el.querySelectorAll("tr[data-s]").forEach(r=>{
+      const ok=(!s||r.dataset.s===s)&&(!q||r.textContent.toLowerCase().includes(q));
+      r.style.display=ok?"":"none";if(ok)any=true;
+    });
+    el.querySelectorAll("tr.sg").forEach(sg=>{
+      let next=sg.nextElementSibling,vis=false;
+      while(next&&!next.classList.contains("sg")){if(next.dataset&&next.dataset.s&&next.style.display!=="none")vis=true;next=next.nextElementSibling;}
+      sg.style.display=vis?"":"none";
+    });
+    if(!any&&(q||s))el.style.display="none";
+  });U();
+}
+R();
+</script>
+</body>
+</html>

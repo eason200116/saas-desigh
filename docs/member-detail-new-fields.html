@@ -8,14 +8,18 @@
     <style>
       :root {
         --bg: #ffffff; --line: #eef0f3; --ink: #1f2733; --label: #8a93a3;
-        --blue: #2563eb; --red: #d4380d;
+        --blue: #2563eb; --red: #d4380d; --muted: #8a93a3; --sheet: #f0f2f5;
       }
       * { box-sizing: border-box; }
+      html, body { height: 100%; }
       body {
         margin: 0; background: var(--bg); color: var(--ink); font-size: 14px; line-height: 1.6;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
           "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        display: flex; flex-direction: column; height: 100vh; overflow: hidden;
       }
+      /* 顶部固定区：标题 / 图例 / 查询 / Tab 不滚动 */
+      .titlebar, .legend, .query, .tabs { flex: none; }
       .titlebar { padding: 16px 20px; font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--line); }
       .pill { font-size: 12px; font-weight: 600; color: var(--blue); background: #eaf1ff; border-radius: 12px; padding: 2px 10px; }
       .legend { font-size: 13px; color: var(--label); padding: 9px 20px; border-bottom: 1px solid var(--line); }
@@ -26,16 +30,22 @@
       .tabs { display: flex; gap: 28px; padding: 0 20px; border-bottom: 2px solid var(--line); }
       .tabs span { padding: 11px 2px; color: var(--label); }
       .tabs span.active { color: var(--blue); font-weight: 700; box-shadow: inset 0 -2px 0 var(--blue); }
-      .sec { font-size: 15px; font-weight: 700; padding: 18px 20px 8px; }
-      .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+      /* 内容区：浅灰底 + 每板块独立白卡片（照抄真实后台版面） */
+      /* 下方内容区：唯一可上下滚动的区域 */
+      .sheet { background: var(--sheet); padding: 6px 0 18px; flex: 1 1 auto; overflow-y: auto; }
+      .block { background: #fff; border: 1px solid var(--line); border-radius: 10px; margin: 14px 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+      .sec { font-size: 15px; font-weight: 700; padding: 13px 18px; border-bottom: 1px solid var(--line); }
+      .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
       .grid.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .f { padding: 14px 20px; border-bottom: 1px solid var(--line); display: flex; gap: 14px; align-items: baseline; min-height: 52px; }
-      .f .l { color: var(--label); white-space: nowrap; min-width: 92px; }
+      .grid.c5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+      .f { padding: 13px 18px; border-bottom: 1px solid var(--line); display: flex; gap: 6px; align-items: baseline; min-height: 50px; }
+      .f .l { color: var(--label); white-space: nowrap; }
+      .f .l::after { content: "："; }
       .f .v { color: var(--ink); font-weight: 600; word-break: break-all; }
       .f.new .l, .f.new .v { color: var(--red); }
       .btn { font-size: 12px; color: var(--blue); border: 1px solid #cdd9ff; border-radius: 4px; padding: 1px 7px; margin-left: 8px; }
       .ok { color: #16a34a; font-weight: 700; }
-      .subhead { background: #f0f5ff; font-weight: 700; padding: 9px 20px; border-top: 1px solid var(--line); font-size: 13px; }
+      .subhead { background: #f0f5ff; font-weight: 700; padding: 9px 18px; border-bottom: 1px solid var(--line); font-size: 13px; }
       .path-link { color: var(--blue); text-decoration: underline; cursor: pointer; }
       .modal-mask { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 100; align-items: center; justify-content: center; }
       .modal-mask.show { display: flex; }
@@ -47,13 +57,13 @@
       .modal-body th { color: var(--label); font-weight: 600; background: #f7f9fc; }
       .modal-body tr.self { background: #eaf1ff; font-weight: 600; }
       .lvl-tag { font-size: 11px; color: var(--blue); background: #eaf1ff; border-radius: 8px; padding: 1px 7px; }
-      @media (max-width: 1024px) { .grid, .grid.c3 { grid-template-columns: repeat(2, minmax(0,1fr)); } }
-      @media (max-width: 600px) { .grid, .grid.c3 { grid-template-columns: minmax(0,1fr); } }
+      @media (max-width: 1024px) { .grid, .grid.c3, .grid.c5 { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+      @media (max-width: 600px) { .grid, .grid.c3, .grid.c5 { grid-template-columns: minmax(0,1fr); } }
     </style>
   </head>
   <body>
     <div class="titlebar">会员详情 — 会员ID: 2250893 <span class="pill">(2001)sit-inr</span></div>
-    <div class="legend"><b>红色字体 = 新增字段</b>；黑色为现有字段，样式保持不变。</div>
+    <div class="legend"><b>红色字体 = 新增字段</b>；黑色为现有字段，样式保持不变。版面照抄真实后台（板块卡片化 · label：value）。</div>
     <div class="query">
       <span>会员ID*</span><span class="box">2250893</span>
       <span>日期</span><span class="box">选择日期范围 → 选择日期范围</span>
@@ -61,157 +71,207 @@
     </div>
     <div class="tabs"><span class="active">基本信息</span><span>充提信息</span><span>投注信息</span><span>钱包信息</span><span>账变记录</span><span>操作日志</span></div>
 
-    <!-- 基本信息 -->
-    <div class="sec">基本信息</div>
-    <div class="grid">
-      <div class="f"><span class="l">会员ID</span><span class="v">2250893</span></div>
-      <div class="f"><span class="l">商户</span><span class="v">(2001)sit-inr</span></div>
-      <div class="f"><span class="l">账号</span><span class="v">919***888</span></div>
-      <div class="f"><span class="l">绑定(邮箱/手机号)</span><span class="v">919***888 / ra***@gmail.com</span></div>
-      <div class="f"><span class="l">语种</span><span class="v">hi</span></div>
-      <div class="f"><span class="l">用户余额</span><span class="v">98,320.50</span></div>
-      <div class="f"><span class="l">三方余额</span><span class="v">1,200.00</span></div>
-      <div class="f"><span class="l">未开奖下注金额</span><span class="v">3,500.00</span></div>
-      <div class="f"><span class="l">充值等级</span><span class="v">L3</span></div>
-      <div class="f"><span class="l">首次登录</span><span class="v">2026-05-12 09:12:45 (UTC+5:30)</span></div>
-      <div class="f"><span class="l">注册时间</span><span class="v">2026-05-12 09:10:30 (UTC+5:30)</span></div>
-      <div class="f"><span class="l">用户状态</span><span class="v ok">启用</span><span class="btn">修改</span></div>
-      <div class="f"><span class="l">用户备注</span><span class="v">高价值用户，上月充值 50w+</span><span class="btn">修改</span></div>
-      <div class="f"><span class="l">用户类型</span><span class="v">真实用户</span></div>
-      <div class="f new"><span class="l">经营币种</span><span class="v">INR</span></div>
-      <div class="f new"><span class="l">邀请人</span><span class="v"><a class="path-link" onclick="showInviter()">2250100（李四）</a></span></div>
-      <div class="f new"><span class="l">访问端</span><span class="v">安卓壳包</span></div>
-    </div>
+    <div class="sheet">
 
-    <!-- 归因来源（全部新增） -->
-    <div class="sec" style="color:var(--red)">归因来源（新增）</div>
-    <div class="grid">
-      <div class="f new"><span class="l">主归因</span><span class="v">代理（邀请推荐）</span></div>
-      <div class="f new"><span class="l">推广平台名称</span><span class="v">Meta（Facebook）</span></div>
-      <div class="f new"><span class="l">注册渠道</span><span class="v">ag010（代理2250100专属链接）</span></div>
-      <div class="f new"><span class="l">登录渠道</span><span class="v">ag010（代理2250100专属链接）</span></div>
-      <div class="f new"><span class="l">搜索引擎</span><span class="v">其他</span></div>
-      <div class="f new"><span class="l">邀请码</span><span class="v">AGENT100</span></div>
-      <div class="f new"><span class="l">邀请类型</span><span class="v">正常邀请（个人邀请）</span></div>
-    </div>
+      <!-- 基本信息 -->
+      <div class="block">
+        <div class="sec">基本信息</div>
+        <div class="grid">
+          <div class="f"><span class="l">会员ID</span><span class="v">2250893</span></div>
+          <div class="f"><span class="l">商户</span><span class="v">(2001)sit-inr</span></div>
+          <div class="f"><span class="l">账号</span><span class="v">919***888</span></div>
+          <div class="f"><span class="l">绑定(邮箱/手机号)</span><span class="v">919***888 / ra***@gmail.com</span></div>
+          <div class="f"><span class="l">语种</span><span class="v">hi</span></div>
+          <div class="f"><span class="l">会员余额</span><span class="v">98,320.50</span></div>
+          <div class="f"><span class="l">三方余额</span><span class="v">1,200.00</span></div>
+          <div class="f"><span class="l">未开奖下注金额</span><span class="v">3,500.00</span></div>
+          <div class="f"><span class="l">充值等级</span><span class="v">L3</span></div>
+          <div class="f"><span class="l">首次登录</span><span class="v">2026-05-12 09:12:45 (UTC+5:30)</span></div>
+          <div class="f"><span class="l">注册时间</span><span class="v">2026-05-12 09:10:30 (UTC+5:30)</span></div>
+          <div class="f"><span class="l">会员状态</span><span class="v ok">启用</span><span class="btn">修改</span></div>
+          <div class="f"><span class="l">会员备注</span><span class="v">高价值会员，上月充值 50w+</span><span class="btn">修改</span></div>
+          <div class="f"><span class="l">会员类型</span><span class="v">真实会员</span></div>
+          <div class="f new"><span class="l">邀请人</span><span class="v"><a class="path-link" onclick="showInviter()">2250100（李四）</a></span></div>
+          <div class="f new"><span class="l">访问端</span><span class="v">安卓壳包</span></div>
+        </div>
+      </div>
 
-    <!-- 归属与层级（全部新增） -->
-    <div class="sec" style="color:var(--red)">归属与层级（新增）<span style="font-size:12px;font-weight:400;color:var(--muted);margin-left:8px">※ 仅研发时查看，后续上线会隐藏</span></div>
-    <div class="grid">
-      <div class="f new"><span class="l">集团</span><span class="v">1001（亚太集团）</span></div>
-      <div class="f new"><span class="l">市场</span><span class="v">印度市场（INR · hi）</span></div>
-      <div class="f new"><span class="l">商户</span><span class="v">(2001)sit-inr</span></div>
-    </div>
+      <!-- 归因来源（全部新增） -->
+      <div class="block">
+        <div class="sec" style="color:var(--red)">归因来源（新增） <a href="attribution-flow.html" target="_blank" style="font-size:12px;font-weight:400;color:#2563eb;text-decoration:underline;margin-left:8px">📊 查看判定流程图 »</a></div>
+        <style>
+        .attr-chain{display:flex;align-items:stretch;flex-wrap:nowrap;margin:14px 16px 16px;overflow-x:auto;padding-bottom:4px}
+        .attr-chain .cn{flex:1 1 0;min-width:100px;background:#fff;border:1.5px solid #f3c9bd;border-radius:11px;padding:9px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+        .attr-chain .cn .lv{font-size:11px;color:#9aa4b2;white-space:nowrap}
+        .attr-chain .cn .vl{font-size:12.5px;font-weight:700;color:#d4380d;margin-top:3px;white-space:nowrap}
+        .attr-chain .ar{flex:none;display:flex;align-items:center;justify-content:center;color:#e0917c;font-weight:700;font-size:16px;padding:0 7px}
+        .attr-chain .cn.mem{border-color:#2563eb;background:#eff5ff}.attr-chain .cn.mem .vl{color:#1d4ed8}.attr-chain .cn.mem .lv{color:#3b82f6}
+        .attr-chain .cn.grp{border-color:#16a34a;background:#f0fdf4}.attr-chain .cn.grp .vl{color:#15803d}.attr-chain .cn.grp .lv{color:#22c55e}
+        </style>
+        <div class="attr-chain">
+          <div class="cn mem"><span class="lv">会员</span><span class="vl">本会员</span></div>
+          <div class="ar">→</div>
+          <div class="cn"><span class="lv">渠道</span><span class="vl">ag010</span></div>
+          <div class="ar">→</div>
+          <div class="cn"><span class="lv">直接上级代理</span><span class="vl">2250100（李四）</span></div>
+          <div class="ar">→</div>
+          <div class="cn"><span class="lv">一级代理</span><span class="vl">2250001（总代·Raj）</span></div>
+          <div class="ar">→</div>
+          <div class="cn"><span class="lv">域名</span><span class="vl">m.sit-inr.com</span></div>
+          <div class="ar">→</div>
+          <div class="cn"><span class="lv">商户</span><span class="vl">(2001) sit-inr</span></div>
+          <div class="ar">→</div>
+          <div class="cn"><span class="lv">市场</span><span class="vl">印度市场（INR）</span></div>
+          <div class="ar">→</div>
+          <div class="cn grp"><span class="lv">集团</span><span class="vl">1001（亚太集团）</span></div>
+        </div>
+        <div class="grid">
+          <div class="f new"><span class="l">主归因</span><span class="v">代理（邀请推荐）</span></div>
+          <div class="f new"><span class="l">推广平台名称</span><span class="v">Meta（Facebook）</span></div>
+          <div class="f new"><span class="l">注册渠道</span><span class="v">ag010（代理2250100专属链接）</span></div>
+          <div class="f new"><span class="l">登录渠道</span><span class="v">ag010（代理2250100专属链接）</span></div>
+          <div class="f new"><span class="l">搜索引擎</span><span class="v">其他</span></div>
+          <div class="f new"><span class="l">邀请码</span><span class="v">AGENT100</span></div>
+          <div class="f new"><span class="l">邀请类型</span><span class="v">正常邀请（个人邀请）</span></div>
+        </div>
+      </div>
 
-    <!-- 数据统计 -->
-    <div class="sec">数据统计</div>
-    <div class="grid c3">
-      <div class="f"><span class="l">今日/累计充值</span><span class="v">5,000.00 / 520,000.00</span></div>
-      <div class="f"><span class="l">今日/累计提现</span><span class="v">0.00 / 385,000.00</span></div>
-      <div class="f"><span class="l">今日/累计充提差</span><span class="v">5,000.00 / 135,000.00</span></div>
-      <div class="f"><span class="l">今日/累计有效投注</span><span class="v">12,800.00 / 1,680,000.00</span></div>
-      <div class="f"><span class="l">今日/累计输赢</span><span class="v">-2,300.00 / -48,500.00</span></div>
-      <div class="f"><span class="l">今日/累计活动优惠</span><span class="v">200.00 / 16,800.00</span></div>
-    </div>
+      <!-- 归属与层级（全部新增） -->
+      <div class="block">
+        <div class="sec" style="color:var(--red)">归属与层级（新增）<span style="font-size:12px;font-weight:400;color:var(--muted);margin-left:8px">※ 仅研发时查看，后续上线会隐藏</span></div>
+        <div class="grid">
+          <div class="f new"><span class="l">集团</span><span class="v">1001（亚太集团）</span></div>
+          <div class="f new"><span class="l">市场</span><span class="v">印度市场（INR · hi）</span></div>
+          <div class="f new"><span class="l">商户</span><span class="v">(2001)sit-inr</span></div>
+        </div>
+      </div>
 
-    <!-- 活动奖励信息 -->
-    <div class="sec">活动奖励信息</div>
-    <div class="grid">
-      <div class="f"><span class="l">已领红包</span><span class="v">2,500.00</span></div>
-      <div class="f"><span class="l">新手礼包</span><span class="v">500.00</span></div>
-      <div class="f"><span class="l">大转盘</span><span class="v">350.00</span></div>
-      <div class="f"><span class="l">注册送金</span><span class="v">100.00</span></div>
-      <div class="f"><span class="l">邀请转盘奖励</span><span class="v">1,200.00</span></div>
-      <div class="f"><span class="l">TG频道活动</span><span class="v">0.00</span></div>
-      <div class="f"><span class="l">首充奖励</span><span class="v">5,000.00</span></div>
-      <div class="f"><span class="l">超级大奖</span><span class="v">0.00</span></div>
-      <div class="f"><span class="l">代理红包充值</span><span class="v">800.00</span></div>
-      <div class="f"><span class="l">回归新充值奖励</span><span class="v">0.00</span></div>
-      <div class="f"><span class="l">每日签到</span><span class="v">3,150.00</span></div>
-      <div class="f"><span class="l">锦标赛奖励</span><span class="v">0.00</span></div>
-      <div class="f"><span class="l">新会员礼包</span><span class="v">500.00</span></div>
-      <div class="f"><span class="l">回归奖励</span><span class="v">0.00</span></div>
-      <div class="f"><span class="l">每周/日奖励</span><span class="v">2,200.00 / 500.00</span></div>
-    </div>
+      <!-- 数据统计 -->
+      <div class="block">
+        <div class="sec">数据统计</div>
+        <div class="grid c3">
+          <div class="f"><span class="l">今日/累计充值</span><span class="v">5,000.00 / 520,000.00</span></div>
+          <div class="f"><span class="l">今日/累计提现</span><span class="v">0.00 / 385,000.00</span></div>
+          <div class="f"><span class="l">今日/累计充提差</span><span class="v">5,000.00 / 135,000.00</span></div>
+          <div class="f"><span class="l">今日/累计有效投注</span><span class="v">12,800.00 / 1,680,000.00</span></div>
+          <div class="f"><span class="l">今日/累计输赢</span><span class="v">-2,300.00 / -48,500.00</span></div>
+          <div class="f"><span class="l">今日/累计活动优惠</span><span class="v">200.00 / 16,800.00</span></div>
+        </div>
+      </div>
 
-    <!-- 代理数据 -->
-    <div class="sec">代理数据</div>
-    <div class="grid c3">
-      <div class="f new"><span class="l">一级代理</span><span class="v">2250001（总代·Raj）</span></div>
-      <div class="f"><span class="l">总获得佣金</span><span class="v">42,680.00</span></div>
-      <div class="f"><span class="l">邀请奖励</span><span class="v">8,500.00</span></div>
-      <div class="f"><span class="l">下级数量</span><span class="v">37</span></div>
-      <div class="f"><span class="l">合伙人奖励</span><span class="v">12,000.00</span></div>
-      <div class="f"><span class="l">上级代理ID</span><span class="v">2250100</span></div>
-      <div class="f"><span class="l">是否领取返佣</span><span class="v">是</span></div>
-      <div class="f new"><span class="l">直接上级代理</span><span class="v">2250100（李四）</span></div>
-      <div class="f new"><span class="l">代理层级</span><span class="v">5 / 10</span></div>
-      <div class="f new"><span class="l">代理路径</span><span class="v"><a class="path-link" onclick="showAgentLine()">2250001 → … → 2250100 → 2250893</a></span><span class="btn" onclick="showAgentLine()">查看代理线</span></div>
-      <div class="f new"><span class="l">佣金模式</span><span class="v">返佣（投注流水返佣）</span></div>
-      <div class="f new"><span class="l">返佣等级</span><span class="v">Lv3（投注流水 0.5%）</span></div>
-      <div class="f new"><span class="l">是否给上级返佣</span><span class="v">是</span></div>
-      <div class="f new"><span class="l">是否可领取返佣</span><span class="v ok">是</span></div>
-      <div class="f new"><span class="l">代理状态</span><span class="v ok">生效</span></div>
-    </div>
+      <!-- 活动奖励信息（照抄后台：5 列） -->
+      <div class="block">
+        <div class="sec">活动奖励信息</div>
+        <div class="grid c5">
+          <div class="f"><span class="l">已领红包</span><span class="v">2,500.00</span></div>
+          <div class="f"><span class="l">新手礼包</span><span class="v">500.00</span></div>
+          <div class="f"><span class="l">大转盘</span><span class="v">350.00</span></div>
+          <div class="f"><span class="l">注册送金</span><span class="v">100.00</span></div>
+          <div class="f"><span class="l">每周/日奖励</span><span class="v">2,200.00 / 500.00</span></div>
+          <div class="f"><span class="l">邀请转盘奖励</span><span class="v">1,200.00</span></div>
+          <div class="f"><span class="l">TG频道活动</span><span class="v">0.00</span></div>
+          <div class="f"><span class="l">首充奖励</span><span class="v">5,000.00</span></div>
+          <div class="f"><span class="l">超级大奖</span><span class="v">0.00</span></div>
+          <div class="f"><span class="l">代理红包充值</span><span class="v">800.00</span></div>
+          <div class="f"><span class="l">回归新充值奖励</span><span class="v">0.00</span></div>
+          <div class="f"><span class="l">每日签到</span><span class="v">3,150.00</span></div>
+          <div class="f"><span class="l">锦标赛奖励</span><span class="v">0.00</span></div>
+          <div class="f"><span class="l">新会员礼包</span><span class="v">500.00</span></div>
+          <div class="f"><span class="l">回归奖励</span><span class="v">0.00</span></div>
+          <div class="f"><span class="l">充值赠送</span><span class="v">12,500.00</span></div>
+          <div class="f"><span class="l">彩金充值</span><span class="v">8,250.30</span></div>
+        </div>
+      </div>
 
-    <!-- VIP -->
-    <div class="sec">VIP</div>
-    <div class="grid">
-      <div class="f"><span class="l">VIP经验值</span><span class="v">16,800</span></div>
-      <div class="f"><span class="l">VIP等级</span><span class="v">V4</span></div>
-      <div class="f"><span class="l">VIP每月奖励</span><span class="v">1,500.00</span></div>
-      <div class="f"><span class="l">VIP升级礼包</span><span class="v">3,000.00</span></div>
-    </div>
+      <!-- 代理数据 -->
+      <div class="block">
+        <div class="sec">代理数据</div>
+        <div class="grid c3">
+          <div class="f new"><span class="l">一级代理</span><span class="v">2250001（总代·Raj）</span></div>
+          <div class="f"><span class="l">总获得佣金</span><span class="v">42,680.00</span></div>
+          <div class="f"><span class="l">邀请奖励</span><span class="v">8,500.00</span></div>
+          <div class="f"><span class="l">下级数量</span><span class="v">37</span></div>
+          <div class="f"><span class="l">合伙人奖励</span><span class="v">12,000.00</span></div>
+          <div class="f"><span class="l">是否领取返佣</span><span class="v">是 <small style="color:#8a93a3;font-weight:400">（可配置开关 · 切换需二次确认）</small></span></div>
+          <div class="f new"><span class="l">是否对上级返佣</span><span class="v">是 <small style="color:#8a93a3;font-weight:400">（可配置开关 · 切换需二次确认）</small></span></div>
+          <div class="f new"><span class="l">直接上级代理</span><span class="v">2250100（李四）</span></div>
+          <div class="f new"><span class="l">代理层级</span><span class="v">5 / 10</span></div>
+          <div class="f new"><span class="l">代理路径</span><span class="v"><a class="path-link" onclick="showAgentLine()">2250001 → … → 2250100 → 2250893</a></span><span class="btn" onclick="showAgentLine()">查看代理线</span></div>
+          <div class="f new"><span class="l">佣金模式</span><span class="v">返佣（投注流水返佣）</span></div>
+          <div class="f new"><span class="l">返佣等级</span><span class="v">Lv3（团队当日充值人数/金额/游戏额达标）</span></div>
+          <div class="f new"><span class="l">代理状态</span><span class="v ok">生效</span></div>
+        </div>
+      </div>
 
-    <!-- 保险箱 -->
-    <div class="sec">保险箱</div>
-    <div class="grid">
-      <div class="f"><span class="l">保险箱余额</span><span class="v">25,000.00</span></div>
-      <div class="f"><span class="l">已领取收益</span><span class="v">6,320.00</span></div>
-      <div class="f"><span class="l">待领取收益</span><span class="v">840.00</span></div>
-      <div class="f"><span class="l">保险箱利率</span><span class="v">58.00%</span></div>
-    </div>
+      <!-- VIP -->
+      <div class="block">
+        <div class="sec">VIP</div>
+        <div class="grid">
+          <div class="f"><span class="l">VIP经验值</span><span class="v">16,800</span></div>
+          <div class="f"><span class="l">VIP等级</span><span class="v">V4</span></div>
+          <div class="f"><span class="l">VIP每月奖励</span><span class="v">1,500.00</span></div>
+          <div class="f"><span class="l">VIP升级礼包</span><span class="v">3,000.00</span></div>
+        </div>
+      </div>
 
-    <!-- 打码/洗码 -->
-    <div class="sec">打码/洗码</div>
-    <div class="grid c3">
-      <div class="f"><span class="l">累计打码量</span><span class="v">1,680,000.00</span></div>
-      <div class="f"><span class="l">需要打码量</span><span class="v">1,560,000.00</span></div>
-      <div class="f"><span class="l">会员洗码量</span><span class="v">1,680,000.00</span></div>
-      <div class="f"><span class="l">返水金额</span><span class="v">8,400.00</span></div>
-      <div class="f"><span class="l">本次打码倍数</span><span class="v">3</span></div>
-      <div class="f"><span class="l">打码量</span><span class="v">120,000</span><span class="btn">修改</span></div>
-    </div>
+      <!-- 保险箱 -->
+      <div class="block">
+        <div class="sec">保险箱</div>
+        <div class="grid">
+          <div class="f"><span class="l">保险箱余额</span><span class="v">25,000.00</span></div>
+          <div class="f"><span class="l">已领取收益</span><span class="v">6,320.00</span></div>
+          <div class="f"><span class="l">待领取收益</span><span class="v">840.00</span></div>
+          <div class="f"><span class="l">保险箱利率</span><span class="v">58.00%</span></div>
+        </div>
+      </div>
 
-    <!-- 注册登录信息 -->
-    <div class="sec">注册登录信息</div>
-    <div class="grid c3">
-      <div class="f"><span class="l">注册时间</span><span class="v">2026-05-12 09:10:30 (UTC+5:30)</span></div>
-      <div class="f"><span class="l">注册IP</span><span class="v">103.48.76.52</span></div>
-      <div class="f"><span class="l">同IP注册用户数</span><span class="v">3</span></div>
-      <div class="f"><span class="l">注册浏览器指纹</span><span class="v">fp_a8c3e91d7b</span></div>
-      <div class="f"><span class="l">同指纹注册用户</span><span class="v">1</span></div>
-      <div class="f new"><span class="l">同设备账号数</span><span class="v">1（仅本账号）</span></div>
-      <div class="f new"><span class="l">注册端</span><span class="v">安卓壳包</span></div>
-      <div class="f new"><span class="l">注册设备号</span><span class="v">AND-9f3c2a1b7e8d4506</span></div>
-      <div class="f new"><span class="l">是否模拟器</span><span class="v">否（真机）</span></div>
-      <div class="f new"><span class="l">登录端</span><span class="v">安卓壳包</span></div>
-      <div class="f new"><span class="l">登录设备号</span><span class="v">AND-9f3c2a1b7e8d4506</span></div>
-      <div class="f new"><span class="l">注册域名</span><span class="v">m.sit-inr.com（推广域名）</span></div>
-      <div class="f new"><span class="l">登录域名</span><span class="v">www.sit-inr.com（主站域名）</span></div>
-    </div>
-    <div class="subhead">最后3次登录信息</div>
-    <div class="grid c3">
-      <div class="f"><span class="l">最后第1次登录时间</span><span class="v">2026-06-08 11:43:11 (UTC+5:30)</span></div>
-      <div class="f"><span class="l">第1次登录IP</span><span class="v">103.48.76.52</span></div>
-      <div class="f"><span class="l">第1次同IP用户数</span><span class="v">3</span></div>
-      <div class="f"><span class="l">最后第2次登录时间</span><span class="v">2026-06-07 19:28:05 (UTC+5:30)</span></div>
-      <div class="f"><span class="l">第2次登录IP</span><span class="v">103.48.76.52</span></div>
-      <div class="f"><span class="l">第2次同IP用户数</span><span class="v">3</span></div>
-      <div class="f"><span class="l">最后第3次登录时间</span><span class="v">2026-06-06 08:15:33 (UTC+5:30)</span></div>
-      <div class="f"><span class="l">第3次登录IP</span><span class="v">49.37.112.88</span></div>
-      <div class="f"><span class="l">第3次同IP用户数</span><span class="v">1</span></div>
-    </div>
+      <!-- 打码/洗码 -->
+      <div class="block">
+        <div class="sec">打码/洗码</div>
+        <div class="grid c3">
+          <div class="f"><span class="l">累计打码量</span><span class="v">1,680,000.00</span></div>
+          <div class="f"><span class="l">需要打码量</span><span class="v">1,560,000.00</span></div>
+          <div class="f"><span class="l">会员洗码量</span><span class="v">1,680,000.00</span></div>
+          <div class="f"><span class="l">返水金额</span><span class="v">8,400.00</span></div>
+          <div class="f"><span class="l">本次打码倍数</span><span class="v">3</span></div>
+          <div class="f"><span class="l">打码量</span><span class="v">120,000</span><span class="btn">修改</span></div>
+        </div>
+      </div>
+
+      <!-- 注册登录信息（照抄后台：注册 + 登录合并为一段） -->
+      <div class="block">
+        <div class="sec">注册登录信息</div>
+        <div class="grid c3">
+          <div class="f"><span class="l">注册时间</span><span class="v">2026-05-12 09:10:30 (UTC+5:30)</span></div>
+          <div class="f"><span class="l">注册IP</span><span class="v">103.48.76.52</span></div>
+          <div class="f new"><span class="l">注册端</span><span class="v">安卓壳包</span></div>
+          <div class="f new"><span class="l">注册浏览器指纹</span><span class="v">fp_a8c3e91d7b</span></div>
+          <div class="f new"><span class="l">是否模拟器</span><span class="v">否（真机）</span></div>
+          <div class="f new"><span class="l">注册域名</span><span class="v">m.sit-inr.com（推广域名）</span></div>
+          <div class="f"><span class="l">同IP注册会员数</span><span class="v">3</span></div>
+          <div class="f new"><span class="l">同设备注册会员数</span><span class="v">1（仅本账号）</span></div>
+          <div class="f"><span class="l">同指纹注册会员数</span><span class="v">1</span></div>
+          <div class="f new"><span class="l">登录端</span><span class="v">安卓壳包</span></div>
+          <div class="f new"><span class="l">登录设备号/指纹</span><span class="v">设备号 AND-9f3c2a1b7e8d4506<br>指纹 fp_a8c3e91d7b</span></div>
+          <div class="f new"><span class="l">登录域名</span><span class="v">www.sit-inr.com（主站域名）</span></div>
+          <div class="f new"><span class="l">同设备登录数</span><span class="v">1（仅本账号）</span></div>
+          <div class="f new"><span class="l">同指纹登录数</span><span class="v">1</span></div>
+        </div>
+        <div class="subhead">最后3次登录信息</div>
+        <div class="grid c3">
+          <div class="f"><span class="l">最后第1次登录时间</span><span class="v">2026-06-08 11:43:11 (UTC+5:30)</span></div>
+          <div class="f"><span class="l">第1次登录IP</span><span class="v">103.48.76.52</span></div>
+          <div class="f"><span class="l">第1次同IP会员数</span><span class="v">3</span></div>
+          <div class="f"><span class="l">最后第2次登录时间</span><span class="v">2026-06-07 19:28:05 (UTC+5:30)</span></div>
+          <div class="f"><span class="l">第2次登录IP</span><span class="v">103.48.76.52</span></div>
+          <div class="f"><span class="l">第2次同IP会员数</span><span class="v">3</span></div>
+          <div class="f"><span class="l">最后第3次登录时间</span><span class="v">2026-06-06 08:15:33 (UTC+5:30)</span></div>
+          <div class="f"><span class="l">第3次登录IP</span><span class="v">49.37.112.88</span></div>
+          <div class="f"><span class="l">第3次同IP会员数</span><span class="v">1</span></div>
+        </div>
+      </div>
+
+    </div><!-- /sheet -->
 
     <!-- 代理线全链路弹窗（点击代理路径打开） -->
     <div id="agentModal" class="modal-mask" onclick="if(event.target===this)this.classList.remove('show')">
@@ -248,7 +308,7 @@
               <tr><th>下级数量</th><td>86</td></tr>
               <tr><th>佣金模式</th><td>返佣（投注流水返佣）</td></tr>
               <tr><th>注册时间</th><td>2026-03-20 14:08:22 (UTC+5:30)</td></tr>
-              <tr><th>用户状态</th><td>启用</td></tr>
+              <tr><th>会员状态</th><td>启用</td></tr>
             </tbody>
           </table>
           <div style="padding:10px 14px;color:var(--label);font-size:12px;border-top:1px solid var(--line)">点击会员ID可跳转该邀请人完整会员详情页。</div>

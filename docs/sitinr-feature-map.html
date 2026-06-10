@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SitINR 超级管理系统 · 功能特性清单</title>
+<style>
+:root{--green:#2e7d5b;--green-l:#e8f5ef;--border:#e2e6ea;--muted:#7a8494;--text:#1f2927;--bg:#f6f8fb;--warn:#e65100;--blue:#1565c0}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.6}
+.header{background:linear-gradient(135deg,#1a3a2a,#2e7d5b);color:#fff;padding:28px 32px}
+.header h1{font-size:22px;margin-bottom:6px}
+.header p{opacity:.8;font-size:13px}
+.stats{display:flex;gap:16px;margin-top:14px;flex-wrap:wrap}
+.stat{background:rgba(255,255,255,.15);border-radius:8px;padding:8px 16px;font-size:12px}
+.stat b{font-size:18px;display:block}
+.toolbar{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--border);padding:10px 24px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.toolbar input{flex:1;min-width:200px;height:34px;border:1px solid var(--border);border-radius:6px;padding:0 12px;font-size:13px}
+.toolbar select{height:34px;border:1px solid var(--border);border-radius:6px;padding:0 8px;font-size:12px}
+.toolbar .count{margin-left:auto;color:var(--muted);font-size:12px}
+.container{max-width:1400px;margin:0 auto;padding:16px 24px}
+.module{background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden}
+.module-head{display:flex;align-items:center;padding:12px 16px;background:#fafbfc;border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+.module-head:hover{background:#f0f4f2}
+.module-head .arrow{width:20px;font-size:11px;color:var(--muted);transition:.2s}
+.module-head.collapsed .arrow{transform:rotate(-90deg)}
+.module-head h2{font-size:14px;margin:0;flex:1}
+.module-head .badge{background:var(--green-l);color:var(--green);font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:8px}
+.module-head .ctrl{font-size:11px;color:var(--muted);margin-left:8px}
+.module-body{padding:0}
+.module-head.collapsed+.module-body{display:none}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead{background:#f6f8fb;position:sticky;top:54px;z-index:2}
+th{text-align:left;padding:8px 12px;font-weight:600;color:#3a4256;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:7px 12px;border-bottom:1px solid #f0f2f5;vertical-align:top}
+tr:hover{background:#f9fbfa}
+.fn-name{font-weight:600;color:var(--text)}
+.fn-route{font-size:11px;color:var(--blue);font-family:monospace}
+.fn-desc{color:#3a4256}
+.tag{display:inline-block;font-size:10px;font-weight:600;padding:1px 6px;border-radius:4px;margin-right:4px}
+.tag-view{background:#e3f2fd;color:#1565c0}
+.tag-edit{background:#fff3e0;color:#e65100}
+.tag-export{background:#e8f5e9;color:#2e7d32}
+.tag-config{background:#f3e5f5;color:#7b1fa2}
+.tag-game{background:#fce4ec;color:#c62828}
+.tag-report{background:#e0f7fa;color:#00695c}
+.tag-audit{background:#efebe9;color:#4e342e}
+.sub-group{font-weight:600;background:#f9fbfa;color:var(--green)}
+.sub-group td{padding:6px 12px;font-size:12px;border-bottom:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>SitINR 超级管理系统 · 功能特性清单</h1>
+  <p>基于源代码 Ar_V1_Admin / ar_v1_lotteryapi / Ar_V1_DataBase 深度分析生成</p>
+  <div class="stats">
+    <div class="stat"><b>11</b>一级模块</div>
+    <div class="stat"><b>700+</b>功能点</div>
+    <div class="stat"><b>29</b>Controller</div>
+    <div class="stat"><b>800+</b>视图页面</div>
+    <div class="stat"><b>5</b>数据库</div>
+  </div>
+</div>
+
+<div class="toolbar">
+  <input id="search" placeholder="搜索功能名称、路由、说明…" oninput="filterRows()">
+  <select id="modFilter" onchange="filterRows()">
+    <option value="">全部模块</option>
+    <option value="会员管理">会员管理</option>
+    <option value="财务管理">财务管理</option>
+    <option value="游戏管理">游戏管理</option>
+    <option value="第三方游戏">第三方游戏</option>
+    <option value="报表中心">报表中心</option>
+    <option value="系统管理">系统管理</option>
+    <option value="活动营销">活动营销</option>
+    <option value="代理管理">代理管理</option>
+    <option value="充值提现">充值提现</option>
+    <option value="渠道与配置">渠道与配置</option>
+    <option value="其他">其他</option>
+  </select>
+  <span class="count" id="rowCount"></span>
+</div>
+
+<div class="container" id="modules">
+
+<!-- ==================== 1. 会员管理 ==================== -->
+<div class="module" data-mod="会员管理">
+  <div class="module-head" onclick="toggleMod(this)">
+    <span class="arrow">▼</span>
+    <h2>会员管理</h2>
+    <span class="badge">UserInfoController · 208 个 Action</span>
+    <span class="ctrl">95 个视图</span>
+  </div>
+  <div class="module-body"><table><thead><tr><th width="180">功能名称</th><th width="260">路由</th><th>逻辑说明</th><th width="70">类型</th></tr></thead><tbody>
+    <tr class="sub-group"><td colspan="4">▸ 用户查询与操作</td></tr>
+    <tr><td class="fn-name">会员列表</td><td class="fn-route">/UserInfo/UserManage</td><td class="fn-desc">按商户/账号/IP/渠道/设备/VIP等多维度筛选会员，支持导出</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">会员列表(代理)</td><td class="fn-route">/UserInfo/UserManage_Agent</td><td class="fn-desc">代理视角的会员列表，仅展示代理线下会员</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">会员详情</td><td class="fn-route">/UserInfo/UserDetaile</td><td class="fn-desc">查看单个会员的完整信息：基本资料、余额、充提记录、游戏数据</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">会员投注汇总</td><td class="fn-route">/UserInfo/UserDetaile_BetTotal</td><td class="fn-desc">会员在各游戏中的投注、中奖、盈亏汇总统计</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">会员列表导出</td><td class="fn-route">/UserInfo/UserManageExport</td><td class="fn-desc">按筛选条件导出会员数据到 Excel</td><td><span class="tag tag-export">导出</span></td></tr>
+    <tr><td class="fn-name">异常会员处理</td><td class="fn-route">/UserInfo/AbnormalUser</td><td class="fn-desc">处理异常账户：冻结、解冻、限制操作</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">会员数据导入</td><td class="fn-route">/UserInfo/UserDataImport</td><td class="fn-desc">批量导入会员数据（Excel文件）</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">下级会员列表</td><td class="fn-route">/UserInfo/SubsetUserList</td><td class="fn-desc">查询代理线下的下级会员列表</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">下级会员导出</td><td class="fn-route">/UserInfo/SubsetUserExport</td><td class="fn-desc">导出下级会员数据</td><td><span class="tag tag-export">导出</span></td></tr>
+    <tr><td class="fn-name">互刷名单</td><td class="fn-route">/UserInfo/MutualBetList</td><td class="fn-desc">检测互相投注的异常会员名单</td><td><span class="tag tag-audit">风控</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 用户分组</td></tr>
+    <tr><td class="fn-name">用户分组</td><td class="fn-route">/UserInfo/UserGroup</td><td class="fn-desc">按业务需要将会员划分为不同分组（默认/高价值/风险/VIP等）</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">分组表单</td><td class="fn-route">/UserInfo/UserGroupForm</td><td class="fn-desc">新增或编辑分组信息</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">分组权限配置</td><td class="fn-route">/UserInfo/UserGroupRightsForm</td><td class="fn-desc">配置分组的活动参与、提现、游戏等权限组合</td><td><span class="tag tag-config">配置</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 实名认证 / 银行卡</td></tr>
+    <tr><td class="fn-name">实名认证列表</td><td class="fn-route">/UserInfo/UserRealName</td><td class="fn-desc">查看会员实名认证状态，审核认证信息</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">实名认证编辑</td><td class="fn-route">/UserInfo/UserRealNameOpt</td><td class="fn-desc">审核通过/驳回会员实名认证</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">CPF 认证列表</td><td class="fn-route">/UserInfo/UserCpfList</td><td class="fn-desc">巴西 CPF 税号认证记录</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">KW 认证列表</td><td class="fn-route">/UserInfo/UserKWList</td><td class="fn-desc">其他认证方式的记录</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">USDT 地址列表</td><td class="fn-route">/UserInfo/UserUsdtList</td><td class="fn-desc">会员绑定的 USDT 提现地址</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">银行卡列表</td><td class="fn-route">/UserInfo/UsersBanks</td><td class="fn-desc">会员绑定的银行卡信息</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">银行卡列表(代理)</td><td class="fn-route">/UserInfo/UsersBanks_Agent</td><td class="fn-desc">代理视角的银行卡查看</td><td><span class="tag tag-view">查看</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 充值 / 提现操作</td></tr>
+    <tr><td class="fn-name">充值银行</td><td class="fn-route">/UserInfo/RechargeBank</td><td class="fn-desc">会员充值银行卡记录</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">充值订单</td><td class="fn-route">/UserInfo/RechargeOrder</td><td class="fn-desc">会员充值订单列表</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">充值记录</td><td class="fn-route">/UserInfo/RechargeRecord</td><td class="fn-desc">充值历史记录查询</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">充值审核</td><td class="fn-route">/UserInfo/RechargeExamine</td><td class="fn-desc">人工充值审核</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">提现订单</td><td class="fn-route">/UserInfo/WithdrawOrder</td><td class="fn-desc">会员提现订单列表</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">提现日志</td><td class="fn-route">/UserInfo/WithdrawLog</td><td class="fn-desc">提现操作日志与审核记录</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">提现审核</td><td class="fn-route">/UserInfo/WithdrawalExamine</td><td class="fn-desc">提现人工审核：通过/驳回/挂起</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">提现手动处理</td><td class="fn-route">/UserInfo/WithdrawalManitou</td><td class="fn-desc">手动处理异常提现订单</td><td><span class="tag tag-edit">操作</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 登录 / 签到</td></tr>
+    <tr><td class="fn-name">登录日志列表</td><td class="fn-route">/UserInfo/LoginlogList</td><td class="fn-desc">查询会员登录历史</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">登录日志</td><td class="fn-route">/UserInfo/LoginLog</td><td class="fn-desc">按 IP/设备/时间维度的登录记录</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">登录日志(代理)</td><td class="fn-route">/UserInfo/LoginLog_Agent</td><td class="fn-desc">代理视角的登录日志</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">连续签到记录</td><td class="fn-route">/UserInfo/ContinuousSignInlog</td><td class="fn-desc">查询会员连续签到天数与奖励领取</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">签到配置</td><td class="fn-route">/UserInfo/SinInSetting</td><td class="fn-desc">配置签到奖励规则</td><td><span class="tag tag-config">配置</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ VIP / 返佣 / 代理关系</td></tr>
+    <tr><td class="fn-name">VIP 等级</td><td class="fn-route">/UserInfo/VipLevel</td><td class="fn-desc">查看和编辑 VIP 等级体系</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">VIP 等级人数</td><td class="fn-route">/UserInfo/VipLevelQuantity</td><td class="fn-desc">各 VIP 等级的会员人数统计</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">VIP 奖励记录</td><td class="fn-route">/UserInfo/VipRewards</td><td class="fn-desc">VIP 升级奖励派彩记录</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">VIP 经验配置</td><td class="fn-route">/UserInfo/VipCurrencyExp</td><td class="fn-desc">配置 VIP 经验值与升级规则</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">返佣等级</td><td class="fn-route">/UserInfo/User_RebateLv</td><td class="fn-desc">查看会员返佣等级</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">返佣报表</td><td class="fn-route">/UserInfo/UserRebateReport</td><td class="fn-desc">返佣数据汇总</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">合伙人奖励</td><td class="fn-route">/UserInfo/PartnerRewards</td><td class="fn-desc">合伙人推广奖励记录</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">代理关系(D/C/M/A)</td><td class="fn-route">/UserInfo/D_UserRelative</td><td class="fn-desc">按董事/经理/主管/代理四级查看代理关系树</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">代理关系导入</td><td class="fn-route">/UserInfo/UserRelativeDataImport</td><td class="fn-desc">批量导入代理关系绑定</td><td><span class="tag tag-edit">操作</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 活动任务 / 首充 / 消息</td></tr>
+    <tr><td class="fn-name">任务活动</td><td class="fn-route">/UserInfo/TaskActivity</td><td class="fn-desc">会员参与的任务活动列表</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">任务活动配置</td><td class="fn-route">/UserInfo/TaskActivityForm</td><td class="fn-desc">新增/编辑任务活动规则</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">任务订单</td><td class="fn-route">/UserInfo/TaskOrder</td><td class="fn-desc">任务活动的参与订单</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">首充管理</td><td class="fn-route">/UserInfo/FirstRechargeManage</td><td class="fn-desc">首充返利活动配置与记录</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">站内消息</td><td class="fn-route">/UserInfo/Message</td><td class="fn-desc">向会员发送站内消息</td><td><span class="tag tag-edit">操作</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ C2C 管理</td></tr>
+    <tr><td class="fn-name">C2C 用户管理</td><td class="fn-route">/UserInfo/C2CUserDisablecd</td><td class="fn-desc">C2C 交易用户启用/禁用管理</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">C2C 申诉订单</td><td class="fn-route">/UserInfo/C2CAppealOrder</td><td class="fn-desc">C2C 交易纠纷申诉处理</td><td><span class="tag tag-edit">操作</span></td></tr>
+  </tbody></table></div>
+</div>
+
+<!-- ==================== 2. 财务管理 ==================== -->
+<div class="module" data-mod="财务管理">
+  <div class="module-head" onclick="toggleMod(this)">
+    <span class="arrow">▼</span>
+    <h2>财务管理</h2>
+    <span class="badge">FinanceController · 7 个 Action</span>
+  </div>
+  <div class="module-body"><table><thead><tr><th width="180">功能名称</th><th width="260">路由</th><th>逻辑说明</th><th width="70">类型</th></tr></thead><tbody>
+    <tr><td class="fn-name">财务记录</td><td class="fn-route">/Finance/FinanceRecord</td><td class="fn-desc">全站资金账变记录：充值/提现/打码/活动/系统调整等所有类型的资金流水</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">财务记录导出</td><td class="fn-route">/Finance/FinanceRecord_Export</td><td class="fn-desc">按条件导出资金流水数据</td><td><span class="tag tag-export">导出</span></td></tr>
+    <tr><td class="fn-name">代理财务记录</td><td class="fn-route">/Finance/FinanceRecord_Agent</td><td class="fn-desc">代理视角的资金流水（仅限代理线下用户）</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">代理财务导出</td><td class="fn-route">/Finance/FinanceRecord_Agent_Export</td><td class="fn-desc">导出代理资金流水</td><td><span class="tag tag-export">导出</span></td></tr>
+    <tr><td class="fn-name">财务日志</td><td class="fn-route">/Finance/FinanceRecord_Log</td><td class="fn-desc">财务操作审计日志：谁在什么时间做了什么操作</td><td><span class="tag tag-audit">审计</span></td></tr>
+    <tr><td class="fn-name">财务日志导出</td><td class="fn-route">/Finance/FinanceRecordLog_Export</td><td class="fn-desc">导出财务审计日志</td><td><span class="tag tag-export">导出</span></td></tr>
+    <tr><td class="fn-name">保险箱记录</td><td class="fn-route">/Finance/SafeRecord</td><td class="fn-desc">会员保险箱（安全钱包）的存取记录</td><td><span class="tag tag-view">查看</span></td></tr>
+  </tbody></table></div>
+</div>
+
+<!-- ==================== 3. 充值提现 ==================== -->
+<div class="module" data-mod="充值提现">
+  <div class="module-head" onclick="toggleMod(this)">
+    <span class="arrow">▼</span>
+    <h2>充值提现管理</h2>
+    <span class="badge">RechargeController · 59 个 Action</span>
+    <span class="ctrl">44 个视图</span>
+  </div>
+  <div class="module-body"><table><thead><tr><th width="180">功能名称</th><th width="260">路由</th><th>逻辑说明</th><th width="70">类型</th></tr></thead><tbody>
+    <tr class="sub-group"><td colspan="4">▸ 支付方式配置</td></tr>
+    <tr><td class="fn-name">支付方式</td><td class="fn-route">/Recharge/PayName</td><td class="fn-desc">配置支持的支付方式（UPI/银行转账/USDT等）</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">支付方式编辑</td><td class="fn-route">/Recharge/PayNameOpt</td><td class="fn-desc">新增/编辑支付方式详情</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">充值渠道</td><td class="fn-route">/Recharge/RechargeChannel</td><td class="fn-desc">管理第三方充值渠道接入</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">充值等级</td><td class="fn-route">/Recharge/RechargeLevel</td><td class="fn-desc">按会员等级配置不同的充值限额和赠送比例</td><td><span class="tag tag-config">配置</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 充值管理</td></tr>
+    <tr><td class="fn-name">充值列表</td><td class="fn-route">/Recharge/Recharge</td><td class="fn-desc">所有充值订单列表，支持按状态/类型/时间筛选</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">充值审核</td><td class="fn-route">/Recharge/RechargeReview</td><td class="fn-desc">人工充值审核：确认到账/驳回</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">充值审核(代理)</td><td class="fn-route">/Recharge/RechargeReview_Agent</td><td class="fn-desc">代理视角充值审核</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">充值审核日志</td><td class="fn-route">/Recharge/RechargeReview_Log</td><td class="fn-desc">充值审核操作日志</td><td><span class="tag tag-audit">审计</span></td></tr>
+    <tr><td class="fn-name">充值申诉</td><td class="fn-route">/Recharge/RechargeAppeal</td><td class="fn-desc">会员充值未到账的申诉处理</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">UPI 充值</td><td class="fn-route">/Recharge/RechargeUpi</td><td class="fn-desc">UPI 支付方式充值管理</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">银行转账充值</td><td class="fn-route">/Recharge/RechargesBank</td><td class="fn-desc">银行转账充值管理（含二维码）</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">USDT 充值</td><td class="fn-route">/Recharge/UsdtRecharge</td><td class="fn-desc">USDT 数字货币充值管理</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">人工充值审批</td><td class="fn-route">/Recharge/ManualRechargeApprovalList</td><td class="fn-desc">人工充值申请的审批队列</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">人工充值记录</td><td class="fn-route">/Recharge/ManualRechargeRecords</td><td class="fn-desc">已完成的人工充值记录</td><td><span class="tag tag-view">查看</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 提现管理</td></tr>
+    <tr><td class="fn-name">提现列表</td><td class="fn-route">/Recharge/WithdrawList</td><td class="fn-desc">提现订单列表与配置</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">提现渠道配置</td><td class="fn-route">/Recharge/WithdrawListOpt</td><td class="fn-desc">配置第三方提现渠道</td><td><span class="tag tag-config">配置</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 第三方支付 / 电子钱包</td></tr>
+    <tr><td class="fn-name">第三方支付</td><td class="fn-route">/Recharge/ThirdPayBank</td><td class="fn-desc">第三方支付通道管理</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">第三方银行</td><td class="fn-route">/Recharge/ThirdpartyBank</td><td class="fn-desc">第三方银行接口配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">电子钱包</td><td class="fn-route">/Recharge/EWalletBank</td><td class="fn-desc">电子钱包支付方式管理</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">KBZPay</td><td class="fn-route">/Recharge/KbzpayBank</td><td class="fn-desc">缅甸 KBZPay 支付管理</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">WavePay</td><td class="fn-route">/Recharge/WavePayBank</td><td class="fn-desc">WavePay 支付管理</td><td><span class="tag tag-config">配置</span></td></tr>
+  </tbody></table></div>
+</div>
+
+<!-- ==================== 4. 游戏管理 ==================== -->
+<div class="module" data-mod="游戏管理">
+  <div class="module-head" onclick="toggleMod(this)">
+    <span class="arrow">▼</span>
+    <h2>游戏管理</h2>
+    <span class="badge">GameManageController · 79 个 Action</span>
+    <span class="ctrl">153 个视图</span>
+  </div>
+  <div class="module-body"><table><thead><tr><th width="180">功能名称</th><th width="260">路由</th><th>逻辑说明</th><th width="70">类型</th></tr></thead><tbody>
+    <tr class="sub-group"><td colspan="4">▸ WinGo 游戏</td></tr>
+    <tr><td class="fn-name">WinGo 期号</td><td class="fn-route">/GameManage/Win_GameIssue</td><td class="fn-desc">WinGo 游戏每期开奖号码管理</td><td><span class="tag tag-game">游戏</span></td></tr>
+    <tr><td class="fn-name">WinGo 订单</td><td class="fn-route">/GameManage/Win_GameOrder</td><td class="fn-desc">WinGo 投注订单列表与查询</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">WinGo 赢率限制</td><td class="fn-route">/GameManage/Win_GameWinLimit</td><td class="fn-desc">WinGo 赢率控制参数配置</td><td><span class="tag tag-config">配置</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ K3 游戏</td></tr>
+    <tr><td class="fn-name">K3 期号</td><td class="fn-route">/GameManage/K3_GameIssue</td><td class="fn-desc">K3 快三游戏期号与开奖管理</td><td><span class="tag tag-game">游戏</span></td></tr>
+    <tr><td class="fn-name">K3 订单</td><td class="fn-route">/GameManage/K3_GameOrder</td><td class="fn-desc">K3 投注订单</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">K3 游戏控制</td><td class="fn-route">/GameManage/K3_GameControl</td><td class="fn-desc">K3 游戏开奖结果控制</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">K3 玩法类型</td><td class="fn-route">/GameManage/K3_Game_PlayType</td><td class="fn-desc">K3 玩法配置（和值/三同号/二不同等）</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">K3 赢率限制</td><td class="fn-route">/GameManage/K3_GameWinLimit</td><td class="fn-desc">K3 赢率控制</td><td><span class="tag tag-config">配置</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 5D / 4D 游戏</td></tr>
+    <tr><td class="fn-name">5D 期号</td><td class="fn-route">/GameManage/V_5D_GameIssue</td><td class="fn-desc">5D 游戏期号管理</td><td><span class="tag tag-game">游戏</span></td></tr>
+    <tr><td class="fn-name">5D 订单</td><td class="fn-route">/GameManage/V_5D_GameOrder</td><td class="fn-desc">5D 投注订单</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">4D 期号</td><td class="fn-route">/GameManage/FourD_GameIssue</td><td class="fn-desc">4D 游戏期号管理</td><td><span class="tag tag-game">游戏</span></td></tr>
+    <tr><td class="fn-name">4D 订单</td><td class="fn-route">/GameManage/FourD_GameOrder</td><td class="fn-desc">4D 投注订单</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">4D 赔率配置</td><td class="fn-route">/GameManage/FourD_Game_OddsPlay</td><td class="fn-desc">4D 各玩法赔率设置</td><td><span class="tag tag-config">配置</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ Bingo18 / TRX</td></tr>
+    <tr><td class="fn-name">Bingo18 期号</td><td class="fn-route">/GameManage/Bingo18_GameIssue</td><td class="fn-desc">Bingo18 游戏期号管理</td><td><span class="tag tag-game">游戏</span></td></tr>
+    <tr><td class="fn-name">Bingo18 订单</td><td class="fn-route">/GameManage/Bingo18_GameOrder</td><td class="fn-desc">Bingo18 投注订单</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">Bingo18 配置</td><td class="fn-route">/GameManage/Bingo18_Game_Config</td><td class="fn-desc">Bingo18 游戏参数配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">TRX 区块</td><td class="fn-route">/GameManage/Trx_Block</td><td class="fn-desc">TRX 区块链区块数据</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">TRX 期号</td><td class="fn-route">/GameManage/Trx_Win_GameIssue</td><td class="fn-desc">TRX WinGo 期号管理</td><td><span class="tag tag-game">游戏</span></td></tr>
+    <tr><td class="fn-name">TRX 订单</td><td class="fn-route">/GameManage/Trx_Win_GameOrder</td><td class="fn-desc">TRX WinGo 投注订单</td><td><span class="tag tag-view">查看</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 越南彩 XOSO / F-XOSO</td></tr>
+    <tr><td class="fn-name">XOSO 期号</td><td class="fn-route">/GameManage/Task_Xoso_Game_Issue</td><td class="fn-desc">越南传统彩 XOSO 期号管理</td><td><span class="tag tag-game">游戏</span></td></tr>
+    <tr><td class="fn-name">XOSO 投注</td><td class="fn-route">/GameManage/Task_Xoso_Game_Betting</td><td class="fn-desc">XOSO 投注订单</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">F-XOSO 期号</td><td class="fn-route">/GameManage/F_Xoso_Game_Issue</td><td class="fn-desc">极速彩 F-XOSO 期号管理</td><td><span class="tag tag-game">游戏</span></td></tr>
+    <tr><td class="fn-name">F-XOSO 北部玩法</td><td class="fn-route">/GameManage/F_Xoso_Game_75NorthPlay</td><td class="fn-desc">F-XOSO 北部75球玩法配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">F-XOSO 赢率配置</td><td class="fn-route">/GameManage/F_Xoso_Game_WinRateConfig</td><td class="fn-desc">F-XOSO 赢率控制</td><td><span class="tag tag-config">配置</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 锦标赛 / 玩法指南</td></tr>
+    <tr><td class="fn-name">锦标赛</td><td class="fn-route">/GameManage/Champion_Task</td><td class="fn-desc">锦标赛活动配置与排名</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">锦标赛结算</td><td class="fn-route">/GameManage/Champion_TaskFinish</td><td class="fn-desc">锦标赛结束后奖励结算</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">玩法指南</td><td class="fn-route">/GameManage/PlayingGuide</td><td class="fn-desc">前端展示的游戏玩法指南管理</td><td><span class="tag tag-edit">操作</span></td></tr>
+  </tbody></table></div>
+</div>
+
+<!-- ==================== 5. 第三方游戏 ==================== -->
+<div class="module" data-mod="第三方游戏">
+  <div class="module-head" onclick="toggleMod(this)">
+    <span class="arrow">▼</span>
+    <h2>第三方游戏</h2>
+    <span class="badge">ThirdGameController + GamesController · 85 个 Action</span>
+  </div>
+  <div class="module-body"><table><thead><tr><th width="180">功能名称</th><th width="260">路由</th><th>逻辑说明</th><th width="70">类型</th></tr></thead><tbody>
+    <tr class="sub-group"><td colspan="4">▸ 厂商与游戏列表</td></tr>
+    <tr><td class="fn-name">厂商管理</td><td class="fn-route">/ThirdGame/VendorPage</td><td class="fn-desc">第三方游戏厂商列表（CQ9/JDB/HB/PG/XB等）</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">游戏列表</td><td class="fn-route">/ThirdGame/GameListPage</td><td class="fn-desc">各厂商的游戏列表管理</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">游戏映射</td><td class="fn-route">/ThirdGame/MappingGameList</td><td class="fn-desc">第三方游戏与本地游戏ID映射关系</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">热门游戏</td><td class="fn-route">/ThirdGame/HotGameList</td><td class="fn-desc">热门游戏排序管理</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">RTP 配置</td><td class="fn-route">/ThirdGame/RTPForm</td><td class="fn-desc">游戏返还率(RTP)配置</td><td><span class="tag tag-config">配置</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 码量与打码</td></tr>
+    <tr><td class="fn-name">码量配置</td><td class="fn-route">/ThirdGame/CodeWashConfig</td><td class="fn-desc">第三方游戏打码量倍数配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">码量规则</td><td class="fn-route">/ThirdGame/CodeWashRule</td><td class="fn-desc">码量计算规则（新/旧两版）</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">码量记录</td><td class="fn-route">/ThirdGame/PCodeWashRecordPage</td><td class="fn-desc">会员打码量记录查询</td><td><span class="tag tag-view">查看</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 投注记录</td></tr>
+    <tr><td class="fn-name">电子游戏投注</td><td class="fn-route">/ThirdGame/PElectronicGamesBetRecordPage</td><td class="fn-desc">老虎机/电子游戏投注记录</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">真人投注</td><td class="fn-route">/ThirdGame/PLiveGamesBetRecordReportPage</td><td class="fn-desc">真人荷官游戏投注记录</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">棋牌投注</td><td class="fn-route">/ThirdGame/PChessGamesBetRecordReportPage</td><td class="fn-desc">棋牌游戏投注记录</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">体育投注</td><td class="fn-route">/ThirdGame/PSportGamesBetRecordReportPage</td><td class="fn-desc">体育博彩投注记录</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">彩票投注</td><td class="fn-route">/ThirdGame/PLotteryGamesBetRecordPage</td><td class="fn-desc">彩票类游戏投注记录</td><td><span class="tag tag-view">查看</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 厂商游戏（GamesController）</td></tr>
+    <tr><td class="fn-name">老虎机列表</td><td class="fn-route">/Games/GameSlots</td><td class="fn-desc">老虎机游戏列表管理</td><td><span class="tag tag-game">游戏</span></td></tr>
+    <tr><td class="fn-name">CQ9 游戏</td><td class="fn-route">/Games/CQ9Gamelist</td><td class="fn-desc">CQ9 厂商游戏列表</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">JDB 游戏</td><td class="fn-route">/Games/JDBGamelist</td><td class="fn-desc">JDB 厂商游戏列表</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">HB 游戏</td><td class="fn-route">/Games/HBGamelist</td><td class="fn-desc">HB 厂商游戏列表</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">PG 游戏</td><td class="fn-route">/Games/PGGamelist</td><td class="fn-desc">PG 厂商游戏列表</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">XB 游戏</td><td class="fn-route">/Games/XbGamelist</td><td class="fn-desc">XB 厂商游戏列表</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">游戏历史</td><td class="fn-route">/Games/GameHistory</td><td class="fn-desc">第三方游戏投注历史</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">资金回收</td><td class="fn-route">/Games/GameMoneyRecycle</td><td class="fn-desc">第三方游戏余额回收到主钱包</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">转账记录</td><td class="fn-route">/Games/TransferHistory</td><td class="fn-desc">主钱包与游戏钱包的转账记录</td><td><span class="tag tag-view">查看</span></td></tr>
+  </tbody></table></div>
+</div>
+
+<!-- ==================== 6. 活动营销 ==================== -->
+<div class="module" data-mod="活动营销">
+  <div class="module-head" onclick="toggleMod(this)">
+    <span class="arrow">▼</span>
+    <h2>活动营销</h2>
+    <span class="badge">TreasureController + TurntableController + InvitedwheelController + ProductsController</span>
+  </div>
+  <div class="module-body"><table><thead><tr><th width="180">功能名称</th><th width="260">路由</th><th>逻辑说明</th><th width="70">类型</th></tr></thead><tbody>
+    <tr class="sub-group"><td colspan="4">▸ 每日 / 每周任务</td></tr>
+    <tr><td class="fn-name">每日任务配置</td><td class="fn-route">/Treasure/DailyConfig</td><td class="fn-desc">配置每日任务规则（充值/投注/签到等目标与奖励）</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">每日任务记录</td><td class="fn-route">/Treasure/DailyUsersRecord</td><td class="fn-desc">会员每日任务完成记录</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">每周任务配置</td><td class="fn-route">/Treasure/WeeklyConfig</td><td class="fn-desc">配置每周任务规则</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">每周任务记录</td><td class="fn-route">/Treasure/WeeklyUsersRecord</td><td class="fn-desc">会员每周任务完成记录</td><td><span class="tag tag-view">查看</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 礼包</td></tr>
+    <tr><td class="fn-name">新会员礼包配置</td><td class="fn-route">/Treasure/GiftPackConfig</td><td class="fn-desc">新会员礼包规则配置（首存门槛、奖励档位）</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">礼包申请记录</td><td class="fn-route">/Treasure/GiftPackMemberApplyRecord</td><td class="fn-desc">会员申请礼包的记录</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">负盈利奖励</td><td class="fn-route">/Treasure/GiftPackNegativeProfitRewardRecord</td><td class="fn-desc">首存负盈利补偿奖励记录</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">新手礼包</td><td class="fn-route">/Treasure/NewBieGiftPace</td><td class="fn-desc">新手引导礼包配置</td><td><span class="tag tag-config">配置</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 老用户回归</td></tr>
+    <tr><td class="fn-name">老用户回归活动</td><td class="fn-route">/Treasure/OldUserReturnAways</td><td class="fn-desc">流失用户回归奖励配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">回归奖励记录</td><td class="fn-route">/Treasure/OldUserReturnBonusHistory</td><td class="fn-desc">老用户回归奖励发放记录</td><td><span class="tag tag-view">查看</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 幸运转盘</td></tr>
+    <tr><td class="fn-name">转盘配置</td><td class="fn-route">/Turntable/TurntableConfig</td><td class="fn-desc">转盘奖品、概率、消耗积分配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">转盘任务</td><td class="fn-route">/Turntable/TurntableTask</td><td class="fn-desc">获取转盘次数的任务配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">转盘中奖记录</td><td class="fn-route">/Turntable/TurntableLotteryRecord</td><td class="fn-desc">转盘抽奖中奖记录</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">实物奖励记录</td><td class="fn-route">/Turntable/TurntablePhysicalRewardRecordList</td><td class="fn-desc">转盘实物奖品发货记录</td><td><span class="tag tag-view">查看</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 邀请转盘</td></tr>
+    <tr><td class="fn-name">邀请转盘配置</td><td class="fn-route">/Invitedwheel/InvitedWheelConfig</td><td class="fn-desc">邀请好友获取转盘次数的规则配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">邀请转盘出款审核</td><td class="fn-route">/Invitedwheel/GetInvitedWheelWithdrawRecord</td><td class="fn-desc">邀请转盘奖金提现审核</td><td><span class="tag tag-edit">操作</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 产品与积分</td></tr>
+    <tr><td class="fn-name">轮播图管理</td><td class="fn-route">/Products/Banners</td><td class="fn-desc">首页/活动页轮播图管理</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">产品管理</td><td class="fn-route">/Products/Products</td><td class="fn-desc">商城产品列表管理</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">产品规则</td><td class="fn-route">/Products/ProductRules</td><td class="fn-desc">产品兑换规则配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">兑换记录</td><td class="fn-route">/Products/ExchangeRecord</td><td class="fn-desc">积分兑换商品的记录</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">积分彩票</td><td class="fn-route">/Products/PointsLottery</td><td class="fn-desc">积分抽奖活动管理</td><td><span class="tag tag-config">配置</span></td></tr>
+  </tbody></table></div>
+</div>
+
+<!-- ==================== 7. 代理管理 ==================== -->
+<div class="module" data-mod="代理管理">
+  <div class="module-head" onclick="toggleMod(this)">
+    <span class="arrow">▼</span>
+    <h2>代理管理</h2>
+    <span class="badge">AgentController · 16 个 Action</span>
+  </div>
+  <div class="module-body"><table><thead><tr><th width="180">功能名称</th><th width="260">路由</th><th>逻辑说明</th><th width="70">类型</th></tr></thead><tbody>
+    <tr><td class="fn-name">返佣等级</td><td class="fn-route">/Agent/RebateLevel</td><td class="fn-desc">代理返佣等级体系配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">返佣比例配置</td><td class="fn-route">/Agent/RebateLvRateConfig</td><td class="fn-desc">各等级返佣比例设置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">手动返佣</td><td class="fn-route">/Agent/RebateManual</td><td class="fn-desc">手动给代理发放返佣</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">代理返佣记录</td><td class="fn-route">/Agent/UserRebate</td><td class="fn-desc">代理返佣发放记录</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">邀请报表(D级)</td><td class="fn-route">/Agent/D_Report_InviteChart</td><td class="fn-desc">董事级别的邀请数据统计</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">邀请报表(C级)</td><td class="fn-route">/Agent/C_Report_InviteChart</td><td class="fn-desc">经理级别的邀请数据统计</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">邀请报表(M级)</td><td class="fn-route">/Agent/M_Report_InviteChart</td><td class="fn-desc">主管级别的邀请数据统计</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">邀请报表(A级)</td><td class="fn-route">/Agent/A_Report_InviteChart</td><td class="fn-desc">代理级别的邀请数据统计</td><td><span class="tag tag-report">报表</span></td></tr>
+  </tbody></table></div>
+</div>
+
+<!-- ==================== 8. 报表中心 ==================== -->
+<div class="module" data-mod="报表中心">
+  <div class="module-head" onclick="toggleMod(this)">
+    <span class="arrow">▼</span>
+    <h2>报表中心</h2>
+    <span class="badge">ReportController · 97 个 Action</span>
+    <span class="ctrl">111 个视图 · D/C/M/A 四级维度</span>
+  </div>
+  <div class="module-body"><table><thead><tr><th width="180">功能名称</th><th width="260">路由（以 D 级为例）</th><th>逻辑说明</th><th width="70">类型</th></tr></thead><tbody>
+    <tr><td class="fn-name">邀请报表</td><td class="fn-route">/Report/D_Report_InviteChart</td><td class="fn-desc">按日期统计邀请注册人数、首充人数、首充金额（D/C/M/A 四级）</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">渠道报表</td><td class="fn-route">/Report/D_Report_Channel</td><td class="fn-desc">各推广渠道的注册、充值、活跃数据（支持 A/C 级）</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">财务报表</td><td class="fn-route">/Report/D_Report_Finance</td><td class="fn-desc">充值/提现/盈亏汇总（支持 A/C 级）</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">游戏报表</td><td class="fn-route">/Report/D_Report_Game</td><td class="fn-desc">各游戏的投注/中奖/盈亏统计（支持 A/C 级）</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">用户报表</td><td class="fn-route">/Report/D_Report_Users</td><td class="fn-desc">用户注册、活跃、留存数据（支持 A/C/M 级）</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">同IP报表</td><td class="fn-route">/Report/D_Report_Ip_Same</td><td class="fn-desc">同IP注册/登录的风控检测报表</td><td><span class="tag tag-audit">风控</span></td></tr>
+    <tr><td class="fn-name">登录类型报表</td><td class="fn-route">/Report/D_Report_User_Login_Type</td><td class="fn-desc">按设备/类型统计登录数据</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">用户充值报表</td><td class="fn-route">/Report/D_UserReport_Recharge</td><td class="fn-desc">按用户维度的充值统计</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">用户提现报表</td><td class="fn-route">/Report/D_UserReport_Withdraw</td><td class="fn-desc">按用户维度的提现统计</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">用户游戏报表</td><td class="fn-route">/Report/D_UserReport_Game</td><td class="fn-desc">按用户维度的游戏盈亏</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">用户财务报表</td><td class="fn-route">/Report/D_UserReport_Finance</td><td class="fn-desc">按用户维度的财务流水</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">充值次数报表</td><td class="fn-route">/Report/C_Report_Recharge_Times</td><td class="fn-desc">充值频次统计</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">提现次数报表</td><td class="fn-route">/Report/C_Report_Withdraw_Times</td><td class="fn-desc">提现频次统计</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">实时统计</td><td class="fn-route">/Report/Realtime_StatisticsDetail</td><td class="fn-desc">实时在线/充值/提现统计</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">用户留存报表</td><td class="fn-route">/Report/KeepUserReport</td><td class="fn-desc">用户留存率统计（日/周/月）</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">邀请转盘统计</td><td class="fn-route">/Report/InvitedWheelStatisticsReport</td><td class="fn-desc">邀请转盘活动效果统计</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">用户安全报表</td><td class="fn-route">/Report/C_Report_User_Safe</td><td class="fn-desc">保险箱使用情况统计</td><td><span class="tag tag-report">报表</span></td></tr>
+  </tbody></table></div>
+</div>
+
+<!-- ==================== 9. 系统管理 ==================== -->
+<div class="module" data-mod="系统管理">
+  <div class="module-head" onclick="toggleMod(this)">
+    <span class="arrow">▼</span>
+    <h2>系统管理</h2>
+    <span class="badge">SystemController · 161 个 Action</span>
+    <span class="ctrl">152 个视图</span>
+  </div>
+  <div class="module-body"><table><thead><tr><th width="180">功能名称</th><th width="260">路由</th><th>逻辑说明</th><th width="70">类型</th></tr></thead><tbody>
+    <tr class="sub-group"><td colspan="4">▸ 权限与用户</td></tr>
+    <tr><td class="fn-name">菜单管理</td><td class="fn-route">/System/Menus</td><td class="fn-desc">动态菜单树管理，支持 N 级嵌套、排序、启用/禁用</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">用户列表</td><td class="fn-route">/System/UserList</td><td class="fn-desc">后台操作员账号管理</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">角色管理</td><td class="fn-route">/System/RoleList</td><td class="fn-desc">角色权限管理（菜单 + 按钮级）</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">人工充值权限</td><td class="fn-route">/System/ManualRechargePermissionList</td><td class="fn-desc">配置哪些操作员可以执行人工充值</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">后台操作权限</td><td class="fn-route">/System/BackstageOperationPermissionConfig</td><td class="fn-desc">细粒度后台操作权限配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">出款组别权限</td><td class="fn-route">/System/WithdrawalGroupConfigPermission</td><td class="fn-desc">出款审核组权限分配</td><td><span class="tag tag-config">配置</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 站点配置</td></tr>
+    <tr><td class="fn-name">站点设置</td><td class="fn-route">/System/SiteSet</td><td class="fn-desc">站点基础信息（名称/Logo/协议/关于我们）</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">H5 设置</td><td class="fn-route">/System/H5Setting</td><td class="fn-desc">H5 移动端页面配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">参数配置</td><td class="fn-route">/System/ParameterConfig</td><td class="fn-desc">系统全局参数（超时/限额/开关等）</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">API 设置</td><td class="fn-route">/System/ApiSetting</td><td class="fn-desc">API 接口地址与密钥配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">CloudFlare 配置</td><td class="fn-route">/System/ApiSettingCloudFlare</td><td class="fn-desc">CloudFlare CDN 配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">Facebook 配置</td><td class="fn-route">/System/ApiSettingFacebook</td><td class="fn-desc">Facebook 广告像素与登录配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">OSS 配置</td><td class="fn-route">/System/ApiSettingOSS</td><td class="fn-desc">对象存储服务配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">APP URL 配置</td><td class="fn-route">/System/AppUrlSeeting</td><td class="fn-desc">APP 下载地址和加载 URL</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">APK 包管理</td><td class="fn-route">/System/APKPackageManagement</td><td class="fn-desc">Android APK 版本发布管理</td><td><span class="tag tag-edit">操作</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 消息与通知</td></tr>
+    <tr><td class="fn-name">弹窗消息</td><td class="fn-route">/System/SiteMessages</td><td class="fn-desc">登录弹窗/维护公告管理</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">滚动消息</td><td class="fn-route">/System/SiteScrollMessages</td><td class="fn-desc">站内滚动公告管理</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">推送消息</td><td class="fn-route">/System/PushUserMessage</td><td class="fn-desc">向指定用户推送消息</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">欢迎消息</td><td class="fn-route">/System/WelcomMessage</td><td class="fn-desc">新用户注册欢迎消息配置</td><td><span class="tag tag-config">配置</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 短信与邮件</td></tr>
+    <tr><td class="fn-name">短信配置</td><td class="fn-route">/System/SmsSettings</td><td class="fn-desc">短信通道配置（18 种短信商户）</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">注册短信</td><td class="fn-route">/System/RegisterSMS</td><td class="fn-desc">注册验证码短信配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">短信发送</td><td class="fn-route">/System/SmsSend</td><td class="fn-desc">手动发送短信</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">邮件配置</td><td class="fn-route">/System/EmailSetings</td><td class="fn-desc">邮件 SMTP 配置</td><td><span class="tag tag-config">配置</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 安全与 IP</td></tr>
+    <tr><td class="fn-name">IP 白名单</td><td class="fn-route">/System/IpList</td><td class="fn-desc">后台访问 IP 白名单</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">设备管理</td><td class="fn-route">/System/Devices</td><td class="fn-desc">允许登录的设备管理</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">设备 IP</td><td class="fn-route">/System/DeviceIP</td><td class="fn-desc">设备与 IP 绑定关系</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">安全设置</td><td class="fn-route">/System/Safe_Settings</td><td class="fn-desc">登录安全策略（密码复杂度/登录失败锁定等）</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">提现黑名单</td><td class="fn-route">/System/UserWithdrawBlackList</td><td class="fn-desc">提现黑名单会员管理</td><td><span class="tag tag-edit">操作</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 充提规则</td></tr>
+    <tr><td class="fn-name">充值设置</td><td class="fn-route">/System/RechargeSeting</td><td class="fn-desc">充值全局规则（限额/赠送/打码等）</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">提现设置</td><td class="fn-route">/System/WithdrawalSeting</td><td class="fn-desc">提现全局规则（限额/审核门槛/手续费）</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">USDT 提现设置</td><td class="fn-route">/System/WithdrawalUsdtSeting</td><td class="fn-desc">USDT 提现规则配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">自动提现配置</td><td class="fn-route">/System/AutoWithdrawConfig</td><td class="fn-desc">自动审核提现的条件配置（金额/频次/风控条件）</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">打码量配置</td><td class="fn-route">/System/AmountOfCodConfig</td><td class="fn-desc">提现所需打码量倍数配置</td><td><span class="tag tag-config">配置</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 注册与活动</td></tr>
+    <tr><td class="fn-name">注册状态</td><td class="fn-route">/System/RegisterState</td><td class="fn-desc">开放/关闭注册开关</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">注册人数</td><td class="fn-route">/System/RegisterCount</td><td class="fn-desc">注册人数统计与限制</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">注册赠送</td><td class="fn-route">/System/RegistPresent</td><td class="fn-desc">注册赠送金币配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">首充返利</td><td class="fn-route">/System/FirstDepositRebate</td><td class="fn-desc">首充返利规则配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">活动列表</td><td class="fn-route">/System/ActiveList</td><td class="fn-desc">全站活动列表管理</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">域名像素配置</td><td class="fn-route">/System/EventRegionConfig</td><td class="fn-desc">Facebook 域名像素追踪配置</td><td><span class="tag tag-config">配置</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 游戏分类</td></tr>
+    <tr><td class="fn-name">游戏分类</td><td class="fn-route">/System/GameCategory</td><td class="fn-desc">游戏分类管理</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">彩票分类</td><td class="fn-route">/System/LotteryCategory</td><td class="fn-desc">彩票游戏分类</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">客服配置</td><td class="fn-route">/System/CustomerService</td><td class="fn-desc">客服通道与分组配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">客户建议</td><td class="fn-route">/System/CustomerSuggestion</td><td class="fn-desc">用户反馈建议管理</td><td><span class="tag tag-view">查看</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 日志</td></tr>
+    <tr><td class="fn-name">系统日志</td><td class="fn-route">/System/LogList</td><td class="fn-desc">系统运行日志</td><td><span class="tag tag-audit">审计</span></td></tr>
+    <tr><td class="fn-name">Web 日志</td><td class="fn-route">/System/WebLogList</td><td class="fn-desc">Web 请求日志</td><td><span class="tag tag-audit">审计</span></td></tr>
+    <tr><td class="fn-name">操作日志</td><td class="fn-route">/System/OperationLog</td><td class="fn-desc">后台操作员操作审计日志</td><td><span class="tag tag-audit">审计</span></td></tr>
+    <tr><td class="fn-name">设备日志</td><td class="fn-route">/System/DevicesLog</td><td class="fn-desc">设备登录日志</td><td><span class="tag tag-audit">审计</span></td></tr>
+    <tr><td class="fn-name">导出中心日志</td><td class="fn-route">/System/ExportCenterLog</td><td class="fn-desc">数据导出操作日志</td><td><span class="tag tag-audit">审计</span></td></tr>
+    <tr><td class="fn-name">参数配置日志</td><td class="fn-route">/System/ParameterConfigLog</td><td class="fn-desc">系统参数修改历史</td><td><span class="tag tag-audit">审计</span></td></tr>
+  </tbody></table></div>
+</div>
+
+<!-- ==================== 10. 渠道与配置 ==================== -->
+<div class="module" data-mod="渠道与配置">
+  <div class="module-head" onclick="toggleMod(this)">
+    <span class="arrow">▼</span>
+    <h2>渠道与配置</h2>
+    <span class="badge">ChannelController + ConfigController + BankController</span>
+  </div>
+  <div class="module-body"><table><thead><tr><th width="180">功能名称</th><th width="260">路由</th><th>逻辑说明</th><th width="70">类型</th></tr></thead><tbody>
+    <tr><td class="fn-name">渠道列表</td><td class="fn-route">/Channel/ChannelList</td><td class="fn-desc">推广渠道列表管理</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">渠道编辑</td><td class="fn-route">/Channel/ChannelOpt</td><td class="fn-desc">新增/编辑推广渠道</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">银行管理</td><td class="fn-route">/Bank/TranBank</td><td class="fn-desc">银行转账管理</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">银行编辑</td><td class="fn-route">/Bank/BankOpt</td><td class="fn-desc">银行信息编辑</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">推送消息配置</td><td class="fn-route">/Config/PushMsgConfig</td><td class="fn-desc">APP 推送消息模板配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">系统设置</td><td class="fn-route">/Config/Setting</td><td class="fn-desc">全局系统参数</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">IP 黑名单</td><td class="fn-route">/BlackIp/BlackIpView</td><td class="fn-desc">IP 封禁列表管理（新增/解除）</td><td><span class="tag tag-edit">操作</span></td></tr>
+  </tbody></table></div>
+</div>
+
+<!-- ==================== 11. 其他 ==================== -->
+<div class="module" data-mod="其他">
+  <div class="module-head" onclick="toggleMod(this)">
+    <span class="arrow">▼</span>
+    <h2>其他功能</h2>
+    <span class="badge">HomeController + WealthController + RemoteWorkController</span>
+  </div>
+  <div class="module-body"><table><thead><tr><th width="180">功能名称</th><th width="260">路由</th><th>逻辑说明</th><th width="70">类型</th></tr></thead><tbody>
+    <tr class="sub-group"><td colspan="4">▸ 首页仪表板</td></tr>
+    <tr><td class="fn-name">首页(D级)</td><td class="fn-route">/Home/Main_D</td><td class="fn-desc">董事级仪表板：全站充提/注册/游戏数据概览</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">首页(C级)</td><td class="fn-route">/Home/Main_C</td><td class="fn-desc">经理级仪表板</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">首页(M级)</td><td class="fn-route">/Home/Main_M</td><td class="fn-desc">主管级仪表板</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">在线会员</td><td class="fn-route">/Home/OnlineMember</td><td class="fn-desc">实时在线会员列表</td><td><span class="tag tag-view">查看</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 理财管理</td></tr>
+    <tr><td class="fn-name">理财类型</td><td class="fn-route">/Wealth/WealthType</td><td class="fn-desc">理财产品类型配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">理财订单</td><td class="fn-route">/Wealth/WealthOrder</td><td class="fn-desc">会员理财订单列表</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">理财设置</td><td class="fn-route">/Wealth/WealthSetting</td><td class="fn-desc">理财全局规则配置</td><td><span class="tag tag-config">配置</span></td></tr>
+
+    <tr class="sub-group"><td colspan="4">▸ 远程工作（出款组）</td></tr>
+    <tr><td class="fn-name">工作仪表板</td><td class="fn-route">/RemoteWork/RemoteDashboard</td><td class="fn-desc">出款组工作台：实时订单/人员状态/异常预警</td><td><span class="tag tag-view">查看</span></td></tr>
+    <tr><td class="fn-name">工作人员列表</td><td class="fn-route">/RemoteWork/RwUserList</td><td class="fn-desc">出款组人员管理</td><td><span class="tag tag-edit">操作</span></td></tr>
+    <tr><td class="fn-name">工作报表</td><td class="fn-route">/RemoteWork/RwUserReport</td><td class="fn-desc">出款人员工作量统计</td><td><span class="tag tag-report">报表</span></td></tr>
+    <tr><td class="fn-name">系统配置</td><td class="fn-route">/RemoteWork/RwSysConfig</td><td class="fn-desc">出款系统全局配置</td><td><span class="tag tag-config">配置</span></td></tr>
+    <tr><td class="fn-name">开始/停止工作</td><td class="fn-route">/RemoteWork/StartWork</td><td class="fn-desc">出款员开始/结束接单</td><td><span class="tag tag-edit">操作</span></td></tr>
+  </tbody></table></div>
+</div>
+
+</div>
+
+<script>
+function toggleMod(el){el.classList.toggle("collapsed");updateCount();}
+function filterRows(){
+  const q=document.getElementById("search").value.toLowerCase();
+  const mod=document.getElementById("modFilter").value;
+  let shown=0,total=0;
+  document.querySelectorAll(".module").forEach(m=>{
+    const mName=m.dataset.mod;
+    if(mod&&mName!==mod){m.style.display="none";return;}
+    m.style.display="";
+    const rows=m.querySelectorAll("tbody tr:not(.sub-group)");
+    let modVisible=0;
+    rows.forEach(r=>{total++;
+      const text=r.textContent.toLowerCase();
+      if(!q||text.includes(q)){r.style.display="";shown++;modVisible++;}
+      else{r.style.display="none";}
+    });
+    m.querySelectorAll(".sub-group").forEach(sg=>{
+      let next=sg.nextElementSibling,hasVisible=false;
+      while(next&&!next.classList.contains("sub-group")){
+        if(next.style.display!=="none")hasVisible=true;
+        next=next.nextElementSibling;
+      }
+      sg.style.display=hasVisible?"":"none";
+    });
+  });
+  updateCount();
+}
+function updateCount(){
+  const visible=document.querySelectorAll("tbody tr:not(.sub-group):not([style*='display: none'])").length;
+  document.getElementById("rowCount").textContent="显示 "+visible+" 个功能点";
+}
+updateCount();
+</script>
+</body>
+</html>

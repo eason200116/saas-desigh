@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>会员详情 · 全字段说明（名词解释 / 应用场景 / 异常情况）</title>
+    <style>
+      :root {
+        --green: #2e7d5b; --blue: #1565c0; --red: #d4380d; --orange: #e65100;
+        --border: #e2e6ea; --muted: #7a8494; --ink: #1f2927; --bg: #f6f8fb;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        background: var(--bg); color: var(--ink); font-size: 14px; line-height: 1.7;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      }
+      .header { background: linear-gradient(135deg, #1a3a2a, #2e7d5b); color: #fff; padding: 28px 32px; }
+      .header h1 { font-size: 23px; margin-bottom: 6px; }
+      .header p { opacity: .85; font-size: 13px; }
+      .header .stats { display: flex; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
+      .header .stat { background: rgba(255,255,255,.12); border-radius: 10px; padding: 8px 16px; }
+      .header .stat b { font-size: 20px; display: block; }
+      .header .stat small { opacity: .75; font-size: 11px; }
+      .toolbar { position: sticky; top: 0; z-index: 10; background: #fff; border-bottom: 1px solid var(--border); padding: 11px 24px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+      .toolbar input { flex: 1; min-width: 220px; height: 38px; border: 1px solid var(--border); border-radius: 8px; padding: 0 14px; font-size: 14px; }
+      .toolbar .ct { color: var(--muted); font-size: 13px; }
+      .toolbar .filt { display: flex; gap: 6px; }
+      .toolbar .filt button { height: 34px; padding: 0 14px; border: 1px solid var(--border); background: #fff; border-radius: 8px; font-size: 13px; cursor: pointer; color: var(--ink); }
+      .toolbar .filt button.on { background: var(--green); border-color: var(--green); color: #fff; font-weight: 600; }
+      .container { max-width: 1320px; margin: 0 auto; padding: 18px 24px; }
+      .card { background: #fff; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 16px; overflow: hidden; }
+      .card-head { padding: 14px 20px; background: #fafbfc; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+      .card-head .arr { width: 18px; font-size: 12px; color: var(--muted); transition: .2s; }
+      .card-head.col .arr { transform: rotate(-90deg); }
+      .card-head h2 { font-size: 16px; margin: 0; flex: 1; }
+      .card-head .cnt { font-size: 12px; color: var(--muted); }
+      .card-head.col + .card-body { display: none; }
+      .card-body { padding: 0; overflow-x: auto; }
+      table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+      thead th { text-align: left; padding: 10px 16px; font-weight: 700; background: #f6f8fb; border-bottom: 2px solid var(--border); white-space: nowrap; }
+      td { padding: 11px 16px; border-bottom: 1px solid #f0f2f5; vertical-align: top; }
+      tr:hover td { background: #f9fbfa; }
+      .fname { font-weight: 700; color: var(--ink); white-space: nowrap; }
+      .fname.new { color: var(--red); }
+      .fname code { display: block; font-weight: 400; font-size: 11px; color: var(--muted); margin-top: 3px; }
+      .tag-new { display: inline-block; font-size: 10px; font-weight: 700; color: #fff; background: var(--red); border-radius: 6px; padding: 1px 6px; margin-left: 6px; vertical-align: middle; }
+      td.exc { color: #9a3a1a; }
+      .col-def { width: 28%; }
+      .col-use { width: 26%; }
+      .col-exc { width: 30%; }
+      .legend { padding: 12px 24px; background: #fff; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--muted); }
+      .legend b { color: var(--red); }
+      @media (max-width: 860px) { .col-def, .col-use, .col-exc { width: auto; } }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>会员详情 · 全字段说明</h1>
+      <p>名词解释 / 应用场景 / 异常情况 — 覆盖会员详情全部 11 个板块字段；已合并《新增字段说明》，可用上方「仅新增」只看新增字段，口径对齐《集团→会员 核心层级与体系》文档</p>
+      <div class="stats">
+        <div class="stat"><b>100</b><small>字段合计</small></div>
+        <div class="stat"><b>12</b><small>板块分组</small></div>
+        <div class="stat"><b>32</b><small>新增字段</small></div>
+        <div class="stat"><b>68</b><small>原有字段</small></div>
+      </div>
+    </div>
+
+    <div class="legend">
+      字段名为 <b>红色</b> 并带「<b>新增</b>」标记的为本期新增（红字）字段，深色为原有字段；每个字段给出 <b>名词解释</b> · <b>应用场景</b> · <b>异常情况</b> 三栏。来源口径以核心层级体系文档为准（集团→市场→商户→域名→渠道→会员；来源归因 / 代理体系 / 业绩归集三套关系分离；历史事实不改写；不提供转代）。
+    </div>
+
+    <div class="toolbar">
+      <input id="q" placeholder="🔍 搜索字段 / 关键词…" oninput="F()" />
+      <div class="filt">
+        <button id="bAll" class="on" onclick="T('all')">全部</button>
+        <button id="bNew" onclick="T('new')">仅新增</button>
+        <button id="bBase" onclick="T('base')">仅原有</button>
+      </div>
+      <span class="ct" id="rc"></span>
+    </div>
+
+    <div class="container">
+
+      <!-- ① 基本信息 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>① 基本信息组</h2><span class="cnt">17 字段 · 3 新增</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>字段</th><th class="col-def">名词解释</th><th class="col-use">应用场景</th><th class="col-exc">异常情况</th></tr></thead>
+            <tbody>
+              <tr data-k="base"><td class="fname">会员ID<code>memberId</code></td><td>会员在本商户内的唯一数字编号，账号主键，全程不变。</td><td>所有模块数据关联主键、客服与风控检索定位。</td><td class="exc">仅商户内唯一（跨商户须配商户号）；注销后不复用、不可修改。</td></tr>
+              <tr data-k="base"><td class="fname">商户<code>merchantId</code></td><td>会员所属运营主体（数据隔离边界），如 (1050)daman。</td><td>多商户隔离、权限与经营责任归属。</td><td class="exc">在 A 注册的会员进入 B 视为 B 的新会员；会员/钱包/订单不跨商户混用。</td></tr>
+              <tr data-k="base"><td class="fname">账号<code>account</code></td><td>会员登录账号（多为手机号/邮箱，脱敏展示，如 919***888）。</td><td>登录凭证、客服检索、账号体系唯一性。</td><td class="exc">完整值需权限查看；改名/换绑须验证并留审计。</td></tr>
+              <tr data-k="base"><td class="fname">绑定(邮箱/手机号)<code>contactBind</code></td><td>账号已绑定的邮箱与手机号（脱敏）。</td><td>找回密码、安全验证、消息触达。</td><td class="exc">未绑定时为空；换绑需二次验证并留痕。</td></tr>
+              <tr data-k="base"><td class="fname">语种<code>language</code></td><td>会员界面语言（如 hi=印地语），随市场本地化。</td><td>活动/消息文案语言匹配、客服分流。</td><td class="exc">与市场默认语不一致时以会员设置为准。</td></tr>
+              <tr data-k="base"><td class="fname">会员余额<code>balance</code></td><td>会员主钱包可用余额（以经营币种计）。</td><td>下注/提现资金来源、资产核对。</td><td class="exc">须与资金账变勾稽，不一致即冻结核账。</td></tr>
+              <tr data-k="base"><td class="fname">三方余额<code>thirdPartyBalance</code></td><td>沉淀在三方游戏厂商处、尚未归集回主钱包的余额。</td><td>游戏内资金核对、一键回收、对账。</td><td class="exc">三方接口异常时显示可能延迟，以对账结果为准。</td></tr>
+              <tr data-k="base"><td class="fname">未开奖下注金额<code>pendingBetAmount</code></td><td>已下注但尚未结算（开奖）的在途金额。</td><td>在途资金统计、提现可用额与风控计算。</td><td class="exc">长时间未结算→挂单/结算异常排查。</td></tr>
+              <tr data-k="base"><td class="fname">充值等级<code>rechargeLevel</code></td><td>按累计充值评定的等级（如 L3）。</td><td>充值激励档位、专属活动门槛。</td><td class="exc">按规则周期评定，不随单次回撤即时降级。</td></tr>
+              <tr data-k="base"><td class="fname">首次登录<code>firstLoginTime</code></td><td>会员账号的首次登录时间。</td><td>激活分析、新客生命周期起点。</td><td class="exc">与注册时间差距过大→疑沉默后激活。</td></tr>
+              <tr data-k="base"><td class="fname">注册时间<code>registerTime</code></td><td>会员账号的创建时间。</td><td>注册趋势、留存与队列（cohort）分析基准。</td><td class="exc">固定不可改；早于首次登录属正常，晚于则数据校验。</td></tr>
+              <tr data-k="base"><td class="fname">会员状态<code>userStatus</code></td><td>账号启用/停用状态。</td><td>登录与交易准入控制、封禁管理。</td><td class="exc">停用后不可登录/交易并留审计；与代理状态相互独立。</td></tr>
+              <tr data-k="base"><td class="fname">会员备注<code>remark</code></td><td>运营/客服对会员的人工标注。</td><td>高价值或风险标识、客服上下文承接。</td><td class="exc">仅内部可见，含敏感信息须脱敏处理。</td></tr>
+              <tr data-k="base"><td class="fname">会员类型<code>userType</code></td><td>真实会员 / 内部号 / 测试号等分类。</td><td>报表剔除内部号、风控与计佣区分。</td><td class="exc">内部/测试号应排除经营指标，错标致数据失真。</td></tr>
+              <tr data-k="new"><td class="fname new">邀请人<span class="tag-new">新增</span><code>inviterId</code></td><td>邀请码发起人 ID（通常=直接上级代理），点击可下钻该会员详情。</td><td>裂变追踪、代理树构建依据、佣金归属判定。</td><td class="exc">无邀请码注册则为空；邀请人被注销/冻结时，代理关系仍保留快照不随之改写。</td></tr>
+              <tr data-k="new"><td class="fname new">访问端<span class="tag-new">新增</span><code>accessClient</code></td><td>最近一次访问的客户端类型，枚举 pc/h5/安卓/ios/安卓壳包/ios壳包。</td><td>设备分布分析、端侧问题定位、APP 下载引导、风控识别。</td><td class="exc">壳包内 WebView 以外层壳判定；UA 被篡改/无法识别时记「未知端」并保留原始 UA。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ② 归因来源 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>② 归因来源组 <span style="font-size:12px;font-weight:400;color:var(--red)">※ 整组新增</span></h2><span class="cnt">7 字段 · 7 新增</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>字段</th><th class="col-def">名词解释</th><th class="col-use">应用场景</th><th class="col-exc">异常情况</th></tr></thead>
+            <tbody>
+              <tr data-k="new"><td class="fname new">主归因<span class="tag-new">新增</span><code>mainAttribution</code></td><td>注册来源唯一归类（自然流量/广告投放/官方直推/邀请来源 + 未知），优先级唯一、命中即停。</td><td>获客成本核算、渠道质量评估、ROI 分母；报表按主归因拆分。</td><td class="exc">邀请链接+UTM 并存→判邀请来源，UTM 留辅证并标「裂变获客」；全部无法识别→未知来源并记失败原因。</td></tr>
+              <tr data-k="new"><td class="fname new">推广平台名称<span class="tag-new">新增</span><code>promoPlatform</code></td><td>识别出的外部推广平台。带平台点击ID精确识别：Google（gclid）、Meta/Facebook（fbclid）、TikTok（ttclid）、Bing（msclkid）；经 utm_source 识别：Instagram、YouTube、Telegram、WhatsApp、X（Twitter）、Snapchat、Kwai、ShareChat、Line、Zalo；<strong>以上均未命中或无参数 → 其他</strong>。</td><td>广告投放平台维度效果与对账；KOL/平台归集。</td><td class="exc">多平台参数冲突按点击ID优先级判定；不可识别→其他；App 安装归因另行设计。</td></tr>
+              <tr data-k="new"><td class="fname new">注册渠道<span class="tag-new">新增</span><code>regChannelId</code></td><td>注册时命中的后台定义渠道ID（如 pc001=Facebook推广1），挂在域名之下的来源归因容器。</td><td>渠道维度注册转化统计、渠道质量与结算。</td><td class="exc">未命中任何渠道→落该经营单元默认自然流量兜底渠道（不可删除/不关注册）；渠道关闭不改历史快照。</td></tr>
+              <tr data-k="new"><td class="fname new">登录渠道<span class="tag-new">新增</span><code>loginChannelId</code></td><td>会员最近一次登录命中的渠道ID，可与注册渠道不同。</td><td>活跃来源分析、再营销渠道评估、回流入口判断。</td><td class="exc">直接访问无渠道参数时显示默认/空；跨商户域名进入应判异常并拦截。</td></tr>
+              <tr data-k="new"><td class="fname new">搜索引擎<span class="tag-new">新增</span><code>searchEngine</code></td><td>由 referrer 来源域名识别。可识别引擎：Google、Bing、Yahoo、Yahoo! Japan、DuckDuckGo、Ecosia、Startpage、Brave Search、Ask.com、AOL、Mojeek、You.com、Perplexity、Qwant、Swisscows、MetaGer、SearXNG、Lycos、Excite、Dogpile、OneSearch、Gibiru、Presearch、Yandex、Mail.ru、Rambler、Naver、Daum、goo、Seznam、Onet、WP（Wirtualna Polska）、Coc Coc、Sapo、Eniro、Najdi、Walla；<strong>中国引擎（百度/搜狗/360/神马等）及未列出者一律归「其他」</strong>；无 referrer 记直接访问。</td><td>SEO 效果评估、自然流量质量。</td><td class="exc">referrer 被剥离（隐私模式/referrer 策略）→记直接访问；非搜索来源（如经 Meta 进入）→其他。</td></tr>
+              <tr data-k="new"><td class="fname new">邀请码<span class="tag-new">新增</span><code>inviteCode</code></td><td>会员注册实际使用的邀请码，关联邀请人/代理ID。</td><td>代理树绑定、裂变奖励触发、邀请人佣金归属。</td><td class="exc">码失效/过期/跨商户→可注册但不绑代理并记原因；活动邀请码额外记 invite_activity_id。</td></tr>
+              <tr data-k="new"><td class="fname new">邀请类型<span class="tag-new">新增</span><code>invite_type</code></td><td>邀请来源细分：正常邀请（invite_type=normal，个人邀请）/ 活动邀请（invite_type=activity，裂变获客，含 invite_activity_id）。</td><td>区分纯邀请与活动裂变；活动邀请触发活动奖励并标裂变。</td><td class="exc">活动码过期但邀请链接有效→降级为正常邀请；两类标记冲突时以活动邀请优先并记原因。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ③ 归属与层级 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>③ 归属与层级组 <span style="font-size:12px;font-weight:400;color:var(--red)">※ 整组新增 · 仅研发时查看，后续上线会隐藏掉</span></h2><span class="cnt">3 字段 · 3 新增</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>字段</th><th class="col-def">名词解释</th><th class="col-use">应用场景</th><th class="col-exc">异常情况</th></tr></thead>
+            <tbody>
+              <tr data-k="new"><td class="fname new">集团<span class="tag-new">新增</span><code>groupId</code></td><td>最高归属与控制方，统管旗下多市场与商户，是层级主线顶层。</td><td>多商户汇总报表维度、全局口径与策略。</td><td class="exc">集团下不同市场币种/语言不同，跨市场指标不默认混合。</td></tr>
+              <tr data-k="new"><td class="fname new">市场<span class="tag-new">新增</span><code>marketId</code></td><td>按国家/地区划分的经营单位，承载币种、语言与本地化口径（INR · hi）。</td><td>本地化配置、风控阈值与活动档位的边界。</td><td class="exc">同集团跨市场金额/非金额指标按规则分开，不混用。</td></tr>
+              <tr data-k="new"><td class="fname new">商户<span class="tag-new">新增</span><code>merchantId</code></td><td>实际运营主体与合同/计费/团队归属边界，是会员数据隔离的经营单元。</td><td>多商户数据隔离、权限边界、经营责任承载。</td><td class="exc">在 A 注册的会员进入 B 视为 B 的新会员；会员/钱包/订单/活动/佣金不跨单元混用。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ④ 数据统计 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>④ 数据统计组</h2><span class="cnt">6 字段</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>字段</th><th class="col-def">名词解释</th><th class="col-use">应用场景</th><th class="col-exc">异常情况</th></tr></thead>
+            <tbody>
+              <tr data-k="base"><td class="fname">今日/累计充值<code>depositToday / depositTotal</code></td><td>会员当日及历史累计成功充值金额。</td><td>充值贡献分析、价值分层、首充/复充判断。</td><td class="exc">仅计成功到账，撤销/失败/挂起不计。</td></tr>
+              <tr data-k="base"><td class="fname">今日/累计提现<code>withdrawToday / withdrawTotal</code></td><td>会员当日及累计成功提现金额。</td><td>资金流出监控、净存核算。</td><td class="exc">审核中/驳回不计入成功提现。</td></tr>
+              <tr data-k="base"><td class="fname">今日/累计充提差<code>netDeposit</code></td><td>充值减提现的净值（今日/累计），即会员净存。</td><td>平台留存资金核心指标、盈利能力评估。</td><td class="exc">负值表示净流出；须与充值、提现分项勾稽一致。</td></tr>
+              <tr data-k="base"><td class="fname">今日/累计有效投注<code>validBetToday / validBetTotal</code></td><td>计入流水的有效投注额（剔除对冲/无效注）。</td><td>流水考核、返水/返佣计算基数、活动门槛。</td><td class="exc">无效/对冲注不计；有效投注规则变更只对之后生效。</td></tr>
+              <tr data-k="base"><td class="fname">今日/累计输赢<code>winLossToday / winLossTotal</code></td><td>会员盈亏（负=会员输、平台赢；正=会员赢）。</td><td>盈利分析、盈利异常监控。</td><td class="exc">大额持续盈利→风控核查（套利/作弊/对刷）。</td></tr>
+              <tr data-k="base"><td class="fname">今日/累计活动优惠<code>bonusToday / bonusTotal</code></td><td>当日及累计获得的活动优惠/赠送金额。</td><td>活动成本核算、羊毛党识别、优惠占比监控。</td><td class="exc">优惠占比/赠送占比过高→活动滥用风控。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ⑤ 活动奖励信息 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>⑤ 活动奖励信息组</h2><span class="cnt">15 字段</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>字段</th><th class="col-def">名词解释</th><th class="col-use">应用场景</th><th class="col-exc">异常情况</th></tr></thead>
+            <tbody>
+              <tr data-k="base"><td class="fname">已领红包<code>redPacketClaimed</code></td><td>会员累计已领取的红包活动金额。</td><td>红包活动成本核算、参与度分析。</td><td class="exc">未领过为 0；超额/异常领取追溯。</td></tr>
+              <tr data-k="base"><td class="fname">新手礼包<code>newbieGift</code></td><td>新手引导礼包累计领取金额。</td><td>新客激励效果、引导转化。</td><td class="exc">通常仅新客一次，重复领取属异常。</td></tr>
+              <tr data-k="base"><td class="fname">大转盘<code>wheelReward</code></td><td>大转盘抽奖累计中奖金额。</td><td>互动活动成本与参与度评估。</td><td class="exc">中奖概率与成本须可对账，异常波动核查。</td></tr>
+              <tr data-k="base"><td class="fname">注册送金<code>registerBonus</code></td><td>注册即赠送的奖励金额。</td><td>拉新成本核算、注册转化激励。</td><td class="exc">仅注册一次；批量注册薅取须风控拦截。</td></tr>
+              <tr data-k="base"><td class="fname">邀请转盘奖励<code>inviteWheelReward</code></td><td>邀请类转盘活动累计奖励。</td><td>裂变激励、邀请活动效果。</td><td class="exc">邀请真实性核验，虚假邀请奖励追回。</td></tr>
+              <tr data-k="base"><td class="fname">TG频道活动<code>tgChannelReward</code></td><td>Telegram 频道活动累计奖励。</td><td>社群运营效果、私域激励。</td><td class="exc">跨平台行为核验，刷量识别。</td></tr>
+              <tr data-k="base"><td class="fname">首充奖励<code>firstDepositReward</code></td><td>首次充值赠送的奖励金额。</td><td>首充转化激励、新客价值提升。</td><td class="exc">仅首充一次；拆分充值薅取须风控。</td></tr>
+              <tr data-k="base"><td class="fname">超级大奖<code>jackpotReward</code></td><td>超级大奖/头奖类累计中奖金额。</td><td>高额激励、活动引爆与拉新。</td><td class="exc">大额中奖需审核与合规公示。</td></tr>
+              <tr data-k="base"><td class="fname">代理红包充值<code>agentRedPacket</code></td><td>代理发放给下级的红包/充值累计金额。</td><td>代理维系下级、私域促活。</td><td class="exc">代理借此刷返利/套利须风控。</td></tr>
+              <tr data-k="base"><td class="fname">回归新充值奖励<code>returnDepositReward</code></td><td>流失会员回归后充值的专属奖励累计。</td><td>召回（流失挽回）激励。</td><td class="exc">回归判定（沉默期阈值）须达标方可触发。</td></tr>
+              <tr data-k="base"><td class="fname">每日签到<code>dailySignReward</code></td><td>连续签到累计获得的奖励金额。</td><td>日活（DAU）提升、留存激励。</td><td class="exc">补签规则、机器刷签到识别。</td></tr>
+              <tr data-k="base"><td class="fname">锦标赛奖励<code>tournamentReward</code></td><td>锦标赛/竞赛类活动累计奖励。</td><td>竞技活动激励、高活跃会员运营。</td><td class="exc">排名作弊/对刷核查。</td></tr>
+              <tr data-k="base"><td class="fname">新会员礼包<code>newMemberGift</code></td><td>新会员专属礼包累计金额。</td><td>新客权益、首期留存。</td><td class="exc">与「新手礼包」口径区分，避免重复发放。</td></tr>
+              <tr data-k="base"><td class="fname">回归奖励<code>returnReward</code></td><td>流失会员回归的奖励（非充值类）累计。</td><td>召回激励、唤醒沉默会员。</td><td class="exc">回归资格判定，防反复领取。</td></tr>
+              <tr data-k="base"><td class="fname">每周/日奖励<code>weeklyDailyReward</code></td><td>周期性（按周/按日）固定发放奖励累计。</td><td>留存激励、VIP/等级周期权益。</td><td class="exc">周期发放须防重发/漏发。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ⑥ 代理数据 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>⑥ 代理数据组</h2><span class="cnt">15 字段 · 9 新增</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>字段</th><th class="col-def">名词解释</th><th class="col-use">应用场景</th><th class="col-exc">异常情况</th></tr></thead>
+            <tbody>
+              <tr data-k="new"><td class="fname new">一级代理<span class="tag-new">新增</span><code>rootAgentId</code></td><td>该会员所在代理树的顶级（根）代理。</td><td>总代业绩归集、分成顶层、大代理线监控。</td><td class="exc">自身即根则显示自己/空；代理线超最大层级后新增不再挂树。</td></tr>
+              <tr data-k="base"><td class="fname">总获得佣金<code>totalCommission</code></td><td>该会员作为代理累计获得的全部佣金。</td><td>代理业绩评估、结算核对。</td><td class="exc">须与佣金明细勾稽，不一致核账。</td></tr>
+              <tr data-k="base"><td class="fname">邀请奖励<code>inviteReward</code></td><td>因邀请下级而获得的奖励累计金额。</td><td>裂变激励核算、邀请效果评估。</td><td class="exc">虚假邀请/对刷奖励追回。</td></tr>
+              <tr data-k="base"><td class="fname">下级数量<code>subordinateCount</code></td><td>该代理名下下级会员总数（按口径含全部下级或直属）。</td><td>代理规模评估、团队体量监控。</td><td class="exc">注销下级是否计入按口径定义；出现闭环则异常。</td></tr>
+              <tr data-k="base"><td class="fname">合伙人奖励<code>partnerReward</code></td><td>合伙人计划累计获得的奖励金额。</td><td>高级代理/合伙人激励核算。</td><td class="exc">达标条件核验，未达标不发放。</td></tr>
+              <tr data-k="base"><td class="fname">是否领取返佣<code>rebateClaimed</code></td><td>该会员是否已领取其返佣（已领/未领状态）。可配置开关，切换需二次确认。</td><td>返佣发放状态跟踪、对账。</td><td class="exc">已领/未领状态须与返佣账目对账一致。</td></tr>
+              <tr data-k="new"><td class="fname new">直接上级代理<span class="tag-new">新增</span><code>parentAgentId</code></td><td>代理树中该会员的直接父节点（=邀请人）。</td><td>一级返佣计算、直属关系展示。</td><td class="exc">平台直客无直接上级；不提供转代，划拨只改经营归属不改代理树位置。</td></tr>
+              <tr data-k="new"><td class="fname new">代理层级<span class="tag-new">新增</span><code>agentLevel</code></td><td>当前深度 / 最大允许层级（如 3 / 10）。</td><td>多级返佣分成层级、防无限级嵌套。</td><td class="exc">达上限后下级不再建代理关系；层级数须与代理路径长度一致，否则告警。</td></tr>
+              <tr data-k="new"><td class="fname new">代理路径<span class="tag-new">新增</span><code>agentPath</code></td><td>根→本会员的完整代理 ID 链。<strong>超过 3 层时仅展示「一级 → … → 直接上级 → 本人」</strong>（中间层折叠），点击查看整条线全部代理信息。</td><td>上下级关系核查、多级返佣溯源、闭环排查。</td><td class="exc">≤3 层时全量展示不折叠；路径出现重复 ID→闭环异常；中间代理注销→以快照为准。</td></tr>
+              <tr data-k="new"><td class="fname new">佣金模式<span class="tag-new">新增</span><code>commissionMode</code></td><td>代理收益方式两类：返佣=投注流水返佣 / 返利=亏损分成返利。</td><td>代理结算口径、不同代理线差异化激励。</td><td class="exc">同线不同级可不同模式；模式变更只对变更后业绩生效，历史按原模式结算。</td></tr>
+              <tr data-k="new"><td class="fname new">返佣等级<span class="tag-new">新增</span><code>rebateLevel</code></td><td>会员自身的返佣等级/档位，决定其投注流水返佣比例（如 Lv3=0.5%）。</td><td>返佣计算、等级化激励、与 VIP/活跃度联动调整。</td><td class="exc">等级变更只对变更后流水生效，历史按原等级结算；无返佣资格时为 0 级/空。</td></tr>
+              <tr data-k="new"><td class="fname new">是否给上级返佣<span class="tag-new">新增</span><code>rebateToUpline</code></td><td>该会员产生的有效投注流水是否为其上级代理计提返佣。可配置开关，切换需二次确认。</td><td>控制返佣链路；内部号/测试号可关闭不计佣。</td><td class="exc">关闭后上级不再因其流水获佣，但代理树关系保留；与代理状态独立。</td></tr>
+              <tr data-k="new"><td class="fname new">代理状态<span class="tag-new">新增</span><code>agentStatus</code></td><td>代理资格状态（生效/冻结/注销），与会员账号状态独立。</td><td>冻结作弊代理返佣但不影响其玩家身份；注销取消资格保留历史。</td><td class="exc">账号启用但代理冻结/注销时，下级业绩不再计佣；状态变更留审计。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ⑦ VIP -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>⑦ VIP 组</h2><span class="cnt">4 字段</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>字段</th><th class="col-def">名词解释</th><th class="col-use">应用场景</th><th class="col-exc">异常情况</th></tr></thead>
+            <tbody>
+              <tr data-k="base"><td class="fname">VIP经验值<code>vipExp</code></td><td>累计 VIP 经验值，决定 VIP 等级。</td><td>VIP 升级判定、权益与奖励计算。</td><td class="exc">经验按规则累计（一般只增），须与等级匹配校验。</td></tr>
+              <tr data-k="base"><td class="fname">VIP等级<code>vipLevel</code></td><td>当前 VIP 等级（如 V4）。</td><td>专属权益、客服优先级、活动档位。</td><td class="exc">保级规则与降级周期须明确，未达保级影响权益。</td></tr>
+              <tr data-k="base"><td class="fname">VIP每月奖励<code>vipMonthlyReward</code></td><td>VIP 每月固定发放奖励金额。</td><td>VIP 留存权益、月度激励。</td><td class="exc">当月未达保级条件影响发放。</td></tr>
+              <tr data-k="base"><td class="fname">VIP升级礼包<code>vipUpgradeGift</code></td><td>VIP 升级时一次性礼包累计金额。</td><td>升级激励、等级跃迁奖励。</td><td class="exc">每级一次，重复发放属异常。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ⑧ 保险箱 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>⑧ 保险箱组</h2><span class="cnt">4 字段</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>字段</th><th class="col-def">名词解释</th><th class="col-use">应用场景</th><th class="col-exc">异常情况</th></tr></thead>
+            <tbody>
+              <tr data-k="base"><td class="fname">保险箱余额<code>vaultBalance</code></td><td>存入保险箱（计息/隔离于主钱包）的余额。</td><td>会员资金管理、计息基数。</td><td class="exc">与主钱包转入转出须勾稽一致。</td></tr>
+              <tr data-k="base"><td class="fname">已领取收益<code>vaultClaimedInterest</code></td><td>保险箱累计已领取的利息收益。</td><td>收益核算、成本统计。</td><td class="exc">发放须按利率与本金校验，超额异常。</td></tr>
+              <tr data-k="base"><td class="fname">待领取收益<code>vaultPendingInterest</code></td><td>已产生但尚未领取的利息。</td><td>待发收益统计、会员提示。</td><td class="exc">长期未领按规则处理（结转/清零）。</td></tr>
+              <tr data-k="base"><td class="fname">保险箱利率<code>vaultRate</code></td><td>保险箱年化/周期利率（如 58.00%）。</td><td>收益计算依据、活动期调整。</td><td class="exc">利率变更只对变更后周期生效，不追溯。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ⑨ 打码/洗码 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>⑨ 打码 / 洗码组</h2><span class="cnt">6 字段</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>字段</th><th class="col-def">名词解释</th><th class="col-use">应用场景</th><th class="col-exc">异常情况</th></tr></thead>
+            <tbody>
+              <tr data-k="base"><td class="fname">累计打码量<code>totalWager</code></td><td>会员累计有效投注流水（打码量）。</td><td>提现解锁、活动达标、返水基数。</td><td class="exc">须与有效投注口径一致。</td></tr>
+              <tr data-k="base"><td class="fname">需要打码量<code>requiredWager</code></td><td>当前仍需完成的打码量（解锁提现/活动）。</td><td>提现门槛、活动条件进度提示。</td><td class="exc">未达不可提现；规则变更影响计算口径。</td></tr>
+              <tr data-k="base"><td class="fname">会员洗码量<code>washAmount</code></td><td>计入洗码（返水）统计的流水量。</td><td>洗码返水计算、返水活动核算。</td><td class="exc">洗码与打码口径差异须明确，避免混淆。</td></tr>
+              <tr data-k="base"><td class="fname">返水金额<code>washRebate</code></td><td>按洗码量与比例计提的返水金额。</td><td>返水发放、活跃激励。</td><td class="exc">与洗码量/返水比例勾稽校验。</td></tr>
+              <tr data-k="base"><td class="fname">本次打码倍数<code>wagerMultiplier</code></td><td>当前活动/充值要求的打码倍数（如 3 倍）。</td><td>提现解锁倍数计算。</td><td class="exc">多活动叠加时按规则口径取值。</td></tr>
+              <tr data-k="base"><td class="fname">打码量<code>wagerProgress</code></td><td>当前进度打码量，支持人工「修改」调整。</td><td>人工调整解锁进度、客诉处理。</td><td class="exc">人工修改须经审批并留痕，防滥用。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ⑩ 注册信息 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>⑩ 注册信息组</h2><span class="cnt">9 字段 · 5 新增</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>字段</th><th class="col-def">名词解释</th><th class="col-use">应用场景</th><th class="col-exc">异常情况</th></tr></thead>
+            <tbody>
+              <tr data-k="base"><td class="fname">注册时间<code>registerTime</code></td><td>会员账号的创建时间（与基本信息一致）。</td><td>注册分析、风控时间线还原。</td><td class="exc">固定不可改；与首次登录顺序异常→校验。</td></tr>
+              <tr data-k="base"><td class="fname">注册IP<code>registerIp</code></td><td>会员注册时的 IP 地址。</td><td>地域分析、同 IP 聚合风控。</td><td class="exc">代理/VPN 伪装；同 IP 大量注册→工作室。</td></tr>
+              <tr data-k="new"><td class="fname new">注册端<span class="tag-new">新增</span><code>regClient</code></td><td>会员注册时使用的客户端，枚举 pc/h5/ios/安卓/ios壳包/安卓壳包。</td><td>注册端转化分析、APP 渗透率。</td><td class="exc">UA 被篡改记未知；注册端与长期登录端差异大→疑养号/接管。</td></tr>
+              <tr data-k="new"><td class="fname new">注册设备号/指纹<span class="tag-new">新增</span><code>regDeviceId + regFingerprint</code></td><td><b>设备号与浏览器指纹合并展示</b>：设备号为原生包采集的稳定设备 ID（<b>为后续原生包预留</b>，壳包/H5 阶段可能为空或临时值）；指纹为前端采集的浏览器指纹（如 fp_a8c3e91d7b）。两者共同唯一标识注册设备。</td><td>多开/养号识别、设备维度风控、配合防环与同设备聚合。</td><td class="exc">壳包/H5 取不到稳定设备号→以指纹兜底；设备号被重置、指纹被清除/伪造→标风险并结合多维判定。</td></tr>
+              <tr data-k="new"><td class="fname new">是否模拟器<span class="tag-new">新增</span><code>isEmulator</code></td><td>注册设备是否为模拟器/虚拟环境。</td><td>批量注册与作弊识别、风控拦截。</td><td class="exc">反检测伪装可能漏判；云真机/越狱设备单独标记。</td></tr>
+              <tr data-k="new"><td class="fname new">注册域名<span class="tag-new">新增</span><code>regDomain</code></td><td>会员注册时进入的域名（属本商户），完成主线 商户→域名；域名定上下文，渠道定来源。域名类型：主站/推广/落地/备用。</td><td>渠道入口落到确定经营上下文；推广域名效果归集。</td><td class="exc">仅有域名而无渠道时落该单元默认自然流量；域名删除/启停不改写历史会员的注册域名快照。</td></tr>
+              <tr data-k="base"><td class="fname">同IP注册会员数<code>sameIpRegCount</code></td><td>与本会员同一注册 IP 的账号总数。</td><td>多开/工作室/养号识别。</td><td class="exc">公共网络（网吧/校园）易误判，须结合设备研判。</td></tr>
+              <tr data-k="new"><td class="fname new">同设备注册会员数<span class="tag-new">新增</span><code>sameDeviceRegCount</code></td><td>与本会员同一注册设备（设备号/指纹）注册的账号总数。</td><td>多开/工作室/养号识别、设备维度风控聚合。</td><td class="exc">取不到稳定设备号时以指纹计；家庭共享设备可能误判，需结合行为研判。</td></tr>
+              <tr data-k="base"><td class="fname">同指纹注册会员数<code>sameFingerprintRegCount</code></td><td>与本会员同浏览器指纹注册的账号数。</td><td>关联账号识别、聚合风控。</td><td class="exc">同设备多真实会员可能误判。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ⑪ 登录信息 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>⑪ 登录信息组 <span style="font-size:12px;font-weight:400;color:var(--red)">※ 整组新增</span></h2><span class="cnt">5 字段 · 5 新增</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>字段</th><th class="col-def">名词解释</th><th class="col-use">应用场景</th><th class="col-exc">异常情况</th></tr></thead>
+            <tbody>
+              <tr data-k="new"><td class="fname new">登录端<span class="tag-new">新增</span><code>loginClient</code></td><td>会员最近一次登录的客户端，枚举同注册端。</td><td>活跃端分析、注册端与登录端一致性风控。</td><td class="exc">登录端频繁跨端切换+异地→异常登录告警。</td></tr>
+              <tr data-k="new"><td class="fname new">登录设备号/指纹<span class="tag-new">新增</span><code>loginDeviceId + loginFingerprint</code></td><td><b>设备号与浏览器指纹合并展示</b>：最近一次登录设备的稳定设备 ID（<b>为后续原生包预留</b>）与登录时采集的浏览器指纹，共同唯一标识登录设备。</td><td>常用设备识别、异常设备登录监控、同设备多账号聚合。</td><td class="exc">与注册设备号/指纹长期不一致→疑账号转手/接管；取不到时待原生包补采。</td></tr>
+              <tr data-k="new"><td class="fname new">同设备登录数<span class="tag-new">新增</span><code>sameDeviceLoginCount</code></td><td>与本会员同一设备（设备号/指纹）登录过的账号总数。</td><td>共享设备/工作室识别、登录维度风控聚合。</td><td class="exc">家庭共享设备可能误判，需结合行为研判。</td></tr>
+              <tr data-k="new"><td class="fname new">同指纹登录数<span class="tag-new">新增</span><code>sameFingerprintLoginCount</code></td><td>与本会员同浏览器指纹登录过的账号总数。</td><td>关联账号识别、登录聚合风控。</td><td class="exc">指纹可伪造/清除，须结合多维判定。</td></tr>
+              <tr data-k="new"><td class="fname new">登录域名<span class="tag-new">新增</span><code>loginDomain</code></td><td>会员最近一次登录进入的域名，可与注册域名不同（如注册走推广域名、登录走主站域名）。</td><td>回流入口分析、主站/备用域名切换监控。</td><td class="exc">跨商户域名进入应判异常并拦截；域名被封后登录走备用域名属正常切换。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ⑪ 最后3次登录信息 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>⑫ 最后 3 次登录信息组</h2><span class="cnt">9 字段</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>字段</th><th class="col-def">名词解释</th><th class="col-use">应用场景</th><th class="col-exc">异常情况</th></tr></thead>
+            <tbody>
+              <tr data-k="base"><td class="fname">最后第1次登录时间<code>lastLogin1Time</code></td><td>最近一次（最新）登录的时间。</td><td>活跃判断、异常登录监控起点。</td><td class="exc">与设备/IP 突变结合→疑账号接管。</td></tr>
+              <tr data-k="base"><td class="fname">第1次登录IP<code>lastLogin1Ip</code></td><td>最近一次登录的 IP 地址。</td><td>异地登录监控、地域核对。</td><td class="exc">异地+换设备同时出现→告警。</td></tr>
+              <tr data-k="base"><td class="fname">第1次同IP会员数<code>lastLogin1SameIp</code></td><td>该登录 IP 关联的账号总数。</td><td>共享 IP/工作室识别、聚合风控。</td><td class="exc">公共网络易误判，结合设备与行为。</td></tr>
+              <tr data-k="base"><td class="fname">最后第2次登录时间<code>lastLogin2Time</code></td><td>倒数第二次登录的时间。</td><td>登录轨迹回溯、频次分析。</td><td class="exc">时间出现倒序→数据异常。</td></tr>
+              <tr data-k="base"><td class="fname">第2次登录IP<code>lastLogin2Ip</code></td><td>倒数第二次登录的 IP 地址。</td><td>登录轨迹与地域分析。</td><td class="exc">短时间频繁跨地→异常。</td></tr>
+              <tr data-k="base"><td class="fname">第2次同IP会员数<code>lastLogin2SameIp</code></td><td>该 IP 关联的账号总数。</td><td>聚合风控、关联识别。</td><td class="exc">公共网络易误判，结合多维。</td></tr>
+              <tr data-k="base"><td class="fname">最后第3次登录时间<code>lastLogin3Time</code></td><td>倒数第三次登录的时间。</td><td>登录轨迹回溯、活跃节奏。</td><td class="exc">时间倒序/缺失→数据校验。</td></tr>
+              <tr data-k="base"><td class="fname">第3次登录IP<code>lastLogin3Ip</code></td><td>倒数第三次登录的 IP 地址。</td><td>轨迹与地域分析。</td><td class="exc">频繁跨地/换网→结合研判。</td></tr>
+              <tr data-k="base"><td class="fname">第3次同IP会员数<code>lastLogin3SameIp</code></td><td>该 IP 关联的账号总数。</td><td>聚合风控、关联识别。</td><td class="exc">公共网络误判，结合设备与行为。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <script>
+      var MODE = 'all';
+      function T(m) {
+        MODE = m;
+        ['All', 'New', 'Base'].forEach(function (x) {
+          document.getElementById('b' + x).classList.toggle('on', x.toLowerCase() === m);
+        });
+        F();
+      }
+      function F() {
+        var q = (document.getElementById('q').value || '').toLowerCase();
+        var shown = 0;
+        document.querySelectorAll('.card').forEach(function (card) {
+          var vis = 0;
+          card.querySelectorAll('tbody tr').forEach(function (r) {
+            var okMode = MODE === 'all' || r.getAttribute('data-k') === MODE;
+            var okText = !q || r.textContent.toLowerCase().includes(q);
+            var ok = okMode && okText;
+            r.style.display = ok ? '' : 'none';
+            if (ok) { vis++; shown++; }
+          });
+          if (card.querySelector('tbody')) card.style.display = vis ? '' : 'none';
+        });
+        document.getElementById('rc').textContent = (q || MODE !== 'all') ? ('命中 ' + shown + ' 字段') : '';
+      }
+      if(/[?&]new\b/.test(location.search)){T('new');}
+    </script>
+  </body>
+</html>

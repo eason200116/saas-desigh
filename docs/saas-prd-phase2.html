@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SaaS 多商户后台 · 二阶段产品文档（PRD）</title>
+<style>
+  :root{--blue:#1d4ed8;--ink:#1f2937;--sub:#64748b;--line:#e5e7eb;--bg:#f7f9fc}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
+  .wrap{max-width:1080px;margin:0 auto;padding:28px 22px 80px}
+  .hero{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;border-radius:14px;padding:26px 28px;margin-bottom:22px}
+  .hero h1{margin:0 0 6px;font-size:24px}
+  .hero p{margin:0;opacity:.92;font-size:13.5px}
+  .meta{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+  .pill{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:3px 12px;font-size:12px}
+  .toc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 20px;margin-bottom:22px}
+  .toc b{color:var(--blue);font-size:13px}
+  .toc a{display:inline-block;margin:4px 14px 4px 0;color:#334155;text-decoration:none;font-size:13px}
+  .toc a:hover{color:var(--blue);text-decoration:underline}
+  h2{font-size:18px;color:var(--blue);margin:30px 0 6px;padding-bottom:8px;border-bottom:2px solid #eef2f7}
+  h3{font-size:15px;color:var(--ink);margin:20px 0 8px}
+  .sub{color:var(--sub);font-size:13px;margin:2px 0 12px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:#f1f5f9;color:#334155;font-weight:700}
+  td.c{text-align:center}
+  .tag{display:inline-block;font-size:11px;border-radius:6px;padding:1px 8px;font-weight:600}
+  .t-new{background:#fef3c7;color:#b45309}
+  .t-done{background:#dcfce7;color:#15803d}
+  .t-core{background:#ede9fe;color:#6d28d9}
+  ul.feat{margin:6px 0;padding-left:20px}
+  ul.feat li{margin:5px 0}
+  ul.feat li b{color:var(--ink)}
+  .note{background:#f8fafc;border:1px solid #eef2f7;border-left:3px solid var(--blue);border-radius:8px;padding:10px 14px;font-size:12.5px;color:var(--sub);line-height:1.85;margin:10px 0}
+  .step{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:10px 0}
+  .step .s{background:#eff6ff;border:1px solid #dbeafe;border-radius:8px;padding:6px 12px;font-size:12.5px;color:#1e40af;font-weight:600}
+  .step .ar{color:#cbd5e1;font-weight:700}
+  a.lk{color:#2563eb;text-decoration:none}
+  a.lk:hover{text-decoration:underline}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <h1>SaaS 多商户后台 · 二阶段产品文档（PRD）</h1>
+    <p>会员管理深度迁移 · 顶部导航与工作台优化 · 会员详情归因字段 · <b>推广分发配置（全新）</b></p>
+    <div class="meta">
+      <span class="pill">版本 v2 · 2026-06-10</span>
+      <span class="pill">范围：二阶段</span>
+      <span class="pill">新增 38 页面 · 5 模块 · 14 子分类</span>
+      <span class="pill">实现后台 localhost:8200</span>
+    </div>
+  </div>
+
+  <div class="toc">
+    <b>目录</b><br>
+    <a href="#s1">一、目标与范围</a>
+    <a href="#s2">二、迁移内容总览</a>
+    <a href="#s3">三、导航与框架</a>
+    <a href="#s4">四、会员管理深度迁移</a>
+    <a href="#s5">五、推广分发配置（核心）</a>
+    <a href="#s6">六、风控 / 配置中心 / 系统</a>
+    <a href="#s7">七、通用交互规范</a>
+    <a href="#s8">八、验收标准</a>
+    <a href="#s9">九、关联文档与原型</a>
+  </div>
+
+  <div class="note">📌 <b>阶段说明</b>：一阶段已完成 SitINR 基础迁移（会员列表/层级/在线人数/财务等基础页、数据分析/运营/租户/系统监控）。本文档为 <b>二阶段</b> 范围 —— 在一阶段基础上做会员管理深度迁移与全新的推广分发配置。一阶段功能见 <a class="lk" href="saas-workplan.html">工作计划书</a> 与 <a class="lk" href="feature-inventory.html">全功能清单</a>。</div>
+
+  <!-- 一 -->
+  <h2 id="s1">一、目标与范围</h2>
+  <div class="card">
+    <p>二阶段聚焦五件事：</p>
+    <ul class="feat">
+      <li><b>① 会员管理深度迁移</b> — 按 SitINR 对照补全会员相关功能，按分类优化重新归属到 5 个模块</li>
+      <li><b>② 顶部导航分类优化</b> — 8 大主 Tab 多列分组下拉，子页作为可关闭标签进入页签栏</li>
+      <li><b>③ 快捷工作台</b> — 功能磁贴可增删 / 拖拽排序（本地持久），作为聚合入口</li>
+      <li><b>④ 会员详情新增归因字段</b> — 在真实抽屉按指定位置注入红字字段（归因来源 / 归属层级 / 代理数据 / 注册登录）</li>
+      <li><b>⑤ 推广分发配置（全新）</b> <span class="tag t-core">核心</span> — 域名 / 打包 / 埋点 / 渠道 / PWA + 配置向导 SOP</li>
+    </ul>
+    <div class="note">交付形式：以 <b>localhost:8200 可点击原型</b> 为准（真实交互，非占位）。本阶段在原型中共<b>新增 38 个页面</b>。</div>
+  </div>
+
+  <!-- 二 -->
+  <h2 id="s2">二、迁移内容总览</h2>
+  <div class="sub">二阶段新增功能点按"分类优化后的归属"分布在 5 个模块（部分会员相关功能经重新归类落入风控 / 配置中心 / 运营管理）。</div>
+  <table>
+    <thead><tr><th style="width:120px">模块</th><th>新增功能点（按子分类）</th><th style="width:60px" class="c">数量</th></tr></thead>
+    <tbody>
+      <tr><td><b>会员管理</b></td><td><b>会员分组</b>：会员分组 · 分组表单　<b>认证·银行卡</b>：CPF认证　<b>登录·验证</b>：登录日志列表 · 登录日志(设备ID/浏览器指纹) · 短信验证码查询　<b>代理关系</b>：代理关系(D/C/M/A) · 代理关系导入</td><td class="c">8</td></tr>
+      <tr><td><b>运营管理</b></td><td><b>消息管理</b>：站内消息 · 公告消息　<b>运营配置</b>：轮播图管理 · TG频道管理　<b>推广配置</b>：配置向导 · PWA配置 · 域名管理 · 打包管理 · 埋点管理 · 渠道管理　<b>运营数据</b>：VIP奖励记录 · VIP等级人数 · 合伙人奖励 · 返佣报表 · 昨日返佣等级 · 充值奖励发放记录 · 邀请奖励领取记录 · 连续签到记录</td><td class="c">18</td></tr>
+      <tr><td><b>风控管理</b></td><td><b>异常·检测</b>：异常会员处理 · 互刷名单 · 相同IP　<b>风控名单</b>：会员提现限制名单 · 刷通道会员清单</td><td class="c">5</td></tr>
+      <tr><td><b>配置中心</b></td><td><b>等级配置</b>：VIP等级 · VIP经验配置 · 充值等级　<b>返佣·代理</b>：返佣等级 · 代理审核机制　<b>会员规则</b>：分组权限配置</td><td class="c">6</td></tr>
+      <tr><td><b>系统管理</b></td><td><b>访问控制</b>：IP黑名单</td><td class="c">1</td></tr>
+      <tr><td><b>合计</b></td><td>5 个模块 · 14 个子分类</td><td class="c"><b>38</b></td></tr>
+    </tbody>
+  </table>
+  <div class="note">注：会员列表 / 会员层级 / 在线人数 / 会员银行卡等基础页一阶段已建，不计入新增。运营管理已重组为"消息管理 / 运营配置 / 推广配置 / 运营数据"。本阶段移除：会员「KW认证」、活动相关配置（首充管理 / 活动资讯 / 邀请任务 / ARB提现 等）、游戏「会员洗码管理」。完整迁移状态见 <a class="lk" href="saas-workplan.html">工作计划书 · 迁移对照表</a>。</div>
+
+  <!-- 三 -->
+  <h2 id="s3">三、导航与框架</h2>
+  <div class="card">
+    <ul class="feat">
+      <li><b>8 大主 Tab</b> — 会员 / 运营 / 风控 / 配置中心 / 财务 / 游戏 / 报表 / 系统，多列分组下拉</li>
+      <li><b>多标签页签栏</b> — 子页作为可关闭标签加入页签栏，多页并存、切换、关闭、拖拽排序（至少保留一个）</li>
+      <li><b>快捷工作台</b> — Logo 入口 + 功能磁贴；默认仅会员/运营/财务，其余可"添加快捷入口"；可删除 / 拖拽排序（本地持久）；作为页签进入页签栏</li>
+    </ul>
+  </div>
+
+  <!-- 四 -->
+  <h2 id="s4">四、会员管理深度迁移</h2>
+  <div class="card">
+    <ul class="feat">
+      <li><b>会员列表</b> <span class="tag t-done">对齐真实</span> — 17 筛选 + 14 批量操作；商户蓝 pill、会员ID/IP 蓝链接+复制、金额右对齐+表头排序、页面合计/总计双汇总行、高级筛选(前5+折叠)/收起、自定义列、全选当前页+跳页</li>
+      <li><b>会员列表 · 返佣配置开关</b> <span class="tag t-new">新增</span> — 「领取返佣」「对上级返佣」行内 toggle，切换二次确认；详情红字字段同步为红色列（可显隐）</li>
+      <li><b>会员详情 · 新增归因字段</b> <span class="tag t-new">新增</span> — 真实抽屉按指定位置注入红字字段：<b>归因来源</b>（带"?"类型简介 + 归因明细折叠流程图）、<b>归属层级</b>、<b>代理数据</b>（含 10 级代理关系图，点击复制代理ID）、<b>注册/登录信息</b>；布局不变，邀请人 · 代理路径可点</li>
+      <li><b>下级会员 / 会员层级</b> — 批量禁用/启用/拉白/拉黑、解除代理、统计列</li>
+      <li><b>会员分组 / 分组表单 · CPF认证 · 登录日志 · 短信验证码 · 代理关系(D/C/M/A) · 代理关系导入</b></li>
+    </ul>
+    <div class="note">字段规格详见 <a class="lk" href="member-detail-field-glossary-full.html?new">会员详情 · 新增字段说明</a>、归因逻辑见 <a class="lk" href="attribution-flow.html">归因来源判定流程图</a>。</div>
+  </div>
+
+  <!-- 五 -->
+  <h2 id="s5">五、推广分发配置 <span class="tag t-core">二阶段核心</span></h2>
+  <div class="sub">位置：运营管理 → 推广配置。把 域名 → 打包/PWA → 渠道 → 埋点 串成投放配置链，支持 安卓APK / iOS原生 / 安卓壳包 / iOS壳包 / H5链接 / PWA 共 6 种分发形态。</div>
+
+  <div class="card">
+    <h3>5.1 配置向导（标准作业 SOP）</h3>
+    <div class="sub">单页分板块、可逐块配置；每阶段标注 负责角色 / 操作步骤 / 验收检查点 / 交付产出；完成后生成配置结果总览。</div>
+    <div class="step">
+      <span class="s">1 域名准备</span><span class="ar">→</span>
+      <span class="s">2 物料打包 / PWA</span><span class="ar">→</span>
+      <span class="s">3 渠道绑定</span><span class="ar">→</span>
+      <span class="s">4 埋点回传</span><span class="ar">→</span>
+      <span class="s">5 投放监控</span>
+    </div>
+    <ul class="feat">
+      <li>每个字段<b>来源真实模块下拉</b>：域名 ← 域名管理、渠道 ← 渠道管理、埋点平台 ← 埋点配置</li>
+      <li>第 2 步按<b>分发形态动态配置</b>：APK 传 .apk + 应用名/版本/打包域名；壳包传壳包 + 壳访问URL；H5 / PWA 免打包（提示 + 跳 PWA 管理）</li>
+      <li>第 4 步按<b>投放平台动态配置</b> + 「?」帮助（按平台查看：回传方式 / 点击参数 / 必传基础事件 / 优化事件 / 开发文档）</li>
+      <li>每步可「去对应功能页完整配置」跳转，向导页签保留</li>
+    </ul>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3>5.2 域名管理</h3>
+      <ul class="feat">
+        <li><b>4 种域名类型</b>：主域名 / 推广域名 / 防封谷歌页 / 防封苹果页</li>
+        <li><b>按类型动态字段</b>：推广域名 → 跳转域名 + 落地指向；防封页 → 仿模板 + 落地主域名 + 救援</li>
+        <li><b>防封救援</b>：救援开关 / 强制弹窗 / 救援域名(多选) / 救援方案 / 救援奖金 —— 被封自动切换、带账号自动登录领奖金</li>
+        <li>解析检测（检测中 → 生效）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>5.3 打包管理</h3>
+      <ul class="feat">
+        <li><b>新增渠道包</b>：应用名称 / 版本号 / 打包域名 / <b>邀请码</b>(0-20 计数，留空不使用)</li>
+        <li>上传 iOS包(.ipa) / 安卓包(.apk) / iOS壳包 / 安卓壳包（WebView 套壳）</li>
+        <li>列表含 邀请码 列；详情 / 下载 / 二维码 / 重新打包</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>5.4 埋点管理</h3>
+      <ul class="feat">
+        <li><b>9 种埋点类型</b>（按平台分组）：常规推广 / APK上架包 + Facebook/TikTok/Kwai/GTM-click + Facebook/TikTok/Kwai-API</li>
+        <li><b>配置项按类型动态</b>：click 类 = Pixel ID；API 类 = Pixel ID + Token + test_event_code</li>
+        <li><b>平台页签</b>（Facebook/TikTok/谷歌/Kwai）+ <b>埋点说明</b>（必传基础事件 + 优化事件 + 事件映射 + 开发文档）</li>
+        <li>测试回传（含 Facebook-API 5 步流程）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>5.5 渠道管理</h3>
+      <ul class="feat">
+        <li><b>新增渠道</b>：渠道来源 / 绑定域名 / 落地指向(5选) / 埋点类型 / 动态参数 / 邀请码</li>
+        <li>生成带渠道码推广链接；复制推广链接 / 推广二维码 / 停用 / 删除</li>
+        <li>来源写入会员「归因来源」，闭环渠道 ROI</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>5.6 PWA 配置</h3>
+    <div class="sub">一页双 Tab：域名列表 + 域名统计。</div>
+    <ul class="feat">
+      <li><b>域名列表</b>：商户 / 域名 / 语言切换 / 内外链 / 备注 / 开启状态 / 最后修改；操作 编辑 · 跳转配置 · 页面配置 · 推送配置 · 发布</li>
+      <li><b>域名统计</b>：打开次数 / 打开人数 / 下载次数（按商户、域名、时间区间查询）</li>
+    </ul>
+    <div class="note">推广分发完整说明（SOP / 关联矩阵 / 投放渠道×端 / 回传逻辑）见 <a class="lk" href="promo-distribution-config.html">推广分发配置 · 完整说明</a>。</div>
+  </div>
+
+  <!-- 六 -->
+  <h2 id="s6">六、风控 / 配置中心 / 系统</h2>
+  <div class="card">
+    <ul class="feat">
+      <li><b>风控管理</b> — 异常会员处理 · 互刷名单 · 相同IP · 会员提现限制名单 · 刷通道会员清单 · IP黑名单</li>
+      <li><b>配置中心</b> — VIP等级 / VIP经验配置 / 充值等级 · 返佣等级 / 代理审核机制 · 分组权限配置</li>
+      <li><b>系统管理</b> — 访问控制：IP黑名单</li>
+    </ul>
+  </div>
+
+  <!-- 七 -->
+  <h2 id="s7">七、通用交互规范</h2>
+  <div class="card">
+    <ul class="feat">
+      <li><b>列表通用</b> — 查询(条件过滤保留输入) / 重置 / 导出 CSV / 翻页 / 排序 / 时间快捷 / 说明 / 批量(勾选拦截+二次确认) / 自定义列(实时显隐) / 高级筛选(前5+折叠)</li>
+      <li><b>筛选下拉来源真实</b> — 选项按字段映射真实内容（广告平台 / 回传类型 / 状态 / 域名类型 / 落地指向 等），首项「全部」</li>
+      <li><b>表单弹窗</b> — 自适应尺寸；图片字段(图片/封面/图标)自动渲染为上传控件(选图→预览→移除)</li>
+      <li><b>动态表单</b> — 域名类型 / 分发形态 / 埋点类型 / 投放平台 改变时，对应配置项动态切换</li>
+    </ul>
+  </div>
+
+  <!-- 八 -->
+  <h2 id="s8">八、验收标准</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th style="width:160px">验收项</th><th>标准</th></tr></thead>
+      <tbody>
+        <tr><td>页面完整性</td><td>38 个新增页面均在 localhost:8200 可点击、真实交互（非占位）</td></tr>
+        <tr><td>配置向导</td><td>5 阶段可走通，每步检查点可勾、可跳转对应功能页，完成后生成配置结果总览</td></tr>
+        <tr><td>动态配置</td><td>域名类型 / 分发形态 / 埋点类型 / 投放平台 切换时配置项正确变化</td></tr>
+        <tr><td>数据来源</td><td>域名 / 渠道 / 埋点等下拉来源对应模块；筛选下拉为真实选项</td></tr>
+        <tr><td>会员详情</td><td>新增归因字段在真实抽屉指定位置以红字注入，布局不变，可点可复制</td></tr>
+        <tr><td>埋点合规</td><td>必传基础事件(激活/注册/登录/首充/付费)强制上报；优化事件可多选；事件名对照各平台</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 九 -->
+  <h2 id="s9">九、关联文档与原型</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>文档</h3>
+      <ul class="feat">
+        <li><a class="lk" href="saas-workplan.html">SaaS 工作计划书</a> — 进度权威来源（含一/二/三阶段）</li>
+        <li><a class="lk" href="promo-distribution-config.html">推广分发配置 · 完整说明</a> — SOP / 矩阵 / 回传</li>
+        <li><a class="lk" href="member-detail-field-glossary-full.html?new">会员详情 · 新增字段说明</a></li>
+        <li><a class="lk" href="attribution-flow.html">归因来源 · 判定流程图</a></li>
+        <li><a class="lk" href="group-to-member-hierarchy.html">集团 → 会员 层级体系</a></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>原型直达（localhost:8200）</h3>
+      <ul class="feat">
+        <li><a class="lk" href="http://localhost:8200/?open=pkg-wizard">配置向导</a></li>
+        <li><a class="lk" href="http://localhost:8200/?open=domain-mgmt">域名管理</a></li>
+        <li><a class="lk" href="http://localhost:8200/?open=apk-package">打包管理</a></li>
+        <li><a class="lk" href="http://localhost:8200/?open=tracking-mgmt">埋点管理</a></li>
+        <li><a class="lk" href="http://localhost:8200/?open=channel-config">渠道管理</a></li>
+        <li><a class="lk" href="http://localhost:8200/?open=pwa-config">PWA 配置</a></li>
+        <li><a class="lk" href="http://localhost:8200/?open=hub">快捷工作台总览</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note" style="margin-top:24px;text-align:center">SaaS 多商户后台 · 二阶段产品文档（PRD） · 以 localhost:8200 实建状态为准 · 2026-06-10</div>
+
+</div>
+</body>
+</html>
