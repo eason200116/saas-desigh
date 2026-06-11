@@ -51,7 +51,25 @@
       .col-exc { width: 30%; }
       .legend { padding: 12px 24px; background: #fff; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--muted); }
       .legend b { color: var(--red); }
+      .mk-y { color: var(--green); font-weight: 700; }
+      .mk-n { color: var(--red); font-weight: 700; }
+      .mk-i { color: var(--muted); font-weight: 700; }
+      .grp-cell { background: #f0f4f8; font-weight: 700; color: var(--blue); vertical-align: middle !important; white-space: nowrap; }
+      .rule-code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; background: #f6f8fb; border: 1px solid var(--border); border-radius: 5px; padding: 1px 6px; white-space: nowrap; }
       @media (max-width: 860px) { .col-def, .col-use, .col-exc { width: auto; } }
+    
+      /* 归因穷举矩阵：左列+表头冻结，右侧横向滑动 */
+      .mx-scroll { overflow: auto; max-height: 72vh; }
+      .mx-scroll table { border-collapse: separate; border-spacing: 0; table-layout: fixed; width: 100%; min-width: 1036px; margin: 0; }
+      .mx-scroll th, .mx-scroll td { padding: 7px 8px; }
+      .mx-scroll .grp-cell { white-space: normal; }
+      .mx-scroll thead th { white-space: normal; word-break: break-word; }
+      .mx-scroll td { word-break: break-word; }
+      .mx-scroll thead th { position: sticky; top: 0; z-index: 5; background: #f1f5f9; }
+      .mx-scroll td.mxfz { position: sticky; z-index: 4; background: #fff; }
+      .mx-scroll th.mxfz { position: sticky; z-index: 8; }
+      .mx-scroll td.mxfz.grp-cell { background: #f0f4f8; }
+      .mx-scroll .mxfz-last { box-shadow: 2px 0 6px rgba(15,23,42,.10); }
     </style>
   </head>
   <body>
@@ -82,6 +100,39 @@
 
     <div class="container">
 
+      <!-- ⓪ 归因穷举矩阵 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>⓪ 归因穷举矩阵（5 大类型 × 18 种情况，点击表头跳转字段说明）</h2><span class="cnt">5 大类型 · 18 种情况</span></div>
+        <div class="card-body">
+          <div class="mx-scroll"><table><colgroup><col style="width:72px"><col style="width:40px"><col style="width:100px"><col style="width:66px"><col style="width:70px"><col style="width:72px"><col style="width:24px"><col style="width:66px"><col style="width:82px"><col style="width:146px"><col style="width:78px"><col style="width:62px"><col style="width:84px"><col style="width:74px"></colgroup>
+            <thead>
+              <tr><th rowspan="2">类型</th><th rowspan="2">编号</th><th colspan="4" style="text-align:center;border-bottom:1px solid var(--border)">触发标识</th><th rowspan="2" style="text-align:center">→</th><th colspan="7" style="text-align:center;border-bottom:1px solid var(--border)">页面呈现 · 归因明细（点击表头跳转字段说明）</th></tr>
+              <tr><th>推广标识<br>(clickid/UTM)</th><th>邀请码</th><th>官方链接标识</th><th>搜索 referrer</th><th><a href="#attr-src" style="color:var(--blue)">主归因</a></th><th><a href="#attr-src" style="color:var(--blue)">推广平台名称</a></th><th><a href="#attr-src" style="color:var(--blue)">注册渠道</a></th><th><a href="#attr-src" style="color:var(--blue)">登录渠道</a></th><th><a href="#attr-src" style="color:var(--blue)">搜索引擎</a></th><th><a href="#attr-src" style="color:var(--blue)">邀请码</a></th><th><a href="#attr-src" style="color:var(--blue)">邀请类型</a></th></tr>
+            </thead>
+            <tbody>
+              <tr data-k="new"><td class="grp-cell" rowspan="6">① 广告投放</td><td>A1</td><td><span class="mk-y">✓</span> 点击ID</td><td><span class="mk-n">✗</span></td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>广告投放</td><td>Facebook</td><td><span style="white-space:nowrap">Facebook-鳗鱼01</span><br><span class="rule-code">apk-fb-me001-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>—</td><td>—</td></tr>
+              <tr data-k="new"><td>A2</td><td><span class="mk-y">✓</span> UTM 清单内</td><td><span class="mk-n">✗</span></td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>广告投放</td><td>Instagram</td><td><span style="white-space:nowrap">Instagram-奥运01</span><br><span class="rule-code">h5-ig-ay002-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>—</td><td>—</td></tr>
+              <tr data-k="new"><td>A3</td><td><span class="mk-y">✓</span> UTM 清单外</td><td><span class="mk-n">✗</span></td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>广告投放</td><td>其他</td><td><span style="white-space:nowrap">其他投放-鳗鱼01</span><br><span class="rule-code">h5-ads-me001-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>—</td><td>—</td></tr>
+              <tr data-k="new"><td>A4</td><td><span class="mk-y">✓</span></td><td><span class="mk-y">✓</span> 有效码</td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>广告投放</td><td>Facebook</td><td><span style="white-space:nowrap">Facebook-鳗鱼01</span><br><span class="rule-code">apk-fb-me001-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>AGENT100</td><td>正常邀请</td></tr>
+              <tr data-k="new"><td>A5</td><td><span class="mk-y">✓</span></td><td><span class="mk-y">✓</span> 无效码</td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>广告投放</td><td>Facebook</td><td><span style="white-space:nowrap">Facebook-鳗鱼01</span><br><span class="rule-code">apk-fb-me001-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>AGENT100</td><td>—</td></tr>
+              <tr data-k="new"><td>B2</td><td><span class="mk-y">✓</span> 平台自动附加</td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>广告投放</td><td>Facebook</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>—</td><td>—</td></tr>
+              <tr data-k="new"><td class="grp-cell" rowspan="5">② 邀请来源</td><td>A6</td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 个人码·手填</td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>邀请来源</td><td>—</td><td><span style="white-space:nowrap">Facebook-鳗鱼01</span><br><span class="rule-code">apk-fb-me001-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>AGENT100</td><td>正常邀请</td></tr>
+              <tr data-k="new"><td>B3</td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 个人码</td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>邀请来源</td><td>—</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>AGENT100</td><td>正常邀请</td></tr>
+              <tr data-k="new"><td>B4</td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 转盘活动码</td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>邀请来源</td><td>—</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>WHEEL8001</td><td>转盘邀请</td></tr>
+              <tr data-k="new"><td>B5</td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 任务活动码</td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>邀请来源</td><td>—</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>TASK8002</td><td>任务邀请</td></tr>
+              <tr data-k="new"><td>B6</td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 活动码过期</td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>邀请来源</td><td>—</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>WHEEL8001</td><td>正常邀请</td></tr>
+              <tr data-k="new"><td class="grp-cell" rowspan="1">③ 官方直推</td><td>B1</td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>官方直推</td><td>—</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>—</td><td>—</td></tr>
+              <tr data-k="new"><td class="grp-cell" rowspan="4">④ 自然流量</td><td>A7</td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 非搜索</td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>自然流量</td><td>—</td><td><span style="white-space:nowrap">Facebook-鳗鱼01</span><br><span class="rule-code">apk-fb-me001-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>其他</td><td>—</td><td>—</td></tr>
+              <tr data-k="new"><td>B7</td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 清单内引擎</td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>自然流量</td><td>—</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>Google</td><td>—</td><td>—</td></tr>
+              <tr data-k="new"><td>B8</td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 清单外/非搜索</td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>自然流量</td><td>—</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>其他</td><td>—</td><td>—</td></tr>
+              <tr data-k="new"><td>B9</td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>自然流量</td><td>—</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>直接访问</td><td>—</td><td>—</td></tr>
+              <tr data-k="new"><td class="grp-cell" rowspan="2">⑤ 解析失败（并入自然流量）</td><td>B10</td><td colspan="4" style="text-align:center;background:#fafbfc;color:var(--muted)">有参数但全部解析失败（损坏 / 伪造 / 过期）</td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>自然流量</td><td>—</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>直接访问</td><td>—</td><td>—</td></tr>
+              <tr data-k="new"><td>B11</td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 无效码</td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>自然流量</td><td>—</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>直接访问</td><td>AGENT100</td><td>—</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+
       <!-- ① 基本信息 -->
       <div class="card">
         <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>① 基本信息组</h2><span class="cnt">17 字段 · 3 新增</span></div>
@@ -111,15 +162,15 @@
       </div>
 
       <!-- ② 归因来源 -->
-      <div class="card">
+      <div class="card" id="attr-src" style="scroll-margin-top:70px">
         <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>② 归因来源组 <span style="font-size:12px;font-weight:400;color:var(--red)">※ 整组新增</span></h2><span class="cnt">7 字段 · 7 新增</span></div>
         <div class="card-body">
           <table>
             <thead><tr><th>字段</th><th class="col-def">名词解释</th><th class="col-use">应用场景</th><th class="col-exc">异常情况</th></tr></thead>
             <tbody>
-              <tr data-k="new"><td class="fname new">主归因<span class="tag-new">新增</span><code>mainAttribution</code></td><td>注册来源唯一归类（自然流量/广告投放/官方直推/邀请来源 + 未知），优先级唯一、命中即停。</td><td>获客成本核算、渠道质量评估、ROI 分母；报表按主归因拆分。</td><td class="exc">邀请链接+UTM 并存→判邀请来源，UTM 留辅证并标「裂变获客」；全部无法识别→未知来源并记失败原因。</td></tr>
+              <tr data-k="new"><td class="fname new">主归因<span class="tag-new">新增</span><code>mainAttribution</code></td><td>注册来源唯一归类（广告投放/邀请来源/官方直推/自然流量，解析失败并入自然流量），优先级唯一、命中即停：广告投放 ＞ 邀请来源 ＞ 官方直推 ＞ 自然流量，呈现示例见顶部⓪卡片。</td><td>获客成本核算、渠道质量评估、ROI 分母；报表按主归因拆分。</td><td class="exc">推广标识+邀请码并存→判广告投放，邀请码留辅证、仍挂代理树返佣并标「裂变获客」；有参数但全部解析失败→归自然流量并记失败原因。</td></tr>
               <tr data-k="new"><td class="fname new">推广平台名称<span class="tag-new">新增</span><code>promoPlatform</code></td><td>识别出的外部推广平台。带平台点击ID精确识别：Google（gclid）、Meta/Facebook（fbclid）、TikTok（ttclid）、Bing（msclkid）；经 utm_source 识别：Instagram、YouTube、Telegram、WhatsApp、X（Twitter）、Snapchat、Kwai、ShareChat、Line、Zalo；<strong>以上均未命中或无参数 → 其他</strong>。</td><td>广告投放平台维度效果与对账；KOL/平台归集。</td><td class="exc">多平台参数冲突按点击ID优先级判定；不可识别→其他；App 安装归因另行设计。</td></tr>
-              <tr data-k="new"><td class="fname new">注册渠道<span class="tag-new">新增</span><code>regChannelId</code></td><td>注册时命中的后台定义渠道ID（如 pc001=Facebook推广1），挂在域名之下的来源归因容器。</td><td>渠道维度注册转化统计、渠道质量与结算。</td><td class="exc">未命中任何渠道→落该经营单元默认自然流量兜底渠道（不可删除/不关注册）；渠道关闭不改历史快照。</td></tr>
+              <tr data-k="new"><td class="fname new">注册渠道<span class="tag-new">新增</span><code>regChannelId</code></td><td>注册时命中的后台定义渠道（如 apk-fb-me001-01＝Facebook-鳗鱼01；邀请/自然流量记实际入口的官方渠道），挂在域名之下的来源归因容器。</td><td>渠道维度注册转化统计、渠道质量与结算。</td><td class="exc">未命中任何投放渠道→落对应端的官方渠道（兜底，不可删除/不关注册）；渠道关闭不改历史快照。</td></tr>
               <tr data-k="new"><td class="fname new">登录渠道<span class="tag-new">新增</span><code>loginChannelId</code></td><td>会员最近一次登录命中的渠道ID，可与注册渠道不同。</td><td>活跃来源分析、再营销渠道评估、回流入口判断。</td><td class="exc">直接访问无渠道参数时显示默认/空；跨商户域名进入应判异常并拦截。</td></tr>
               <tr data-k="new"><td class="fname new">搜索引擎<span class="tag-new">新增</span><code>searchEngine</code></td><td>由 referrer 来源域名识别。可识别引擎：Google、Bing、Yahoo、Yahoo! Japan、DuckDuckGo、Ecosia、Startpage、Brave Search、Ask.com、AOL、Mojeek、You.com、Perplexity、Qwant、Swisscows、MetaGer、SearXNG、Lycos、Excite、Dogpile、OneSearch、Gibiru、Presearch、Yandex、Mail.ru、Rambler、Naver、Daum、goo、Seznam、Onet、WP（Wirtualna Polska）、Coc Coc、Sapo、Eniro、Najdi、Walla；<strong>中国引擎（百度/搜狗/360/神马等）及未列出者一律归「其他」</strong>；无 referrer 记直接访问。</td><td>SEO 效果评估、自然流量质量。</td><td class="exc">referrer 被剥离（隐私模式/referrer 策略）→记直接访问；非搜索来源（如经 Meta 进入）→其他。</td></tr>
               <tr data-k="new"><td class="fname new">邀请码<span class="tag-new">新增</span><code>inviteCode</code></td><td>会员注册实际使用的邀请码，关联邀请人/代理ID。</td><td>代理树绑定、裂变奖励触发、邀请人佣金归属。</td><td class="exc">码失效/过期/跨商户→可注册但不绑代理并记原因；活动邀请（转盘 / 任务）邀请码额外记 invite_activity_id。</td></tr>
@@ -351,6 +402,36 @@
         document.getElementById('rc').textContent = (q || MODE !== 'all') ? ('命中 ' + shown + ' 字段') : '';
       }
       if(/[?&]new\b/.test(location.search)){T('new');}
+    </script>
+  
+    <script>
+    (function () {
+      var FROZEN = 7, LEFTS = [0, 72, 112, 206, 266, 330, 394];
+      document.querySelectorAll('.mx-scroll table').forEach(function (table) {
+        var grid = [], rows = table.rows;
+        for (var r = 0; r < rows.length; r++) {
+          grid[r] = grid[r] || [];
+          var c = 0;
+          for (var i = 0; i < rows[r].cells.length; i++) {
+            var cell = rows[r].cells[i];
+            while (grid[r][c]) c++;
+            var cs = cell.colSpan || 1, rs = cell.rowSpan || 1;
+            for (var rr = r; rr < r + rs; rr++) { grid[rr] = grid[rr] || []; for (var cc = c; cc < c + cs; cc++) grid[rr][cc] = true; }
+            if (c + cs <= FROZEN) {
+              cell.classList.add('mxfz');
+              cell.style.left = LEFTS[c] + 'px';
+              if (c + cs === FROZEN) cell.classList.add('mxfz-last');
+            }
+            c += cs;
+          }
+        }
+        var hr = table.tHead && table.tHead.rows;
+        if (hr && hr.length > 1) {
+          var h1 = hr[0].offsetHeight;
+          for (var k = 0; k < hr[1].cells.length; k++) hr[1].cells[k].style.top = h1 + 'px';
+        }
+      });
+    })();
     </script>
   </body>
 </html>
