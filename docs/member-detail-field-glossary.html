@@ -57,6 +57,11 @@
       .grp-row td { background: #f0f4f8; font-weight: 700; color: var(--blue); font-size: 14px; }
       .legend { padding: 12px 24px; background: #fff; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--muted); }
       .legend b { color: var(--red); }
+      .mk-y { color: var(--green); font-weight: 700; }
+      .mk-n { color: var(--red); font-weight: 700; }
+      .mk-i { color: var(--muted); font-weight: 700; }
+      .grp-cell { background: #f0f4f8; font-weight: 700; color: var(--blue); vertical-align: middle !important; white-space: nowrap; }
+      .rule-code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; background: #f6f8fb; border: 1px solid var(--border); border-radius: 5px; padding: 1px 6px; white-space: nowrap; }
       @media (max-width: 860px) { .col-def, .col-use, .col-exc { width: auto; } }
     </style>
   </head>
@@ -81,6 +86,158 @@
 
     <div class="container">
 
+      <!-- 前置Ⓐ：核心名词与关系 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>Ⓐ 前置知识 · 核心名词与关系（渠道ID / 渠道Code / 包ID / 包名）</h2><span class="cnt">4 名词</span></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>名词</th><th class="col-def">是什么</th><th class="col-use">存在哪（V1 源库）</th><th>唯一性</th></tr></thead>
+            <tbody>
+              <tr><td class="fname" style="color:var(--blue)">渠道ID</td><td>渠道的身份证：渠道表自增主键（如 26125），渠道管理建渠道时产生。</td><td><code>tab_Channels.ChannelID</code></td><td>全局唯一，系统生成不可改</td></tr>
+              <tr><td class="fname" style="color:var(--blue)">渠道Code</td><td>会员身上的来源印记：注册时命中哪个渠道，就把该渠道的标识写进会员记录，即渠道ID 的快照。</td><td><code>tab_Users.ChannelCode</code>（注释「渠道编号」）</td><td>每个会员一个，值可重复（同渠道会员相同）</td></tr>
+              <tr><td class="fname" style="color:var(--blue)">包ID</td><td>一次打包产物的管理编号：打包记录主键，管下载 / 二维码 / 重新打包 / 删除，<b>不参与归因</b>。</td><td><code>tab_APKPackageManagement.Id</code></td><td>全局唯一</td></tr>
+              <tr><td class="fname" style="color:var(--blue)">包名</td><td>业务包名＝应用显示名（桌面图标名、商店可搜索的马甲包名）；另有技术包名 <code>com.xxx.yyy</code>（BundleId），同 App 多个马甲包技术包名必须不同。</td><td><code>PackageTitle</code>「APK包名」；新设计叫「应用名称」</td><td>可重复（多渠道分包同名）</td></tr>
+            </tbody>
+          </table>
+
+          <div class="callout" style="margin:14px 20px">
+            <h3>四组关系（类比：渠道ID=门牌号 · 渠道Code=快递单上抄的门牌号 · 包ID=快递单号 · 包名=箱子上的品牌名）</h3>
+            <div class="three">
+              <div class="b"><b>渠道ID ↔ 渠道Code</b><br>同一个值的两个角色：ID 是渠道表主键（管理用），Code 是注册时盖到会员身上的归因快照（统计用）。用快照保证渠道改名 / 关闭后历史归因不变。</div>
+              <div class="b"><b>包ID ↔ 包名</b><br>包ID 是「这一次打包」的唯一记录号；包名是「应用叫什么」。多渠道分包时：同一 App 打 10 个包＝同包名、10 个不同包ID。</div>
+              <div class="b"><b>包 ↔ 渠道</b><br>包必须挂一个渠道，打包时渠道code写入包体。V1 里 ChannelId 有唯一索引＝一渠道一包；新设计支持多渠道分包：一 App 投 N 渠道打 N 包。</div>
+              <div class="b"><b>全链路</b><br>渠道ID →（链接 ?ch= 或 写入包体）→ 会员·渠道Code（注册渠道）→ 渠道报表。包ID / 包名全程只管包，不进归因。</div>
+            </div>
+          </div>
+
+          <div style="padding:4px 20px 0;font-weight:700;color:var(--blue)">全链路关系图</div>
+          <div style="padding:6px 20px 18px">
+            <svg viewBox="0 0 680 540" style="width:100%;max-width:760px;display:block;margin:0 auto" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="渠道、推广链接、安装包、会员、报表的关系图">
+              <defs><marker id="arA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#9aa4b2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+              <rect x="240" y="20" width="200" height="78" rx="8" fill="#e6f1fb" stroke="#1565c0"/>
+              <text x="340" y="52" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">渠道（渠道管理）</text>
+              <text x="340" y="76" text-anchor="middle" font-size="12" fill="var(--muted)">渠道ID：主键，如 26125</text>
+              <line x1="298" y1="98" x2="188" y2="170" stroke="#9aa4b2" stroke-width="1.5" marker-end="url(#arA)"/>
+              <line x1="382" y1="98" x2="492" y2="170" stroke="#9aa4b2" stroke-width="1.5" marker-end="url(#arA)"/>
+              <rect x="70" y="170" width="220" height="72" rx="8" fill="#f1ecfe" stroke="#7c4dbe"/>
+              <text x="180" y="199" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">推广链接（H5 / PWA）</text>
+              <text x="180" y="223" text-anchor="middle" font-size="12" fill="var(--muted)">URL 携带 ?ch=渠道ID</text>
+              <rect x="390" y="170" width="220" height="106" rx="8" fill="#fff3e0" stroke="#e65100"/>
+              <text x="500" y="196" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">安装包（打包管理）</text>
+              <text x="500" y="220" text-anchor="middle" font-size="12" fill="var(--muted)">包ID：打包记录主键</text>
+              <text x="500" y="238" text-anchor="middle" font-size="12" fill="var(--muted)">包名：应用显示名</text>
+              <text x="500" y="256" text-anchor="middle" font-size="12" fill="var(--muted)">渠道code 写入包体，装完即归因</text>
+              <line x1="186" y1="242" x2="296" y2="330" stroke="#9aa4b2" stroke-width="1.5" marker-end="url(#arA)"/>
+              <line x1="494" y1="276" x2="384" y2="330" stroke="#9aa4b2" stroke-width="1.5" marker-end="url(#arA)"/>
+              <rect x="240" y="330" width="200" height="84" rx="8" fill="#e8f5e9" stroke="#2e7d5b"/>
+              <text x="340" y="358" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">会员（注册）</text>
+              <text x="340" y="380" text-anchor="middle" font-size="12" fill="var(--muted)">渠道Code = 渠道ID 的快照</text>
+              <text x="340" y="398" text-anchor="middle" font-size="12" fill="var(--muted)">写入「注册渠道」，永不回改</text>
+              <line x1="340" y1="414" x2="340" y2="462" stroke="#9aa4b2" stroke-width="1.5" marker-end="url(#arA)"/>
+              <rect x="240" y="462" width="200" height="58" rx="8" fill="#f0f2f5" stroke="#9aa4b2"/>
+              <text x="340" y="486" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">渠道报表 / ROI</text>
+              <text x="340" y="506" text-anchor="middle" font-size="12" fill="var(--muted)">按渠道Code 统计</text>
+            </svg>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 前置Ⓑ：六形态对照 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>Ⓑ 前置知识 · 六种分发形态对照（安卓 / iOS / 壳包 / H5 / PWA）</h2><span class="cnt">6 形态</span></div>
+        <div class="card-body">
+          <div style="padding:14px 20px 4px;font-size:12.5px;color:var(--muted)">总原则：三个标识在六种形态中分工完全一致——渠道ID 是源头身份，渠道code 是随用户旅行的票根，包ID 是行李牌。形态间的区别只有一个：渠道code 怎么递到用户手上——H5 / PWA 贴在链接上，四种包形态缝进包体里。</div>
+          <table>
+            <thead><tr><th>分发形态</th><th>包ID</th><th class="col-def">渠道code 如何到达用户</th><th class="col-use">埋点 / 设备标识</th></tr></thead>
+            <tbody>
+              <tr><td class="fname" style="color:var(--ink)">安卓 APK（原生）</td><td>有（上传 .apk 的打包记录）</td><td>打包时写入安装包，装完即归因</td><td>GAID；Click + API 回传</td></tr>
+              <tr><td class="fname" style="color:var(--ink)">iOS 原生（.ipa）</td><td>有（上传 .ipa）</td><td>写入包体；分发走「保存桌面」或「苹果商店」（需已封装域名）</td><td>IDFA / IDFV，受 ATT 限制，重度依赖 CAPI</td></tr>
+              <tr><td class="fname" style="color:var(--ink)">安卓壳包（WebView）</td><td>有</td><td>渠道code 写入壳体，壳打开推广域名 H5；更新内容不用重新发版</td><td>壳内 H5 像素 + 服务端回传</td></tr>
+              <tr><td class="fname" style="color:var(--ink)">iOS 壳包（WebView）</td><td>有</td><td>渠道code 写入壳体；商店上架需已封装域名</td><td>壳内 H5 像素 + 回传</td></tr>
+              <tr><td class="fname" style="color:var(--ink)">H5 链接</td><td>无（无需打包）</td><td>URL 参数 <code>?ch=渠道ID</code>，浏览器直开</td><td>H5 像素 + CAPI</td></tr>
+              <tr><td class="fname" style="color:var(--ink)">PWA</td><td>无（免打包，走 PWA 管理发布）</td><td>带渠道ID 的 PWA 链接，添加到桌面时来源随之固化</td><td>H5 像素 + CAPI + 推送召回</td></tr>
+            </tbody>
+          </table>
+          <div style="padding:8px 20px 14px;font-size:12.5px;color:var(--muted)">渠道ID 与渠道Code 六种形态全都有、作用一致；包ID 只有四种包形态才有——H5 / PWA 不经过打包管理，谈不上包ID。</div>
+        </div>
+      </div>
+
+      <!-- 前置Ⓒ：归因统计流程 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>Ⓒ 前置知识 · 归因统计流程（五步 + 流程图）</h2><span class="cnt">5 步骤</span></div>
+        <div class="card-body">
+          <div style="padding:14px 20px 0;font-weight:700;color:var(--blue)">归因双轨流程图</div>
+          <div style="padding:6px 20px 14px">
+            <svg viewBox="0 0 680 412" style="width:100%;max-width:760px;display:block;margin:0 auto" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="六种形态的归因双轨流程图">
+              <defs><marker id="arC" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#9aa4b2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+              <rect x="60" y="16" width="260" height="96" rx="8" fill="#f1ecfe" stroke="#7c4dbe"/>
+              <text x="190" y="44" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">链接携带型：H5 / PWA</text>
+              <text x="190" y="68" text-anchor="middle" font-size="12" fill="var(--muted)">渠道code 在 URL ?ch= 中</text>
+              <text x="190" y="88" text-anchor="middle" font-size="12" fill="var(--muted)">无包ID，免打包</text>
+              <rect x="360" y="16" width="260" height="96" rx="8" fill="#fff3e0" stroke="#e65100"/>
+              <text x="490" y="44" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">包体写入型：原生 / 壳包</text>
+              <text x="490" y="68" text-anchor="middle" font-size="12" fill="var(--muted)">渠道code 打包时写入包体</text>
+              <text x="490" y="88" text-anchor="middle" font-size="12" fill="var(--muted)">包ID = 打包记录，装完即归因</text>
+              <line x1="190" y1="112" x2="290" y2="168" stroke="#9aa4b2" stroke-width="1.5" marker-end="url(#arC)"/>
+              <line x1="490" y1="112" x2="390" y2="168" stroke="#9aa4b2" stroke-width="1.5" marker-end="url(#arC)"/>
+              <rect x="215" y="168" width="250" height="90" rx="8" fill="#e8f5e9" stroke="#2e7d5b"/>
+              <text x="340" y="196" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">注册 → 归因判定</text>
+              <text x="340" y="218" text-anchor="middle" font-size="12" fill="var(--muted)">主归因优先级，唯一命中</text>
+              <text x="340" y="238" text-anchor="middle" font-size="12" fill="var(--muted)">渠道Code 快照，注册即固化</text>
+              <line x1="290" y1="258" x2="190" y2="318" stroke="#9aa4b2" stroke-width="1.5" marker-end="url(#arC)"/>
+              <line x1="390" y1="258" x2="490" y2="318" stroke="#9aa4b2" stroke-width="1.5" marker-end="url(#arC)"/>
+              <rect x="60" y="318" width="260" height="72" rx="8" fill="#e6f1fb" stroke="#1565c0"/>
+              <text x="190" y="346" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">渠道报表 / ROI</text>
+              <text x="190" y="368" text-anchor="middle" font-size="12" fill="var(--muted)">按渠道Code：注册 · 首充 · 付费</text>
+              <rect x="360" y="318" width="260" height="72" rx="8" fill="#f0f2f5" stroke="#9aa4b2"/>
+              <text x="490" y="346" text-anchor="middle" font-size="14" font-weight="700" fill="var(--ink)">广告平台回传（CAPI）</text>
+              <text x="490" y="368" text-anchor="middle" font-size="12" fill="var(--muted)">按 clickid 回传，优化投放</text>
+            </svg>
+          </div>
+          <table>
+            <thead><tr><th>步骤</th><th>阶段</th><th class="col-def">发生什么</th><th class="col-use">标识动向</th></tr></thead>
+            <tbody>
+              <tr><td class="fname" style="color:var(--ink)">① 配置期</td><td>一次性</td><td>域名管理备域名 → 打包管理 / PWA 管理 → 渠道管理 → 埋点管理（渠道绑定 Pixel / Token）。</td><td>四种包形态产生<b>包ID</b>、渠道code写入包体；渠道管理产生<b>渠道ID</b>，生成 ?ch= 链接 / 二维码。</td></tr>
+              <tr><td class="fname" style="color:var(--ink)">② 投放期</td><td>广告 / 分享</td><td>广告平台（FB / TikTok / 谷歌 / Kwai）或代理分享发出链接、安装包、二维码。</td><td>点击携带 clickid + UTM + 渠道码（+ 邀请码）。</td></tr>
+              <tr><td class="fname" style="color:var(--ink)">③ 落地激活</td><td>落地页 / 首启</td><td>链接型从 URL 读渠道code；包型安装后首次启动从包体读渠道code，上报「激活 Activate」。</td><td>渠道code 随用户到达系统。</td></tr>
+              <tr><td class="fname" style="color:var(--ink)">④ 归因判定</td><td>注册时刻 · 一次定终身</td><td>主归因优先级唯一命中、命中即停：广告 UTM / clickid &gt; 邀请 &gt; 官方直推 &gt; 自然流量（解析失败并入自然，原因记日志）；未命中渠道落默认自然流量兜底渠道。</td><td><b>渠道Code＝渠道ID 快照</b>写入「注册渠道」，注册即固化，关渠道 / 划拨均不回改。</td></tr>
+              <tr><td class="fname" style="color:var(--ink)">⑤ 统计与回传</td><td>持续</td><td>对内按渠道Code 聚合注册 / 首充 / 付费 / ROI，三维归集渠道→商户→市场→集团；对外按 clickid CAPI 回传五个必传事件。</td><td>渠道Code 进报表；包ID 只出现在打包管理的版本 / 下载量统计，与归因无关。</td></tr>
+            </tbody>
+          </table>
+          <div style="padding:8px 20px 16px;font-size:12.5px;color:var(--muted)">详细口径见 <a href="promo-distribution-config.html" style="color:var(--blue)">《推广分发配置说明》</a> 与 <a href="promo-attribution-workflow.html" style="color:var(--blue)">《推广归因工作流》</a>。</div>
+
+        </div>
+      </div>
+
+      <!-- 前置Ⓓ：渠道判定与命名总表 -->
+      <div class="card">
+        <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>Ⓓ 前置知识 · 渠道判定与命名总表（标识 → 主归因 → 渠道名称 → 渠道号）</h2><span class="cnt">4 类来源 · 10 判定行</span></div>
+        <div class="card-body">
+          <div style="padding:12px 20px 0;font-size:12.5px;color:var(--muted)">读表：<span class="mk-y">✓</span> 有 · <span class="mk-n">✗</span> 无 · <span class="mk-i">－</span> 不参与（被更高优先级覆盖）；从上往下匹配、<b style="color:var(--ink)">命中即停</b>，优先级 <b style="color:var(--ink)">广告投放 ＞ 邀请来源 ＞ 官方直推 ＞ 自然流量</b>；判定结果写入会员「主归因＋注册渠道」，注册即固化不回改。</div>
+          <table style="margin-top:10px">
+            <thead><tr><th>主归因（优先级）</th><th>推广标识<br>(clickid/UTM)</th><th>邀请码</th><th>官方链接标识</th><th>搜索 referrer</th><th>端</th><th>渠道名称</th><th>建议渠道号（规则）</th></tr></thead>
+            <tbody>
+              <tr><td class="grp-cell" rowspan="2">① 广告投放</td><td><span class="mk-y">✓</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td>渠道绑定端：apk / ios / ask / isk / h5 / pwa</td><td>平台-公司+编号（{端}），如 Facebook-鳗鱼01（安卓原生）</td><td><span class="rule-code">{端}-{平台}-{推广商}-{序号}</span>，如 <span class="rule-code">apk-fb-me001-01</span></td></tr>
+              <tr><td><span class="mk-y">✓</span></td><td><span class="mk-y">✓</span></td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td>渠道绑定端：apk / ios / ask / isk / h5 / pwa</td><td>平台-公司+编号（{端}）<br><span style="color:var(--muted);font-size:12px">邀请码留辅证，仍挂代理树返佣</span></td><td><span class="rule-code">{端}-{平台}-{推广商}-{序号}</span></td></tr>
+              <tr><td class="grp-cell" rowspan="4">② 邀请来源</td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 个人码</td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td>任意端（记「注册端」字段）</td><td>好友邀请</td><td><span class="rule-code">invn-ag{代理ID}-{序号}</span></td></tr>
+              <tr><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 转盘活动码（wheel）</td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td>任意端（记「注册端」字段）</td><td>转盘邀请</td><td><span class="rule-code">invw-act{活动ID}-{序号}</span></td></tr>
+              <tr><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 任务活动码（task）</td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td>任意端（记「注册端」字段）</td><td>任务邀请</td><td><span class="rule-code">invt-act{活动ID}-{序号}</span></td></tr>
+              <tr><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 活动码过期（链接有效，降级 normal）</td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td>任意端（记「注册端」字段）</td><td>好友邀请</td><td>落回 <span class="rule-code">invn-ag{代理ID}-{序号}</span></td></tr>
+              <tr><td class="grp-cell">③ 官方直推</td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span></td><td><span class="mk-i">－</span></td><td>链接固定端：apk / ios / ask / isk / h5 / pwa</td><td>官方渠道<br><span style="color:var(--muted);font-size:12px">名称不带端，端只在渠道号区分</span></td><td><span class="rule-code">{端}-{序号}</span>，如 <span class="rule-code">h5-01</span></td></tr>
+              <tr><td class="grp-cell" rowspan="3">④ 自然流量</td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span></td><td>任意端（记「注册端」字段）</td><td>自然流量（{引擎名}），如 自然流量（Google）</td><td><span class="rule-code">org-{引擎代码}-000</span></td></tr>
+              <tr><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td>任意端（记「注册端」字段）</td><td>自然流量</td><td><span class="rule-code">org-000</span>（固定保留号）</td></tr>
+              <tr><td colspan="4" style="text-align:center;background:#fafbfc;color:var(--muted)">有参数但全部解析失败（损坏 / 伪造 / 过期，原因记日志）</td><td>任意端（记「注册端」字段）</td><td>自然流量</td><td><span class="rule-code">org-000</span>（固定保留号）</td></tr>
+            </tbody>
+          </table>
+          <div style="padding:10px 20px 16px;font-size:12.5px;color:var(--muted);line-height:1.9">
+            端代码字典：apk=安卓原生 · ios=iOS原生 · ask=安卓壳包 · isk=iOS壳包 · h5=H5 · pwa=PWA。官方/投放渠道建渠道时绑死端，端写进渠道号第一段；邀请/自然渠道不锁端（同一链接任意端可开），实际入口看会员「注册端」字段。<br>
+            渠道号两种格式：官方＝端+编号（<span class="rule-code">h5-01</span>）；投放＝端+平台+推广商+编号（<span class="rule-code">apk-fb-me001-01</span>）；邀请/自然渠道由系统按规则自动生成，运营不手建。<br>
+            三条硬约束：渠道号由系统下拉拼装、不允许手敲；商户内唯一、创建即锁定（改名只改渠道名称）；系统渠道（<span class="rule-code">org-*</span>）不可删除、不关注册。
+          </div>
+        </div>
+      </div>
+
       <!-- 基本信息 -->
       <div class="card">
         <div class="card-head" onclick="this.classList.toggle('col')"><span class="arr">▼</span><h2>① 基本信息组</h2><span class="cnt">3 字段</span></div>
@@ -102,13 +259,13 @@
           <table>
             <thead><tr><th>字段</th><th class="col-def">名词解释</th><th class="col-use">应用场景</th><th class="col-exc">异常情况</th></tr></thead>
             <tbody>
-              <tr><td class="fname">主归因<code>mainAttribution</code></td><td>注册来源唯一归类（自然流量/广告投放/官方直推/邀请来源 + 未知），优先级唯一、命中即停。</td><td>获客成本核算、渠道质量评估、ROI 分母；报表按主归因拆分。</td><td class="exc">邀请链接+UTM 并存→判邀请来源，UTM 留辅证并标「裂变获客」；全部无法识别→未知来源并记失败原因。</td></tr>
+              <tr><td class="fname">主归因<code>mainAttribution</code></td><td>注册来源唯一归类（广告投放/邀请来源/官方直推/自然流量，解析失败并入自然流量），优先级唯一、命中即停：广告投放 ＞ 邀请来源 ＞ 官方直推 ＞ 自然流量。</td><td>获客成本核算、渠道质量评估、ROI 分母；报表按主归因拆分。</td><td class="exc">推广标识+邀请码并存→判广告投放，邀请码留辅证、仍挂代理树返佣并标「裂变获客」；有参数但全部解析失败→归自然流量并记失败原因。</td></tr>
               <tr><td class="fname">推广平台名称<code>promoPlatform</code></td><td>识别出的外部推广平台。带平台点击ID精确识别：Google（gclid）、Meta/Facebook（fbclid）、TikTok（ttclid）、Bing（msclkid）；经 utm_source 识别：Instagram、YouTube、Telegram、WhatsApp、X（Twitter）、Snapchat、Kwai、ShareChat、Line、Zalo；<strong>以上均未命中或无参数 → 其他</strong>。</td><td>广告投放平台维度效果与对账；KOL/平台归集。</td><td class="exc">多平台参数冲突按点击ID优先级判定；不可识别→其他；App 安装归因另行设计。</td></tr>
               <tr><td class="fname">注册渠道<code>regChannelId</code></td><td>注册时命中的后台定义渠道ID（如 pc001=Facebook推广1），挂在域名之下的来源归因容器。</td><td>渠道维度注册转化统计、渠道质量与结算。</td><td class="exc">未命中任何渠道→落该经营单元默认自然流量兜底渠道（不可删除/不关注册）；渠道关闭不改历史快照。</td></tr>
               <tr><td class="fname">登录渠道<code>loginChannelId</code></td><td>会员最近一次登录命中的渠道ID，可与注册渠道不同。</td><td>活跃来源分析、再营销渠道评估、回流入口判断。</td><td class="exc">直接访问无渠道参数时显示默认/空；跨商户域名进入应判异常并拦截。</td></tr>
               <tr><td class="fname">搜索引擎<code>searchEngine</code></td><td>由 referrer 来源域名识别。可识别引擎：Google、Bing、Yahoo、Yahoo! Japan、DuckDuckGo、Ecosia、Startpage、Brave Search、Ask.com、AOL、Mojeek、You.com、Perplexity、Qwant、Swisscows、MetaGer、SearXNG、Lycos、Excite、Dogpile、OneSearch、Gibiru、Presearch、Yandex、Mail.ru、Rambler、Naver、Daum、goo、Seznam、Onet、WP（Wirtualna Polska）、Coc Coc、Sapo、Eniro、Najdi、Walla；<strong>中国引擎（百度/搜狗/360/神马等）及未列出者一律归「其他」</strong>；无 referrer 记直接访问。</td><td>SEO 效果评估、自然流量质量。</td><td class="exc">referrer 被剥离（隐私模式/referrer 策略）→记直接访问；非搜索来源（如经 Meta 进入）→其他。</td></tr>
-              <tr><td class="fname">邀请码<code>inviteCode</code></td><td>会员注册实际使用的邀请码，关联邀请人/代理ID。</td><td>代理树绑定、裂变奖励触发、邀请人佣金归属。</td><td class="exc">码失效/过期/跨商户→可注册但不绑代理并记原因；活动邀请码额外记 invite_activity_id。</td></tr>
-              <tr><td class="fname">邀请类型<code>invite_type</code></td><td>邀请来源细分：正常邀请（invite_type=normal，个人邀请）/ 活动邀请（invite_type=activity，裂变获客，含 invite_activity_id）。</td><td>区分纯邀请与活动裂变；活动邀请触发活动奖励并标裂变。</td><td class="exc">活动码过期但邀请链接有效→降级为正常邀请；两类标记冲突时以活动邀请优先并记原因。</td></tr>
+              <tr><td class="fname">邀请码<code>inviteCode</code></td><td>会员注册实际使用的邀请码，关联邀请人/代理ID。</td><td>代理树绑定、裂变奖励触发、邀请人佣金归属。</td><td class="exc">码失效/过期/跨商户→可注册但不绑代理并记原因；活动邀请（转盘 / 任务）邀请码额外记 invite_activity_id。</td></tr>
+              <tr><td class="fname">邀请类型<code>invite_type</code></td><td>邀请来源细分：正常邀请（invite_type=normal，个人邀请码/链接）/ 转盘活动邀请（invite_type=wheel，邀请转盘裂变，含 invite_activity_id）/ 邀请任务（invite_type=task，邀请任务活动，含 invite_activity_id）。</td><td>区分个人邀请与两类活动裂变（转盘 / 任务）；活动邀请触发对应活动奖励并标裂变。</td><td class="exc">活动码过期但邀请链接有效→降级为正常邀请；多类标记冲突时以活动邀请优先（转盘 / 任务按 invite_activity_id 判定）并记原因。</td></tr>
             </tbody>
           </table>
         </div>

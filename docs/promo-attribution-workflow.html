@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>推广分发 → 获客归因 · 端到端工作流</title>
+<style>
+  :root{--bg:#f6f7f9;--surface:#fff;--soft:#f1f5f4;--line:#e2e8e6;--line2:#cbd5e1;
+    --ink:#162321;--text:#28322f;--muted:#647069;--teal:#13756f;--blue:#1d4ed8;
+    --green:#2f855a;--amber:#b45309;--red:#b42318;--shadow:0 12px 36px rgba(31,42,39,.07)}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:15px/1.7 Inter,ui-sans-serif,system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1140px;margin:0 auto;padding:30px 24px 90px}
+  .hero{background:linear-gradient(125deg,rgba(19,117,111,.14),transparent 54%),linear-gradient(90deg,rgba(29,78,216,.10),transparent 60%),var(--surface);border:1px solid var(--line);border-radius:16px;padding:30px 32px;margin-bottom:22px}
+  .eyebrow{color:var(--teal);font-weight:700;font-size:13px;margin:0 0 8px;letter-spacing:.04em}
+  .hero h1{margin:0;color:var(--ink);font-size:clamp(24px,3.4vw,38px);font-weight:800;line-height:1.2}
+  .hero p{margin:14px 0 0;color:#45514e;font-size:15px;max-width:880px}
+  .meta{margin-top:18px;display:flex;gap:8px;flex-wrap:wrap}
+  .pill{background:var(--soft);border:1px solid var(--line2);border-radius:20px;padding:4px 13px;font-size:12px;color:#33433f}
+  h2{color:var(--ink);font-size:21px;font-weight:800;margin:38px 0 4px;border-left:4px solid var(--teal);padding-left:12px}
+  h2 .n{color:var(--teal)}
+  .sub{color:var(--muted);font-size:13.5px;margin:8px 0 14px;padding-left:16px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:20px 24px;margin:14px 0}
+  .diagram{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;margin:14px 0;overflow-x:auto;text-align:center}
+  .mermaid{text-align:center}.mermaid svg{max-width:100%;height:auto}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+  th{background:var(--soft);color:var(--ink);font-weight:700;font-size:13px}
+  td b{color:var(--ink)}
+  .stage td:first-child{white-space:nowrap;font-weight:700;color:var(--teal)}
+  code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:.86em;background:var(--soft);border-radius:4px;padding:1px 5px;color:#0f5e59}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:8px}
+  .legend b{color:var(--ink)}
+  .note{background:#fbfdfc;border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:8px;padding:11px 15px;font-size:12.8px;color:#4a5651;line-height:1.85;margin:12px 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:820px){.grid2{grid-template-columns:1fr}}
+  ul{margin:8px 0;padding-left:20px}li{margin:5px 0}
+  a.lk{color:var(--blue);text-decoration:none}a.lk:hover{text-decoration:underline}
+  .tag{display:inline-block;font-size:11px;font-weight:700;border-radius:6px;padding:1px 8px}
+  .t-cfg{background:#e8f3f1;color:#0f5e59}.t-put{background:#eef2ff;color:#3730a3}.t-attr{background:#fff7ed;color:#b45309}.t-back{background:#f0fdf4;color:#15803d}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <p class="eyebrow">SaaS 多商户后台 · 推广运营</p>
+    <h1>推广分发 → 获客归因 · 端到端工作流</h1>
+    <p>把「域名 → 打包 → 渠道 → 埋点」的<b>配置侧</b>，与「投放 → 获客 → 归因 → 归集/回传 → ROI」的<b>归因侧</b>串成一条闭环工作流。每一步标注 <b>负责角色 / 输入来源 / 关键操作 / 交付产出 / 对应后台页</b>，并贯通到会员的归因字段与代理返佣。基于现有原型与文档归纳。</p>
+    <div class="meta">
+      <span class="pill">闭环：配置 → 投放 → 归因 → 优化</span>
+      <span class="pill">6 种分发形态</span>
+      <span class="pill">invite_type 三类</span>
+      <span class="pill">三维归集 渠道→商户→市场→集团</span>
+      <span class="pill">2026-06-11</span>
+    </div>
+  </div>
+
+  <!-- §1 闭环总览 -->
+  <h2><span class="n">§1</span> 闭环总览</h2>
+  <div class="sub">绿=配置期（运营搭建）· 蓝=投放期 · 橙=获客归因 · 绿框=归集/回传/优化。虚线为反哺回路（回传优化信号、ROI 调优）。</div>
+  <div class="diagram">
+    <pre class="mermaid">
+flowchart TD
+  subgraph CFG["① 配置期 · 运营搭建"]
+    direction LR
+    D["域名管理<br/>主 / 推广 / 防封页 + 救援"]
+    P["打包管理 · PWA<br/>APK / 壳包 / H5 / PWA + 邀请码"]
+    C["渠道管理<br/>渠道码 + 落地指向"]
+    T["埋点管理<br/>Pixel / Token · Click+API"]
+    D --> P
+    D --> C
+    P --> C
+    T --> C
+  end
+  C --> LNK["推广链接 + 安装包<br/>携带 渠道码 / 邀请码 / 埋点"]
+  subgraph PUT["② 投放期"]
+    direction LR
+    AD["广告投放<br/>FB / TikTok / Kwai / 谷歌"]
+    SH["玩家分享<br/>邀请 / 转盘 / 任务"]
+  end
+  LNK --> AD
+  LNK --> SH
+  AD --> LAND["落地页 / PWA<br/>点击带 clickid + UTM + 渠道码"]
+  SH --> LAND
+  LAND --> REG["注册 · 激活<br/>新会员携带来源参数"]
+  REG --> ATTR{"③ 归因判定<br/>主归因优先级 · 唯一命中"}
+  ATTR --> FLD["会员归因字段<br/>主归因 / 渠道 / UTM / invite_type / 邀请码"]
+  subgraph BACK["④ 归集 · 回传 · 优化"]
+    direction LR
+    CAPI["埋点回传 CAPI<br/>激活/注册/登录/首充/付费"]
+    ROLL["三维归集<br/>渠道→商户→市场→集团"]
+    REB["代理返佣<br/>邀请挂代理树 + 活动奖励"]
+    ROI["ROI 报表<br/>渠道质量 / 获客成本"]
+  end
+  FLD --> CAPI
+  FLD --> ROLL
+  FLD --> REB
+  ROLL --> ROI
+  CAPI -.->|回传优化信号| AD
+  ROI -.->|渠道调优| C
+  classDef cfg fill:#e8f3f1,stroke:#13756f,color:#13302d;
+  classDef put fill:#eef2ff,stroke:#4f46e5,color:#1e1b4b;
+  classDef attr fill:#fff7ed,stroke:#d97706,color:#7c2d12;
+  classDef back fill:#f0fdf4,stroke:#16a34a,color:#14532d;
+  classDef hub fill:#ffffff,stroke:#94a3b8,color:#1f2937;
+  class D,P,C,T cfg; class AD,SH put; class ATTR,FLD,REG,LAND attr; class CAPI,ROLL,REB,ROI back; class LNK hub;
+    </pre>
+  </div>
+
+  <!-- §2 阶段工作流 -->
+  <h2><span class="n">§2</span> 九阶段工作流</h2>
+  <div class="sub">按执行顺序逐项完成；每阶段在对应后台页配置，上一环的产出是下一环的输入。前四阶段也可在 <b>配置向导</b>（运营管理 → 推广配置 → 配置向导）一页串联完成。</div>
+  <div class="card" style="padding:0;overflow-x:auto">
+  <table class="stage">
+    <thead><tr><th style="width:96px">阶段</th><th>目的</th><th style="width:96px">负责</th><th>输入（来源）</th><th>关键操作</th><th>交付产出（给下一环）</th><th style="width:110px">后台页</th></tr></thead>
+    <tbody>
+      <tr><td><span class="tag t-cfg">①</span> 域名准备</td><td>备好可用且防封的域名池</td><td>运营</td><td>已申请域名</td><td>配置 4 类型（主 / 推广 / 防封谷歌 / 防封苹果）+ 跳转域名 / 落地指向 + 防封救援（被封自动切换、带账号登录领奖金）+ 解析检测</td><td>可用域名（供打包 / 渠道下拉）</td><td>域名管理</td></tr>
+      <tr><td><span class="tag t-cfg">②</span> 物料打包</td><td>产出可分发的安装物料</td><td>运营 / 技术</td><td>打包域名 · 应用名 · 邀请码</td><td>选分发形态上传：APK(.apk) / iOS(.ipa) / 安卓壳包 / iOS壳包（WebView 套壳）/ H5 / PWA；写入渠道邀请码（0–20）</td><td>安装包 + 二维码（带渠道码 / 邀请码）</td><td>打包管理 · PWA配置</td></tr>
+      <tr><td><span class="tag t-cfg">③</span> 渠道绑定</td><td>生成可追踪的推广入口</td><td>运营</td><td>渠道来源 · 绑定域名 · 落地指向(5选) · 埋点类型 · 动态参数 · 邀请码</td><td>新增渠道 → 生成带<b>渠道码</b>推广链接 / 二维码</td><td>带渠道码推广链接（来源写入会员归因）</td><td>渠道管理</td></tr>
+      <tr><td><span class="tag t-cfg">④</span> 埋点回传</td><td>打通转化回传链路</td><td>运营 / 投放</td><td>投放平台 · Pixel ID / Token / test_event_code</td><td>选 9 类埋点；click 类填 Pixel、API 类填 Pixel+Token；按平台配事件映射；<b>测试回传</b>验证 Click / API 链路</td><td>回传通道（Click + API / CAPI）</td><td>埋点管理</td></tr>
+      <tr><td><span class="tag t-put">⑤</span> 投放 / 分享</td><td>把入口铺到流量端</td><td>投放 / 玩家</td><td>推广链接 + 安装包</td><td>广告平台建广告（FB/TikTok/Kwai/谷歌）；或玩家分享邀请（正常 / 转盘 / 任务）</td><td>点击流量（带 clickid + 渠道码 + 邀请码）</td><td>外部平台</td></tr>
+      <tr><td><span class="tag t-put">⑥</span> 落地获客</td><td>把点击转成注册会员</td><td>系统</td><td>点击（渠道码 / UTM / 邀请码 / clickid）</td><td>落地页 → 注册 → 激活；防封页被封自动切换救援域名</td><td>新会员（携带全部来源参数）</td><td>落地页 / PWA</td></tr>
+      <tr><td><span class="tag t-attr">⑦</span> 归因判定</td><td>定唯一来源、细分邀请类型</td><td>系统</td><td>注册携带参数</td><td>主归因优先级唯一命中（见 §4）；邀请来源再分 invite_type 三类</td><td>会员归因字段（主归因 / 渠道 / UTM / invite_type / 邀请码）</td><td>会员详情·归因来源</td></tr>
+      <tr><td><span class="tag t-back">⑧</span> 回传归集</td><td>反哺平台、归集数据、结算佣金</td><td>系统</td><td>归因字段 + 行为事件</td><td>CAPI 回传（激活/注册/登录/首充/付费）；三维归集 渠道→商户→市场→集团；邀请来源挂代理树 + 返佣</td><td>平台优化信号 + 归集报表 + 返佣结算</td><td>埋点·报表·代理</td></tr>
+      <tr><td><span class="tag t-back">⑨</span> ROI 优化</td><td>评估质量、反哺投放</td><td>运营</td><td>归集报表 + 回传转化</td><td>渠道质量 / 获客成本 / ROI 评估；按 invite_type 拆活动效果</td><td>渠道与投放调优（回到 ①③④）</td><td>数据统计 · 报表</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <!-- §3 数据串联矩阵 -->
+  <h2><span class="n">§3</span> 数据串联矩阵 · 谁产生、流向哪、落在哪</h2>
+  <div class="sub">工作流靠这些「产物 / 参数」串起来——配置期产生，投放/获客期携带，归因期落到会员字段。</div>
+  <div class="card" style="padding:0;overflow-x:auto">
+  <table>
+    <thead><tr><th>产物 / 参数</th><th>产生于</th><th>携带 / 流经</th><th>最终落点</th></tr></thead>
+    <tbody>
+      <tr><td><b>域名</b></td><td>① 域名管理</td><td>② 打包 / ③ 渠道 下拉选用</td><td>安装包打包域名 · 渠道绑定域名</td></tr>
+      <tr><td><b>渠道码</b> <code>ch=</code></td><td>③ 渠道管理</td><td>推广链接 → 点击 → 注册</td><td>会员·<b>注册渠道</b>（归因来源）</td></tr>
+      <tr><td><b>邀请码</b> <code>inv=</code></td><td>② 打包 / ③ 渠道</td><td>安装包 / 链接 → 注册</td><td>会员·<b>邀请码</b> + 代理树上级</td></tr>
+      <tr><td><b>埋点</b> Pixel / Token</td><td>④ 埋点管理</td><td>③ 渠道绑定 → ⑧ 回传</td><td>广告平台 CAPI / Click 上报</td></tr>
+      <tr><td><b>clickid</b> <code>fbclid/gclid/ttclid</code></td><td>⑤ 广告点击</td><td>落地页 → ⑧ 回传匹配</td><td>回传归因（平台侧转化匹配）</td></tr>
+      <tr><td><b>UTM</b> source/medium/campaign</td><td>⑤ 广告链接</td><td>落地 → 注册</td><td>会员·辅助归因（主归因留辅证）</td></tr>
+      <tr><td><b>落地指向</b></td><td>③ 渠道 / ① 域名</td><td>点击跳转</td><td>落地页 / PWA / 下载页</td></tr>
+      <tr><td><b>invite_type</b></td><td>⑦ 归因判定</td><td>邀请来源细分</td><td>会员·邀请类型（normal/wheel/task）</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <!-- §4 归因判定 -->
+  <h2><span class="n">§4</span> 归因判定逻辑</h2>
+  <div class="grid2">
+    <div class="card">
+      <b>主归因优先级</b>（优先级唯一、命中即停、就高不就低）
+      <ul>
+        <li>广告 UTM / clickid → <b>广告投放</b></li>
+        <li>有效邀请链接 / 邀请码 → <b>邀请来源</b>（同时建代理树）</li>
+        <li>官方推广链接 → <b>官方直推</b></li>
+        <li>自然访问（无来源参数）→ <b>自然流量</b></li>
+        <li>全部无法识别 → <b>自然流量</b>（并入自然，失败原因记日志）</li>
+      </ul>
+      <div class="note">邀请链接与 UTM 并存 → 判广告投放，邀请码留辅证、仍挂代理树返佣并标「裂变获客」。原始来源注册即固定，划拨 / 撤代 / 关渠道均不改写。</div>
+    </div>
+    <div class="card">
+      <b>邀请来源再分三类</b> <code>invite_type</code>
+      <table style="margin-top:6px">
+        <thead><tr><th>类型</th><th>值</th><th>来源</th></tr></thead>
+        <tbody>
+          <tr><td>正常邀请</td><td><code>normal</code></td><td>个人邀请码 / 链接</td></tr>
+          <tr><td>转盘活动邀请</td><td><code>wheel</code></td><td>邀请转盘裂变</td></tr>
+          <tr><td>邀请任务</td><td><code>task</code></td><td>邀请任务活动</td></tr>
+        </tbody>
+      </table>
+      <div class="note">三类都进代理树、都归上级代理；活动邀请（转盘 / 任务）额外触发对应活动奖励并记 <code>invite_activity_id</code>。详见 <a class="lk" href="attribution-flow.html">归因判定流程图</a>。</div>
+    </div>
+  </div>
+
+  <!-- §5 回传事件链 -->
+  <h2><span class="n">§5</span> 回传事件链（CAPI / S2S）</h2>
+  <div class="sub">必传基础事件强制上报；首充 / 付费为核心优化事件，回传给平台用于广告优化与 ROAS。</div>
+  <div class="card" style="padding:0;overflow-x:auto">
+  <table>
+    <thead><tr><th style="width:120px">事件</th><th style="width:150px">触发时点</th><th style="width:120px">回传方式</th><th>用途</th></tr></thead>
+    <tbody>
+      <tr><td><b>激活</b> Activate</td><td>首次启动 / 安装</td><td>Click + API</td><td>安装归因、激活成本</td></tr>
+      <tr><td><b>注册</b> Register</td><td>注册成功</td><td>CAPI</td><td>注册转化、CPA</td></tr>
+      <tr><td><b>登录</b> Login</td><td>登录</td><td>CAPI</td><td>活跃 / 留存信号</td></tr>
+      <tr><td><b>首充</b> FirstDeposit</td><td>首次充值</td><td>CAPI</td><td><b>核心优化事件</b>、付费转化</td></tr>
+      <tr><td><b>付费</b> Purchase</td><td>每次充值</td><td>CAPI</td><td>ROAS、LTV 回收</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note">埋点管理按投放平台（Facebook / TikTok / Kwai / 谷歌）动态配置，事件名按平台映射；配置后用<b>测试回传</b>验证 Click / API 链路是否打通（Facebook-API 5 步流程）。</div>
+
+  <!-- §6 归集与返佣 -->
+  <h2><span class="n">§6</span> 数据归集与代理返佣</h2>
+  <div class="grid2">
+    <div class="card">
+      <b>三维归集</b>
+      <div class="step" style="margin-top:8px;font-size:13px;color:#33433f">渠道 → 商户 → 市场 → 集团</div>
+      <ul>
+        <li>每个新会员的原始来源逐级归集，形成渠道 / 商户 / 市场 / 集团各层的获客与转化报表</li>
+        <li>原始来源固定，后续划拨 / 撤代 / 关渠道<b>不改写</b>历史归因</li>
+      </ul>
+    </div>
+    <div class="card">
+      <b>代理返佣</b>
+      <ul>
+        <li>邀请来源（normal / wheel / task）注册即挂到<b>上级代理树</b>，佣金按代理模式结算</li>
+        <li>活动邀请额外触发对应活动奖励（转盘奖励 / 任务奖励）并记 <code>invite_activity_id</code></li>
+        <li>例：A 邀请 B → B 归 A；A 分享邀请转盘拉来 C → C 归 A + 发转盘奖励</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- §7 关联 -->
+  <h2><span class="n">§7</span> 关联文档与原型</h2>
+  <div class="grid2">
+    <div class="card">
+      <b>文档</b>
+      <ul>
+        <li><a class="lk" href="promo-distribution-config.html">推广分发配置 · 完整说明</a> — SOP / 配置矩阵 / 形态 × 投放端 / 回传逻辑（配置侧深度）</li>
+        <li><a class="lk" href="attribution-flow.html">归因来源 · 判定流程图</a></li>
+        <li><a class="lk" href="group-to-member-hierarchy.html">核心层级和体系介绍</a> — 渠道三分类 / 归因 / 代理 / 归集</li>
+        <li><a class="lk" href="member-detail-field-glossary-full.html?new">会员详情 · 新增字段说明</a></li>
+        <li><a class="lk" href="saas-prd-phase2.html#s5">二阶段 PRD · 推广分发配置</a></li>
+      </ul>
+    </div>
+    <div class="card">
+      <b>原型直达（localhost:8200）</b>
+      <ul>
+        <li><a class="lk" href="http://localhost:8200/?open=pkg-wizard">配置向导（①–④ 一页串联）</a></li>
+        <li><a class="lk" href="http://localhost:8200/?open=domain-mgmt">① 域名管理</a></li>
+        <li><a class="lk" href="http://localhost:8200/?open=apk-package">② 打包管理</a> · <a class="lk" href="http://localhost:8200/?open=pwa-config">PWA 配置</a></li>
+        <li><a class="lk" href="http://localhost:8200/?open=channel-config">③ 渠道管理</a></li>
+        <li><a class="lk" href="http://localhost:8200/?open=tracking-mgmt">④ 埋点管理</a></li>
+        <li><a class="lk" href="http://localhost:8200/?open=member-list">⑦ 会员详情 · 归因来源</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note" style="margin-top:24px">本工作流为对现有原型与文档的归纳串联；配置字段细节以各后台功能页与 <a class="lk" href="promo-distribution-config.html">推广分发配置完整说明</a> 为准，归因 / 代理口径以 <a class="lk" href="group-to-member-hierarchy.html">核心层级体系</a> 为准。</div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad:true,
+    securityLevel:"strict",
+    theme:"base",
+    flowchart:{useMaxWidth:true,htmlLabels:true,curve:"basis"},
+    themeVariables:{
+      fontFamily:"Inter, ui-sans-serif, system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif",
+      fontSize:"13px",primaryColor:"#e8f3f1",primaryTextColor:"#152b28",
+      primaryBorderColor:"#13756f",lineColor:"#80938f",
+      secondaryColor:"#fff8ec",tertiaryColor:"#eef3f2",
+      clusterBkg:"#fbfdfc",clusterBorder:"#d9e1df"
+    }
+  });
+</script>
+</body>
+</html>
