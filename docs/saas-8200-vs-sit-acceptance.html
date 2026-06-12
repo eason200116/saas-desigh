@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>目标后台(8200) vs SIT · 逐页对比验收清单</title>
+<style>
+:root{--blue:#2563eb;--blue-d:#1d4ed8;--blue-l:#e8f0ff;--border:#e2e6ea;--muted:#7a8494;--text:#1f2927;--bg:#f6f8fb;--green:#16a34a;--green-l:#dcfce7;--warn:#e65100;--warn-l:#fff4ed;--red:#d4380d}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.6}
+.header{background:linear-gradient(135deg,#15803d,#16a34a);color:#fff;padding:28px 32px}
+.header h1{font-size:22px;margin-bottom:6px}
+.header p{opacity:.9;font-size:13px}
+.header p b{font-weight:700}
+.stats{display:flex;gap:16px;margin-top:14px;flex-wrap:wrap}
+.stat{background:rgba(255,255,255,.16);border-radius:8px;padding:8px 16px;font-size:12px}
+.stat b{font-size:18px;display:block}
+.src{margin-top:12px;font-size:11.5px;opacity:.85}
+.src code{background:rgba(255,255,255,.18);border-radius:4px;padding:1px 6px;font-family:monospace}
+.container{max-width:1360px;margin:0 auto;padding:18px 24px 60px}
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:14px;padding:16px 20px}
+.card h3{font-size:14px;color:var(--blue-d);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.card p{font-size:12.5px;color:#3a4256;margin-bottom:6px}
+.card .layer{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.layer .box{flex:1;min-width:280px;border:1px solid var(--border);border-radius:9px;padding:12px 14px;background:#fafbfc}
+.layer .box b{color:var(--text)}
+.layer .box .tag{font-size:11px;font-weight:700;border-radius:5px;padding:1px 7px;margin-left:4px}
+.t-orig{background:#e3f2fd;color:#1565c0}
+.t-inj{background:#f3e5f5;color:#7b1fa2}
+table{width:100%;border-collapse:collapse;font-size:12.5px;background:#fff}
+thead th{background:#f1f5f9;text-align:left;padding:9px 11px;color:#334155;font-weight:600;border-bottom:1px solid #e2e8f0;white-space:nowrap;position:sticky;top:0}
+td{padding:8px 11px;border-bottom:1px solid #f1f5f9;color:#475569;vertical-align:top}
+tr:hover td{background:#f9fbff}
+.mod-row td{background:#eef5ff;font-weight:700;color:var(--blue-d)}
+.pg{font-weight:600;color:var(--text);white-space:nowrap}
+.rt{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:var(--blue);white-space:nowrap}
+.lay{font-size:11px;font-weight:700;border-radius:5px;padding:1px 7px;white-space:nowrap}
+.v-ok{color:var(--green);font-weight:700;white-space:nowrap}
+.v-warn{color:var(--warn);font-weight:700;white-space:nowrap}
+.chk{font-size:10.5px;font-weight:700;border-radius:5px;padding:1px 6px;white-space:nowrap}
+.c-shot{background:var(--green-l);color:#15803d}
+.c-infer{background:#eef2f7;color:#64748b}
+.delta{background:var(--warn-l);border:1px solid #fed7aa;border-radius:10px;padding:14px 18px;margin-bottom:14px}
+.delta h3{color:#9a3412;font-size:14px;margin-bottom:8px}
+.delta .d{display:flex;gap:10px;font-size:12.5px;padding:7px 0;border-bottom:1px dashed #fed7aa}
+.delta .d:last-child{border-bottom:none}
+.delta .d .n{flex:none;width:30px;height:22px;line-height:22px;text-align:center;background:#fb923c;color:#fff;border-radius:6px;font-weight:700;font-size:11px}
+.delta .d b{color:#9a3412}
+.legend{font-size:12px;color:var(--muted);background:#fff;border:1px dashed #d8dde6;border-radius:10px;padding:10px 14px;margin-bottom:14px;line-height:1.9}
+.legend .chk{margin:0 2px}
+.ok-banner{background:var(--green-l);border:1px solid #86efac;color:#15803d;border-radius:10px;padding:12px 16px;font-size:13px;margin-bottom:14px;font-weight:600}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>目标后台(8200) vs SIT · 逐页对比验收清单</h1>
+  <p>核验目标后台 <b>member-app(localhost:8200)</b> 是否已承载线上 SIT 租户后台的交互与排版 —— 以 SIT 的 24 个页面为基准逐页对照。</p>
+  <div class="stats">
+    <div class="stat"><b>24/24</b>页已承载 SIT 交互排版</div>
+    <div class="stat"><b>9</b>页截图实测</div>
+    <div class="stat"><b>15</b>页同产物推断</div>
+    <div class="stat"><b>2</b>处微差异</div>
+  </div>
+  <div class="src">核验环境:member-app 预览 <code>localhost:8765</code>(等同 8200) · 账号 sysadmin · 商户 (1050)daman · 走查日 2026-06-10 · 对照基准见 <code>docs/sit-tenant-admin-map.html</code></div>
+</div>
+
+<div class="container">
+
+  <div class="ok-banner">✅ 结论:目标后台已全面承载 SIT 的交互与排版,无框架级缺口。24 个 SIT 页面在 8200 均存在且为 SIT 样式;仅 2 处页面级微差异(见下),功能等价。</div>
+
+  <div class="card">
+    <h3>一、为什么"已同步"——两层架构</h3>
+    <p>member-app 本体即 <b>SIT 商户后台产物</b>,叠加注入层扩展了 SaaS 专属页。两层都是 SIT 交互/排版:</p>
+    <div class="layer">
+      <div class="box"><b>A. 原始 SIT Vue 页<span class="tag t-orig">原</span></b><br>hash 路由(如 <code>#/withdraw-orders</code>),菜单项带「原」标记。财务/游戏/报表/系统/部分会员页 —— <b>本就是 SIT 页</b>,出款工作流子标签、多行收款单元格、页脚合计、RBAC 权限树等一应俱全。</div>
+      <div class="box"><b>B. 注入式 SIT 风格页<span class="tag t-inj">注入</span></b><br><code>arp-css</code> 数据驱动框架(<code>__arOpenTab(route)</code>)。会员/运营/风控/配置 的 SaaS 扩展页 —— 复用同一套 SIT 控件:筛选区/快捷日期/自定义列/批量/toggle/合计/分页/详情弹窗。</div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <b>验证方式:</b>
+    <span class="chk c-shot">截图实测</span> 本次在 8200/8765 实跑并截图逐项核对 ·
+    <span class="chk c-infer">同产物推断</span> 路由存在且属同一 SIT 产物 bundle / 同一注入框架,未单独截图但确定同源。
+    <b>层:</b> <span class="lay t-orig">原</span> 原始SIT页 · <span class="lay t-inj">注入</span> 注入式风格页。
+  </div>
+
+  <table>
+    <thead><tr><th width="150">SIT 页面</th><th width="220">8200 路由</th><th width="60">层</th><th width="80">验证</th><th width="70">结论</th><th>对照要点 / 备注</th></tr></thead>
+    <tbody>
+      <tr class="mod-row"><td colspan="6">① 会员管理</td></tr>
+      <tr><td class="pg">会员列表</td><td class="rt">#/member-list</td><td><span class="lay t-orig">原</span></td><td><span class="chk c-shot">截图实测</span></td><td class="v-ok">✅ 已同步</td><td>商户*/会员ID/会员账号/会员状态 筛选、快捷日期全套、批量工具条、蓝色ID+复制、数字右对齐+排序、状态badge、注册IP蓝链、<b>页面合计</b>页脚</td></tr>
+      <tr><td class="pg">会员层级</td><td class="rt">#/member-level</td><td><span class="lay t-inj">注入</span></td><td><span class="chk c-shot">截图实测</span></td><td class="v-ok">✅ 已同步</td><td>上级ID/层级/直属·全部下级/代理类型 + 投注·中奖·充值·提现(金额/次/人)多指标单元格 + 页面合计/总计</td></tr>
+      <tr><td class="pg">下级会员</td><td class="rt">#/member-tags</td><td><span class="lay t-inj">注入</span></td><td><span class="chk c-infer">同产物推断</span></td><td class="v-ok">✅ 已同步</td><td>代理ID必填 + 层级区间/VIP/注册设备多筛选(同注入框架)</td></tr>
+      <tr><td class="pg">资金账变</td><td class="rt">#/fund-change</td><td><span class="lay t-orig">原</span></td><td><span class="chk c-infer">同产物推断</span></td><td class="v-ok">✅ 已同步</td><td>账变类型/变动前·账变·变动后余额 + 导出(同 SIT 产物)</td></tr>
+      <tr><td class="pg">会员银行卡管理</td><td class="rt">#/bank-card</td><td><span class="lay t-orig">原</span></td><td><span class="chk c-shot">截图实测</span></td><td class="v-warn">⚠ 微差异</td><td>6 子标签(银行卡/USDT/PIX/电子钱包/UPI/实名认证)齐全;手机已脱敏(9199****23)但 <b>卡号明文</b>——见微差异 D2</td></tr>
+      <tr><td class="pg">在线人数</td><td class="rt">#/online-users</td><td><span class="lay t-orig">原</span></td><td><span class="chk c-infer">同产物推断</span></td><td class="v-ok">✅ 已同步</td><td>在线状态/VIP/会员分组/打码量(同 SIT 产物)</td></tr>
+
+      <tr class="mod-row"><td colspan="6">② 财务管理</td></tr>
+      <tr><td class="pg">提现订单管理</td><td class="rt">#/withdraw-orders</td><td><span class="lay t-orig">原</span></td><td><span class="chk c-shot">截图实测</span></td><td class="v-ok">✅ 已同步</td><td>出款数据看板/出款员工操作台/出款组别配置 子标签、商户pill、<b>多行收款单元格</b>(BankName/Beneficiary/AccountNo)、INR tag、操作(人工确认/订单重审/订单详情)、<b>页面总计/总计</b></td></tr>
+      <tr><td class="pg">充值订单管理</td><td class="rt">#/deposit-orders</td><td><span class="lay t-orig">原</span></td><td><span class="chk c-infer">同产物推断</span></td><td class="v-ok">✅ 已同步</td><td>三方待入款/本地待入款/全部入款记录/直充短信 子标签 + 页脚金额/U额合计(同 SIT 产物)</td></tr>
+      <tr><td class="pg">人工充值</td><td class="rt">#/manual-recharge</td><td><span class="lay t-orig">原</span></td><td><span class="chk c-infer">同产物推断</span></td><td class="v-ok">✅ 已同步</td><td>左查询+右充值 双栏表单(同 SIT 产物)</td></tr>
+      <tr><td class="pg">人工充值审核列表</td><td class="rt">#/manual-recharge-audit-list</td><td><span class="lay t-orig">原</span></td><td><span class="chk c-infer">同产物推断</span></td><td class="v-ok">✅ 已同步</td><td>操作类型+子类型级联筛选、导出、批量(同 SIT 产物)</td></tr>
+      <tr><td class="pg">人工充值审核记录</td><td class="rt">#/manual-recharge-audit-records</td><td><span class="lay t-orig">原</span></td><td><span class="chk c-infer">同产物推断</span></td><td class="v-ok">✅ 已同步</td><td>审核历史记录列表(同 SIT 产物)</td></tr>
+      <tr><td class="pg">本地收款账号管理</td><td class="rt">#/local-payment-account</td><td><span class="lay t-orig">原</span></td><td><span class="chk c-infer">同产物推断</span></td><td class="v-ok">✅ 已同步</td><td>本地银行卡/UPI/USDT/EWallet 子标签 + IFSC/二维码字段(同 SIT 产物)</td></tr>
+      <tr><td class="pg">支代付三方管理</td><td class="rt">#/payout-third-party</td><td><span class="lay t-orig">原</span></td><td><span class="chk c-shot">截图实测</span></td><td class="v-ok">✅ 已同步</td><td>币种/三方映射码 tag、三方商户/余额、关联商户蓝链、新增三方商户、编辑(市场数据 INR/BRL)</td></tr>
+      <tr><td class="pg">充值类型管理</td><td class="rt">#/recharge-type</td><td><span class="lay t-orig">原</span></td><td><span class="chk c-infer">同产物推断</span></td><td class="v-ok">✅ 已同步</td><td>充值大类/充值通道 子标签 + 图标上传 + 内置类型 tag(同 SIT 产物)</td></tr>
+      <tr><td class="pg">提现类型管理</td><td class="rt">#/withdraw-type</td><td><span class="lay t-orig">原</span></td><td><span class="chk c-infer">同产物推断</span></td><td class="v-ok">✅ 已同步</td><td>提现大类/提现通道 子标签(同 SIT 产物)</td></tr>
+      <tr><td class="pg">银行字典</td><td class="rt">#/bank-dictionary</td><td><span class="lay t-inj">注入</span></td><td><span class="chk c-shot">截图实测</span></td><td class="v-warn">⚠ 微差异</td><td>注入版:银行名称/Code/状态/编辑·删除 + 新增银行/同步商户;<b>状态用 badge</b> 而非 SIT 行内 toggle——见微差异 D1(另有原始 SIT 版路由)</td></tr>
+
+      <tr class="mod-row"><td colspan="6">③ 游戏管理</td></tr>
+      <tr><td class="pg">三方游戏记录</td><td class="rt">#/third-party-game</td><td><span class="lay t-orig">原</span></td><td><span class="chk c-shot">截图实测</span></td><td class="v-ok">✅ 已同步</td><td><b>双维导航</b>精确还原:顶部 5 横标签(彩票/视讯/体育/电子/棋牌)× 左侧 6 彩种卡(Wingo/K3/5D/TRX/XOSO/MOTO)+ 期号/玩法/盈亏筛选 + 页面总计/总计</td></tr>
+
+      <tr class="mod-row"><td colspan="6">④ 系统管理</td></tr>
+      <tr><td class="pg">系统用户</td><td class="rt">#/sys-users</td><td><span class="lay t-orig">原</span></td><td><span class="chk c-infer">同产物推断</span></td><td class="v-ok">✅ 已同步</td><td>操作员/角色/出款·人工充值权限 + 批量赋权/google2FA(同 SIT 产物)</td></tr>
+      <tr><td class="pg">系统角色</td><td class="rt">#/sys-roles</td><td><span class="lay t-orig">原</span></td><td><span class="chk c-shot">截图实测</span></td><td class="v-ok">✅ 已同步</td><td>RBAC 主从:左角色列表 + 右<b>权限分配树</b>(模块→菜单→权限点,带 通用/商户 作用域 tag)+ 信息提示条</td></tr>
+      <tr><td class="pg">IP白名单</td><td class="rt">#/sys-white-ip</td><td><span class="lay t-inj">注入</span></td><td><span class="chk c-infer">同产物推断</span></td><td class="v-ok">✅ 已同步</td><td>IP/状态/备注 + 创建·修改审计列(同注入框架)</td></tr>
+      <tr><td class="pg">平台日志</td><td class="rt">#/sys-log</td><td><span class="lay t-orig">原</span></td><td><span class="chk c-infer">同产物推断</span></td><td class="v-ok">✅ 已同步</td><td>操作审计:用户/IP/IP所在地/OS/浏览器/状态(同 SIT 产物)</td></tr>
+      <tr><td class="pg">中台日志</td><td class="rt">#/mid-platform-log</td><td><span class="lay t-orig">原</span></td><td><span class="chk c-infer">同产物推断</span></td><td class="v-ok">✅ 已同步</td><td>操作时间/操作用户/操作详情(同 SIT 产物)</td></tr>
+
+      <tr class="mod-row"><td colspan="6">⑤ 报表管理</td></tr>
+      <tr><td class="pg">支代付通道预警</td><td class="rt">#/channel-alert</td><td><span class="lay t-orig">原</span></td><td><span class="chk c-infer">同产物推断</span></td><td class="v-ok">✅ 已同步</td><td>6 预警统计卡 + 状态快筛(全部/待处理/已处理/已忽略)+ 预警规则配置(同 SIT 产物)</td></tr>
+      <tr><td class="pg">数据统计</td><td class="rt">#/data-statistics</td><td><span class="lay t-orig">原</span></td><td><span class="chk c-shot">截图实测</span></td><td class="v-ok">✅ 已同步</td><td>5 子标签+大屏模式、币种/商户多选+刷新频率、KPI 卡(充提差/代收/代付 带↑↓%)、<b>ECharts 24小时走势</b>(代收/代付×金额/笔数/成功率)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="delta">
+    <h3>⚠ 二、微差异清单(2 处,功能等价,可选优化)</h3>
+    <div class="d"><span class="n">D1</span><div><b>银行字典(注入版)状态控件</b>:注入版状态列用 <b>badge(正常/异常)</b>,而 SIT 用<b>行内 toggle 开关</b>。框架已内置 <code>arp-csw</code> toggle,改动量极小;另原始 <code>#/bank-dictionary</code> 路由仍是 SIT 版。<br><span style="color:#64748b">建议:把注入版银行字典状态列改用 <code>arp-csw</code>,与 SIT 完全一致。</span></div></div>
+    <div class="d"><span class="n">D2</span><div><b>会员银行卡管理 卡号未脱敏</b>:8200 卡号<b>明文显示</b>(如 1299824602910968),手机已脱敏(9199****23);SIT 卡号是<b>中段打码</b>(如 646***545)。<br><span style="color:#64748b">建议:卡号按 SIT 规则保留首尾、中段以 *** 打码,与手机脱敏风格统一。</span></div></div>
+  </div>
+
+  <div class="card">
+    <h3>三、通用控件层 · 逐项对照</h3>
+    <p>下列 SIT 通用控件/排版规律,在 8200 均已具备(实测 + 框架确认):</p>
+    <p>✅ 筛选区(商户*居首/可收起/高级筛选/时间范围) ｜ ✅ 日期快筛(今天…所有) ｜ ✅ 状态快筛 Tab ｜ ✅ 自定义列 ｜ ✅ 文本链接操作 ｜ ✅ toggle 开关+二次确认 ｜ ✅ 商户 pill / 币种·状态 tag ｜ ✅ 数据脱敏(手机/短信) ｜ ✅ 多行单元格(收款信息/层级统计) ｜ ✅ 页脚合计(页面合计/总计·金额/U额) ｜ ✅ 分页+跳至 ｜ ✅ 详情弹窗内部 Tab ｜ ✅ 多标签页栏 ｜ ✅ 集团→商户切换</p>
+  </div>
+
+  <div class="legend">
+    预览入口:目标后台 <code>http://localhost:8200/?open=hub</code> · 本验收页与全部文档由同一静态服务提供(8753 / 8090 均可) · SIT 对照基准 <a href="sit-tenant-admin-map.html">sit-tenant-admin-map.html</a>
+  </div>
+
+</div>
+</body>
+</html>

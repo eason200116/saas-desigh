@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>产品 → AI 提需求 · 提示词范本</title>
+<style>
+:root{--blue:#2563eb;--blue-d:#1d4ed8;--blue-l:#e8f0ff;--border:#e2e6ea;--muted:#7a8494;--text:#1f2927;--bg:#f6f8fb;--green:#16a34a;--green-l:#ecfdf5;--red:#d4380d;--red-l:#fff1ec}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.75}
+.header{background:linear-gradient(135deg,#312e81,#4f46e5);color:#fff;padding:30px 34px}
+.header h1{font-size:23px;margin-bottom:8px}
+.header p{opacity:.88;font-size:13.5px;max-width:860px}
+.stats{display:flex;gap:14px;margin-top:14px;flex-wrap:wrap}
+.stat{background:rgba(255,255,255,.16);border-radius:8px;padding:7px 15px;font-size:12px}
+.container{max-width:1080px;margin:0 auto;padding:22px 24px 70px}
+h2{font-size:17px;color:var(--blue-d);margin:30px 0 12px;display:flex;align-items:center;gap:9px}
+h2 .n{width:26px;height:26px;border-radius:8px;background:var(--blue-l);color:var(--blue-d);display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex:none}
+h3{font-size:14.5px;color:var(--text);margin:18px 0 8px}
+p.desc{color:#475569;font-size:13px;margin-bottom:10px}
+.card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:18px 22px;margin-bottom:14px}
+pre{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:16px 18px;font-size:13px;line-height:1.8;overflow-x:auto;white-space:pre-wrap;word-break:break-all;font-family:ui-monospace,Menlo,Consolas,monospace;position:relative;margin:10px 0}
+pre b{color:#7dd3fc;font-weight:700}
+pre i{color:#86efac;font-style:normal}
+pre em{color:#94a3b8;font-style:normal}
+.copybtn{position:absolute;top:10px;right:10px;background:#334155;color:#cbd5e1;border:none;border-radius:6px;padding:3px 12px;font-size:11px;cursor:pointer}
+.copybtn:hover{background:#475569;color:#fff}
+table{width:100%;border-collapse:collapse;font-size:13px;background:#fff;margin:8px 0}
+th{background:#f1f5f9;text-align:left;padding:9px 12px;color:#334155;font-weight:700;border-bottom:1px solid #e2e8f0}
+td{padding:9px 12px;border-bottom:1px solid #f1f5f9;color:#475569;vertical-align:top}
+.bad{background:var(--red-l);border-left:3px solid var(--red);padding:2px 10px;border-radius:0 6px 6px 0;color:#9a3412}
+.good{background:var(--green-l);border-left:3px solid var(--green);padding:2px 10px;border-radius:0 6px 6px 0;color:#166534}
+.tip{background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:10px;padding:12px 16px;font-size:13px;margin:12px 0}
+.note{font-size:12.5px;color:var(--muted);background:#fff;border:1px dashed #d8dde6;border-radius:10px;padding:12px 16px;margin-top:8px;line-height:1.9}
+.tag{display:inline-block;font-size:11px;font-weight:700;border-radius:5px;padding:1px 8px;margin-right:6px;background:var(--blue-l);color:var(--blue-d)}
+ul.ls{margin:6px 0 6px 20px}
+ul.ls li{margin:4px 0;color:#374151}
+ul.ls li b{color:var(--text)}
+.toc{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.toc a{background:#fff;border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12.5px;color:var(--blue-d);text-decoration:none;font-weight:600}
+.toc a:hover{border-color:#bcd0ff;background:#f7faff}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>产品 → AI 提需求 · 提示词范本</h1>
+  <p>一份给产品经理用的「向 AI(Claude 等)下需求」标准话术模板。八要素骨架 + 6 个场景化范本 + 好坏对照,全部可直接复制改空填词。范本沉淀自本项目(SaaS 后台原型设计)真实协作经验。</p>
+  <div class="stats">
+    <div class="stat"><b>8 要素</b>·通用骨架</div>
+    <div class="stat"><b>6 个</b>·场景范本</div>
+    <div class="stat"><b>7 条</b>·好坏对照</div>
+    <div class="stat"><b>1 段</b>·开场上下文模板</div>
+  </div>
+  <div class="toc">
+    <a href="#s1">① 通用骨架</a><a href="#s2">② 场景范本</a><a href="#s3">③ 好坏对照</a><a href="#s4">④ 开场上下文</a><a href="#s5">⑤ 速查卡</a>
+  </div>
+</div>
+
+<div class="container">
+
+<h2 id="s1"><span class="n">①</span>通用骨架 · 八要素(任何需求都按这个填)</h2>
+<p class="desc">不必每条都写满——但<b>目标、参照、落点、验收</b>四项强烈建议永远写。AI 做错方向,九成是这四项没说清。</p>
+<div class="card">
+<pre><button class="copybtn" onclick="cp(this)">复制</button><b>【目标】</b><em>(一句话:做什么、给谁用、解决什么问题)</em>
+做一个 ______,给 ______ 用,解决 ______ 的问题。
+
+<b>【背景】</b><em>(现状与痛点;涉及哪个系统/模块,新人视角讲清)</em>
+现状是 ______;痛点是 ______。涉及 ______ 系统的 ______ 模块。
+
+<b>【参照】</b><em>(对标物:线上页面 URL / 截图 / 文档路径。给参照物,别用形容词)</em>
+照着 ______ 做;风格对齐 ______;字段以 ______ 为准。
+
+<b>【落点】</b><em>(改哪个文件/哪个系统/哪个页面;是「新增」还是「覆盖」,覆盖前要不要备份)</em>
+落在 ______;这是一次 [新增 / 修改 / 覆盖] 操作;不要动 ______。
+
+<b>【范围】</b><em>(这次只做什么;明确不做什么,防止做大)</em>
+本次只做 ______;不包含 ______(下次再说)。
+
+<b>【规则】</b><em>(必须遵守的约束:设计原则 / 命名术语 / 技术栈 / 数据来源)</em>
+必须遵循 ______;术语用 ______;数据取自 ______,不要 mock。
+
+<b>【交付物 + 验收】</b><em>(交什么、怎样算对——写成可勾选的清单)</em>
+交付:______。验收:□ ______ □ ______ □ ______
+
+<b>【流程】</b><em>(要不要先出方案/截图确认?还是直接做完给预览?)</em>
+[先出草图/方案给我确认,再做正式版] 或 [直接做完,附预览链接]</pre>
+</div>
+
+<h2 id="s2"><span class="n">②</span>六个场景范本(已填好,改空即用)</h2>
+
+<h3><span class="tag">场景 A</span>新功能页面 / 原型</h3>
+<div class="card">
+<pre><button class="copybtn" onclick="cp(this)">复制</button>【目标】给 SaaS 后台新增「<i>渠道管理</i>」页,给运营用,解决 <i>渠道码无处配置</i> 的问题。
+【参照】布局照 <i>SIT 租户后台 /finance/payoutThirdParty</i>(筛选区+列表+新增弹窗);字段清单见 <i>docs/channel-management.md</i>。
+【落点】新增到 <i>member-app 注入框架</i>,挂在「<i>运营管理 → 运营配置</i>」菜单下;不动现有页面。
+【范围】只做列表+新增/编辑弹窗;导入导出这次不做。
+【规则】遵循项目设计原则(交互统一/控件统一/简洁/小白友好);筛选区第一项必须是「商户*」;操作列用文本链接。
+【交付物 + 验收】可点击原型。验收:□ 查询/重置可用 □ 新增后列表出现记录 □ 与会员列表控件风格一致
+【流程】先截图给我确认布局,确认后再做交互。</pre>
+</div>
+
+<h3><span class="tag">场景 B</span>修改现有页面交互</h3>
+<div class="card">
+<pre><button class="copybtn" onclick="cp(this)">复制</button>【目标】把「<i>会员列表</i>」的 <i>返佣配置</i> 改成行内开关,减少进详情页的操作步数。
+【参照】开关样式照 <i>SIT 银行字典「状态」列的 toggle</i>;切换需二次确认弹窗。
+【落点】只改 <i>member-app 会员列表</i> 这一页的这两列(领取返佣 / 对上级返佣);其余列不动,布局不变。
+【规则】开关切换必须有二次确认;改完同步更新 <i>saas-workplan.html</i> 对应条目。
+【交付物 + 验收】改好的页面 + 预览链接。验收:□ 开关可切换且有确认弹窗 □ 原有列顺序不变 □ 工作计划书已同步
+【流程】直接做,做完附预览链接,不用问我。</pre>
+</div>
+
+<h3><span class="tag">场景 C</span>迁移 / 对照(从源系统搬功能)</h3>
+<div class="card">
+<pre><button class="copybtn" onclick="cp(this)">复制</button>【目标】把 <i>SIT 租户后台的「资金账变」</i> 迁到 SaaS 后台,迁移中顺带优化。
+【背景】注意区分三个系统:旧超管(SitINR,/UserInfo/* 路由)、线上 SIT 租户后台(Vue,/member/*)、目标 SaaS 后台(8200)。本次源 = <i>SIT 租户后台</i>。
+【参照】源页面 <i>https://sit-tenantadmin.…/member/fundChange</i>(账号见知识库);字段、筛选、校验规则以源页为准。
+【落点】落到 8200 的 <i>会员管理</i> 菜单;若同名页已存在,先告诉我差异,不要直接覆盖。
+【范围】功能 1:1 迁移;「优化」仅限:布局对齐设计原则、文案改简洁,不新增功能。
+【交付物 + 验收】迁移后页面 + 一张「源 vs 新」差异说明。验收:□ 字段无遗漏 □ 必填校验一致 □ 差异都有说明
+【流程】先出对照表确认,再动手。</pre>
+</div>
+
+<h3><span class="tag">场景 D</span>调研 / 检索(学习一个系统或页面)</h3>
+<div class="card">
+<pre><button class="copybtn" onclick="cp(this)">复制</button>【目标】检索 <i>______(URL)</i>,产出两样东西:① 完整功能清单(类型/子类型/路由);② 交互与排版布局规律。
+【规则】要实地逐页打开看,不要凭页面名猜;有登录态/真实数据优先实测;清单要能对账(总数和系统自报一致)。
+【交付物 + 验收】结构化报告(可折叠/可搜索的 HTML 更好)。验收:□ 菜单树完整无遗漏 □ 每页有交互要点 □ 通用控件规律单独成节
+【流程】做完直接给我报告 + 预览链接;中途发现权限/登录问题马上说。</pre>
+</div>
+
+<h3><span class="tag">场景 E</span>文档 / 文案产出(PRD、周报、说明)</h3>
+<div class="card">
+<pre><button class="copybtn" onclick="cp(this)">复制</button>【目标】写一份 <i>______(PRD / 周报 / 对外说明)</i>,读者是 <i>______(老板 / 开发 / 商户)</i>。
+【背景】素材来源:______(本次会话内容 / 某文档 / 某页面)。
+【规则】口径以 <i>saas-workplan.html</i> 为准,不要自创进度数字;对外文档不出现内部账号密码;读者是小白,术语先解释再使用。
+【落点】[新建 docs/______.html] 或 [更新 ______ 的第 _ 节,追加不删原文]。
+【交付物 + 验收】成稿 + 预览链接。验收:□ 数据与权威来源一致 □ 结构有目录可跳转 □ 一眼能看懂结论
+【流程】直接写完给我看,我提修改意见后迭代。</pre>
+</div>
+
+<h3><span class="tag">场景 F</span>查数 / 取证(用真实环境核实)</h3>
+<div class="card">
+<pre><button class="copybtn" onclick="cp(this)">复制</button>【目标】帮我核实:<i>______(某功能线上到底怎么表现 / 某字段取值有哪些 / 某流程走到哪步)</i>。
+【规则】一律用 <i>UAT/SIT 真实环境</i> 实测,不要用 mock、不要凭记忆回答;每个结论给截图或数据证据。
+【范围】只查不改;过程中不要点任何 [删除 / 提交 / 审核通过] 等会改数据的按钮。
+【交付物 + 验收】结论 + 证据截图。验收:□ 每条结论有出处 □ 与线上一致可复核
+【流程】查完直接汇报;遇到要登录/要权限的卡点立即告诉我。</pre>
+</div>
+
+<h2 id="s3"><span class="n">③</span>好坏对照 · 七个高频踩坑点</h2>
+<p class="desc">下面每条都是真实协作里出过偏差的写法。坏例不是"错",是"AI 必须猜"——猜错就返工。</p>
+<div class="card">
+<table>
+<thead><tr><th width="120">要点</th><th width="42%">❌ 坏例(要靠猜)</th><th>✅ 好例(零歧义)</th></tr></thead>
+<tbody>
+<tr><td><b>指代要唯一</b></td><td><div class="bad">"同步到目标网站"(项目里有旧超管/SIT租户后台/SaaS后台三个系统,目标是哪个?)</div></td><td><div class="good">"同步到 SaaS 实现后台(localhost:8200 的 member-app)"——系统名+地址,一次说死</div></td></tr>
+<tr><td><b>覆盖要授权</b></td><td><div class="bad">"把内容覆盖进去"(覆盖哪个文件?原内容还要吗?)</div></td><td><div class="good">"新建一个专页挂到门户,不要动现有文件" / "覆盖 X 文件,原内容不要了"</div></td></tr>
+<tr><td><b>参照物 &gt; 形容词</b></td><td><div class="bad">"做得好看一点、专业一点"</div></td><td><div class="good">"布局照 SIT 提现订单页,配色沿用门户首页那套蓝"</div></td></tr>
+<tr><td><b>范围要封口</b></td><td><div class="bad">"把会员模块优化一下"(无边界,AI 可能改 20 个页面)</div></td><td><div class="good">"只改会员列表的操作列,其余页面这次不动"</div></td></tr>
+<tr><td><b>验收可检验</b></td><td><div class="bad">"做完跟我说一声"</div></td><td><div class="good">"验收三条:查询可用 / 新增能出记录 / 风格与会员列表一致——逐条核完再交"</div></td></tr>
+<tr><td><b>流程说清楚</b></td><td><div class="bad">(不说,于是 AI 反复来问"要不要继续")</div></td><td><div class="good">"先截图确认再做正式版" 或 "直接做完附预览链接,别问我"</div></td></tr>
+<tr><td><b>数据来源定死</b></td><td><div class="bad">"列表里放点数据"(AI 会编 mock)</div></td><td><div class="good">"数据取 SIT 真实环境实测值;拿不到就标注'示意数据'"</div></td></tr>
+</tbody>
+</table>
+</div>
+<div class="tip">💡 一个判断技巧:写完需求后自问——<b>"如果把这段话发给一个第一天入职、完全不懂背景的新同事,他能不能不来问我就开工?"</b> 能,就是合格的提示词;不能,缺什么补什么。</div>
+
+<h2 id="s4"><span class="n">④</span>开场上下文模板(新会话第一条消息)</h2>
+<p class="desc">换新会话/新工具时,先把"长期背景"一次性交代掉,后面每条需求就可以很短。</p>
+<div class="card">
+<pre><button class="copybtn" onclick="cp(this)">复制</button>我是 ______(角色:产品经理),负责 ______(项目一句话)。
+【项目背景】______(在做什么、迁移自哪里、给谁用)
+【关键资源】源系统:______(URL+测试账号);目标系统:______;文档库:______
+【长期规则】① ______(如:交互/控件/术语全局统一)② ______(如:数据一律取真实环境)③ ______(如:改交互须同步文档)
+【协作习惯】① 任务直接执行,不要反复确认 ② 原型先截图确认再出正式版 ③ 做完必附预览链接
+接下来我会逐条提需求,每条按【目标/参照/落点/验收】给你。收到请回"明白",不用复述。</pre>
+</div>
+
+<h2 id="s5"><span class="n">⑤</span>速查卡 · 30 字版</h2>
+<div class="card">
+<pre><button class="copybtn" onclick="cp(this)">复制</button>做什么(目标) + 照着什么做(参照) + 放到哪/动不动旧的(落点) + 怎样算对(验收) + 要不要先确认(流程)</pre>
+<p class="desc" style="margin-top:6px">急的时候至少把这五件事说全,就不会跑偏。</p>
+</div>
+
+<div class="note">
+  <b>使用说明:</b>每个代码块右上角可一键复制;<i>斜体绿字</i>是示例填词,替换成你的内容即可。本范本沉淀自 saas-desigh 项目的真实协作复盘(2026-06),场景 C 的"三个系统指代"与好坏对照第 1、2 条,均来自实际发生过的歧义案例。
+</div>
+
+</div>
+<script>
+function cp(btn){
+  var pre=btn.parentElement.cloneNode(true);
+  pre.querySelector('.copybtn').remove();
+  var txt=pre.textContent.trim();
+  navigator.clipboard.writeText(txt).then(function(){
+    btn.textContent='已复制 ✓';setTimeout(function(){btn.textContent='复制'},1500);
+  });
+}
+</script>
+</body>
+</html>

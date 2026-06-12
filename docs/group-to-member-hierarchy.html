@@ -328,7 +328,7 @@ flowchart TD
               </article>
               <article class="card">
                 <strong>代理</strong>
-                <p>分销 / 推广来源。由会员、邀请人或外部代理的邀请码、邀请链接带来，既产生来源归因，又形成会员之间的推广关系。按发起形态分<strong>正常邀请</strong>（玩家 / 邀请人 / 代理发起的个人邀请）与<strong>活动邀请</strong>（玩家分享活动拉新的裂变行为）两类。外部代理本质是「会员 + 代理端只读查看能力」，代理本人不作为渠道本体存在。</p>
+                <p>分销 / 推广来源。由会员、邀请人或外部代理的邀请码、邀请链接带来，既产生来源归因，又形成会员之间的推广关系。按发起形态分<strong>正常邀请</strong>（玩家 / 邀请人 / 代理发起的个人邀请）、<strong>转盘活动邀请</strong>（玩家分享邀请转盘拉新的裂变行为）与<strong>邀请任务</strong>（玩家完成邀请任务拉新）三类。外部代理本质是「会员 + 代理端只读查看能力」，代理本人不作为渠道本体存在。</p>
               </article>
               <article class="card">
                 <strong>自流量</strong>
@@ -336,7 +336,7 @@ flowchart TD
               </article>
             </div>
             <div class="callout">
-              来源优先级（简化口径）：有效邀请链接 → 官方直推 → 广告 / UTM → 可识别自然访问 → 未知来源。
+              来源优先级（简化口径）：官方直推 → 广告 / UTM → 可识别自然访问 → 有效邀请链接 → 未知来源。
               <strong>原始来源一旦在注册时固定，员工划拨、撤销代理端、渠道关闭都不改写。</strong>
             </div>
           </section>
@@ -352,7 +352,7 @@ flowchart TD
               </p>
               <p>
                 <strong>从归因到集团的整体流程：</strong>
-                会员在某域名注册 → 系统按优先级判定主归因（邀请 &gt; 官方直推 &gt; 广告 &gt; 自然 &gt; 未知）→
+                会员在某域名注册 → 系统按优先级判定主归因（官方直推 &gt; 广告 &gt; 自然 &gt; 邀请 &gt; 未知）→
                 该会员的注册、投注、充值等流水带上「渠道 / 员工 / 代理树」三个维度 →
                 数据先在<strong>渠道</strong>内汇总（ROI、流量质量），再到<strong>域名 / 商户</strong>（经营责任、商户聚合），
                 逐层向上到<strong>市场</strong>（按国家 / 币种口径），最终在<strong>集团</strong>形成全局报表。
@@ -448,8 +448,8 @@ flowchart TD
                   <tr class="db-has"><td><code>staff_id</code></td><td><code>tab_Users.OwnerID / BelongID</code></td><td>业绩归集</td><td>经营归属（Owner / Belong，口径待确认）</td><td>业绩归集第三维、员工间划拨</td></tr>
                   <tr><td><code>first_touch_at / last_touch_at</code></td><td>无</td><td>来源归因</td><td>首次 / 末次有效触点时间；<strong>建议新增</strong></td><td>归因窗口与「末次触点」取值依据</td></tr>
                   <tr class="db-has"><td><code>invite_code</code></td><td><code>tab_Users.InviterCode</code></td><td>代理</td><td>注册所用邀请码</td><td>解析上级、建立代理绑定</td></tr>
-                  <tr><td><code>invite_type</code></td><td>DB / 代码均<strong>无独立列</strong>（最接近的 <code>tab_Users.RegType</code> 仅区分手机 / 邮箱注册方式，非邀请类型）</td><td>代理 · 邀请细分</td><td>邀请类型 <code>normal / activity</code>（正常邀请 / 活动邀请）；<strong>建议新增</strong></td><td>区分个人邀请与活动裂变，分开统计获客质量与活动效果</td></tr>
-                  <tr><td><code>invite_activity_id</code></td><td>会员级<strong>无独立列</strong>；活动邀请关系现由下游表记录：<code>tab_UserInvitedTask</code>(UserId↔ParentId)、<code>tb_InviteCodeBind</code>、<code>tab_InvitedWheelSpinRecord.FromUserId</code>，但均无「活动 ID」字段</td><td>代理 · 邀请细分</td><td>活动邀请对应的活动 ID；仅活动邀请有值，<strong>建议新增</strong></td><td>还原由哪个活动驱动的裂变，核算活动 ROI 与奖励发放</td></tr>
+                  <tr><td><code>invite_type</code></td><td>DB / 代码均<strong>无独立列</strong>（最接近的 <code>tab_Users.RegType</code> 仅区分手机 / 邮箱注册方式，非邀请类型）</td><td>代理 · 邀请细分</td><td>邀请类型 <code>normal / wheel / task</code>（正常邀请 / 转盘活动邀请 / 邀请任务）；<strong>建议新增</strong></td><td>区分个人邀请与两类活动裂变（转盘 / 任务），分开统计获客质量与各活动效果</td></tr>
+                  <tr><td><code>invite_activity_id</code></td><td>会员级<strong>无独立列</strong>；活动邀请关系现由下游表记录：<code>tab_UserInvitedTask</code>(UserId↔ParentId)、<code>tb_InviteCodeBind</code>、<code>tab_InvitedWheelSpinRecord.FromUserId</code>，但均无「活动 ID」字段</td><td>代理 · 邀请细分</td><td>活动邀请（转盘 / 任务）对应的活动 ID；仅活动邀请有值，<strong>建议新增</strong></td><td>还原由哪个活动驱动的裂变，核算活动 ROI 与奖励发放</td></tr>
                   <tr><td><code>landing_url</code></td><td>无</td><td>来源归因 · 辅证</td><td>落地页地址；<strong>建议新增</strong></td><td>还原投放 / 活动入口</td></tr>
                   <tr class="db-has"><td><code>device_id / register_ip</code></td><td><code>tab_User_RegisterDevice.DeviceId</code> / <code>tab_Users.RegisterIP</code></td><td>风控</td><td>设备指纹 / 注册 IP</td><td>防作弊、防环、风控判定</td></tr>
                   <tr class="db-has"><td><code>member_status</code></td><td><code>tab_Users.UserState</code>（+ IsBlock / IsValid）</td><td>会员</td><td>会员状态</td><td>生命周期与风控控制</td></tr>
@@ -470,21 +470,23 @@ flowchart TD
               <pre class="mermaid">
 flowchart TD
   Client["访问端 client_type<br/>iOS原生 / 安卓原生 / iOS壳包 / 安卓壳包 / PC端（含平板） / 手机H5端"] --> Visit["玩家访问商户入口"]
-  Visit --> Invite{"有效邀请链接？"}
+  Visit --> Official{"有效官方推广链接？"}
 
-  Invite -->|是| S1["主归因：邀请来源<br/>同时形成代理树推广关系"]
-  Invite -->|否| Official{"有效官方推广链接？"}
   Official -->|是| S2["主归因：官方直推"]
   Official -->|否| Ads{"有效广告参数 / UTM？"}
   Ads -->|是| S3["主归因：广告投放"]
   Ads -->|否| Nat{"可识别自然访问？"}
   Nat -->|是| S4["主归因：自然流量"]
-  Nat -->|否| S5["主归因：未知来源<br/>保留失败原因"]
+  Nat -->|否| Invite{"有效邀请链接？"}
+  Invite -->|是| S1["主归因：邀请来源<br/>同时形成代理树推广关系"]
+  Invite -->|否| S5["主归因：未知来源<br/>保留失败原因"]
   S1 --> InvKind{"邀请类型？<br/>invite_type"}
-  InvKind -->|个人邀请码 / 链接| S1a["正常邀请<br/>玩家 / 邀请人 / 代理发起的个人邀请"]
-  InvKind -->|分享活动邀请| S1b["活动邀请<br/>玩家分享活动拉新（裂变获客 · 带活动ID）"]
+  InvKind -->|个人邀请码 / 链接 · normal| S1a["正常邀请<br/>玩家 / 邀请人 / 代理发起的个人邀请"]
+  InvKind -->|分享邀请转盘 · wheel| S1b["转盘活动邀请<br/>邀请转盘裂变（裂变获客 · 带活动ID）"]
+  InvKind -->|完成邀请任务 · task| S1c["邀请任务<br/>邀请任务拉新（裂变获客 · 带活动ID）"]
   S1a --> Reg["注册完成"]
   S1b --> Reg
+  S1c --> Reg
   S2 --> Reg
   S3 --> Reg
   S4 --> Reg
@@ -494,7 +496,7 @@ flowchart TD
   classDef src fill:#e8f3f1,stroke:#13756f,color:#152b28;
   classDef dec fill:#fff8ec,stroke:#9b6518,color:#3d2b12;
   classDef lock fill:#eef3f2,stroke:#65716e,color:#202625;
-  class Client,Visit,S1,S1a,S1b,S2,S3,S4,S5,Reg,Roll src;
+  class Client,Visit,S1,S1a,S1b,S1c,S2,S3,S4,S5,Reg,Roll src;
   class Invite,Official,Ads,Nat,InvKind dec;
   class Lock lock;
               </pre>
@@ -503,20 +505,20 @@ flowchart TD
               <p>
                 <strong>流程图 3 整体流程：</strong>玩家访问商户入口后，系统按<strong>固定优先级依次判定主归因，命中即停</strong>——
                 第一个满足的条件即作为该玩家的主归因，不再向下判断。判定顺序为：
-                有效邀请链接（→ 邀请来源，同时建立代理树推广关系）→ 有效官方推广链接（→ 官方直推）→
-                有效广告参数 / UTM（→ 广告投放）→ 可识别自然访问（→ 自然流量）→ 都不满足则归未知来源并保留失败原因。
+                有效官方推广链接（→ 官方直推）→ 有效广告参数 / UTM（→ 广告投放）→ 可识别自然访问（→ 自然流量）→
+                有效邀请链接（→ 邀请来源，同时建立代理树推广关系）→ 都不满足则归未知来源并保留失败原因。
               </p>
               <p>
                 判定完成后<strong>注册完成</strong>，主归因写入快照<strong>就此固定</strong>，员工划拨、撤销代理端、关闭渠道均不改写；
                 与此同时，该玩家后续的注册、投注、充值等流水按<strong>渠道 → 商户 → 市场 → 集团</strong>逐层三维归集。
-                核心原则是<strong>优先级唯一、命中即停、就高不就低</strong>（如邀请链接与 UTM 同时存在，优先判为邀请来源）。
+                核心原则是<strong>优先级唯一、命中即停、就高不就低</strong>（如官方推广链接与邀请链接同时存在，优先判为官方直推）。
               </p>
               <p>
-                <strong>邀请来源再细分为两类（<code>invite_type</code>）：</strong>
+                <strong>邀请来源再细分为三类（<code>invite_type</code>）：</strong>
                 <strong>正常邀请</strong>——玩家、邀请人、代理等角色发起的个人邀请行为（个人邀请码 / 链接）；
-                <strong>活动邀请</strong>——玩家通过分享活动邀请他人的裂变获客行为（活动专属邀请链接，带活动 ID）。
-                两类<strong>都进代理树、都归代理（上级）</strong>，区别仅在发起形态与是否携带活动上下文：
-                正常邀请用于核算个人 / 代理拉新，活动邀请用于核算活动裂变效果与 ROI，二者分开统计。
+                <strong>转盘活动邀请</strong>——玩家通过分享邀请转盘活动拉新的裂变获客行为（活动专属邀请链接，带活动 ID）；<strong>邀请任务</strong>——玩家通过完成邀请任务活动拉新（带活动 ID）。
+                三类<strong>都进代理树、都归代理（上级）</strong>，区别仅在发起形态与是否携带活动上下文：
+                正常邀请用于核算个人 / 代理拉新，活动邀请（转盘 / 任务）用于核算各活动裂变效果与 ROI，分开统计。
               </p>
             </div>
 
@@ -565,7 +567,7 @@ flowchart TD
               </article>
               <article class="card">
                 <strong>邀请来源</strong>
-                <p>由玩家、邀请人或外部代理的邀请码 / 链接带来，同时形成代理树。再分两类：<strong>正常邀请</strong>＝玩家 / 邀请人 / 代理发起的个人邀请；<strong>活动邀请</strong>＝玩家分享活动邀请他人的裂变行为。<em>例：老玩家分享带自己 ID 的邀请链接（正常邀请）；玩家分享「邀请转盘」活动拉新（活动邀请）。</em></p>
+                <p>由玩家、邀请人或外部代理的邀请码 / 链接带来，同时形成代理树。再分三类：<strong>正常邀请</strong>＝玩家 / 邀请人 / 代理发起的个人邀请；<strong>转盘活动邀请</strong>＝玩家分享邀请转盘活动拉新的裂变行为；<strong>邀请任务</strong>＝玩家完成邀请任务活动拉新。<em>例：老玩家分享带自己 ID 的邀请链接（正常邀请）；玩家分享「邀请转盘」活动拉新（转盘活动邀请）；玩家完成「邀请任务」拉新（邀请任务）。</em></p>
               </article>
               <article class="card">
                 <strong>未知来源</strong>
@@ -601,9 +603,14 @@ flowchart TD
                     <td>玩家 / 邀请人 / 代理发起的个人邀请，链接或邀请码内含上级玩家 / 代理 ID，注册时写入代理树上级关系，<code>invite_type=normal</code>。例：<code>/r/INV8K3D</code> 或填写邀请码 <code>8K3D</code>。</td>
                   </tr>
                   <tr>
-                    <td>邀请来源 · 活动邀请</td>
-                    <td>活动专属邀请链接 / 海报</td>
-                    <td>玩家通过分享活动邀请他人（裂变获客），链接含上级 ID + 活动 ID，注册时既挂代理树又触发活动奖励，<code>invite_type=activity</code> 并记 <code>invite_activity_id</code>。例：邀请转盘 <code>/act/wheel?inv=8K3D&amp;act=2026spin</code>。</td>
+                    <td>邀请来源 · 转盘活动邀请</td>
+                    <td>邀请转盘专属链接 / 海报</td>
+                    <td>玩家通过分享邀请转盘活动拉新（裂变获客），链接含上级 ID + 活动 ID，注册时既挂代理树又触发转盘奖励，<code>invite_type=wheel</code> 并记 <code>invite_activity_id</code>。例：邀请转盘 <code>/act/wheel?inv=8K3D&amp;act=2026spin</code>。</td>
+                  </tr>
+                  <tr>
+                    <td>邀请来源 · 邀请任务</td>
+                    <td>邀请任务活动页 / 任务链接</td>
+                    <td>玩家通过完成邀请任务活动拉新（裂变获客），链接含上级 ID + 活动 ID，注册时既挂代理树又触发任务奖励，<code>invite_type=task</code> 并记 <code>invite_activity_id</code>。例：邀请任务 <code>/act/task?inv=8K3D&amp;act=2026invite</code>。</td>
                   </tr>
                   <tr>
                     <td>未知来源</td>
@@ -614,14 +621,14 @@ flowchart TD
               </table>
             </div>
             <div class="callout">
-              若邀请链接与 UTM 同时存在，<strong>主归因给邀请来源</strong>，UTM 作为辅助证据保留；被邀请玩家可跟随上级来源，但需标记为「裂变获客」。
+              若邀请链接与 UTM 同时存在，<strong>按优先级判为广告投放</strong>（广告 / UTM 优先级高于邀请），邀请链接作为辅助证据保留；来源归因与代理树归属相互独立，是否归上级代理由代理树绑定规则单独判定。
             </div>
 
             <h3>归因边界与边缘情况（研发）</h3>
             <div class="grid two">
               <article class="card">
                 <strong>邀请 + UTM 同时存在</strong>
-                <p>主归因判为<strong>邀请来源</strong>，UTM 作为辅助证据保留；被邀请玩家可跟随上级来源，但标记为「裂变获客」。</p>
+                <p>按优先级<strong>广告 / UTM 先于邀请命中，主归因判为广告投放</strong>，邀请链接作为辅助证据保留；是否归上级代理由代理树绑定规则单独判定（来源归因与代理树归属相互独立）。</p>
               </article>
               <article class="card">
                 <strong>多次触点</strong>
@@ -653,7 +660,7 @@ flowchart TD
                   <tr><th>主归因</th><th>是否进代理树</th><th>玩家归属</th><th>说明与举例</th></tr>
                 </thead>
                 <tbody>
-                  <tr><td>邀请来源（正常邀请 / 活动邀请）</td><td>是</td><td><strong>归代理（上级）</strong></td><td>无论正常邀请还是活动邀请，都挂到上级代理树下，佣金按代理模式结算；活动邀请额外触发活动奖励并记 <code>invite_activity_id</code>。例：A 邀请 B → B 归 A 这条代理线；A 分享邀请转盘活动拉来 C → C 同样归 A，并发放转盘奖励。</td></tr>
+                  <tr><td>邀请来源（正常邀请 / 转盘活动邀请 / 邀请任务）</td><td>是</td><td><strong>归代理（上级）</strong></td><td>无论正常邀请还是活动邀请（转盘 / 任务），都挂到上级代理树下，佣金按代理模式结算；活动邀请额外触发对应活动奖励并记 <code>invite_activity_id</code>。例：A 邀请 B → B 归 A 这条代理线；A 分享邀请转盘活动拉来 C → C 同样归 A，并发放转盘奖励；A 通过邀请任务拉来 D → D 同样归 A，并发放任务奖励。</td></tr>
                   <tr><td>官方直推</td><td>视渠道配置</td><td>默认归平台 / 商户</td><td>官方运营入口默认归平台侧；若直推链接绑定了某外部代理，则该入口带来的玩家归该代理。例：KOL 专属链接绑定代理则归该 KOL。</td></tr>
                   <tr><td>广告投放</td><td>否</td><td>归平台 / 商户</td><td>商户买量获取，归平台运营，不归任何个人代理。例：信息流广告获客计入商户投放业绩。</td></tr>
                   <tr><td>自然流量</td><td>否</td><td>归平台 / 商户</td><td>用户自行搜索 / 直接进入，无上级，归平台兜底。例：搜商户名进入的新用户。</td></tr>

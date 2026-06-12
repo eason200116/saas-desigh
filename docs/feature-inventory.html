@@ -79,8 +79,8 @@ const DATA=[
 {domain:"① 用户 / 会员",subs:[
   {name:"会员基础",admin:"会员列表(多维筛选)、会员详情(投注统计/资金/活动汇总)、批量操作、用户数据导入、在线会员、用户分组+分组权限、用户有效性设置",api:"注册、登录、获取用户信息、修改昵称、设置语言、忘记密码、搜索用户、心跳",db:"tab_Users(主表)、Users_Safe、Users_Locked、Users_Relative(关系树)、UserGroup、User_Valid、User_RegisterDevice、UserHideSettings"},
   {name:"实名/认证",admin:"实名认证审核",api:"获取实名信息、获取/设置安全问题、添加安全邮箱、换手机/邮箱、验证码校验",db:"tab_UserRealName、tab_GoogleVerify"},
-  {name:"VIP 体系",admin:"VIP等级配置、VIP奖励记录、VIP经验配置",api:"获取VIP信息、领取VIP奖励、VIP等级详情、VIP奖励列表、会员操作日志",db:"tab_VipUsers、VipLevel、VipRecord、VipRewards、VipUsersExp_Day"},
-  {name:"会员层级/充值等级",admin:"会员层级、充值等级配置",api:"—",db:"tab_Users_Recharge_Level、tab_UserLevel_Recharge、tab_FixUserLevel"},
+  {name:"VIP 体系",admin:"VIP等级配置、VIP奖励记录",api:"获取VIP信息、领取VIP奖励、VIP等级详情、VIP奖励列表、会员操作日志",db:"tab_VipUsers、VipLevel、VipRecord、VipRewards、VipUsersExp_Day"},
+  {name:"会员层级",admin:"会员层级",api:"—",db:"tab_Users_Recharge_Level、tab_UserLevel_Recharge、tab_FixUserLevel"},
 ]},
 {domain:"② 财务 / 充提",subs:[
   {name:"充值",admin:"充值列表/审核/审核日志、充值导入、银行卡充值、UPI充值、USDT充值、电子钱包/KBZ/Wave、充值申诉、充值级别、人工充值权限",api:"充值记录、本地银行/UPI/USDT下单、C2C充值(下单/取消/申诉/确认)、三方支付、提交UTR、创建/取消/查询充值订单、首充PIX判断",db:"tab_Recharges、RechargesBank、RechargesUpi、C2C_RechargeOrder、tab_ManualRechargePermission、RechargeDelayedRewardLog"},
@@ -112,11 +112,11 @@ const DATA=[
   {name:"转盘",admin:"转盘配置/任务/抽奖记录/实物奖励/发货/导入",api:"大转盘(当日存款/旋转次数/信息/记录/抽奖)",db:"tab_Turntable_Config、Turntable_Task、Turntable_LotteryRecord、Turntable_PostUserRotateNum"},
   {name:"邀请转盘",admin:"邀请转盘配置、出款记录/审核/锁定、导出",api:"邀请转盘信息、抽奖、提现记录、取款、规则",db:"tab_UserInvitedWheel(+Detail)、InvitedWheelSpinRecord、InvitedWheelWithdrawRecord"},
   {name:"锦标赛/老用户回归/TG",admin:"老用户回归活动/奖励历史、TG活动",api:"锦标赛(入口/列表/加入/详情/排名)、领取回归奖励、TG配置、宝箱、奖金中心",db:"tab_Champion_Task(+ParticipateUser/RankingAwards)、Activity_OldUserReturn、TGActivityRecord/Setting、RewardConfig"},
-  {name:"签到",admin:"签到列表/设置、连续签到日志",api:"签到内容/连续签到/记录、活动列表/详情",db:"tab_SignInLog、SignInRecharges、SignCount、tab_SinIn"},
+  {name:"签到",admin:"签到列表/设置",api:"签到内容/连续签到/记录、活动列表/详情",db:"tab_SignInLog、SignInRecharges、SignCount、tab_SinIn"},
   {name:"积分商城/积分彩",admin:"积分抽奖配置/中奖单/发货单、产品/横幅/订单/兑换记录、产品规则",api:"积分商城(开关/商品/记录/订单/规则/兑换/地址)",db:"tab_PointsLottery(+Orders/Tickets)、Product(+List/Types/Orders/Banners)、UserIntegralLog、Integral_Game_Exchange"},
 ]},
 {domain:"⑦ 代理 / 返佣",subs:[
-  {name:"返佣体系",admin:"返佣等级/费率配置、手动返佣、用户返利(等级/报表/历史)",api:"用户返佣、推广地址、邀请团队、总返佣规则、推广教程、佣金明细、邀请记录、团队日报、合伙人奖励",db:"tab_Commissions、PartnerRewards(+Config/Detail)、Integral_Invite_Level、tab_Users_Relative"},
+  {name:"返佣体系",admin:"返佣等级/费率配置、手动返佣、用户返利(等级/报表/历史)",api:"用户返佣、推广地址、邀请团队、总返佣规则、推广教程、佣金明细、邀请记录、团队日报",db:"tab_Commissions、PartnerRewards(+Config/Detail)、Integral_Invite_Level、tab_Users_Relative"},
   {name:"代理关系(D/C/M/A四级)",admin:"董事/经理/主任/代理 用户关系列表+导出、关系导入/解绑",api:"—",db:"tab_Users_Relative、Users_Relative_Chart、tb_chart_relative*"},
   {name:"代理账号(独立库)",admin:"—",api:"—",db:"【Lottery_Agent库】tab_Agent_User、Agent_GoogleVerify、Agent_Locked、Agent_OnLineStatus、Agent_Logs"},
 ]},
@@ -128,7 +128,7 @@ const DATA=[
 {domain:"⑨ 风控 / 安全",subs:[
   {name:"IP风控",admin:"IP黑名单(增删)、白名单IP(增删/启停/批量/绑定用户)、设备IP、注册IP/登录IP查询",api:"获取客户端IP、检查是否允许下注",db:"tab_Ips、IPScanner、BlackIp相关、tab_client_ip"},
   {name:"设备/指纹",admin:"设备管理、设备日志、浏览器指纹查询、同设备查询",api:"注册设备",db:"tab_User_RegisterDevice、sys_Devices、DeviceLog"},
-  {name:"黑名单/标记",admin:"会员活动黑名单、提现限制名单、刷通道清单、用户标记",api:"—",db:"tab_MemberActivityBlack、UserWithdrawBlack、MarkRecord、UserMarkData"},
+  {name:"黑名单/标记",admin:"会员活动黑名单、用户标记",api:"—",db:"tab_MemberActivityBlack、UserWithdrawBlack、MarkRecord、UserMarkData"},
   {name:"安全设置",admin:"安全设置、Google验证、用户隐藏设置",api:"—",db:"tab_Safe_Settings、GoogleVerify、UserHideSettings"},
 ]},
 {domain:"⑩ 系统 / 配置",subs:[

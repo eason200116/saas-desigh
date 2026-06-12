@@ -929,15 +929,15 @@ flowchart TD
               <div class="diagram-title">流程图 4：玩家注册来源归因优先级</div>
               <pre class="mermaid">
 flowchart TD
-  Visit["玩家访问品牌入口"] --> Invite{"有效邀请链接"}
-  Invite -->|是| InviteSource["主归因：邀请来源<br/>同时形成玩家推广关系"]
-  Invite -->|否| Official{"有效官方推广链接"}
+  Visit["玩家访问品牌入口"] --> Official{"有效官方推广链接"}
   Official -->|是| OfficialSource["主归因：官方直推"]
   Official -->|否| Ads{"有效广告参数 / UTM"}
   Ads -->|是| AdsSource["主归因：广告投放"]
   Ads -->|否| Natural{"可识别自然访问"}
   Natural -->|是| NaturalSource["主归因：自然流量"]
-  Natural -->|否| UnknownSource["主归因：未知来源<br/>保留失败原因"]
+  Natural -->|否| Invite{"有效邀请链接"}
+  Invite -->|是| InviteSource["主归因：邀请来源<br/>同时形成玩家推广关系"]
+  Invite -->|否| UnknownSource["主归因：未知来源<br/>保留失败原因"]
 
   InviteSource --> Register["注册完成"]
   OfficialSource --> Register

@@ -17,9 +17,9 @@
 | 9 | 推广平台（Facebook/Meta）| 会员·归因 | ✅ | （11）| 待迁移 |
 | 10 | 是否领取返佣 | 会员·代理 | ✅ | `RebateState_Bet` / `UserDetaile.cshtml` | 待迁移 |
 | 11 | 返佣等级（3 条件达标）| 代理 | ✅ | `Rebate_Lv`（Agent 区 `RebateLevel.cshtml`）| 待迁移（在 Agent 区）|
-| 12 | 上级代理ID/下级数量/总佣金/邀请奖励/合伙人奖励 | 会员·代理 | ✅ | `UserDetaile.cshtml` | 待迁移 |
+| 12 | 上级代理ID/下级数量/总佣金 | 会员·代理 | ✅ | `UserDetaile.cshtml` | 待迁移 |
 | 13 | 注册浏览器指纹 · 同IP/同指纹注册用户 | 会员详情 | ✅ | `UserDetaile.cshtml` | 待迁移 |
-| 14 | VIP奖励/等级人数·合伙人奖励·返佣报表·充值奖励发放·首充·签到·TG活动 | 运营 | ✅ | `UserInfoController`/`Treasure`/`Agent` 等 | 待迁移 |
+| 14 | VIP奖励/等级人数·返佣报表·首充·签到·TG活动 | 运营 | ✅ | `UserInfoController`/`Treasure`/`Agent` 等 | 待迁移 |
 | 15 | 归因来源板块（主归因/邀请类型/归因链路）| 会员详情 | 🟡 | 渠道/邀请/来源数据有，`主归因` 0 命中 | 聚合呈现新 |
 | 16 | 打包·多渠道分包（渠道码写入安装包）| 推广 | 🟡 | APK 打包有，分包是新 | 增强新 |
 | 17 | 埋点·服务端回传 CAPI/S2S 体系 | 推广 | 🟡 | FB 像素/充值上报有，统一 CAPI 管理是新 | 增强新 |

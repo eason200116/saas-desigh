@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>配置弹窗 · 商户作用域审计</title>
+<style>
+:root{--blue:#2563eb;--blue-d:#1d4ed8;--blue-l:#e8f0ff;--border:#e2e6ea;--muted:#7a8494;--text:#1f2927;--bg:#f6f8fb;--green:#16a34a;--green-l:#ecfdf5;--amber:#b45309;--amber-l:#fffbeb;--red:#d4380d;--red-l:#fff1ec}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.7}
+.header{background:linear-gradient(135deg,#7c2d12,#b45309);color:#fff;padding:28px 32px}
+.header h1{font-size:22px;margin-bottom:6px}
+.header p{opacity:.92;font-size:13px;max-width:900px}
+.stats{display:flex;gap:14px;margin-top:14px;flex-wrap:wrap}
+.stat{background:rgba(255,255,255,.16);border-radius:8px;padding:7px 15px;font-size:12px}
+.stat b{font-size:17px;display:block}
+.container{max-width:1240px;margin:0 auto;padding:18px 24px 60px}
+h2{font-size:16px;color:var(--blue-d);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+.lead{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:14px;font-size:13px}
+.lead b{color:var(--text)}
+table{width:100%;border-collapse:collapse;font-size:12.5px;background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+th{background:#f1f5f9;text-align:left;padding:9px 11px;color:#334155;font-weight:700;border-bottom:1px solid #e2e8f0;white-space:nowrap}
+td{padding:9px 11px;border-bottom:1px solid #f1f5f9;color:#475569;vertical-align:top}
+tr:last-child td{border-bottom:none}
+.tag{display:inline-block;font-size:11px;font-weight:700;border-radius:5px;padding:1px 8px;white-space:nowrap}
+.t-multi{background:#ede9fe;color:#6d28d9}
+.t-single{background:#dbeafe;color:#1d4ed8}
+.t-none{background:#f1f5f9;color:#64748b}
+.s-ok{color:var(--green);font-weight:700;white-space:nowrap}
+.s-gap{color:var(--red);font-weight:700;white-space:nowrap}
+.s-part{color:var(--amber);font-weight:700;white-space:nowrap}
+.legend{font-size:12px;color:var(--muted);background:#fff;border:1px dashed #d8dde6;border-radius:10px;padding:10px 14px;margin:8px 0 14px;line-height:1.9}
+.gapbox{background:var(--amber-l);border:1px solid #fde68a;border-radius:10px;padding:14px 18px;margin-bottom:14px}
+.gapbox h3{color:#92400e;font-size:14px;margin-bottom:6px}
+.gapbox .g{font-size:12.5px;padding:5px 0;border-bottom:1px dashed #fde68a}
+.gapbox .g:last-child{border-bottom:none}
+.gapbox b{color:#92400e}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>配置弹窗 · 商户作用域审计</h1>
+  <p>盘点目标后台(member-app / localhost:8200)全部<b>配置弹窗(新增 / 编辑)</b>,判断每个配置项应按<b>单商户</b>归属、还是支持<b>多商户</b>关联/下发,并标出当前缺口。架构前提:集团 → 市场 → 商户,顶部有全局「商户」切换器,<b>商户是数据隔离边界</b>。</p>
+  <div class="stats">
+    <div class="stat"><b>~24</b>个配置弹窗</div>
+    <div class="stat"><b>2</b>已具多商户(支代付/银行字典)</div>
+    <div class="stat"><b>15+</b>注入弹窗无商户字段</div>
+    <div class="stat"><b>3</b>类缺口</div>
+  </div>
+</div>
+<div class="container">
+
+  <div class="lead">
+    <b>一句话结论:</b>现状是「<b>顶部全局切商户 + 配置弹窗大多不带商户字段</b>」——对<b>单商户操作员</b>够用;但作为多商户 SaaS,有 <b>3 类缺口</b>需补商户作用域:① 个别配置天然应<b>多商户关联/下发</b>;② <b>集团/市场级操作员</b>建配置时弹窗内无法指定目标商户;③ <b>系统用户(操作员)</b>缺「可管辖商户」授权维度。
+  </div>
+
+  <div class="legend">
+    作用域:<span class="tag t-multi">多商户</span> 一份配置关联/下发多个商户(模态需多选) ·
+    <span class="tag t-single">单商户</span> 配置属某一商户(模态需单选 / 跟随全局) ·
+    <span class="tag t-none">平台级</span> 全集团统一、无商户维度。
+    当前:<span class="s-ok">✅ 有</span> / <span class="s-part">⚠ 部分/隐式</span> / <span class="s-gap">✘ 缺字段</span>
+  </div>
+
+  <h2>① 财务 / 支付类配置弹窗</h2>
+  <table>
+    <thead><tr><th width="150">配置弹窗</th><th width="90">应有作用域</th><th width="110">当前</th><th>说明 / 建议</th></tr></thead>
+    <tbody>
+      <tr><td><b>支代付三方管理</b><br>新增三方商户</td><td><span class="tag t-multi">多商户</span></td><td class="s-ok">✅ 已有</td><td>一个 PSP 通道可服务多个商户,已有<b>「关联商户」多选</b>。保持。</td></tr>
+      <tr><td><b>银行字典</b></td><td><span class="tag t-multi">多商户</span></td><td class="s-part">⚠ 部分</td><td>有<b>「同步商户」</b>按钮(可下发多商户),但<b>新增/编辑弹窗本身无「适用商户」多选</b> → 建议弹窗内直接补「同步至商户(多选, 可全选)」。</td></tr>
+      <tr><td><b>充值类型管理</b><br>充值大类 / 通道</td><td><span class="tag t-single">单商户</span></td><td class="s-part">⚠ 隐式</td><td>per 商户支付配置。列表有「商户*」,弹窗跟随全局。<b>集团/市场级操作员</b>需在弹窗内显式选「所属商户」。</td></tr>
+      <tr><td><b>提现类型管理</b><br>提现大类 / 通道</td><td><span class="tag t-single">单商户</span></td><td class="s-part">⚠ 隐式</td><td>同上。</td></tr>
+      <tr><td><b>本地收款账号管理</b><br>银行卡/UPI/USDT/EWallet</td><td><span class="tag t-single">单商户</span></td><td class="s-part">⚠ 隐式</td><td>收款账号属某商户;弹窗建议显式「所属商户」单选。</td></tr>
+    </tbody>
+  </table>
+
+  <h2>② 运营 / 推广配置弹窗(注入式 · 当前均无商户字段)</h2>
+  <table>
+    <thead><tr><th width="150">配置弹窗</th><th width="90">应有作用域</th><th width="110">当前</th><th>说明 / 建议</th></tr></thead>
+    <tbody>
+      <tr><td><b>域名管理</b></td><td><span class="tag t-single">单商户</span></td><td class="s-gap">✘ 无字段</td><td>域名属商户。弹窗补「所属商户」单选(默认=当前全局商户,可改)。</td></tr>
+      <tr><td><b>渠道管理</b></td><td><span class="tag t-single">单商户</span></td><td class="s-gap">✘ 无字段</td><td>同上。</td></tr>
+      <tr><td><b>埋点管理</b></td><td><span class="tag t-single">单商户</span></td><td class="s-gap">✘ 无字段</td><td>同上。</td></tr>
+      <tr><td><b>PWA配置 / 打包管理</b></td><td><span class="tag t-single">单商户</span></td><td class="s-gap">✘ 无字段</td><td>同上。</td></tr>
+      <tr><td><b>轮播图管理</b></td><td><span class="tag t-single">单商户</span></td><td class="s-gap">✘ 无字段</td><td>前台展示物料,属商户。</td></tr>
+      <tr><td><b>站内消息 / 公告消息</b></td><td><span class="tag t-multi">多商户</span></td><td class="s-gap">✘ 无字段</td><td><b>重点</b>:常需<b>一次群发多个商户/市场</b> → 弹窗补「下发商户(多选, 可按市场全选 / 全集团)」。否则只能逐商户发。</td></tr>
+      <tr><td>TG频道 / 签到配置</td><td><span class="tag t-single">单商户</span></td><td class="s-gap">✘ 无字段</td><td>属商户;弹窗补单选商户。</td></tr>
+    </tbody>
+  </table>
+
+  <h2>③ 会员规则 / 风控 / 配置中心弹窗</h2>
+  <table>
+    <thead><tr><th width="150">配置弹窗</th><th width="90">应有作用域</th><th width="110">当前</th><th>说明 / 建议</th></tr></thead>
+    <tbody>
+      <tr><td><b>VIP等级配置</b></td><td><span class="tag t-multi">多商户</span></td><td class="s-gap">✘ 无字段</td><td><b>模板型</b>:常希望「一套等级模板下发多个商户」。建议支持「适用商户(多选)」或「保存为模板→批量套用」。</td></tr>
+      <tr><td><b>会员返佣等级</b></td><td><span class="tag t-multi">多商户</span></td><td class="s-gap">✘ 无字段</td><td>同上,模板型,宜支持多商户下发。</td></tr>
+      <tr><td><b>代理审核机制</b></td><td><span class="tag t-single">单商户</span></td><td class="s-gap">✘ 无字段</td><td>per 商户规则;弹窗补单选商户。</td></tr>
+      <tr><td><b>分组管理</b></td><td><span class="tag t-single">单商户</span></td><td class="s-gap">✘ 无字段</td><td>会员分组属商户;弹窗补单选商户。</td></tr>
+      <tr><td><b>IP黑名单</b></td><td><span class="tag t-single">单商户</span></td><td class="s-gap">✘ 无字段</td><td>会员风控,per 商户;弹窗补单选商户。</td></tr>
+    </tbody>
+  </table>
+
+  <h2>④ 系统管理弹窗</h2>
+  <table>
+    <thead><tr><th width="150">配置弹窗</th><th width="90">应有作用域</th><th width="110">当前</th><th>说明 / 建议</th></tr></thead>
+    <tbody>
+      <tr><td><b>系统用户(操作员)</b><br>新增 / 编辑用户</td><td><span class="tag t-multi">多商户</span></td><td class="s-gap">✘ 缺维度</td><td><b>关键缺口</b>:多租户下操作员需<b>「可管辖商户」</b>授权(一个操作员可管 1 个或多个商户 / 整个市场)。建议补「可管辖商户(多选 / 按市场授权 / 全集团)」。</td></tr>
+      <tr><td><b>系统角色(RBAC)</b></td><td><span class="tag t-none">平台级</span></td><td class="s-ok">✅ 合理</td><td>角色 = 平台级权限模板,无需商户维度(商户隔离靠「可管辖商户」在用户层做)。</td></tr>
+      <tr><td><b>IP白名单</b>(后台登录)</td><td><span class="tag t-none">平台级</span></td><td class="s-ok">✅ 合理</td><td>后台访问控制,集团/平台级,无需按商户。</td></tr>
+    </tbody>
+  </table>
+
+  <div class="gapbox">
+    <h3>⚠ 三类缺口 · 优先级建议</h3>
+    <div class="g"><b>缺口 A(高)· 多商户下发能力缺失</b>:站内/公告消息、VIP等级、返佣等级 等<b>模板型/群发型</b>配置应支持「下发多个商户(多选, 可按市场 / 全集团)」;银行字典的「同步商户」宜并入新增/编辑弹窗。否则集团运营只能逐商户重复配置。</div>
+    <div class="g"><b>缺口 B(中)· 集团/市场级操作员无法在弹窗指定目标商户</b>:15+ 注入式配置弹窗无「商户」字段,只能先切全局商户再建。建议统一补「所属商户」单选(默认=当前全局商户,可改);单商户操作员该字段可锁定/隐藏。</div>
+    <div class="g"><b>缺口 C(高)· 系统用户缺「可管辖商户」授权</b>:这是多租户隔离的核心。操作员账号需绑定其可管辖的商户范围(单 / 多 / 按市场 / 全集团),否则全局商户切换器的可见范围无从约束。</div>
+  </div>
+
+  <div class="legend">
+    口径来源:目标后台 <code>localhost:8200</code> 注入表单代码审计(域名/渠道/埋点/PWA/轮播/分组/IP/消息等弹窗均无商户字段)+ 原生 SIT 配置页(支代付三方=关联商户多选、银行字典=同步商户)。对照基准见 <a href="sit-tenant-admin-map.html">SIT 结构图谱</a>。
+  </div>
+</div>
+</body>
+</html>

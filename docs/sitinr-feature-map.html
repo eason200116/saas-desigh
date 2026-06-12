@@ -103,7 +103,7 @@ tr:hover{background:#f9fbfa}
     <tr><td class="fn-name">会员数据导入</td><td class="fn-route">/UserInfo/UserDataImport</td><td class="fn-desc">批量导入会员数据（Excel文件）</td><td><span class="tag tag-edit">操作</span></td></tr>
     <tr><td class="fn-name">下级会员列表</td><td class="fn-route">/UserInfo/SubsetUserList</td><td class="fn-desc">查询代理线下的下级会员列表</td><td><span class="tag tag-view">查看</span></td></tr>
     <tr><td class="fn-name">下级会员导出</td><td class="fn-route">/UserInfo/SubsetUserExport</td><td class="fn-desc">导出下级会员数据</td><td><span class="tag tag-export">导出</span></td></tr>
-    <tr><td class="fn-name">互刷名单</td><td class="fn-route">/UserInfo/MutualBetList</td><td class="fn-desc">检测互相投注的异常会员名单</td><td><span class="tag tag-audit">风控</span></td></tr>
+    <tr><td class="fn-name">对打查询</td><td class="fn-route">/UserInfo/MutualBetList</td><td class="fn-desc">检测互相投注的异常会员名单</td><td><span class="tag tag-audit">风控</span></td></tr>
 
     <tr class="sub-group"><td colspan="4">▸ 用户分组</td></tr>
     <tr><td class="fn-name">用户分组</td><td class="fn-route">/UserInfo/UserGroup</td><td class="fn-desc">按业务需要将会员划分为不同分组（默认/高价值/风险/VIP等）</td><td><span class="tag tag-view">查看</span></td></tr>
@@ -133,7 +133,6 @@ tr:hover{background:#f9fbfa}
     <tr><td class="fn-name">登录日志列表</td><td class="fn-route">/UserInfo/LoginlogList</td><td class="fn-desc">查询会员登录历史</td><td><span class="tag tag-view">查看</span></td></tr>
     <tr><td class="fn-name">登录日志</td><td class="fn-route">/UserInfo/LoginLog</td><td class="fn-desc">按 IP/设备/时间维度的登录记录</td><td><span class="tag tag-view">查看</span></td></tr>
     <tr><td class="fn-name">登录日志(代理)</td><td class="fn-route">/UserInfo/LoginLog_Agent</td><td class="fn-desc">代理视角的登录日志</td><td><span class="tag tag-view">查看</span></td></tr>
-    <tr><td class="fn-name">连续签到记录</td><td class="fn-route">/UserInfo/ContinuousSignInlog</td><td class="fn-desc">查询会员连续签到天数与奖励领取</td><td><span class="tag tag-view">查看</span></td></tr>
     <tr><td class="fn-name">签到配置</td><td class="fn-route">/UserInfo/SinInSetting</td><td class="fn-desc">配置签到奖励规则</td><td><span class="tag tag-config">配置</span></td></tr>
 
     <tr class="sub-group"><td colspan="4">▸ VIP / 返佣 / 代理关系</td></tr>
@@ -143,7 +142,6 @@ tr:hover{background:#f9fbfa}
     <tr><td class="fn-name">VIP 经验配置</td><td class="fn-route">/UserInfo/VipCurrencyExp</td><td class="fn-desc">配置 VIP 经验值与升级规则</td><td><span class="tag tag-config">配置</span></td></tr>
     <tr><td class="fn-name">返佣等级</td><td class="fn-route">/UserInfo/User_RebateLv</td><td class="fn-desc">查看会员返佣等级</td><td><span class="tag tag-view">查看</span></td></tr>
     <tr><td class="fn-name">返佣报表</td><td class="fn-route">/UserInfo/UserRebateReport</td><td class="fn-desc">返佣数据汇总</td><td><span class="tag tag-report">报表</span></td></tr>
-    <tr><td class="fn-name">合伙人奖励</td><td class="fn-route">/UserInfo/PartnerRewards</td><td class="fn-desc">合伙人推广奖励记录</td><td><span class="tag tag-view">查看</span></td></tr>
     <tr><td class="fn-name">代理关系(D/C/M/A)</td><td class="fn-route">/UserInfo/D_UserRelative</td><td class="fn-desc">按董事/经理/主管/代理四级查看代理关系树</td><td><span class="tag tag-view">查看</span></td></tr>
     <tr><td class="fn-name">代理关系导入</td><td class="fn-route">/UserInfo/UserRelativeDataImport</td><td class="fn-desc">批量导入代理关系绑定</td><td><span class="tag tag-edit">操作</span></td></tr>
 
@@ -191,7 +189,6 @@ tr:hover{background:#f9fbfa}
     <tr><td class="fn-name">支付方式</td><td class="fn-route">/Recharge/PayName</td><td class="fn-desc">配置支持的支付方式（UPI/银行转账/USDT等）</td><td><span class="tag tag-config">配置</span></td></tr>
     <tr><td class="fn-name">支付方式编辑</td><td class="fn-route">/Recharge/PayNameOpt</td><td class="fn-desc">新增/编辑支付方式详情</td><td><span class="tag tag-edit">操作</span></td></tr>
     <tr><td class="fn-name">充值渠道</td><td class="fn-route">/Recharge/RechargeChannel</td><td class="fn-desc">管理第三方充值渠道接入</td><td><span class="tag tag-config">配置</span></td></tr>
-    <tr><td class="fn-name">充值等级</td><td class="fn-route">/Recharge/RechargeLevel</td><td class="fn-desc">按会员等级配置不同的充值限额和赠送比例</td><td><span class="tag tag-config">配置</span></td></tr>
 
     <tr class="sub-group"><td colspan="4">▸ 充值管理</td></tr>
     <tr><td class="fn-name">充值列表</td><td class="fn-route">/Recharge/Recharge</td><td class="fn-desc">所有充值订单列表，支持按状态/类型/时间筛选</td><td><span class="tag tag-view">查看</span></td></tr>

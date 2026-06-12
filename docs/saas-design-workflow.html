@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>SaaS 后台设计 · 标准工作流</title>
+<style>
+  :root{--ink:#1f2733;--muted:#6b7280;--line:#e6e9ef;--bg:#f5f7fb;--blue:#2563eb;--blue-d:#1d4ed8;--brand:#0960bd;--red:#d4380d;--green:#16a34a;--amber:#d97706;--violet:#7c3aed}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.65}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 22px 64px}
+  .hd h1{font-size:24px;font-weight:800}
+  .hd p{color:var(--muted);font-size:13px;margin-top:6px}
+  .toc{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 24px;font-size:12.5px}
+  .toc a{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 14px;color:var(--blue-d);text-decoration:none;font-weight:600}
+  .toc a:hover{border-color:#bfdbfe;background:#f7faff}
+  h2{font-size:18px;font-weight:800;margin:34px 0 14px;display:flex;align-items:center;gap:8px;scroll-margin-top:20px}
+  h2 .n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;background:linear-gradient(120deg,#2563eb,#1d4ed8);color:#fff;font-size:13px;flex:none}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-bottom:14px}
+  .muted{color:var(--muted)}
+  /* 主流程横向链 */
+  .chain{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding:6px 2px}
+  .cn{flex:1;min-width:118px;background:#f7faff;border:1px solid #d6e4ff;border-radius:12px;padding:12px 10px;text-align:center;position:relative}
+  .cn .lv{font-size:11px;color:var(--muted);margin-bottom:3px}
+  .cn .vl{font-weight:700;font-size:13px;color:var(--blue-d)}
+  .cn .ds{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5}
+  .cn.s0{background:linear-gradient(120deg,#eff6ff,#e0eaff);border-color:#bfdbfe}
+  .cn.s9{background:#f0fdf4;border-color:#bbf7d0}.cn.s9 .vl{color:#15803d}
+  .arr{align-self:center;flex:none;width:26px;text-align:center;color:#f59e0b;font-weight:800}
+  /* 步骤卡 */
+  .step{border:1px solid var(--line);border-radius:14px;background:#fff;margin-bottom:14px;overflow:hidden}
+  .step-h{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:1px solid #eef1f6;background:#fafbfd}
+  .step-h .no{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:linear-gradient(120deg,#2563eb,#1d4ed8);color:#fff;font-weight:800;font-size:14px;flex:none}
+  .step-h b{font-size:15px}
+  .step-h .tag{margin-left:auto;font-size:11px;background:#eff6ff;color:var(--blue-d);border:1px solid #bfdbfe;border-radius:999px;padding:2px 10px;white-space:nowrap}
+  .step-b{padding:14px 18px;font-size:13.5px}
+  .step-b ul{margin:4px 0 4px 18px}
+  .step-b li{margin:4px 0}
+  .rule{display:inline-block;background:#fff4f0;border:1px solid #ffd8c8;color:var(--red);border-radius:6px;padding:1px 8px;font-size:12px;font-weight:700;margin-right:4px}
+  .ok{display:inline-block;background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;border-radius:6px;padding:1px 8px;font-size:12px;font-weight:700;margin-right:4px}
+  code{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:5px;padding:1px 6px;font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#0f172a}
+  table{width:100%;border-collapse:collapse;font-size:13px;background:#fff}
+  th{background:#f1f5f9;text-align:left;padding:9px 12px;border:1px solid var(--line);font-weight:700;white-space:nowrap}
+  td{padding:8px 12px;border:1px solid var(--line);vertical-align:top}
+  tr:hover td{background:#fafcff}
+  a{color:var(--blue-d)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:860px){.grid2{grid-template-columns:1fr}.chain{flex-wrap:wrap}.arr{display:none}.cn{min-width:46%}}
+  .pill{display:inline-block;font-size:11px;border-radius:999px;padding:1px 9px;font-weight:700}
+  .pill.b{background:#eff6ff;color:var(--blue-d);border:1px solid #bfdbfe}
+  .pill.g{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
+  .pill.o{background:#fff7ed;color:var(--amber);border:1px solid #fed7aa}
+  .pill.r{background:#fff4f0;color:var(--red);border:1px solid #ffd8c8}
+  .note{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 14px;font-size:12.5px;color:#92400e;margin:10px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hd">
+    <h1>📐 SaaS 后台设计 · 标准工作流</h1>
+    <p>基于 <code>/Users/eason/v1</code> 现有资产与既定约定整理 · 适用于 SitINR → SaaS 迁移期的所有 设计 / 交互 / 文档 工作 · 更新：2026-06-12</p>
+  </div>
+
+  <div class="toc">
+    <a href="#flow">① 主流程一图</a>
+    <a href="#assets">② 资产地图</a>
+    <a href="#steps">③ 七步详解</a>
+    <a href="#redline">④ 全局红线</a>
+    <a href="#sync">⑤ 四处同步</a>
+    <a href="#publish">⑥ 发布流程</a>
+    <a href="#pitfall">⑦ 常见坑速查</a>
+    <a href="#links">⑧ 链接索引</a>
+  </div>
+
+  <!-- ① 主流程 -->
+  <h2 id="flow"><span class="n">①</span>主流程一图（需求 → 交付）</h2>
+  <div class="card">
+    <div class="chain">
+      <div class="cn s0"><div class="lv">STEP 1</div><div class="vl">需求输入</div><div class="ds">用户需求 / PDF / 截图 / 参照图</div></div>
+      <div class="arr">→</div>
+      <div class="cn"><div class="lv">STEP 2</div><div class="vl">调研取证</div><div class="ds">SIT/UAT 真实环境 + SitINR 源码</div></div>
+      <div class="arr">→</div>
+      <div class="cn"><div class="lv">STEP 3</div><div class="vl">板块设计</div><div class="ds">先截图确认<br>再正式产出</div></div>
+      <div class="arr">→</div>
+      <div class="cn"><div class="lv">STEP 4</div><div class="vl">注入实现</div><div class="ds">8200 member-app<br>SPECS 框架</div></div>
+      <div class="arr">→</div>
+      <div class="cn"><div class="lv">STEP 5</div><div class="vl">四处同步</div><div class="ds">菜单 / SPECS /<br>工作台 / 文档</div></div>
+      <div class="arr">→</div>
+      <div class="cn"><div class="lv">STEP 6</div><div class="vl">实测验证</div><div class="ds">8200 DOM 核对<br>普通 reload</div></div>
+      <div class="arr">→</div>
+      <div class="cn s9"><div class="lv">STEP 7</div><div class="vl">交付 / 发布</div><div class="ds">必附预览链接<br>按需 Pages 发布</div></div>
+    </div>
+    <div class="note">⚡ 隐含约定：所有任务<b>直接执行不反复确认</b>；唯一的强制停点是 STEP 3 的「截图 → 用户确认」检查点，以及名词/控件出现不一致时「先问再做」。</div>
+  </div>
+
+  <!-- ② 资产地图 -->
+  <h2 id="assets"><span class="n">②</span>资产地图（源 → 设计 → 目标）</h2>
+  <div class="card">
+    <div class="chain">
+      <div class="cn"><div class="lv">迁移源 · 真实系统</div><div class="vl">SitINR 线上后台</div><div class="ds">arcloud.top（eason/123456）<br>ASP.NET MVC · 700+ 功能</div></div>
+      <div class="arr">→</div>
+      <div class="cn"><div class="lv">迁移源 · 源码三仓</div><div class="vl">Ar_V1_Admin 等</div><div class="ds">Ar_V1_Admin / ar_v1_lotteryapi / Ar_V1_DataBase（字段·枚举·权限的权威依据）</div></div>
+      <div class="arr">→</div>
+      <div class="cn s0"><div class="lv">设计产出（主战场）</div><div class="vl">saas-desigh/</div><div class="ds">docs 文档 + prototypes 原型 + member-app 实现后台</div></div>
+      <div class="arr">→</div>
+      <div class="cn s9"><div class="lv">迁移目标 · 实演示</div><div class="vl">localhost:8200</div><div class="ds">「目标后台 / 新SaaS后台」<br>?open=hub 总览</div></div>
+    </div>
+    <table style="margin-top:14px">
+      <tr><th style="width:220px">资源</th><th>位置 / 地址</th><th>用途与口径</th></tr>
+      <tr><td><b>工作目录（唯一）</b></td><td><code>/Users/eason/v1/saas-desigh</code></td><td>所有产出只放这里，<span class="pill r">不用 Downloads</span>；带 git，origin = eason200116/saas-desigh</td></tr>
+      <tr><td>实现后台（目标后台）</td><td><code>http://localhost:8200</code>（serve member-app）</td><td>用户实际看的交互演示。总览 <code>?open=hub</code>，单页 <code>?open=&lt;route&gt;</code>；demo 账号 admin/123456</td></tr>
+      <tr><td>文档 / 原型预览</td><td><code>http://localhost:8753</code>（serve saas-desigh 根）</td><td><code>/docs/*.html</code>、<code>/prototypes/*.html</code>；8200 经 <code>member-app/docs</code> 软链也可访问 docs</td></tr>
+      <tr><td>SitINR 线上（源参照）</td><td><code>https://arcloud.top/Admin_UERP/Index</code></td><td>迁移来源真实系统，对照真实交互与字段</td></tr>
+      <tr><td>SIT 租户后台（新版参照）</td><td><code>sit-tenantadmin.lottotest6688.com</code></td><td>同产品演进版（history 路由 / 242 组件 / tenant 层）。与 8200 是<b>两个构建</b>，图谱见 <a href="sit-tenant-admin-map.html" target="_blank">sit-tenant-admin-map</a></td></tr>
+      <tr><td>素材库</td><td><code>v1/saas素材/</code> + 浏览器另存 html 快照</td><td>UI 规范来源（54+ 截图）；快照只读参照，<span class="pill r">不要改快照文件</span></td></tr>
+      <tr><td>进度权威源</td><td><a href="saas-workplan.html" target="_blank">docs/saas-workplan.html</a></td><td>CMP 数据驱动统计；增删功能点必同步（见 ⑤）</td></tr>
+    </table>
+  </div>
+
+  <!-- ③ 七步详解 -->
+  <h2 id="steps"><span class="n">③</span>七步工作流详解</h2>
+
+  <div class="step">
+    <div class="step-h"><span class="no">1</span><b>需求输入</b><span class="tag">入口：用户口述 / PDF / 参照截图</span></div>
+    <div class="step-b">
+      <ul>
+        <li>来源：用户直接提需求、产品 PDF（如《域名和渠道说明》）、参考截图、SIT/SitINR 现有页面。</li>
+        <li>产品侧提需求可参照范本 <a href="ai-prompt-template.html" target="_blank">产品→AI 提需求范本</a>（8 要素 + 6 场景）。</li>
+        <li><span class="rule">仔细看需求</span>参考图中的字段先判定性质（配置项 ≠ 统计列），「不增加其他数据」要确认指代范围，避免砍错/补错。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-h"><span class="no">2</span><b>调研取证</b><span class="tag">原则：真实环境优先，不编 mock</span></div>
+    <div class="step-b">
+      <ul>
+        <li><span class="rule">UAT/SIT 优先</span>字段结构、枚举值、业务数据、接口形态一律先取真实环境（SitINR 线上 / SIT 租户后台 / 三仓源码），拿不到再退而求其次并说明。</li>
+        <li>SitINR 功能对照：<a href="sitinr-feature-map.html" target="_blank">SitINR 功能图谱</a>（旧超管，<code>/UserInfo/*</code>）；源码逐页审计走 <code>Ar_V1_Admin/PC.dianzan/Areas/Admin/Views/</code>。</li>
+        <li>新版参照：<a href="sit-tenant-admin-map.html" target="_blank">SIT 租户后台图谱</a>（5 模块 24 页）。<span class="rule">勿混用</span>两图谱对应两个不同系统。</li>
+        <li>列表类设计先看金标准：<b>会员列表 = 全局列表模板</b>（筛选/快捷时间/自定义列/合计行/分页跳页）。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-h"><span class="no">3</span><b>板块设计（含确认检查点）</b><span class="tag">硬约束：先截图确认，再出正式 HTML</span></div>
+    <div class="step-b">
+      <ul>
+        <li>一个板块一个板块推进：产出该板块 → 本地预览截图给用户 → <b>等确认</b> → 再产正式页面。不一次性做完整页。</li>
+        <li>设计四原则：<span class="ok">交互统一</span><span class="ok">控件统一</span><span class="ok">交互简洁</span><span class="ok">小白友好</span>（入口明显、文字引导、视觉反馈、重要操作二次确认）。</li>
+        <li>层级体系：<b>集团→市场→商户→域名→渠道→会员</b>，商户是数据隔离边界，<span class="rule">无品牌层</span>。</li>
+        <li>控件与名词全局一致；发现既有页面不一致，<span class="rule">先问再做</span>。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-h"><span class="no">4</span><b>注入实现（8200 member-app）</b><span class="tag">统一入口：?open=hub，不再散建原型</span></div>
+    <div class="step-b">
+      <ul>
+        <li>所有新交互<b>注入 member-app</b>（改 <code>member-app/index.html</code> 的 SPECS 数据驱动框架），共用 <code>localhost:8200/?open=hub</code> 一条预览链接；不再单独散建 prototypes/*.html 或新端口。</li>
+        <li>新增一个模块 = ① SPECS 加条目（<code>t</code> 必须=菜单文案）② 菜单（build() 克隆注入 ADD / 删除走 HIDE）③ 工作台 <code>T</code> 数组加磁贴。</li>
+        <li>两套视图认清楚：直接 hash 导航 = 真实 Vue 页（bundle 改不动）；点菜单/磁贴 = 注入 SPECS 覆盖层。给真实页「加列/加字段」只能做在 SPECS 覆盖层或 augment 增强。</li>
+        <li>弹窗尺寸三级制：大图详情（基类 1480×88vh）/ 中表单（form 760×auto）/ 小确认（sm 440）。开关类操作一律二次确认。</li>
+        <li>通用机制优先复用：<code>freeze:N</code> 列冻结、<code>platTabs</code> 平台页签、<code>html:</code> 图文页、FOPT 筛选真实选项、红列 <code>[名,类型,1]</code> 标新增。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-h"><span class="no">5</span><b>四处同步（增删功能点必做）</b><span class="tag">缺一不可，详见 ⑤</span></div>
+    <div class="step-b">
+      <ul>
+        <li>① 交互/下拉菜单（HIDE / ADD）② SPECS ③ 快捷工作台 T 磁贴 ④ 文档（saas-workplan 为首）。</li>
+        <li>涉及计数口径（页面数/子分类数/合计）的所有文档一起改：workplan、PRD、功能说明书、new-content-list、naming 映射。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-h"><span class="no">6</span><b>实测验证</b><span class="tag">改完必须在 8200 真实 DOM 核对</span></div>
+    <div class="step-b">
+      <ul>
+        <li>改 <code>index.html</code> 注入层 → 普通 <code>location.reload()</code>（保留登录态）；改打包 bundle（如 <code>index-*.js</code> 菜单 iK）→ 必须 <code>Cmd+Shift+R</code> 硬刷新（会登出，登录让用户自己来）。</li>
+        <li>删菜单项验证：DOM 里查被删 label 命中数 = 0；新增页面验证：菜单、磁贴、<code>?open=</code> 三个入口都可达（SPECS 存在 ≠ 可达）。</li>
+        <li>控制台报错先看：注入框架块语法崩的标志 = <code>__arShowPage</code> 等全 undefined、点了没反应。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-h"><span class="no">7</span><b>交付 / 发布</b><span class="tag">必附预览链接，不需要问</span></div>
+    <div class="step-b">
+      <ul>
+        <li>任何修改完成后，回复末尾<b>直接附本地预览链接</b>：交互 → <code>localhost:8200/?open=&lt;route&gt;</code>；文档/原型 → <code>localhost:8753/docs|prototypes/xxx.html</code>。</li>
+        <li>需要对外分享时走 GitHub Pages 标准流程（见 ⑥），发布后必须做内容比对校验，不能只看 HTTP 200。</li>
+        <li>周报/日报/对外文案类输出由 Claude 负责起草。</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ④ 全局红线 -->
+  <h2 id="redline"><span class="n">④</span>全局红线（任何步骤都生效）</h2>
+  <div class="card grid2" style="display:grid">
+    <div>
+      <p><span class="rule">路径</span>只用 <code>/Users/eason/v1/saas-desigh</code>，不碰 Downloads、不改浏览器快照文件。</p>
+      <p style="margin-top:8px"><span class="rule">数据</span>真实环境优先（SIT/UAT/源码），mock 是最后手段且要说明。</p>
+      <p style="margin-top:8px"><span class="rule">一致</span>控件与名词全局统一，不一致先问；列表页统一套会员列表模板。</p>
+      <p style="margin-top:8px"><span class="rule">安全</span>登录、输密码、谷歌码属禁止代做项，让用户自己操作。</p>
+    </div>
+    <div>
+      <p><span class="ok">执行</span>任务直接做、不反复确认；唯一例外是板块设计的截图确认点。</p>
+      <p style="margin-top:8px"><span class="ok">交付</span>每次完成必附预览链接；交互与文档必须同步（四处同步）。</p>
+      <p style="margin-top:8px"><span class="ok">架构</span>集团→市场→商户→域名→渠道→会员；商户=隔离边界，无品牌层。</p>
+      <p style="margin-top:8px"><span class="ok">协作</span>多会话并发改同一文件：动手前先 grep 现值再替换，断言失败=口径已变。</p>
+    </div>
+  </div>
+
+  <!-- ⑤ 四处同步 -->
+  <h2 id="sync"><span class="n">⑤</span>「四处同步」明细（功能点增 / 删 checklist）</h2>
+  <div class="card">
+    <table>
+      <tr><th style="width:46px">#</th><th style="width:200px">同步点</th><th>新增功能点</th><th>删除功能点</th></tr>
+      <tr><td>1</td><td><b>菜单/下拉</b><br><span class="muted">member-app/index.html</span></td><td>mega-menu <code>build()</code> 的 ADD 数组克隆注入（label 必须与 SPECS <code>t</code> 完全一致）</td><td><code>HIDE</code> 加 label；组名入 HIDE 可整组隐藏（打包 iK 项删不掉只能隐藏）</td></tr>
+      <tr><td>2</td><td><b>SPECS</b></td><td>加页面配置条目（列表 <code>{t,f,c,tb,ra,n}</code> / 表单 <code>{t,form}</code> / 图文 <code>{t,html}</code>），LBL2RT 自动派生</td><td>删条目（留作不可达孤儿也无害，删=清理非必需）</td></tr>
+      <tr><td>3</td><td><b>快捷工作台</b></td><td><code>T</code> 数组加磁贴</td><td><code>T</code> 数组删磁贴</td></tr>
+      <tr><td>4</td><td><b>文档</b><br><span class="muted">进度权威源</span></td><td colspan="2"><a href="saas-workplan.html" target="_blank">saas-workplan.html</a>（CMP 条目 <code>s:done|todo|new|na</code> + 新建页面表行 + 合计）→ 连带 <a href="saas-prd-phase2.html" target="_blank">二阶段 PRD</a>、<a href="saas-phase2-feature-spec.html" target="_blank">功能说明书</a>、saas-new-content-list.md、sitinr-vs-saas-naming.md；字段类另同步字段说明文档。<b>源系统清单（sitinr-feature-map / V1F）照例不动。</b></td></tr>
+    </table>
+    <div class="note">🧮 批量改文档计数用 python <code>assert count==1</code> 再替换，防错位；改前先 grep 现值（并发会话可能已改口径）。</div>
+  </div>
+
+  <!-- ⑥ 发布 -->
+  <h2 id="publish"><span class="n">⑥</span>GitHub Pages 发布流程（对外分享时）</h2>
+  <div class="card">
+    <div class="chain">
+      <div class="cn"><div class="lv">1</div><div class="vl">git add / commit / push</div><div class="ds">keychain 已存凭据；失效则要 PAT（repo 权限）</div></div>
+      <div class="arr">→</div>
+      <div class="cn"><div class="lv">2</div><div class="vl">等 Pages 构建</div><div class="ds">raw.githubusercontent 先验证 push 已达</div></div>
+      <div class="arr">→</div>
+      <div class="cn"><div class="lv">3</div><div class="vl">内容比对校验</div><div class="ds">本地 wc -c 对线上 ?cb=N 轮询字节数；CDN max-age=600，给足时间</div></div>
+      <div class="arr">→</div>
+      <div class="cn s9"><div class="lv">4</div><div class="vl">给链接</div><div class="ds">eason200116.github.io/saas-desigh/…（可配 tinyurl 短链）</div></div>
+    </div>
+    <div class="note">⚠️ 只看 HTTP 200 会被 CDN 旧缓存骗到——同链接更新尤其必须做字节数比对。</div>
+  </div>
+
+  <!-- ⑦ 常见坑 -->
+  <h2 id="pitfall"><span class="n">⑦</span>常见坑速查</h2>
+  <div class="card">
+    <table>
+      <tr><th style="width:230px">场景</th><th>坑</th><th>正解</th></tr>
+      <tr><td>注入框架加 CSS</td><td>CSS 是 JS 字符串拼接，塞裸换行 → SyntaxError → 整个框架崩（<code>?open=</code> 全失效）</td><td>必须 <code>+ '.cls{...}'</code> 逐行拼；崩了先看 console SyntaxError 行号</td></tr>
+      <tr><td>刷新方式</td><td><code>Cmd+Shift+R</code> 会登出 8200（登录不能代做）</td><td>改注入层用普通 reload；只有改 bundle 才硬刷新，并让用户重新登录</td></tr>
+      <tr><td>删顶部下拉菜单项</td><td>删 <code>T</code> 数组删不掉打包下拉项</td><td>菜单项在打包 iK，走 <code>HIDE</code>；T 只管工作台磁贴</td></tr>
+      <tr><td>openModal 表单取值</td><td><code>data-mok</code> 先关弹窗再回调，onOk 里读不到 DOM</td><td>所有字段 oninline 实时写 <code>window</code> store，onOk 纯读 store</td></tr>
+      <tr><td>z-index</td><td>强改 Naive 下拉容器 z-index 会让主导航打不开</td><td>层级定式：注入页 1990 &lt; 下拉 2000+ &lt; toast 3600 &lt; 弹窗 3300（toast 高于弹窗）</td></tr>
+      <tr><td>并发会话同改一文件</td><td>Edit 报 modified-since-read / 锚点 count=0</td><td>先 grep 实际命名取现值；小补丁用 python assert+replace 原子写</td></tr>
+      <tr><td>列冻结测量</td><td>容器未显示时 offsetLeft 全 0，冻结列全叠 left:0</td><td><code>requestAnimationFrame</code> + 零值重试再测量</td></tr>
+      <tr><td>8200 截图嵌文档</td><td>无头 Chrome 直连被登录页拦；JS 原文 return 被安全过滤</td><td>已登录标签导航 → 抽 DOM+CSS → Blob 下载 → file:// 无头截图 → PIL 裁白边</td></tr>
+      <tr><td>验证入口可达性</td><td>SPECS 有条目 ≠ 用户能点到</td><td>核对「菜单 + 磁贴」两层入口；冒烟别 JS 狂切路由（会卡死渲染线程）</td></tr>
+    </table>
+  </div>
+
+  <!-- ⑧ 链接索引 -->
+  <h2 id="links"><span class="n">⑧</span>链接索引</h2>
+  <div class="card">
+    <table>
+      <tr><th style="width:280px">入口</th><th>链接</th></tr>
+      <tr><td>🏠 预览中枢（全部产出导航）</td><td><code>http://localhost:8753/index.html</code></td></tr>
+      <tr><td>⭐ 实现后台总览（快捷工作台）</td><td><code>http://localhost:8200/?open=hub</code></td></tr>
+      <tr><td>📘 工作计划书（进度权威）</td><td><code>http://localhost:8753/docs/saas-workplan.html</code></td></tr>
+      <tr><td>🆕 二阶段 PRD</td><td><code>http://localhost:8753/docs/saas-prd-phase2.html</code></td></tr>
+      <tr><td>📙 二阶段功能说明书</td><td><code>http://localhost:8753/docs/saas-phase2-feature-spec.html</code></td></tr>
+      <tr><td>📋 V1 全功能点清单</td><td><code>http://localhost:8753/docs/feature-inventory.html</code></td></tr>
+      <tr><td>🧭 SIT 租户后台图谱</td><td><code>http://localhost:8753/docs/sit-tenant-admin-map.html</code></td></tr>
+      <tr><td>🌐 对外发布（Pages）</td><td><code>https://eason200116.github.io/saas-desigh/&lt;相对路径&gt;</code></td></tr>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>
