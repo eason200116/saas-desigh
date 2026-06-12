@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>SIT 租户后台 · 结构与交互图谱</title>
+<style>
+:root{--blue:#2563eb;--blue-d:#1d4ed8;--blue-l:#e8f0ff;--border:#e2e6ea;--muted:#7a8494;--text:#1f2927;--bg:#f6f8fb;--warn:#e65100;--green:#16a34a;--red:#d4380d}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.6}
+.header{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;padding:28px 32px}
+.header h1{font-size:22px;margin-bottom:6px}
+.header p{opacity:.85;font-size:13px}
+.header p b{font-weight:700}
+.stats{display:flex;gap:16px;margin-top:14px;flex-wrap:wrap}
+.stat{background:rgba(255,255,255,.15);border-radius:8px;padding:8px 16px;font-size:12px}
+.stat b{font-size:18px;display:block}
+.src{margin-top:12px;font-size:11.5px;opacity:.8}
+.src code{background:rgba(255,255,255,.18);border-radius:4px;padding:1px 6px;font-family:monospace}
+.toolbar{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--border);padding:10px 24px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.toolbar input{flex:1;min-width:200px;height:34px;border:1px solid var(--border);border-radius:6px;padding:0 12px;font-size:13px}
+.toolbar select{height:34px;border:1px solid var(--border);border-radius:6px;padding:0 8px;font-size:12px}
+.toolbar .count{margin-left:auto;color:var(--muted);font-size:12px}
+.tabs{display:flex;gap:6px;padding:10px 24px 0;flex-wrap:wrap}
+.tabs button{border:1px solid var(--border);background:#fff;border-radius:8px 8px 0 0;padding:7px 16px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.tabs button.on{color:var(--blue-d);border-color:var(--blue);border-bottom-color:#fff;background:#fff}
+.container{max-width:1400px;margin:0 auto;padding:16px 24px 60px}
+.pane{display:none}
+.pane.on{display:block}
+.module{background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden}
+.module-head{display:flex;align-items:center;padding:12px 16px;background:#fafbfc;border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+.module-head:hover{background:#f0f4f9}
+.module-head .arrow{width:20px;font-size:11px;color:var(--muted);transition:.2s}
+.module-head.collapsed .arrow{transform:rotate(-90deg)}
+.module-head h2{font-size:14px;margin:0;flex:1}
+.module-head .badge{background:var(--blue-l);color:var(--blue-d);font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:8px}
+.module-head .ctrl{font-size:11px;color:var(--muted);margin-left:8px}
+.module-head.collapsed+.module-body{display:none}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead{background:#f6f8fb}
+th{text-align:left;padding:8px 12px;font-weight:600;color:#3a4256;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:8px 12px;border-bottom:1px solid #f0f2f5;vertical-align:top}
+tr:hover{background:#f9fbfd}
+.fn-name{font-weight:600;color:var(--text);white-space:nowrap}
+.fn-route{font-size:11px;color:var(--blue);font-family:monospace}
+.fn-tabs{color:#3a4256;font-size:12px}
+.fn-tabs i{font-style:normal;color:var(--muted)}
+.fn-desc{color:#3a4256}
+.tag{display:inline-block;font-size:10px;font-weight:600;padding:1px 6px;border-radius:4px;margin-right:4px;white-space:nowrap}
+.t-list{background:#e3f2fd;color:#1565c0}
+.t-board{background:#e0f2f1;color:#00695c}
+.t-chart{background:#e0f7fa;color:#00838f}
+.t-form{background:#fff3e0;color:#e65100}
+.t-config{background:#f3e5f5;color:#7b1fa2}
+.t-console{background:#fce4ec;color:#c2185b}
+.t-modal{background:#ede7f6;color:#4527a0}
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:14px;padding:16px 20px}
+.card h3{font-size:14px;color:var(--blue-d);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.card .h3sub{font-size:11.5px;color:var(--muted);font-weight:500}
+.card ul{list-style:none;margin-top:10px;display:flex;flex-direction:column;gap:7px}
+.card li{display:flex;gap:9px;align-items:flex-start;font-size:12.5px}
+.card li::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--blue);margin-top:7px}
+.card li b{font-weight:700}
+.card li span{color:var(--muted)}
+.note{font-size:12px;color:var(--muted);background:#fff;border:1px dashed #d8dde6;border-radius:10px;padding:12px 16px;margin-bottom:14px;line-height:1.85}
+.note b{color:var(--text)}
+.warn{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:10px;padding:11px 15px;font-size:12px;margin-bottom:14px;line-height:1.8}
+.warn b{color:#9a3412}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>SIT 租户后台 · 结构与交互图谱</h1>
+  <p>线上 <b>商户级</b> 后台(Vue SPA)实地走查产出 —— 完整菜单树(类型 / 子类型)+ 七大页面原型与交互规律,作为 SaaS 后台迁移/对齐的参照系。</p>
+  <div class="stats">
+    <div class="stat"><b>5</b>一级模块</div>
+    <div class="stat"><b>24</b>叶子页面</div>
+    <div class="stat"><b>34</b>页内子页签</div>
+    <div class="stat"><b>7</b>页面原型</div>
+    <div class="stat"><b>3</b>币种 INR/VND/USDT</div>
+  </div>
+  <div class="src">来源:<code>https://sit-tenantadmin.lottotest6688.com</code> · 账号 org_eason · 集团=第一集团 / 商户=(2007)vnd · 走查日 2026-06-10 · Vue Router 路由可按 URL 直跳</div>
+</div>
+
+<div class="warn">
+  ⚠ <b>这是"SIT 租户后台"(线上 Vue 商户后台,路由 <code>/member/user</code>),与 <code>docs/sitinr-feature-map.html</code> 是<b>两个不同系统</b></b> —— 后者是旧版「SitINR 超级管理系统」(ASP.NET MVC 源码图谱,11 模块 / 700+ 功能,路由 <code>/UserInfo/...</code>)。二者不要混用或互相覆盖。
+</div>
+
+<div class="tabs">
+  <button class="on" onclick="showPane('menu',this)">① 菜单树 · 类型/子类型</button>
+  <button onclick="showPane('ux',this)">② 交互设计与排版布局</button>
+</div>
+
+<!-- ==================== PANE 1: 菜单树 ==================== -->
+<div class="container pane on" id="pane-menu">
+
+  <div class="toolbar">
+    <input id="search" placeholder="搜索功能名称、路由、页签、说明…" oninput="filterRows()">
+    <select id="modFilter" onchange="filterRows()">
+      <option value="">全部模块</option>
+      <option value="财务管理">财务管理</option>
+      <option value="会员管理">会员管理</option>
+      <option value="游戏管理">游戏管理</option>
+      <option value="系统管理">系统管理</option>
+      <option value="报表管理">报表管理</option>
+    </select>
+    <span class="count" id="rowCount"></span>
+  </div>
+
+  <div class="note">
+    顶部 5 大类型(顶级菜单)+ 快捷工作台首页,共 <b>24 个可用叶子页面</b>(首页角标「可用快捷入口 24」印证)。<b>原型类型</b>标签:
+    <span class="tag t-list">列表</span><span class="tag t-board">看板</span><span class="tag t-chart">BI图表</span>
+    <span class="tag t-form">表单</span><span class="tag t-config">配置</span><span class="tag t-console">坐席台</span><span class="tag t-modal">弹窗</span>
+  </div>
+
+  <!-- 财务管理 -->
+  <div class="module" data-mod="财务管理">
+    <div class="module-head" onclick="toggleMod(this)">
+      <span class="arrow">▼</span><h2>① 财务管理 Finance</h2>
+      <span class="badge">8 项 / 含1组3子 = 10 叶子页</span><span class="ctrl">/finance/*</span>
+    </div>
+    <div class="module-body"><table>
+      <thead><tr><th width="160">子类型</th><th width="270">路由</th><th width="300">页内子页签(二/三级)</th><th>说明 · 交互要点</th><th width="70">原型</th></tr></thead>
+      <tbody>
+        <tr><td class="fn-name">提现订单管理</td><td class="fn-route">/finance/withdrawOrder</td><td class="fn-tabs">出款看板<i>(三级:出款数据面板/员工实时状态)</i> · 出款员工操作台 · 出款组别配置 · 出款员工报表 · 当前提现订单 · 全部提现记录</td><td class="fn-desc">系统最重模块=完整出款工作流:看板统计卡+风控预警、坐席打卡操作台、组别派发/超时规则配置、坐席绩效报表、60天订单+批量转派</td><td><span class="tag t-board">看板</span><span class="tag t-console">坐席台</span></td></tr>
+        <tr><td class="fn-name">充值订单管理</td><td class="fn-route">/finance/rechargeOrder</td><td class="fn-tabs">三方待入款 · 本地待入款 · 全部入款记录 · 直充短信</td><td class="fn-desc">仅显示近60天;页脚「页面总计/总计」双汇总行(金额 / U额)</td><td><span class="tag t-list">列表</span></td></tr>
+        <tr><td class="fn-name">人工充值</td><td class="fn-route">/finance/manualRechargeGroup/manualRecharge</td><td class="fn-tabs"><i>(隶属"人工充值管理"组)</i></td><td class="fn-desc">左「查询」(商户*/会员Id)+ 右「充值」(存款类型/金额/备注必填,字数计数器)双栏操作页;支持批量人工充值</td><td><span class="tag t-form">表单</span></td></tr>
+        <tr><td class="fn-name">人工充值审核列表</td><td class="fn-route">…/manualRechargeAuditList</td><td class="fn-tabs"></td><td class="fn-desc">操作类型 + 子类型 级联筛选;导出 + 批量操作</td><td><span class="tag t-list">列表</span></td></tr>
+        <tr><td class="fn-name">人工充值审核记录</td><td class="fn-route">…/manualRechargeAuditRecords</td><td class="fn-tabs"></td><td class="fn-desc">人工充值审核历史记录</td><td><span class="tag t-list">列表</span></td></tr>
+        <tr><td class="fn-name">本地收款账号管理</td><td class="fn-route">/finance/localPaymentAccount</td><td class="fn-tabs">本地银行卡账号 · 本地UPI账号 · 本地USDT账号 · 本地EWallet</td><td class="fn-desc">收款账号配置;字段含 IFSC Code、二维码、充值等级、单笔金额限额;新增</td><td><span class="tag t-config">配置</span></td></tr>
+        <tr><td class="fn-name">支代付三方管理</td><td class="fn-route">/finance/payoutThirdParty</td><td class="fn-tabs"></td><td class="fn-desc">PSP通道配置:币种/三方映射码(BinancePay/Wallet66/JDNewPay…)/三方商户号/三方余额/关联商户(多商户)/新增三方商户</td><td><span class="tag t-config">配置</span></td></tr>
+        <tr><td class="fn-name">充值类型管理</td><td class="fn-route">/finance/rechargeType</td><td class="fn-tabs">充值大类 · 充值通道</td><td class="fn-desc">图标上传(选中前/后)、内置类型tag(本地银行卡/三方法币/三方Usdt)、操作含"充值通道管理"下钻</td><td><span class="tag t-config">配置</span></td></tr>
+        <tr><td class="fn-name">提现类型管理</td><td class="fn-route">/finance/withdrawType</td><td class="fn-tabs">提现大类 · 提现通道</td><td class="fn-desc">结构与充值类型管理一致</td><td><span class="tag t-config">配置</span></td></tr>
+        <tr><td class="fn-name">银行字典</td><td class="fn-route">/finance/bankDictionary</td><td class="fn-tabs"></td><td class="fn-desc">银行名称/字典Code/状态;状态列用行内 toggle 开关(蓝开/灰关)</td><td><span class="tag t-config">配置</span></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- 会员管理 -->
+  <div class="module" data-mod="会员管理">
+    <div class="module-head" onclick="toggleMod(this)">
+      <span class="arrow">▼</span><h2>② 会员管理 Member</h2>
+      <span class="badge">6 叶子页</span><span class="ctrl">/member/*</span>
+    </div>
+    <div class="module-body"><table>
+      <thead><tr><th width="160">子类型</th><th width="270">路由</th><th width="300">页内子页签</th><th>说明 · 交互要点</th><th width="70">原型</th></tr></thead>
+      <tbody>
+        <tr><td class="fn-name">会员列表</td><td class="fn-route">/member/user</td><td class="fn-tabs"></td><td class="fn-desc">列表范式标杆:商户*+会员ID/账号/状态/注册时间筛选、日期快筛、批量拉黑/拉白、自定义列、详情弹窗(查看详情)</td><td><span class="tag t-list">列表</span><span class="tag t-modal">弹窗</span></td></tr>
+        <tr><td class="fn-name">会员层级</td><td class="fn-route">/member/level</td><td class="fn-tabs"></td><td class="fn-desc">代理层级分析:上级ID/层级/直属下级/全部下级/代理类型/投注·中奖统计;日期"上一日/下一日/日/日区间/月"逐日导航</td><td><span class="tag t-list">列表</span></td></tr>
+        <tr><td class="fn-name">下级会员</td><td class="fn-route">/member/subsetUser</td><td class="fn-tabs"></td><td class="fn-desc">指定代理下线查询:代理ID*必填,含VIP等级/层级区间/注册设备等多行筛选</td><td><span class="tag t-list">列表</span></td></tr>
+        <tr><td class="fn-name">资金账变</td><td class="fn-route">/member/fundChange</td><td class="fn-tabs"></td><td class="fn-desc">资金流水台账:账变类型/变动前·账变·变动后余额;"会员ID/订单号/类型/操作人必填一项"校验;导出</td><td><span class="tag t-list">列表</span></td></tr>
+        <tr><td class="fn-name">会员银行卡管理</td><td class="fn-route">/member/bankCard</td><td class="fn-tabs">银行卡信息 · USDT地址 · PIX钱包 · 电子钱包信息 · UPI信息 · 实名认证</td><td class="fn-desc">卡号·手机脱敏(646***545);会员ID为蓝链接;新增银行卡;编辑/删除</td><td><span class="tag t-list">列表</span></td></tr>
+        <tr><td class="fn-name">在线人数</td><td class="fn-route">/member/onlineUsers</td><td class="fn-tabs"></td><td class="fn-desc">在线状态/VIP等级/会员分组/余额/打码量/最后登录</td><td><span class="tag t-list">列表</span></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- 游戏管理 -->
+  <div class="module" data-mod="游戏管理">
+    <div class="module-head" onclick="toggleMod(this)">
+      <span class="arrow">▼</span><h2>③ 游戏管理 Game</h2>
+      <span class="badge">1 叶子页</span><span class="ctrl">/game/*</span>
+    </div>
+    <div class="module-body"><table>
+      <thead><tr><th width="160">子类型</th><th width="270">路由</th><th width="300">页内子页签</th><th>说明 · 交互要点</th><th width="70">原型</th></tr></thead>
+      <tbody>
+        <tr><td class="fn-name">三方游戏记录</td><td class="fn-route">/game/order</td><td class="fn-tabs">顶部水平:彩票/视讯/体育/电子/棋牌投注订单 · 左侧垂直彩种卡:Win Go / K3 / 5D / TRX Win Go / XOSO / MOTO Video</td><td class="fn-desc">双维导航(水平类目 × 左侧彩种);投注记录多筛选:期号/玩法类型/投注类型/投注内容/投注·盈亏金额区间;导出</td><td><span class="tag t-list">列表</span></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- 系统管理 -->
+  <div class="module" data-mod="系统管理">
+    <div class="module-head" onclick="toggleMod(this)">
+      <span class="arrow">▼</span><h2>④ 系统管理 System</h2>
+      <span class="badge">5 叶子页</span><span class="ctrl">/system/*</span>
+    </div>
+    <div class="module-body"><table>
+      <thead><tr><th width="160">子类型</th><th width="270">路由</th><th width="300">页内子页签</th><th>说明 · 交互要点</th><th width="70">原型</th></tr></thead>
+      <tbody>
+        <tr><td class="fn-name">系统用户</td><td class="fn-route">/system/user</td><td class="fn-tabs"></td><td class="fn-desc">后台操作员管理(非会员):用户账号/角色/出款权限配置/人工充值权限;批量赋权/批量google操作(2FA)/批量调整出款权限/批量变更状态</td><td><span class="tag t-list">列表</span></td></tr>
+        <tr><td class="fn-name">系统角色</td><td class="fn-route">/system/role</td><td class="fn-tabs"></td><td class="fn-desc">RBAC:状态(启用绿tag)、操作含"权限编辑"(选中行→右侧权限列表分配)/编辑/删除;新增角色</td><td><span class="tag t-list">列表</span></td></tr>
+        <tr><td class="fn-name">IP白名单</td><td class="fn-route">/system/whiteIp</td><td class="fn-tabs"></td><td class="fn-desc">IP/状态(toggle)/备注 + 创建人·创建时间·最后修改人·最后修改时间 审计列;新增白名单IP</td><td><span class="tag t-config">配置</span></td></tr>
+        <tr><td class="fn-name">平台日志</td><td class="fn-route">/system/platform-log</td><td class="fn-tabs"></td><td class="fn-desc">操作审计:日志标题/操作用户/用户IP/IP所在地/操作系统/浏览器/状态;日志类型筛选</td><td><span class="tag t-list">列表</span></td></tr>
+        <tr><td class="fn-name">中台日志</td><td class="fn-route">/system/log</td><td class="fn-tabs"></td><td class="fn-desc">简化日志:操作时间/操作用户/操作详情</td><td><span class="tag t-list">列表</span></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- 报表管理 -->
+  <div class="module" data-mod="报表管理">
+    <div class="module-head" onclick="toggleMod(this)">
+      <span class="arrow">▼</span><h2>⑤ 报表管理 Report</h2>
+      <span class="badge">2 叶子页</span><span class="ctrl">/report/*</span>
+    </div>
+    <div class="module-body"><table>
+      <thead><tr><th width="160">子类型</th><th width="270">路由</th><th width="300">页内子页签</th><th>说明 · 交互要点</th><th width="70">原型</th></tr></thead>
+      <tbody>
+        <tr><td class="fn-name">支代付通道预警</td><td class="fn-route">/report/channel-alert</td><td class="fn-tabs"></td><td class="fn-desc">顶部6预警统计卡(预警总数/待处理/代收失败率/代收拉单失败/代付余额不足/大额出款)+ 状态快筛(全部/待处理/已处理/已忽略)+ 预警规则配置 + 批量操作</td><td><span class="tag t-board">看板</span></td></tr>
+        <tr><td class="fn-name">数据统计</td><td class="fn-route">/report/statistics</td><td class="fn-tabs">24小时报表 · 数据概况 · 商户报表 · 通道报表 · 三方商户号报表</td><td class="fn-desc">BI看板:币种/商户多选+刷新频率;KPI卡(充提差/代收/代付,带↑↓趋势%)+ 24小时多商户折线(代收/代付 × 金额/笔数/成功率)</td><td><span class="tag t-chart">BI图表</span></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="note">
+    另有 <b>快捷工作台</b> <span class="fn-route">/home/welcome</span>(首页磁贴总览,与顶部菜单同权限口径)与 <b>个人中心</b> <span class="fn-route">/home/profile</span>(头像下)。
+  </div>
+
+</div>
+
+<!-- ==================== PANE 2: 交互设计 ==================== -->
+<div class="container pane" id="pane-ux">
+
+  <div class="card">
+    <h3>1. 全局框架 <span class="h3sub">每页一致</span></h3>
+    <ul>
+      <li><b>顶栏</b> <span>Logo │ 日期+时区(UTC+7:00)│ <b>集团→商户切换</b>(第一集团 ▸ (2007)vnd ▸ 切换)│ 5大菜单 │ 全屏 │ 在线/出入款/消息(红点角标)│ 头像+账号</span></li>
+      <li><b>多标签页栏</b> <span>打开的页面以可关闭标签(×)堆叠,超宽出现 ‹ › 滚动箭头与 ⌄ 标签列表下拉</span></li>
+      <li><b>顶级菜单</b> <span>hover 即切换下拉;"人工充值管理"带 › 二级飞出子菜单</span></li>
+      <li><b>架构信号</b> <span>集团 → 市场 → 商户((2007)vnd、(2001)sit-inr、(2002)sit-inr2002)→ PSP通道 + 会员;多币种 INR/VND/USDT;<b>商户=数据隔离边界</b>,几乎所有筛选区首项恒为 <b>商户 *</b>(必填)</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>2. 七种页面原型</h3>
+    <table style="margin-top:10px">
+      <thead><tr><th width="90">原型</th><th width="220">代表页</th><th>关键结构</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag t-list">列表</span></td><td>会员列表、当前提现订单、资金账变</td><td>筛选区(可收起)+ 操作工具条 + 日期快筛 + 自定义列 + 表格 + 分页(部分带页脚合计)</td></tr>
+        <tr><td><span class="tag t-board">看板</span></td><td>出款看板、支代付通道预警</td><td>顶部统计卡(色条+趋势%)+ 风控/预警列表 + 自动刷新</td></tr>
+        <tr><td><span class="tag t-chart">BI图表</span></td><td>数据统计</td><td>KPI卡(充提差/代收/代付,带↑↓%)+ 多商户折线走势(代收/代付 × 金额/笔数/成功率)</td></tr>
+        <tr><td><span class="tag t-form">表单</span></td><td>人工充值</td><td>左查询 + 右操作 双栏;必填 *、备注字数计数器 0/100</td></tr>
+        <tr><td><span class="tag t-config">配置</span></td><td>银行字典、IP白名单、出款组别配置</td><td>「新增 X」主按钮 + 行内 toggle 开关 / inline 参数 + 编辑·删除</td></tr>
+        <tr><td><span class="tag t-console">坐席台</span></td><td>出款员工操作台</td><td>打卡上班(右下浮动按钮)+ 我的审核队列(总单/待审核/审核中)</td></tr>
+        <tr><td><span class="tag t-modal">弹窗</span></td><td>审核订单详情</td><td>顶部摘要条 + 内部页签(订单详情/日志/会员/游戏/账变)+ 字段网格 + 第三方·银行卡双栏 + 风控变更预警 + 全屏/关闭</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>3. 通用控件规律 <span class="h3sub">全局一致</span></h3>
+    <ul>
+      <li><b>筛选区</b> <span>商户 * 永远居首必填 → 高级条件 → 时间范围(中间 → 箭头)→ 蓝色 搜索/重置/收起·展开;复杂页支持「高级筛选」折叠(前5主筛选+其余折叠)</span></li>
+      <li><b>日期快筛(两套范式)</b> <span>业务列表:今天/昨天/本周/上周/本月/上月/所有;层级类:上一日/下一日/日/日区间/月/所有(逐日导航)</span></li>
+      <li><b>状态快筛 Tab</b> <span>横排(全部/待派发/待审核/审核中/审核超时/已提交…),当前态高亮</span></li>
+      <li><b>操作列</b> <span>纯文本链接:查看详情/编辑(蓝)、删除(红)、转派/充值通道管理/权限编辑(下钻)</span></li>
+      <li><b>状态表达</b> <span>启用=绿色 tag,或行内 蓝/灰 toggle 开关(银行字典、IP白名单)</span></li>
+      <li><b>Tag 体系</b> <span>币种(USDT绿/INR/VND)、商户号、内置类型(本地银行卡/三方法币/三方Usdt)均用胶囊 tag</span></li>
+      <li><b>数据脱敏</b> <span>卡号 646***545、手机 841***890</span></li>
+      <li><b>多行单元格</b> <span>一格堆叠多条(订单时间含 申请/派单/更新)</span></li>
+      <li><b>批量操作</b> <span>底部「全选当前页 + 批量操作」,或顶部专项按钮(批量转派/批量赋权/批量google操作/批量拉黑)</span></li>
+      <li><b>导入导出 / 自定义列</b> <span>几乎每个列表右上角都有「⚙ 自定义列」,数据页有「导出」</span></li>
+      <li><b>辅助提示</b> <span>蓝色信息条(权限说明)、红色约束提示(仅保留近60天订单、必须填写一项、日期跨度限制)</span></li>
+      <li><b>分页器</b> <span>统一 共N条 ‹ 1 2 … › │ 10/页 │ 跳至 __;部分带「页面总计/总计」页脚合计(金额/U额)</span></li>
+      <li><b>多时区</b> <span>详情弹窗内申请时间可按业务地显示(如印度 UTC+5:30),与系统 UTC+7 并存</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>4. 命名规律</h3>
+    <ul>
+      <li><b>后缀统一</b> <span>…管理(功能模块)/ …列表·记录(查询)/ …配置(设置)/ …类型·大类·通道(分类)/ …字典(基础数据)</span></li>
+      <li><b>术语统一</b> <span>商户、会员、订单、三方、代收/代付、出款/入款、审核、层级/下级、提现大类/玩法类型 —— 全站一致</span></li>
+    </ul>
+  </div>
+
+  <div class="note">
+    设计内核:<b>"商户隔离 + 可收起筛选 + 标准表格 + 文本链接操作 + 自定义列"</b> 为骨架,叠加 <b>出款工作流</b>(看板/坐席/组别/报表/审核弹窗)与 <b>支付通道治理</b>(三方/类型/通道/预警)两大重型业务模块。
+  </div>
+
+</div>
+
+<script>
+function toggleMod(h){h.classList.toggle('collapsed')}
+function showPane(id,btn){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pane-'+id).classList.add('on');
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+function filterRows(){
+  var q=(document.getElementById('search').value||'').toLowerCase().trim();
+  var mod=document.getElementById('modFilter').value;
+  var shown=0;
+  document.querySelectorAll('#pane-menu .module').forEach(function(m){
+    var modName=m.getAttribute('data-mod');
+    var modOk=!mod||mod===modName;
+    var any=false;
+    m.querySelectorAll('tbody tr').forEach(function(tr){
+      var txt=tr.textContent.toLowerCase();
+      var ok=modOk&&(!q||txt.indexOf(q)>-1);
+      tr.style.display=ok?'':'none';
+      if(ok){any=true;shown++}
+    });
+    m.style.display=(modOk&&(any||!q))?'':'none';
+  });
+  document.getElementById('rowCount').textContent='匹配 '+shown+' 个子类型';
+}
+filterRows();
+</script>
+</body>
+</html>
