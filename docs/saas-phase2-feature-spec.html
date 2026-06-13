@@ -91,7 +91,7 @@
     <h1>SaaS 多商户后台 · 二阶段功能说明书</h1>
     <p>二阶段全部新增功能的<b>使用说明与交互规格</b> —— 每个页面的筛选、列表、操作、弹窗与反馈逐项讲清，可按本说明书逐条点验原型。</p>
     <div class="meta">
-      <span class="pill">版本 v1.13 · 2026-06-13</span>
+      <span class="pill">版本 v1.15 · 2026-06-13</span>
       <span class="pill">范围：二阶段（已建 23 功能页 · 开放 19 · 5 模块）</span>
       <span class="pill">原型 localhost:8200（真实交互）</span>
       <span class="pill">文档性质：功能说明书</span>
@@ -135,10 +135,10 @@
 
   <h2 id="s0b">一、本期需求内容</h2>
   <div class="sub">二阶段（本期）需求范围速览——交付以 localhost:8200 可点击原型为准（真实交互、非占位）。</div>
-    <div class="plain">一句话：把旧后台（SitINR）里会员相关的功能搬进新后台并顺手升级——共 25 个功能页、一套新导航框架、一套「会员从哪儿来」的归因体系、一条广告投放配置链。下面五条就是本期交付的全部内容。</div>
+    <div class="plain">一句话：把旧后台（SitINR）里会员相关的功能搬进新后台并顺手升级——共 22 个功能页、一套新导航框架、一套「会员从哪儿来」的归因体系、一条广告投放配置链。下面五条就是本期交付的全部内容。</div>
   <div class="card">
     <ul class="feat">
-      <li><b>① 会员管理深度迁移</b> — 按 SitINR 对照补全会员相关功能并按分类优化重新归属，共<b>已建 24 个功能页</b>：会员管理 3 / 运营管理 12 / 风控管理 2 / 配置中心 5 / 系统管理 1（5 模块 · 12 子分类）。</li>
+      <li><b>① 会员管理深度迁移</b> — 按 SitINR 对照补全会员相关功能并按分类优化重新归属，共<b>已建 22 个功能页</b>：会员管理 3 / 运营管理 12 / 报表管理 2 / 风控管理 2 / 配置中心 2 / 系统管理 1（6 模块 · 12 子分类）。</li>
       <li><b>② 顶部导航分类优化</b> — 8 大主 Tab 多列分组下拉（mega menu），「风控管理」「配置中心」从会员子项提升为一级模块；菜单项带 新 / 原 角标（§3.1）。</li>
       <li><b>③ 多标签页签栏</b> — 功能页以页签多开并存、切换、关闭（§3.2）。</li>
       <li><b>④ 会员详情归因字段＋会员列表增强</b> — 会员详情按指定位置注入红字归因字段（归因来源 / 代理数据 / 注册登录）；会员列表同步红色列（自定义列显隐）＋「领取返佣 / 对上级返佣」行内配置开关（§4）。</li>
@@ -186,7 +186,7 @@
       <li><span class="op gray">启用 / 停用 / 上架 / 下架</span> → 即时切换状态并 Toast。</li>
       <li><b>操作列冻结贴右</b>：操作列<b>固定吸附在表格最右</b>，列很宽需横向滚动时始终可见，左侧带分隔阴影区隔；层级高于页面浮动元素，任何浮标不得遮挡操作按钮。</li>
       <li><b>横向滚动位置保持</b>：排序 / 翻页 / 切换开关 / 展开收起等触发表格重绘后，<b>横向滚动位置保持不变</b>，表格停在当前查看位置、不会跳回最左。</li>
-      <li><b>操作过多自动折叠</b>：行操作较多时默认只显示主操作，末尾「<span class="op">更多 »</span>」展开 /「<span class="op">« 收起</span>」收起其余操作（如会员列表折叠为「修改密码」，展开补「三方信息」）。</li>
+      <li><b>操作过多自动折叠</b>：行操作较多时默认只显示主操作，「修改密码」与「三方信息」均直接显示（会员列表已去除「更多 »」折叠按钮）。</li>
     </ul>
     <h3>2.5 弹窗与反馈体系</h3>
     <table>
@@ -244,12 +244,12 @@
     <ul class="feat">
       <li>详情抽屉「归因来源」红字字段展示<b>主归因</b>结果，旁带 <b>?</b> 图标，点击弹出四种类型简介；下方「归因明细」可折叠展开判定流程图。</li>
       <li><b>判定优先级（命中即停）</b>：广告投放 ＞ 邀请来源 ＞ 官方直推 ＞ 自然流量；全部解析失败并入自然流量。</li>
-      <li>归因明细呈现 8 个字段：主归因 / 推广平台名称 / 注册渠道 / 登录渠道 / 搜索引擎 / 邀请码 / 邀请类型 / 邀请人；逐项定义见 4.3 字段表。</li>
+      <li>归因明细呈现 9 个字段：主归因 / 推广平台名称 / 注册渠道 / 登录渠道 / 搜索引擎 / 邀请码 / 邀请类型 / 包名 / 版本号；逐项定义见 4.3 字段表。</li>
     </ul>
     <img class="shot" src="img/spec3-basic.png?v=0613e" alt="原型截图 · 会员详情「基本信息」：红字新增字段 邀请人（可点击下钻）与 访问端">
     <div class="shot-cap">原型截图 · 会员详情「基本信息」：红字新增字段 邀请人（可点击下钻）与 访问端</div>
-    <img class="shot" src="img/spec3-attr.png?v=0613e" alt="原型截图 · 会员详情「归因来源」：会员→渠道→代理→域名→商户→市场→集团 链路（角标 ? 点击看说明），下方「归因明细」展开后逐项展示红字归因字段">
-    <div class="shot-cap">原型截图 · 会员详情「归因来源」：会员→渠道→代理→域名→商户→市场→集团 链路（角标 ? 点击看说明），下方「归因明细」展开后逐项展示红字归因字段</div>
+    <img class="shot" src="img/spec3-attr.png?v=0613e" alt="原型截图 · 会员详情「归因来源」：会员→渠道→直接上级代理→一级代理→域名→商户→市场→集团 链路（角标 ? 点击看说明），下方「归因明细」展开后逐项展示红字归因字段">
+    <div class="shot-cap">原型截图 · 会员详情「归因来源」：会员→渠道→直接上级代理→一级代理→域名→商户→市场→集团 链路（角标 ? 点击看说明），下方「归因明细」展开后逐项展示红字归因字段</div>
     <h3>4.2 归因判定流程（注册 → 固化 五步）</h3>
     <ol class="flow">
       <li><b>① 进入</b>：用户点击 推广链接 / 广告 / 邀请链接 / 搜索结果 → 进入注册页。</li>
@@ -259,7 +259,7 @@
       <li><b>⑤ 展示</b>：会员详情「归因来源」板块（红字）＋ 会员列表红色归因列（自定义列可开）。</li>
     </ol>
     <div class="note"><b>并存与细分规则</b>：邀请链接与广告 UTM 并存 → 判<b>广告投放</b>，邀请码留作辅证、仍挂代理树计返佣并标「裂变获客」。邀请来源再分三类 <code>invite_type</code>：正常邀请 normal（个人码/链接）/ 转盘活动邀请 wheel / 邀请任务 task——三类都进代理树、都归上级代理；活动邀请额外触发对应活动奖励并记 <code>invite_activity_id</code>。18 种边界情况逐条见 4.6 归因穷举矩阵。</div>
-    <h3>4.3 归因与来源字段（9）</h3>
+    <h3>4.3 归因、来源 + 注册设备字段（14）</h3>
     <table>
       <tr><th style="width:150px">字段</th><th>定义</th><th style="width:190px">主要用途</th></tr>
       <tr><td style="white-space:nowrap"><b style="color:#d4380d">邀请人</b><br><code style="font-size:11px;color:#7c3aed">inviterId</code></td><td>邀请码发起人 ID（通常＝直接上级代理），点击可下钻该会员详情。</td><td>裂变追踪、代理树构建、佣金归属判定</td></tr>
@@ -271,6 +271,11 @@
       <tr id="f-se"><td style="white-space:nowrap"><b style="color:#d4380d">搜索引擎</b><br><code style="font-size:11px;color:#7c3aed">searchEngine</code></td><td>由 referrer 来源域名识别（Google / Bing / Yahoo / DuckDuckGo 等，未识别记「其他」，无 referrer 记「直接访问」）。</td><td>SEO 效果评估、自然流量质量</td></tr>
       <tr id="f-invcode"><td style="white-space:nowrap"><b style="color:#d4380d">邀请码</b><br><code style="font-size:11px;color:#7c3aed">inviteCode</code></td><td>注册实际使用的邀请码，关联邀请人 / 代理ID。</td><td>代理树绑定、裂变奖励触发</td></tr>
       <tr id="f-invtype"><td style="white-space:nowrap"><b style="color:#d4380d">邀请类型</b><br><code style="font-size:11px;color:#7c3aed">invite_type</code></td><td>邀请来源细分：正常邀请（个人码/链接）/ 转盘活动邀请 / 任务活动邀请。</td><td>区分个人邀请与活动裂变并触发对应奖励</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">注册端</b><br><code style="font-size:11px;color:#7c3aed">regClient</code></td><td>注册时使用的客户端：pc / h5 / ios / 安卓 / ios壳包 / 安卓壳包。</td><td>注册端转化分析、APP 渗透率</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">注册设备号 / 指纹</b><br><code style="font-size:11px;color:#7c3aed">regDeviceId + regFingerprint</code></td><td>设备号（原生包稳定 ID，壳包/H5 阶段可能为空）＋ 浏览器指纹（前端采集，如 fp_a8…）合并展示。</td><td>多开/养号识别、设备维度风控</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">是否模拟器</b><br><code style="font-size:11px;color:#7c3aed">isEmulator</code></td><td>注册设备是否为模拟器 / 虚拟环境。</td><td>批量注册与作弊识别</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">注册域名</b><br><code style="font-size:11px;color:#7c3aed">regDomain</code></td><td>注册时进入的域名（属本商户）；域名定上下文、渠道定来源。</td><td>推广域名效果归集</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">同设备注册会员数</b><br><code style="font-size:11px;color:#7c3aed">sameDeviceRegCount</code></td><td>与本会员同一注册设备（设备号/指纹）注册的账号总数。</td><td>工作室/养号识别、设备聚合风控</td></tr>
       <tr style="display:none"><td style="white-space:nowrap"><b style="color:#d4380d">集团</b><br><code style="font-size:11px;color:#7c3aed">groupId</code></td><td>最高归属与控制方，统管旗下多市场与商户，层级主线顶层。</td><td>多商户汇总报表、全局口径</td></tr>
       <tr style="display:none"><td style="white-space:nowrap"><b style="color:#d4380d">市场</b><br><code style="font-size:11px;color:#7c3aed">marketId</code></td><td>按国家/地区划分的经营单位，承载币种、语言与本地化口径。</td><td>本地化配置、风控阈值边界</td></tr>
       <tr style="display:none"><td style="white-space:nowrap"><b style="color:#d4380d">商户</b><br><code style="font-size:11px;color:#7c3aed">merchantId</code></td><td>实际运营主体与计费/团队归属边界，会员数据隔离的经营单元。</td><td>数据隔离、权限边界</td></tr>
@@ -289,14 +294,9 @@
     </table>
     <img class="shot" src="img/spec3-agent.png?v=0613e" alt="原型截图 · 会员详情「代理数据」（代理明细已展开）：返佣开关 + 10 级代理关系链（节点可复制代理ID）+ 代理关系 / 业绩与返佣明细；「点击查看逐级详情」打开代理线全链路表">
     <div class="shot-cap">原型截图 · 会员详情「代理数据」（代理明细已展开）：返佣开关 + 10 级代理关系链（节点可复制代理ID）+ 代理关系 / 业绩与返佣明细；「点击查看逐级详情」打开代理线全链路表</div>
-    <h3>4.5 注册 / 登录设备字段（10）</h3>
+    <h3>4.5 登录设备字段（5）</h3>
     <table>
       <tr><th style="width:150px">字段</th><th>定义</th><th style="width:190px">主要用途</th></tr>
-      <tr><td style="white-space:nowrap"><b style="color:#d4380d">注册端</b><br><code style="font-size:11px;color:#7c3aed">regClient</code></td><td>注册时使用的客户端：pc / h5 / ios / 安卓 / ios壳包 / 安卓壳包。</td><td>注册端转化分析、APP 渗透率</td></tr>
-      <tr><td style="white-space:nowrap"><b style="color:#d4380d">注册设备号 / 指纹</b><br><code style="font-size:11px;color:#7c3aed">regDeviceId + regFingerprint</code></td><td>设备号（原生包稳定 ID，壳包/H5 阶段可能为空）＋ 浏览器指纹（前端采集，如 fp_a8…）合并展示。</td><td>多开/养号识别、设备维度风控</td></tr>
-      <tr><td style="white-space:nowrap"><b style="color:#d4380d">是否模拟器</b><br><code style="font-size:11px;color:#7c3aed">isEmulator</code></td><td>注册设备是否为模拟器 / 虚拟环境。</td><td>批量注册与作弊识别</td></tr>
-      <tr><td style="white-space:nowrap"><b style="color:#d4380d">注册域名</b><br><code style="font-size:11px;color:#7c3aed">regDomain</code></td><td>注册时进入的域名（属本商户）；域名定上下文、渠道定来源。</td><td>推广域名效果归集</td></tr>
-      <tr><td style="white-space:nowrap"><b style="color:#d4380d">同设备注册会员数</b><br><code style="font-size:11px;color:#7c3aed">sameDeviceRegCount</code></td><td>与本会员同一注册设备（设备号/指纹）注册的账号总数。</td><td>工作室/养号识别、设备聚合风控</td></tr>
       <tr><td style="white-space:nowrap"><b style="color:#d4380d">登录端</b><br><code style="font-size:11px;color:#7c3aed">loginClient</code></td><td>最近一次登录的客户端（枚举同注册端）。</td><td>活跃端分析、端一致性风控</td></tr>
       <tr><td style="white-space:nowrap"><b style="color:#d4380d">登录设备号 / 指纹</b><br><code style="font-size:11px;color:#7c3aed">loginDeviceId + loginFingerprint</code></td><td>最近一次登录设备的稳定 ID 与浏览器指纹，合并展示。</td><td>常用设备识别、异常登录监控</td></tr>
       <tr><td style="white-space:nowrap"><b style="color:#d4380d">同设备登录数</b><br><code style="font-size:11px;color:#7c3aed">sameDeviceLoginCount</code></td><td>与本会员同一设备登录过的账号总数。</td><td>共享设备/工作室识别</td></tr>
@@ -349,14 +349,15 @@
       <li><b>操作列精简 + 折叠展开</b> <span class="tag t-new">本期</span>：操作列默认只显示「<span class="op">修改密码</span>」，末尾「<span class="op">更多 »</span>」展开「<span class="op">三方信息</span>」、「<span class="op">« 收起</span>」收起（原「修改用户名 / 删除」已去除）；操作列冻结贴右、按内容收窄不留白。</li>
       <li><b>返佣配置开关（红色列）</b> <span class="tag t-new">本期调整</span>：「领取返佣」「对上级返佣」为<b>行内 toggle 红色列</b>（默认随其它红列显示，可在「自定义列」显隐），<b>不并入操作列</b>；点击弹「确认要开启/关闭该会员的「××」吗？」，确定后翻转并 Toast。</li>
       <li><b>表头分组归类（数据列重排）</b>：会员列表所有数据列<b>按类目重新排列并归组</b>，列名行之上新增一行<b>分组标签</b>——<b>商户 / 会员 / 账户资金 / 等级分组 / 状态 / 渠道归因 / 代理数据 / 注册设备 / 登录设备 / 其它</b>；分组随列一起冻结，横向滚动时分组标签与所属列始终对齐。<b>「自定义列」弹窗同样按组分块</b>展示（每组小标题带计数 + 组内两列复选框），与表头归类一致。</li>
-      <li><b>列精简</b> <span class="tag t-new">本期</span>：移除「积分」列（低频，详情可查）；其余列可经「自定义列」自由显隐。</li>
+      <li><b>列精简</b> <span class="tag t-new">本期</span>：移除「三方余额」「积分」列（与「余额」重复 / 低频，详情可查）；其余列可经「自定义列」自由显隐。</li>
+      <li><b>状态列语义化</b> <span class="tag t-new">本期</span>：「黑名单状态」显示 正常（中性灰）/ 拉黑（红）；「会员状态」显示 启用（绿）/ 停用（灰）——按各自语义着色，不再统一「正常 / 异常」。</li>
       <li><b>会员详情 · 新增昵称（只读）</b> <span class="tag t-new">本期</span>：基本信息区「账号」后新增「昵称」字段，<b>仅展示、不可修改</b>（无「修改」按钮）；会员状态 / 会员备注仍为同款可编辑交互。</li>
       <li><b>归因红字字段</b>：会员详情抽屉按指定位置注入红色字段（原布局不变）——<b>归因来源</b>（带 ? 图标点击看类型简介 + 归因明细折叠流程图）、<b>代理数据</b>（含 10 级代理关系图，点击节点复制代理ID）、<b>注册 / 登录信息</b>（注册端 / 设备号 / 指纹 / 域名 / 同设备注册数等）。</li>
       <li>红字字段在列表中同步为<b>红色新列</b>（可在「自定义列」勾选显隐）；邀请人、代理路径可点击下钻。</li>
     </ul>
   </div>
 
-  <h2 id="s4">五、会员管理深度迁移（4 新增页）</h2>
+  <h2 id="s4">五、会员管理深度迁移（3 新增页）</h2>
 
   <div class="card">
     <h3>5.1 分组管理 <span class="tag t-new">融合页</span> <a class="golink" href="http://localhost:8200/?open=user-group" target="_blank" title="在原型中打开该页面">查看 ↗</a></h3>
@@ -401,44 +402,48 @@
 
 <h2 id="s5b">六、推广分发配置</h2>
   <div class="card">
-    <div class="sub">入口：运营管理 → 推广配置。本期开放 <b>渠道管理 / 域名管理 / 防封救援 / 解析检测记录</b> 四个页面，覆盖「域名 → 渠道 → 推广 → 获客归因」闭环的前半段；渠道类型分官方渠道（仅 H5 端）与投放渠道（多端）。</div>
+    <div class="sub">入口：运营管理 → 推广配置。本期开放 <b>渠道管理 / 域名管理 / 防封救援 / 解析检测记录</b> 四个页面，覆盖「域名 → 渠道 → 推广 → 获客归因」闭环的前半段；渠道类型分 <b>官方渠道（仅 H5 端）</b>与 <b>投放渠道（可选 H5 / Android / iOS / PWA 端）</b>。</div>
+
+    <h4>渠道管理 <a class="golink" href="http://localhost:8200/?open=channel-config" target="_blank" title="在原型中打开该页面">查看 ↗</a></h4>
+    <div class="plain">每条对外投放的链接都先在这里登记成一个「渠道」——系统生成专属渠道ID与推广链接，之后谁从哪条链接进来注册，后台自动归到对应渠道，哪条链接拉新多一目了然。</div>
+    <img class="shot" src="img/spec-channel-config.png?v=0613f" alt="原型截图 · 渠道管理：渠道名/ID/域名地址/渠道编码/渠道类型+分发端/赠送金额/打码倍数/备注" loading="lazy"><div class="shot-cap">原型截图 · 渠道管理：渠道名 / 渠道ID（自动生成）/ 域名地址 / 渠道编码 / 渠道类型（投放渠道·官方渠道 badge）+ 分发端 / 赠送金额 / 打码量倍数 / 备注</div>
+    <table>
+      <tr><td class="k">列表字段</td><td>渠道名 · 渠道ID（保存后自动生成，全局唯一）· 域名地址 · 渠道编码 · <b>渠道类型</b>（投放渠道 / 官方渠道 badge）+ 分发端（H5端 等） · 赠送金额 · 打码量倍数 · 备注</td></tr>
+      <tr><td class="k">筛选</td><td>渠道ID / 渠道名称</td></tr>
+      <tr><td class="k">工具栏</td><td><span class="op">新增渠道</span></td></tr>
+      <tr><td class="k">行操作</td><td><span class="op">编辑</span><span class="op warn">删除</span></td></tr>
+      <tr><td class="k">新增 / 编辑弹窗</td><td>渠道ID（只读·保存后生成）/ 渠道名*（≤50）/ 域名地址 / 渠道编码（留空自动生成）/ <b>渠道类型</b>（官方渠道·投放渠道）/ <b>分发端</b>（官方渠道固定 H5；投放渠道可选 H5 / Android / iOS / PWA）/ 赠送金额 / 打码量倍数 / 备注</td></tr>
+    </table>
 
     <h4>域名管理 <a class="golink" href="http://localhost:8200/?open=domain-mgmt" target="_blank" title="在原型中打开该页面">查看 ↗</a></h4>
     <div class="plain">登记与管理对外访问的各类域名，是推广链接与防封的基础。域名分 4 类：<b>主域名</b>（根域名）/<b>推广域名</b>（投放用，配 跳转域名 + 落地指向）/<b>防封谷歌页</b>/<b>防封苹果页</b>。</div>
+    <img class="shot" src="img/spec-domain-mgmt.png?v=0613f" alt="原型截图 · 域名管理：商户/域名ID/域名/域名类型/节点/CDN/解析状态/跳转域名/落地指向/防封救援/关联渠道数" loading="lazy"><div class="shot-cap">原型截图 · 域名管理：解析状态 正常=绿 / 异常=红；行操作 详情 / 编辑 / 解析检测 / 防封配置 / 删除</div>
     <table>
-      <tr><td class="k">列表字段</td><td>商户 · 域名ID · 域名 · 域名类型 · 节点 · <b>CDN 服务商</b> · 解析状态 · 跳转域名 · 落地指向 · 防封救援 · 关联渠道 · 创建人 · 创建时间</td></tr>
-      <tr><td class="k">筛选</td><td>商户 / 域名 / 域名类型 / 解析状态 / 创建时间</td></tr>
+      <tr><td class="k">列表字段</td><td>商户 · 域名ID · 域名 · 域名类型 · 节点 · <b>CDN 服务商</b> · 解析状态（正常绿 / 异常红）· 跳转域名 · 落地指向 · 防封救援 · 关联渠道数 · 创建人 · 创建时间</td></tr>
+      <tr><td class="k">筛选</td><td>商户 / 域名 / 域名类型 / 解析状态 / 创建时间（快捷：今天～所有）</td></tr>
       <tr><td class="k">工具栏</td><td><span class="op">新增域名</span><span class="op gray">导出</span></td></tr>
-      <tr><td class="k">行操作</td><td><span class="op">详情</span><span class="op">编辑</span>（含 <b>CDN 服务商 + 加速域名(CNAME)</b>；按域名类型动态展开「推广域名配置」/「防封页配置」）<span class="op">解析检测</span><span class="op">防封配置</span>（救援开关 / 弹窗方式 / 救援域名 / 救援方案 / 救援奖金）<span class="op gray">删除</span></td></tr>
+      <tr><td class="k">行操作</td><td><span class="op">详情</span><span class="op">编辑</span>（按域名类型动态展开「推广域名配置」/「防封页配置」）<span class="op">解析检测</span><span class="op">防封配置</span><span class="op warn">删除</span></td></tr>
     </table>
+
     <h4>防封救援 <a class="golink" href="http://localhost:8200/?open=domain-rescue" target="_blank" title="在原型中打开该页面">查看 ↗</a></h4>
     <div class="plain">原域名被封无法访问时弹出救援弹窗 → 随机打开一个救援域名（防封谷歌/苹果页）→ 下载 PWA/App 自动带入被封前已登录账号并自动登录、领取救援奖金（被封前未登录则无奖金）。苹果页救援仅支持下载 PWA（保存桌面）。</div>
+    <img class="shot" src="img/spec-domain-rescue.png?v=0613f" alt="原型截图 · 防封救援：救援ID/防封页域名/页面类型/救援域名/救援方案/弹窗方式/救援奖金/救援开关/累计切换次数/累计救援人数" loading="lazy"><div class="shot-cap">原型截图 · 防封救援：救援开关（正常=绿 / 异常=红）；行操作 编辑 / 救援记录 / 停用 / 删除</div>
     <table>
-      <tr><td class="k">列表字段</td><td>商户 · 救援ID · 防封页域名 · 页面类型 · 救援域名 · 救援方案 · 弹窗方式 · 救援奖金 · 救援开关 · 累计切换次数 · 累计救援人数 · 创建人 · 创建时间</td></tr>
-      <tr><td class="k">工具栏 / 行操作</td><td><span class="op">新增救援</span><span class="op gray">导出</span>｜<span class="op">编辑</span><span class="op">救援记录</span><span class="op gray">停用</span><span class="op gray">删除</span></td></tr>
+      <tr><td class="k">列表字段</td><td>商户 · 救援ID · 防封页域名 · 页面类型 · 救援域名 · 救援方案 · 弹窗方式 · 救援奖金 · <b>救援开关</b>（异常/正常）· 累计切换次数 · 累计救援人数 · 创建人 · 创建时间</td></tr>
+      <tr><td class="k">筛选</td><td>商户 / 防封页域名 / 救援状态 / 创建时间（快捷）</td></tr>
+      <tr><td class="k">工具栏 / 行操作</td><td><span class="op">新增救援</span><span class="op gray">导出</span>｜<span class="op">编辑</span><span class="op">救援记录</span><span class="op gray">停用</span><span class="op warn">删除</span></td></tr>
     </table>
+
     <h4>解析检测记录 <a class="golink" href="http://localhost:8200/?open=domain-resolve-log" target="_blank" title="在原型中打开该页面">查看 ↗</a></h4>
     <div class="plain">系统按节点周期巡检各域名 DNS 解析是否生效、响应是否正常；解析结果 正常=绿 / 异常=红（可能被劫持、被封或未生效）。可「手动检测」立即触发，或对单条「重新检测」。</div>
+    <img class="shot" src="img/spec-domain-resolve-log.png?v=0613f" alt="原型截图 · 解析检测记录：商户/记录ID/域名/域名类型/检测节点/解析结果/解析IP/响应耗时/TTL/检测方式/检测时间" loading="lazy"><div class="shot-cap">原型截图 · 解析检测记录：解析结果 正常=绿 / 异常=红；工具栏 手动检测；行操作 详情 / 重新检测</div>
     <table>
-      <tr><td class="k">列表字段</td><td>商户 · 记录ID · 域名 · 域名类型 · 检测节点 · 解析结果 · 解析IP · 响应耗时(ms) · TTL(秒) · 检测方式 · 检测时间</td></tr>
+      <tr><td class="k">列表字段</td><td>商户 · 记录ID · 域名 · 域名类型 · 检测节点 · 解析结果（正常绿 / 异常红）· 解析IP · 响应耗时(ms) · TTL(秒) · 检测方式 · 检测时间</td></tr>
+      <tr><td class="k">筛选</td><td>商户 / 域名 / 解析结果 / 检测时间（快捷）</td></tr>
       <tr><td class="k">工具栏 / 行操作</td><td><span class="op">手动检测</span><span class="op gray">导出</span>｜<span class="op">详情</span><span class="op">重新检测</span></td></tr>
     </table>
-    <h4>渠道管理 <a class="golink" href="http://localhost:8200/?open=channel-config" target="_blank" title="在原型中打开该页面">查看 ↗</a></h4>
-    <div class="note" style="border-left-color:#dc2626;background:#fef2f2;color:#7f1d1d"><b>⚠ 最新口径（见§十一）</b>：渠道管理列表 渠道名 / <b>渠道ID（新增自动生成）</b> / 域名地址 / 渠道编码 / <b>渠道类型</b> / 赠送金额 / 打码量倍数 / 备注；渠道类型分 <b>官方渠道（仅 H5 端）</b>与投放渠道（可选 H5 / Android / iOS / PWA 端）；弹窗 渠道ID（保存后自动生成·只读）/ 渠道名* / 域名地址 / 渠道编码（留空自动生成）/ <b>渠道类型 / 分发端</b> / 赠送金额 / 打码量倍数 / 备注；行操作 编辑 / 删除。下方为此前版本规格，待整体改写。</div>
-    <div class="plain">每条对外投放的链接都先在这里登记成一个「渠道」，系统生成专属推广链接发出去——之后谁从哪条链接进来注册，后台自动记到对应渠道头上，哪条链接拉新多一目了然。</div><img class="shot" src="img/spec-channel-config.png?v=0613e" alt="原型截图 · 渠道管理：渠道链接行内复制 + 推广链接开关 + 埋点类型 badge" loading="lazy"><div class="shot-cap">原型截图 · 渠道管理：渠道链接行内复制 + 推广链接开关 + 埋点类型 badge</div>
-    <table>
-      <tr><td class="k">渠道形态</td><td><b>现阶段仅支持 H5 链接 与 官方渠道</b>（暂无 APK / PWA / 原生安装包形态）</td></tr>
-      <tr><td class="k">列表字段</td><td>渠道ID（可复制）· 渠道名称 · 渠道标识（代码 tag）· 所属商户 · 推广商 · 渠道类型（H5 / 官方渠道 badge）· 埋点类型（Google Ads / Meta / TikTok / Kwai / 无埋点 彩色 badge）· 跳转域名 · <b>渠道链接（行内「复制」）</b> · <b>是否推广链接（行内开关，点击二次确认；关闭后链接不可访问）</b> · <b>赠送金额（渠道级注册赠送配置，&gt;0 橙色高亮）</b> · 状态 · 创建时间。仅含渠道字段，不含人数 / 充提等统计列</td></tr>
-      <tr><td class="k">筛选</td><td>商户 / 渠道ID / 渠道名称 / 创建时间范围 + 快捷时间（今天～所有）</td></tr>
-      <tr><td class="k">工具栏</td><td><span class="op">新增渠道</span><span class="op">批量新增</span>（粘贴或上传 .csv「渠道名称,推广商,跳转域名」，实时识别计数 ≤200 条，默认 H5/无埋点/启用）<span class="op gray">批量设置赠送金额</span>（勾选 → 输入金额 → 确认，统一回写各渠道赠送金额；打码倍数 / 触发条件仍由活动管理配置）<span class="op gray">批量调整推广链接状态</span>（勾选 → 选 开启/关闭 → 确认，批量切换链接开关）<span class="op gray">导出</span></td></tr>
-      <tr><td class="k">行操作</td><td><span class="op">详情</span><span class="op">编辑</span><span class="op">测试回传</span><span class="op gray">停用 / 启用</span>（随状态切换，二次确认）<span class="op warn">删除</span>（确认「删除后渠道链接将立即失效」）</td></tr>
-    </table>
-    <b>新增 / 编辑弹窗</b>（分区表单）：① 基础信息——商户* / 渠道名称*（≤50 实时计数）/ 渠道类型*（H5 · 官方渠道）/ 推广商* / 落地方向* / 跳转域名*（来源：域名管理）/ 渠道说明；② 投放埋点——埋点类型*（来源：埋点管理）/ API 回传 URL / 回传签名密钥 / 回传事件（注册·首充·充值·提现 勾选）；③ 关联活动——提示「赠送参数已迁移到活动管理统一配置，此处仅关联引用」+ 关联活动下拉 + 赠送金额（0 为不赠送）；④ 渠道链接——<b>实时预览</b>（随域名/埋点联动变化）+ 复制 / 二维码 / 测试链接 / 生成短链（新增时提示「渠道ID 保存后可用」）。保存即回写列表并提示新渠道ID。
-    <b>详情弹窗</b>：基础信息 / 投放埋点（平台ID · 转化标签 · 默认转化价值 · API 回传 · 回传事件 · 最近回传状态）/ 关联活动 / 渠道链接 四区，底部 <span class="op">编辑</span><span class="op gray">复制渠道</span>（生成「-副本」停用态新渠道）<span class="op">测试回传</span>。
-    <b>测试回传弹窗</b>：显示渠道与回传配置 → 填 test_event_code、选事件（REGISTER / FIRST_DEPOSIT / PURCHASE）→ <span class="op">发起测试</span> → 绿色结果块（platform / event / latency / status）；「无埋点」渠道直接提示无需测试。
   </div>
-
-  <h2 id="s5">七、运营管理（运营配置 / 返佣·等级 / 运营数据 · 含报表·代理报表）</h2>
+<h2 id="s5">七、运营管理（运营配置 / 返佣·等级 / 运营数据 · 含报表·代理报表）</h2>
 
   <div class="card">
     <h3>7.1 消息管理 · 站内消息（推送消息） <span class="tag t-core">复杂表单</span> <a class="golink" href="http://localhost:8200/?open=inbox-message" target="_blank" title="在原型中打开该页面">查看 ↗</a></h3>
@@ -466,8 +471,8 @@
     <div class="plain">管 App 里两种公告：打开 App 时弹出来的「弹窗公告」，和首页顶部滚动的「跑马灯」。支持 7 种语言分别填写，没填的语言自动用英语顶上。</div><img class="shot" src="img/spec-announcement-msg.png?v=0613e" alt="原型截图 · 公告消息：弹窗 / 滚动双页签" loading="lazy"><div class="shot-cap">原型截图 · 公告消息：弹窗 / 滚动双页签</div>
     <table>
       <tr><td class="k">页签</td><td><b>弹窗消息</b>（前台弹窗公告，按排序从大到小依次弹出）/ <b>滚动消息</b>（首页顶部跑马灯，建议短文案）；点击页签即切换列表</td></tr>
-      <tr><td class="k">筛选</td><td>标题 / 状态（全部 · 启用 · 停用）/ 更新时间范围</td></tr>
-      <tr><td class="k">列表字段</td><td>ID（可复制）· 标题 · <b>消息内容</b>（摘要蓝链，<b>点击查看完整内容</b>：弹出详情窗＝ID/状态/排序/更新时间元信息条 + 标题 + 富文本全文 + 英语版本对照）· 状态（启用绿 / 停用灰）· 排序（可排序列）· 更新时间</td></tr>
+      <tr><td class="k">筛选</td><td>渠道 / 标题 / 状态（全部 · 启用 · 停用）/ 更新时间范围</td></tr>
+      <tr><td class="k">列表字段</td><td>序号 · 商户 · 标题 · <b>消息内容</b>（摘要蓝链，<b>点击查看完整内容</b>：弹出详情窗＝ID/状态/排序/更新时间元信息条 + 标题 + 富文本全文 + 英语版本对照）· 渠道 · 状态（启用绿 / 停用灰）· 排序（可排序列）· 更新时间</td></tr>
       <tr><td class="k">工具栏</td><td><span class="op">新增弹窗消息 / 新增滚动消息</span>（随页签变化）</td></tr>
       <tr><td class="k">行操作</td><td><span class="op">编辑</span><span class="op warn">删除</span>（确认「删除后前台将不再展示」）</td></tr>
     </table>
@@ -633,6 +638,8 @@
       <tr><td>v1.11</td><td>2026-06-13</td><td>eason</td><td>用 CDP 脚本从 localhost:8200 重截会员详情 4 个面板（基本信息 / 归因·注册信息 / 代理数据 / 登录信息）：归因面板已隐藏「归属与层级」、新增 包名/版本号 字段、归因与注册合并；代理数据面板「领取/对上级返佣」开关已移至板块表头。注：原型 mock 主归因仍显示「代理（邀请推荐）」（旧术语，待原型层更新）。缓存戳 c→d。</td></tr>
       <tr><td>v1.12</td><td>2026-06-13</td><td>eason</td><td>补全运营管理「返佣·等级」子组：新增 <b>会员返佣等级</b>（强制提升会员返佣等级，含规则）、<b>代理审核机制</b>（自配置中心迁入，返佣状态 badge + 修改返佣弹窗）；§7.4 移除已下线的 返佣报表；§九 配置中心相应去掉代理审核机制（3→2 功能点）。对齐 8200 运营管理 4 子组（运营配置/推广配置/返佣·等级/运营数据）。</td></tr>
       <tr><td>v1.13</td><td>2026-06-13</td><td>eason</td><td>会员详情「代理数据」面板重截为<b>代理明细展开</b>态（含 代理关系 + 业绩与返佣 明细）；按最新交互<b>去掉「代理状态」</b>（8200 原型 + §4.4 代理体系字段 同步移除，字段 8→7）。缓存戳 d→e。</td></tr>
+      <tr><td>v1.14</td><td>2026-06-13</td><td>eason</td><td>对照截图修正 4 处不符：① §4.1 归因链路"代理"拆为"直接上级代理→一级代理"；② 归因明细字段 8→9（邀请人→包名/版本号）；③ §7.2 公告消息筛选加渠道、列表加商户+渠道列（ID→序号）；④ §4.8 操作列去掉"更多 »"折叠描述（8200 已改为直接展开）。</td></tr>
+      <tr><td>v1.15</td><td>2026-06-13</td><td>eason</td><td>§六推广分发配置全面重写：① <b>渠道管理</b>换为当前实际内容（去掉旧 SitINR 内容和⚠注释，改为渠道名/ID/域名地址/渠道编码/类型+分发端/赠送金额/打码倍数/备注，新增弹窗字段对齐8200原型）；② <b>新增三张截图</b>（域名管理/防封救援/解析检测记录）；③ 调整顺序为菜单顺序（渠道管理 → 域名管理 → 防封救援 → 解析检测记录）。</td></tr>
     </table>
   </div>
 
