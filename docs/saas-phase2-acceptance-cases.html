@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>SaaS 多商户后台 · 二阶段验收用例</title>
+<style>
+  :root{--blue:#1d4ed8;--ink:#1f2937;--sub:#64748b;--line:#e5e7eb;--bg:#f7f9fc}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 22px 80px}
+  .hero{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;border-radius:14px;padding:24px 28px;margin-bottom:18px}
+  .hero h1{margin:0 0 6px;font-size:23px}
+  .hero p{margin:0;opacity:.92;font-size:13.5px}
+  .meta{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+  .pill{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:3px 12px;font-size:12px}
+  .note{background:#f8fafc;border:1px solid #eef2f7;border-left:3px solid var(--blue);border-radius:8px;padding:10px 14px;font-size:12.5px;color:var(--sub);line-height:1.85;margin:0 0 14px}
+  table{width:100%;border-collapse:collapse;font-size:13px;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:#f1f5f9;color:#334155;font-weight:700;white-space:nowrap;position:sticky;top:0;z-index:2}
+  tr.mod td{background:#eef4ff;color:var(--blue);font-weight:700;font-size:13.5px}
+  td.cid{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--sub);white-space:nowrap}
+  td.res{color:#b45309;font-weight:600;white-space:nowrap;text-align:center}
+  td.who{color:var(--sub);white-space:nowrap;text-align:center}
+  a.golink{display:inline-block;margin-top:4px;font-size:12px;font-weight:600;color:#2563eb;text-decoration:none;border:1px solid #bfdbfe;border-radius:6px;padding:0 8px;background:#eff6ff}
+  a.golink:hover{background:#dbeafe}
+  a.lk{color:#2563eb}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>SaaS 多商户后台 · 二阶段验收用例</h1>
+    <p>逐功能可执行的验收用例（操作步骤 → 预期结果），对照 localhost:8200 原型逐条点验。配套 <a class="lk" style="color:#fff;text-decoration:underline" href="saas-phase2-feature-spec.html#s9">功能说明书 · 验收口径</a>。</p>
+    <div class="meta">
+      <span class="pill">版本 v1.0 · 2026-06-13</span>
+      <span class="pill">共 30 条用例</span>
+      <span class="pill">验收人默认 eason</span>
+    </div>
+  </div>
+  <div class="note">用法：每条用例按「操作步骤」在原型中操作，核对是否符合「预期结果」，在「验收结果」列标记 通过 / 不通过（默认<b>待测</b>）；<b>验收人默认 eason</b>。各功能交互细节见 <a class="lk" href="saas-phase2-feature-spec.html">二阶段功能说明书</a>。</div>
+  <table>
+    <thead><tr><th style="width:62px">用例号</th><th style="width:150px">功能</th><th>操作步骤</th><th>预期结果</th><th style="width:64px">验收结果</th><th style="width:64px">验收人</th></tr></thead>
+    <tbody>
+<tr class="mod"><td colspan="6">通用交互（所有列表页）</td></tr>
+<tr><td class="cid">UC-01</td><td rowspan="3"><b>筛选与重置</b><br><a class="golink" href="http://localhost:8200/?open=member-list" target="_blank">查看 ↗</a></td><td>填写若干筛选条件后点「搜索」</td><td>列表按全部条件即时过滤，Toast「查询完成，共 N 条」</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-02</td><td>点「重置」</td><td>清空条件并还原列表</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-03</td><td>筛选项 >5 个时点「收起」</td><td>整个筛选区折叠/展开；≤5 项时不出现「收起」</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-04</td><td rowspan="3"><b>工具栏与自定义列</b><br><a class="golink" href="http://localhost:8200/?open=member-list" target="_blank">查看 ↗</a></td><td>列数 >10 的页查看右上角</td><td>出现「自定义列」按钮；≤10 列不出现</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-05</td><td>打开自定义列、勾选后点「保存」</td><td>保存后列显隐才生效（未保存为临时态）</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-06</td><td>查看导出按钮位置</td><td>位于右侧「自定义列」旁；点击真实下载 CSV，Toast「已导出 N 条」</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-07</td><td rowspan="2"><b>分页与商户视角</b><br><a class="golink" href="http://localhost:8200/?open=member-list" target="_blank">查看 ↗</a></td><td>切换每页条数下拉</td><td>可选 10/20/50/100，列表按选定条数重排，各页独立记忆</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-08</td><td>顶栏切换商户</td><td>当前列表自动按该商户数据重渲染；商户视角下隐藏「商户」列</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-09</td><td rowspan="2"><b>反馈与二次确认</b><br><a class="golink" href="http://localhost:8200/?open=abnormal-member" target="_blank">查看 ↗</a></td><td>执行删除/批量/危险操作</td><td>先弹「操作确认」二次确认，确定后执行并 Toast</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-10</td><td>鼠标悬停任意图片缩略图</td><td>浮层放大预览，移开/滚动自动收起</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr class="mod"><td colspan="6">会员管理</td></tr>
+<tr><td class="cid">UC-11</td><td rowspan="2"><b>分组管理</b><br><a class="golink" href="http://localhost:8200/?open=user-group" target="_blank">查看 ↗</a></td><td>点「新增分组」，填名称与自动归组阈值，保存</td><td>列表新增该分组行，Toast 保存成功</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-12</td><td>查看「状态」列</td><td>为 badge 纯展示（开=绿/关=灰），不可点击</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-13</td><td rowspan="1"><b>登录日志</b><br><a class="golink" href="http://localhost:8200/?open=login-log" target="_blank">查看 ↗</a></td><td>按会员ID（多 ID 空格分隔）查询</td><td>列表按 ID 过滤；设备与浏览器指纹融合一列展示</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-14</td><td rowspan="1"><b>短信验证码查询</b><br><a class="golink" href="http://localhost:8200/?open=sms-code" target="_blank">查看 ↗</a></td><td>按手机号查询</td><td>列出验证码/业务类型/发送时间/状态；页面无导出按钮</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-15</td><td rowspan="2"><b>会员列表 · 操作列与开关</b><br><a class="golink" href="http://localhost:8200/?open=member-list" target="_blank">查看 ↗</a></td><td>查看操作列</td><td>默认展开、直接显示各行操作（无「更多」折叠按钮）</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-16</td><td>切换「领取返佣 / 对上级返佣」开关</td><td>弹二次确认，确定后开关翻转并 Toast</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-17</td><td rowspan="1"><b>会员详情 · 归因来源</b><br><a class="golink" href="http://localhost:8200/?open=member-list" target="_blank">查看 ↗</a></td><td>点会员ID下钻详情 → 看「归因来源」板块</td><td>红字归因字段齐全；代理数据含 10 级代理关系图</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr class="mod"><td colspan="6">运营管理</td></tr>
+<tr><td class="cid">UC-18</td><td rowspan="1"><b>站内消息</b><br><a class="golink" href="http://localhost:8200/?open=inbox-message" target="_blank">查看 ↗</a></td><td>新增推送：富文本正文+上传图片+指定用户表格导入</td><td>富文本可编辑、图片可预览、用户ID 表格导入去重计数，保存 Toast</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-19</td><td rowspan="1"><b>公告消息</b><br><a class="golink" href="http://localhost:8200/?open=announcement-msg" target="_blank">查看 ↗</a></td><td>在弹窗/滚动双页签切换，编辑某语种内容</td><td>7 语种独立保存、切换不丢内容；列表含「渠道」与「商户」列</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-20</td><td rowspan="1"><b>轮播图管理</b><br><a class="golink" href="http://localhost:8200/?open=banner-mgmt" target="_blank">查看 ↗</a></td><td>新增：跳转方式选「跳转厂商或子游戏」</td><td>出现 游戏大类→厂商→子游戏 三级联动；图片可上传预览</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-21</td><td rowspan="1"><b>渠道管理</b><br><a class="golink" href="http://localhost:8200/?open=channel-config" target="_blank">查看 ↗</a></td><td>点「新增渠道」，填渠道名（渠道编码留空）保存</td><td>渠道编码自动生成，列表新增该官方渠道行</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-22</td><td rowspan="1"><b>VIP 人数</b><br><a class="golink" href="http://localhost:8200/?open=vip-level-count" target="_blank">查看 ↗</a></td><td>打开页面</td><td>3 列（等级/名称/人数）共 10 行，人数蓝色；无导出/筛选/商户列</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr class="mod"><td colspan="6">风控管理</td></tr>
+<tr><td class="cid">UC-23</td><td rowspan="1"><b>异常会员处理</b><br><a class="golink" href="http://localhost:8200/?open=abnormal-member" target="_blank">查看 ↗</a></td><td>勾选若干会员点「批量驳回提现」</td><td>弹二次确认，确定后执行并 Toast；金额列有页脚合计</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-24</td><td rowspan="1"><b>同IP/设备检测</b><br><a class="golink" href="http://localhost:8200/?open=same-ip" target="_blank">查看 ↗</a></td><td>在 4 个子页签间切换，点某行「人数」蓝链</td><td>跳会员列表并按该 IP/设备自动查询，Toast 命中数</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr class="mod"><td colspan="6">配置中心</td></tr>
+<tr><td class="cid">UC-25</td><td rowspan="1"><b>VIP 等级配置</b><br><a class="golink" href="http://localhost:8200/?open=vip-level-config" target="_blank">查看 ↗</a></td><td>在「VIP等级 / 经验值配置」双页签切换；改某等级</td><td>等级固定 10 级（VIP0–9）不可增删；修改弹窗 ID 隐藏、名称只读</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-26</td><td rowspan="1"><b>返佣等级配置</b><br><a class="golink" href="http://localhost:8200/?open=rebate-level" target="_blank">查看 ↗</a></td><td>在「返佣费率配置」页签编辑某等级费率</td><td>同级五大类费率之和 >4% 时校验拦截</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-27</td><td rowspan="1"><b>代理审核机制</b><br><a class="golink" href="http://localhost:8200/?open=agent-audit" target="_blank">查看 ↗</a></td><td>点某行「修改返佣」</td><td>弹 5 游戏基础费率+备注弹窗；返佣状态以 badge 展示</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr class="mod"><td colspan="6">报表管理</td></tr>
+<tr><td class="cid">UC-28</td><td rowspan="1"><b>代理报表</b><br><a class="golink" href="http://localhost:8200/?open=agent-report" target="_blank">查看 ↗</a></td><td>切换统计周期（日/日区间/月/所有）并翻页</td><td>表格按周期刷新；点「下级列表」打开真实下钻抽屉</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-29</td><td rowspan="1"><b>昨日返佣等级</b><br><a class="golink" href="http://localhost:8200/?open=rebate-level-yesterday" target="_blank">查看 ↗</a></td><td>查看五游戏列</td><td>每游戏为「投注金额/返佣金额」双列分组表头；工具栏仅导出</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr class="mod"><td colspan="6">系统管理</td></tr>
+<tr><td class="cid">UC-30</td><td rowspan="1"><b>IP 黑名单</b><br><a class="golink" href="http://localhost:8200/?open=ip-blacklist" target="_blank">查看 ↗</a></td><td>点「批量导入」，粘贴多个 IP 或上传 CSV</td><td>实时识别去重计数、选封禁类型/原因，确认后插入列表顶部并 Toast</td><td class="res">待测</td><td class="who">eason</td></tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>
