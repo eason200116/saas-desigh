@@ -1,0 +1,1 @@
+import{Wn as e,kn as t,xn as n}from"./vendor-naive-pem5K3pO.js";import{t as r}from"./ExceptionState-BK7nU-ao.js";var i=t({__name:`403`,setup(t){return(t,i)=>(e(),n(r,{code:`403`,title:`无权限访问`,description:`抱歉，你当前没有访问该页面的权限，请联系管理员确认当前账号角色。`}))}});export{i as default};

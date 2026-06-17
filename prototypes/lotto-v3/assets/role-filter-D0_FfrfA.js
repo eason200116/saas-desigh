@@ -1,0 +1,1 @@
+function e(t,n){let r=[];for(let i of t){let t=i.meta?.roles??null;if(!(!t||t.includes(n)))continue;let a;Array.isArray(i.children)&&i.children.length>0&&(a=e(i.children,n),a.length===0&&i.children.length>0&&!i.redirect)||r.push({...i,...a===void 0?{}:{children:a}})}return r}export{e as t};
