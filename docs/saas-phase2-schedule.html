@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SaaS 二阶段 · 排期跟踪表（基于 PRD 整理）</title>
+<style>
+  :root{--blue:#1d4ed8;--ink:#1f2937;--sub:#64748b;--line:#e5e7eb;--bg:#f7f9fc;}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.6 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg);padding:24px 28px 80px;}
+  .hero{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;border-radius:14px;padding:22px 26px;margin-bottom:18px;}
+  .hero h1{margin:0 0 6px;font-size:22px;}
+  .hero p{margin:0;opacity:.92;font-size:13px;}
+  .bar{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 14px;font-size:12.5px;color:var(--sub);}
+  .bar b{color:var(--ink);}
+  .tip{background:#fffbeb;border:1px solid #fde68a;border-radius:9px;padding:9px 13px;font-size:12.5px;color:#92400e;margin:0 0 14px;}
+  .scroll{overflow:auto;border:1px solid var(--line);border-radius:10px;background:#fff;}
+  table{border-collapse:collapse;font-size:12.5px;min-width:1900px;}
+  th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:middle;}
+  thead th{position:sticky;top:0;background:#1d4ed8;color:#fff;white-space:nowrap;z-index:2;font-weight:600;}
+  tbody tr:nth-child(even) td{background:#fafbfc;}
+  td.mod{font-weight:700;color:var(--blue);background:#f0f4f8!important;white-space:nowrap;vertical-align:middle;text-align:center;}
+  td.page{font-weight:600;white-space:nowrap;}
+  td.design{min-width:420px;color:#334155;line-height:1.55;}
+  td.ver{text-align:center;color:var(--sub);white-space:nowrap;}
+  td.prog{text-align:center;white-space:nowrap;}
+  .b{display:inline-block;font-size:11px;border-radius:5px;padding:1px 7px;background:#dcfce7;color:#15803d;}
+  .b.new{background:#fef3c7;color:#b45309;}
+  a.lk{color:#2563eb;text-decoration:none;white-space:nowrap;}
+  a.lk:hover{text-decoration:underline;}
+  td.empty{background:#fff;min-width:96px;}
+</style>
+</head>
+<body>
+  <div class="hero">
+    <h1>📋 SaaS 多商户后台 · 二阶段排期跟踪表</h1>
+    <p>基于《二阶段 PRD / 功能说明书》整理。版本 / 大模块 / 页面 / 设计内容 / 原型链接 已填；进度·负责人·时间·技术·测试等项目管理列留空待填。</p>
+  </div>
+  <div class="bar"><span><b>共 24 个功能页</b> · 6 大模块</span><span>·</span><span>原型：localhost:3100（V3 应用，各页指向真实路由）</span></div>
+  <div class="tip">💡 可直接<b>全选本表 → 复制 → 粘贴进 Excel / Google 表格</b>，列与合并单元格会保留；时间/负责人/技术列为空，按实际填写。</div>
+  <div class="scroll">
+  <table id="t">
+    <thead><tr>
+      <th>版本</th><th>大模块</th><th>页面</th><th>设计内容</th><th>原型进度</th>
+      <th>产品负责人</th><th>开始时间</th><th>结束时间</th><th>内审时间</th><th>技术评审时间</th>
+      <th>前端技术</th><th>开始/结束时间</th><th>后端技术</th><th>开始/结束时间</th>
+      <th>测试</th><th>开始/结束时间</th><th>备注</th><th>原型链接</th>
+    </tr></thead>
+    <tbody id="tb"></tbody>
+  </table>
+  </div>
+<script>
+const MAP={'member-list':'/member/user','user-group':'/member/groupManage','login-log':'/member/loginLog','sms-code':'/member/smsCode','inbox-message':'/operations/inboxMessage','announcement-msg':'/operations/announcement','banner-mgmt':'/operations/banner','channel-config':'/operations/channelConfig','domain-mgmt':'/operations/domainMgmt','domain-rescue':'/operations/domainRescue','domain-resolve-log':'/operations/domainResolveLog','vip-reward-log':'/operations/vipRewardLog','vip-level-count':'/operations/vipLevelCount','vip-op-log':'/operations/vipOpLog','member-rebate-level':'/operations/memberRebateLevel','agent-audit':'/operations/agentAudit','abnormal-member':'/risk-control/abnormalMember','same-ip':'/risk-control/sameIp','vip-level-config':'/config-center/vipConfig3','rebate-level':'/config-center/rebateConfig','agent-report':'/report/agentReport','rebate-level-yesterday':'/operations/rebateLevelYesterday','ip-blacklist':'/system/ipBlacklist'};
+const PROTO3='http://localhost:3100';
+const ROWS=[
+ ['会员管理',[
+   ['会员列表','商户筛选 + 19 项搜索；9 类目分组表头；批量操作（拉黑/启用/分组/转渠道等）；自定义列；新增「领取返佣/对上级返佣」行内开关；会员 ID 下钻详情','新','member-list'],
+   ['会员详情','27 红字归因字段按指定位置注入（布局不变）；代理数据含 10 级代理关系图；同 IP/设备/指纹数值下钻风控','新','member-list'],
+   ['分组管理','会员分组 + 分组表单 + 权限配置融合为一页；自动归组阈值（充值金额/次数/投注）；状态 badge；系统默认分组不可改删','新','user-group'],
+   ['登录日志','多会员 ID（空格分隔）查询；设备与浏览器指纹融合一列；纯查询页','新','login-log'],
+   ['短信验证码查询','按手机号查验证码/业务类型/发送时间/状态；手机号脱敏；无导出','新','sms-code'],
+ ]],
+ ['运营管理',[
+   ['站内消息','富文本正文 + 图片上传 + 指定用户表格导入（去重）；可预约发送；推送通道 Firebase/极光；未发送可编辑、已发送仅详情','新','inbox-message'],
+   ['公告消息','弹窗/滚动双页签；7 语种独立保存（前台回退英语）；筛选加渠道、列表加商户+渠道列','新','announcement-msg'],
+   ['轮播图管理','图片上传+预览；三选一跳转（URL / 厂商或子游戏三级联动 / 在线客服）；排序；表单加商户','新','banner-mgmt'],
+   ['渠道管理','渠道名 / 渠道 ID（自动生成·唯一）/ 域名 / 编码 / 类型（官方 H5 / 投放多端）/ 分发端 / 赠送金额 / 打码倍数','新','channel-config'],
+   ['域名管理','4 种类型（主/推广/防封谷歌页/防封苹果页）按类型动态字段；解析状态 badge；CDN 服务商列','新','domain-mgmt'],
+   ['防封救援','救援开关 / 救援域名（多选）/ 救援方案 / 救援奖金；原域名被封→弹救援窗→随机域名自动登录领奖','新','domain-rescue'],
+   ['解析检测记录','周期巡检 + 手动检测；DNS 解析状态（正常绿/异常红）；检测节点/解析 IP/响应耗时/TTL','新','domain-resolve-log'],
+   ['VIP 升级奖励记录','按会员 ID 查询 VIP 升级奖励发放/领取记录','新','vip-reward-log'],
+   ['VIP 人数','3 列（等级/名称/人数）共 10 行；人数蓝链下钻会员列表；无导出/筛选/商户列','新','vip-level-count'],
+   ['VIP 操作日志','明细型经验/领取流水；含页面总计行；纯查询页','新','vip-op-log'],
+   ['会员返佣等级','按配置值强制提升会员返佣等级；连续使用天数/失效规则；批量删除','新','member-rebate-level'],
+   ['代理审核机制','返佣资格审核；返佣状态 badge；修改返佣弹窗（5 游戏基础费率 + 备注）','新','agent-audit'],
+ ]],
+ ['风控管理',[
+   ['异常会员处理','多会员 ID 查询（≤100）；四项批量处置（回收余额/保险箱转出/驳回提现/余额扣除）；金额列页脚合计','新','abnormal-member'],
+   ['同 IP/设备检测','4 子页签（同注册 IP/同注册设备/同登录 IP/同登录设备）；设备+指纹合并列；人数蓝链下钻','新','same-ip'],
+ ]],
+ ['配置中心',[
+   ['VIP 配置','双页签：VIP 等级（VIP0–VIP10 固定 11 级·行内编辑·去 ID）+ 经验值配置；商户工作区（选→保存→发布）+ 复制模板；保存校验','新','URL::http://localhost:3100/config-center/vipConfig3'],
+   ['返佣配置','双页签：返佣等级管理（0 级不可删）+ 返佣费率配置（一~六级×五游戏）；同级费率之和 >4% 校验拦截','新','rebate-level'],
+ ]],
+ ['报表管理',[
+   ['代理报表','统计周期切换（日/日区间/月/所有）；内部=返利、外部=返佣；下级列表下钻抽屉','新','agent-report'],
+   ['昨日返佣等级','五游戏列「投注金额/返佣金额」双列分组表头；工具栏仅导出','新','rebate-level-yesterday'],
+ ]],
+ ['系统管理',[
+   ['IP 黑名单','列表（IP v4/v6 + 封禁类型多标签 + 原因 + 关联会员 + 状态）；批量导入（粘贴/CSV/XLSX，去重≤500）','新','ip-blacklist'],
+ ]],
+];
+const tb=document.getElementById('tb');
+ROWS.forEach(function(grp){
+  var mod=grp[0], pages=grp[1];
+  pages.forEach(function(p,idx){
+    var tr=document.createElement('tr');
+    var link = p[3].indexOf('URL::')===0 ? p[3].slice(5) : PROTO3+(MAP[p[3]]||'/');
+    var modCell = idx===0 ? '<td class="mod" rowspan="'+pages.length+'">'+mod+'</td>' : '';
+    var tag = p[2]==='新' ? '<span class="b new">新</span>' : '<span class="b">迁移</span>';
+    tr.innerHTML =
+      '<td class="ver">二期</td>'+modCell+
+      '<td class="page">'+p[0]+'</td>'+
+      '<td class="design">'+p[1]+'</td>'+
+      '<td class="prog">'+tag+'</td>'+
+      '<td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td>'+
+      '<td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td>'+
+      '<td class="empty"></td><td class="empty"></td><td class="empty"></td>'+
+      '<td><a class="lk" href="'+link+'" target="_blank">原型 ↗</a></td>';
+    tb.appendChild(tr);
+  });
+});
+</script>
+</body>
+</html>

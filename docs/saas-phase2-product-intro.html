@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SaaS 多商户后台 · 二阶段产品介绍</title>
+<style>
+  :root{--accent:#2563eb;--accent2:#7c3aed;--bg:#f5f6f8;--card:#fff;--border:#e5e7eb;--muted:#6b7280;--red:#dc2626;--green:#16a34a;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:#1f2328;background:var(--bg);}
+  a{color:var(--accent);}
+  /* header */
+  header{position:sticky;top:0;z-index:30;background:linear-gradient(90deg,#1e293b,#312e81);color:#fff;padding:12px 24px;display:flex;align-items:center;gap:16px;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+  header .logo{font-size:16px;font-weight:700;}
+  header .ver{font-size:12px;opacity:.7;}
+  header .grow{flex:1;}
+  .proto-btn{background:#22c55e;color:#fff;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;box-shadow:0 2px 6px rgba(34,197,94,.4);}
+  .proto-btn:hover{background:#16a34a;}
+  .proto-btn small{font-weight:400;opacity:.85;}
+  /* layout */
+  .layout{display:flex;max-width:none;margin:0;width:100%;}
+  nav{width:240px;flex:none;position:sticky;top:57px;align-self:flex-start;height:calc(100vh - 57px);overflow:auto;padding:16px 8px;font-size:12.5px;border-right:1px solid var(--border);background:#fafbfc;}
+  nav a{display:block;padding:4px 10px;color:#374151;text-decoration:none;border-radius:5px;line-height:1.5;}
+  nav a:hover{background:#eef2ff;color:var(--accent);}
+  nav a.sub{padding-left:22px;color:var(--muted);font-size:12px;}
+  nav .grp{font-weight:700;margin-top:10px;color:#111827;padding:4px 10px;}
+  main{flex:1;min-width:0;padding:24px 36px 100px;}
+  section{margin-bottom:48px;scroll-margin-top:70px;}
+  h2.sec{font-size:22px;border-left:5px solid var(--accent);padding-left:12px;margin:0 0 6px;}
+  .sec-desc{color:var(--muted);font-size:13.5px;margin:0 0 18px;}
+  h3{font-size:17px;margin:28px 0 10px;scroll-margin-top:70px;}
+  .lead{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:16px 20px;font-size:14px;line-height:1.8;}
+  /* tab定义 */
+  .tab-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:14px;}
+  .tab-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;}
+  .tab-card .t{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;}
+  .tab-card .badge{font-size:11px;color:#fff;background:var(--accent);padding:1px 8px;border-radius:20px;}
+  .tab-card .badge.up{background:var(--accent2);}
+  .tab-card .def{color:#374151;font-size:13px;margin:8px 0;}
+  .tab-card .subs{font-size:12px;color:var(--muted);}
+  .tab-card .subs b{color:#111827;font-weight:600;}
+  /* page cards */
+  .pcard{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:18px 0;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .pcard .hd{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border);background:#fcfcfd;}
+  .pcard .hd .name{font-size:15px;font-weight:700;}
+  .pcard .hd .tagn{font-size:11px;background:#dbeafe;color:#1d4ed8;border-radius:5px;padding:1px 7px;}
+  .pcard .hd .tagn.new{background:#dcfce7;color:#15803d;}
+  .pcard .hd .src{font-size:11px;color:var(--muted);margin-left:2px;}
+  .pcard .hd .grow{flex:1;}
+  .pcard .golink{font-size:12px;background:var(--accent);color:#fff;padding:4px 12px;border-radius:6px;text-decoration:none;white-space:nowrap;}
+  .pcard .golink:hover{background:#1d4ed8;}
+  .pcard .bd{display:flex;gap:20px;padding:16px 18px;}
+  .pcard .shot{flex:none;width:480px;max-width:46%;}
+  .pcard .shot img{width:100%;border:1px solid var(--border);border-radius:8px;cursor:zoom-in;display:block;}
+  .pcard .shot .noimg{width:100%;aspect-ratio:16/9;border:1px dashed var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:12px;}
+  .pcard .info{flex:1;min-width:0;}
+  .pcard ul{margin:0;padding-left:18px;font-size:12.5px;line-height:1.7;}
+  .pcard ul li b{color:#111827;}
+  .blk{margin:0 0 11px;}
+  .blk:last-child{margin-bottom:0;}
+  .blk .lbl{font-size:11px;font-weight:700;color:#fff;border-radius:4px;padding:1px 9px;display:inline-block;margin-bottom:5px;}
+  .blk.fn .lbl{background:#0ea5e9;}
+  .blk.ix .lbl{background:#7c3aed;}
+  .blk.ed .lbl{background:#d97706;}
+  /* 字段词典 */
+  .dict{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin:12px 0;}
+  .dict .gt{font-size:14px;font-weight:700;margin:0 0 8px;display:flex;align-items:center;gap:8px;}
+  .dict .gt .cnt{font-size:11px;color:var(--muted);font-weight:400;}
+  .dict .gt.newg{color:#b91c1c;}
+  .dict dl{margin:0;display:grid;grid-template-columns:1fr 1fr;gap:2px 22px;}
+  @media(max-width:900px){.dict dl{grid-template-columns:1fr;}}
+  .dict .row{display:flex;gap:8px;padding:3px 0;border-bottom:1px dashed #eef0f2;font-size:12.5px;line-height:1.5;}
+  .dict .fn{font-weight:600;color:#111827;flex:none;min-width:96px;}
+  .dict .dd{color:#4b5563;}
+  .newt{font-size:10px;background:#fee2e2;color:#b91c1c;border-radius:3px;padding:0 5px;margin-left:4px;font-weight:700;vertical-align:1px;}
+  .defcard{background:#fff;border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:10px 0;}
+  .defcard .dn{font-weight:700;font-size:14px;color:#111827;}
+  .defcard .dn .sw{font-size:11px;background:#ede9fe;color:#6d28d9;border-radius:4px;padding:1px 7px;margin-left:6px;}
+  .defcard p{margin:6px 0 0;font-size:13px;line-height:1.7;color:#374151;}
+  /* 归因矩阵 + 示例图 */
+  .mx-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:8px;}
+  table.mx{margin:0;font-size:12px;min-width:1080px;border:0;}
+  table.mx th,table.mx td{padding:6px 8px;vertical-align:top;}
+  table.mx th{position:sticky;top:0;background:#eef2ff;z-index:1;}
+  .gtag{display:inline-block;font-size:11px;font-weight:700;border-radius:4px;padding:1px 7px;white-space:nowrap;}
+  .g-ad{background:#fee2e2;color:#b91c1c;} .g-inv{background:#fef3c7;color:#92400e;} .g-off{background:#dbeafe;color:#1d4ed8;} .g-nat{background:#dcfce7;color:#15803d;}
+  .excard{background:#fafbff;border:1px solid #c7d2fe;border-radius:10px;padding:14px 16px;margin:12px 0;}
+  .excard .et{font-weight:700;font-size:13.5px;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+  .exflow{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch;}
+  .exflow .box{background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;line-height:1.5;flex:1;min-width:160px;}
+  .exflow .box .k{display:inline-block;font-size:10px;color:#fff;background:#64748b;border-radius:3px;padding:0 6px;margin-bottom:4px;}
+  .exflow .box.res{background:#eef9f0;border-color:#bbf7d0;}
+  .exflow .box.res .k{background:#16a34a;}
+  .exflow .arr{align-self:center;color:var(--accent);font-weight:700;font-size:18px;}
+  /* 18 种脉络图 */
+  .amfig{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:12px 0;box-shadow:0 1px 3px rgba(0,0,0,.03);}
+  .amfig .head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:12.5px;margin-bottom:10px;}
+  .amfig .code{font-weight:700;background:#1e293b;color:#fff;border-radius:5px;padding:1px 9px;}
+  .amfig .node{background:#f1f5f9;border:1px solid var(--border);border-radius:5px;padding:1px 8px;font-size:12px;}
+  .amfig .hh{color:var(--muted);}
+  .amflow{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch;}
+  .amstep{background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:11.5px;line-height:1.55;flex:1;min-width:158px;}
+  .amstep.hot{background:#fff7ed;border-color:#fed7aa;}
+  .amstep.gr{background:#eef9f0;border-color:#bbf7d0;}
+  .amstep .sh{font-weight:700;font-size:12px;margin-bottom:5px;display:flex;gap:6px;align-items:center;}
+  .amstep .sn{background:var(--accent);color:#fff;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;flex:none;}
+  .amstep .sf span{display:block;color:#475569;margin-top:2px;}
+  .amaar{align-self:center;color:var(--accent);font-weight:700;font-size:16px;}
+  @media(max-width:900px){.pcard .bd{flex-direction:column;}.pcard .shot{width:100%;max-width:100%;}.tab-grid{grid-template-columns:1fr;}}
+  /* tables */
+  table{border-collapse:collapse;width:100%;font-size:12.5px;margin:12px 0;}
+  th,td{border:1px solid var(--border);padding:6px 9px;text-align:left;vertical-align:top;}
+  th{background:#f3f4f6;}
+  tr:nth-child(even) td{background:#fafbfc;}
+  .red{color:var(--red);font-weight:600;}
+  .pill{display:inline-block;font-size:11px;padding:1px 8px;border-radius:20px;background:#eef2ff;color:#3730a3;margin:2px 2px 0 0;}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0;}
+  .flow .step{background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:13px;}
+  .flow .arr{color:var(--accent);font-weight:700;}
+  .note{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#92400e;margin:10px 0;}
+  ul.clean{font-size:13px;line-height:1.8;}
+  /* lightbox */
+  #lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;align-items:center;justify-content:center;cursor:zoom-out;}
+  #lb img{max-width:94vw;max-height:94vh;border-radius:6px;box-shadow:0 8px 40px rgba(0,0,0,.5);}
+</style>
+</head>
+<body>
+<header>
+  <span class="logo">🎯 SaaS 多商户后台 · 二阶段产品介绍</span>
+  <span class="ver">v1.15 · 对标《二阶段功能说明书》</span>
+  <span class="grow"></span>
+  <a class="proto-btn" href="http://localhost:3100" target="_blank">▶ 打开原型 <small>localhost:3100</small></a>
+</header>
+<div class="layout">
+  <nav id="toc">
+    <a href="#overview">概览：本期五大交付</a>
+    <a href="#tabs">一、顶部 Tab 分类与定义</a>
+    <a href="#attr">二、归因体系 + 会员详情</a>
+    <div class="grp">三、迁移功能逐页介绍</div>
+    <a class="sub" href="#m-member">① 会员管理</a>
+    <a class="sub" href="#m-op-config">② 运营·运营配置</a>
+    <a class="sub" href="#m-op-promo">② 运营·推广配置</a>
+    <a class="sub" href="#m-op-data">② 运营·运营数据</a>
+    <a class="sub" href="#m-op-rebate">② 运营·返佣等级</a>
+    <a class="sub" href="#m-risk">③ 风控管理</a>
+    <a class="sub" href="#m-config">④ 配置中心</a>
+    <a class="sub" href="#m-report">⑦ 报表管理</a>
+    <a class="sub" href="#m-system">⑧ 系统管理</a>
+    <a href="#common">四、通用交互规范</a>
+    <a href="#accept">五、验收口径</a>
+    <a href="#changelog">六、修改记录</a>
+  </nav>
+  <main>
+
+  <!-- 概览 -->
+  <section id="overview">
+    <h2 class="sec">概览：本期五大交付</h2>
+    <p class="sec-desc">一句话：把旧后台（SitINR）里会员相关的功能搬进新后台并顺手升级——共 22 个功能页、一套新导航框架、一套「会员从哪儿来」的归因体系、一条广告投放配置链。交付以 <a href="http://localhost:3100" target="_blank">localhost:3100 可点击原型</a> 为准（真实交互、非占位）。</p>
+    <div class="lead">
+      <b>① 会员管理深度迁移</b> — 按 SitINR 对照补全会员相关功能并重新归类，共 22 个功能页（会员管理 3 / 运营管理 12 / 报表管理 2 / 风控管理 2 / 配置中心 2 / 系统管理 1）。<br>
+      <b>② 顶部导航分类优化</b> — 8 大主 Tab 多列分组下拉（mega menu），「风控管理」「配置中心」从会员子项提升为一级模块；菜单项带 新/原 角标。<br>
+      <b>③ 多标签页签栏</b> — 功能页以页签多开并存、切换、关闭。<br>
+      <b>④ 会员详情归因字段 + 会员列表增强</b> — 会员详情按指定位置注入 27 个红字归因字段；会员列表同步红色列 +「领取返佣 / 对上级返佣」行内开关。<br>
+      <b>⑤ 推广分发配置</b> — 本期开放 渠道管理 / 域名管理 / 防封救援 / 解析检测记录 4 页，覆盖「域名 → 渠道 → 推广 → 获客归因」闭环前半段。
+    </div>
+    <div class="note">本期同步移除：KW认证 / CPF认证 / 代理关系导入、活动相关配置（首充管理 / 活动资讯 / 邀请任务 / ARB提现 等）与 会员洗码管理；「会员分组 + 分组表单」融合为「分组管理」一页。</div>
+  </section>
+
+  <!-- 一、Tab 分类 -->
+  <section id="tabs">
+    <h2 class="sec">一、顶部 Tab 分类与定义</h2>
+    <p class="sec-desc">8 大主 Tab 多列分组下拉（mega menu）。本期把「风控管理」「配置中心」从会员子项 <span class="pill">提升为一级</span>。<a href="http://localhost:8200/?open=hub" target="_blank">在原型查看导航 ↗</a></p>
+    <div class="pcard"><div class="bd" style="padding-top:18px"><div class="shot" style="width:100%;max-width:100%"><img src="img/topnav.png" alt="顶部导航" loading="lazy"></div></div></div>
+    <div class="tab-grid">
+      <div class="tab-card"><div class="t">① 会员管理 <span class="badge">迁移</span></div><div class="def">会员行为与数据查询 —— 会员从注册到行为的全量档案与查询入口。</div><div class="subs"><b>子分类：</b>账号查询（会员列表/详情）、分组管理、登录·验证（登录日志/短信验证码查询）</div></div>
+      <div class="tab-card"><div class="t">② 运营管理 <span class="badge">迁移+新增</span></div><div class="def">拉新促活的运营工具 —— 面向运营的消息、推广、返佣与数据。</div><div class="subs"><b>子分类：</b>运营配置（站内消息/公告/轮播图）、推广配置（渠道/域名/防封救援/解析检测）、返佣·等级（会员返佣等级/代理审核机制）、运营数据（VIP 奖励/人数/日志）</div></div>
+      <div class="tab-card"><div class="t">③ 风控管理 <span class="badge up">↑提升为一级</span></div><div class="def">会员行为风控 —— 识别与处置异常会员、关联账号。</div><div class="subs"><b>子分类：</b>异常·检测（异常会员处理 / 同IP·设备检测）</div></div>
+      <div class="tab-card"><div class="t">④ 配置中心 <span class="badge up">↑提升为一级</span></div><div class="def">低频规则配置 —— 按商户独立、可模板套用的核心规则。</div><div class="subs"><b>子分类：</b>VIP配置（等级 + 经验值）、返佣配置（等级管理 + 费率配置）</div></div>
+      <div class="tab-card"><div class="t">⑤ 财务管理 <span class="badge" style="background:#9ca3af">一期已建</span></div><div class="def">资金变动配置与数据 —— 充值/提现订单、账变、收款方式。</div><div class="subs"><b>本期：</b>沿用一期基础，不新增。</div></div>
+      <div class="tab-card"><div class="t">⑥ 游戏管理 <span class="badge" style="background:#9ca3af">后续迭代</span></div><div class="def">游戏配置与数据 —— 自营/三方游戏、玩法、投注记录。</div><div class="subs"><b>本期：</b>游戏线单独迭代，不含本期。</div></div>
+      <div class="tab-card"><div class="t">⑦ 报表管理 <span class="badge">迁移</span></div><div class="def">经营数据报表与预警 —— 多维统计与下钻分析。</div><div class="subs"><b>本期新增子分类：</b>代理报表（代理报表 / 昨日返佣等级）</div></div>
+      <div class="tab-card"><div class="t">⑧ 系统管理 <span class="badge">迁移</span></div><div class="def">账号权限访问控制 · 日志 —— 管理员、角色权限、访问控制。</div><div class="subs"><b>本期新增：</b>IP 黑名单</div></div>
+    </div>
+  </section>
+
+  <!-- 二、归因 + 会员详情 -->
+  <section id="attr">
+    <h2 class="sec">二、归因体系 + 会员详情</h2>
+    <p class="sec-desc">解决「这个会员从哪儿来」——注册时按优先级判定来源并固化，详情页以红字字段呈现完整链路。</p>
+
+    <h3>归因判定规则（优先级）</h3>
+    <div class="flow">
+      <span class="step">① 广告投放</span><span class="arr">›</span>
+      <span class="step">② 邀请来源</span><span class="arr">›</span>
+      <span class="step">③ 官方直推</span><span class="arr">›</span>
+      <span class="step">④ 自然流量</span>
+    </div>
+    <p style="font-size:13px;color:#374151">注册时按上述优先级判定首个命中的来源，写入会员档案并<b>固化不再变更</b>。共 5 大归因类型 × 18 种情况的穷举矩阵覆盖各种进入路径。</p>
+
+    <h3>归因判定流程（5 步固化）</h3>
+    <div class="flow">
+      <span class="step">进入</span><span class="arr">→</span>
+      <span class="step">采集（埋点：激活/注册/登录/首充/付费）</span><span class="arr">→</span>
+      <span class="step">判定（按优先级）</span><span class="arr">→</span>
+      <span class="step">固化（写档案）</span><span class="arr">→</span>
+      <span class="step">展示（详情红字）</span>
+    </div>
+
+    <h3>新增红字字段（共 27 个，分 3 组）</h3>
+    <table>
+      <tr><th width="160">字段组</th><th>字段</th></tr>
+      <tr><td><b>归因/来源 + 注册设备（14）</b></td><td><span class="pill">归因类型</span><span class="pill">渠道/邀请人</span><span class="pill">访问端</span><span class="pill">注册域名</span><span class="pill">注册设备</span><span class="pill">注册客户端</span><span class="pill">注册设备ID</span><span class="pill">是否模拟器</span><span class="pill">注册IP</span><span class="pill">同IP注册数</span><span class="pill">注册浏览器指纹</span><span class="pill">同指纹注册数</span><span class="pill">包名</span><span class="pill">版本号</span></td></tr>
+      <tr><td><b>代理体系（7）</b></td><td><span class="pill">邀请人</span><span class="pill">一级代理</span><span class="pill">直接上级代理</span><span class="pill">代理层级</span><span class="pill">佣金模式</span><span class="pill">返佣等级</span><span class="pill">对上级返佣</span></td></tr>
+      <tr><td><b>登录设备（5）</b></td><td><span class="pill">登录客户端</span><span class="pill">登录设备ID</span><span class="pill">登录域名</span><span class="pill">最后3次登录(IP/同IP数)</span><span class="pill">登录指纹</span></td></tr>
+    </table>
+    <div class="note">所有「同IP / 同设备 / 同指纹」数值均可点击，跳转「风控管理 · 同IP/设备检测」对应维度页签并自动带入该会员 ID。</div>
+
+    <h3>归因穷举矩阵 §4.6（原样复刻）</h3>
+    <p class="sec-desc">以下为说明书 §4.6 原样复刻：左侧蓝色「编号」点击弹窗预览该归因的完整脉络（来源→入口→注册→采集→留存），每行末列为「脉络预览」小图，18 种全部列出。<a href="attribution-matrix-4.6.html" target="_blank">单独打开 ↗</a></p>
+    <iframe src="attribution-matrix-4.6.html" style="width:100%;height:1500px;border:1px solid var(--border);border-radius:10px;background:#fff" title="归因穷举矩阵 §4.6" loading="lazy"></iframe>
+
+    <h3>会员详情 4 面板（红字按位置注入，布局不变）</h3>
+    <p class="sec-desc">点击任意面板截图可放大查看。</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(560px,1fr));gap:16px">
+      <div class="tab-card"><div class="t">基本信息</div><div class="shot" style="margin-top:8px"><img src="img/spec3-basic.png" alt="基本信息" loading="lazy" style="width:100%;border:1px solid var(--border);border-radius:8px;cursor:zoom-in"></div></div>
+      <div class="tab-card"><div class="t">注册信息（归因）<span class="red">· 置顶</span></div><div class="shot" style="margin-top:8px"><img src="img/spec3-attr.png" alt="归因" loading="lazy" style="width:100%;border:1px solid var(--border);border-radius:8px;cursor:zoom-in"></div></div>
+      <div class="tab-card"><div class="t">代理数据 <span class="red">·10级关系图</span></div><div class="shot" style="margin-top:8px"><img src="img/spec3-agent.png" alt="代理数据" loading="lazy" style="width:100%;border:1px solid var(--border);border-radius:8px;cursor:zoom-in"></div></div>
+      <div class="tab-card"><div class="t">登录信息</div><div class="shot" style="margin-top:8px"><img src="img/spec3-reglogin.png" alt="登录信息" loading="lazy" style="width:100%;border:1px solid var(--border);border-radius:8px;cursor:zoom-in"></div></div>
+    </div>
+    <h3>会员列表 · 新增内容定义</h3>
+    <p class="sec-desc">本期会员列表在原 SIT 排版基础上，新增 2 个行内配置开关与一批展示列，并按 9 类目分组表头重排。以下逐项解释含义与作用。</p>
+    <div class="defcard"><div class="dn">领取返佣 <span class="sw">行内开关</span></div><p>控制该会员<b>是否可领取自己的返佣</b>。开=可领取、关=不可领取。供运营按会员资质开关返佣资格。点击弹二次确认「确认要开启/关闭该会员的「领取返佣」吗？」，翻转后 Toast。</p></div>
+    <div class="defcard"><div class="dn">对上级返佣 <span class="sw">行内开关</span></div><p>控制该会员产生的有效投注流水<b>是否为其上级代理计提返佣</b>。开=计提、关=不计提。常用于内部号 / 测试号关闭，避免污染代理佣金结算。点击弹二次确认，翻转后 Toast。</p></div>
+    <div class="dict"><div class="gt">新增展示列 <span class="cnt">注册设备 · 登录设备 · 代理数据（原型实际「新」标列 = 10 个）</span></div><dl>
+      <div class="row"><span class="fn">注册域名<span class="newt">新</span></span><span class="dd">注册时进入的域名（属本商户）。</span></div>
+      <div class="row"><span class="fn">注册设备号<span class="newt">新</span></span><span class="dd">注册时稳定设备 ID（App 端有值，网页端显 -）。</span></div>
+      <div class="row"><span class="fn">注册浏览器指纹<span class="newt">新</span></span><span class="dd">注册时浏览器指纹（网页端有值，App 端显 -）。</span></div>
+      <div class="row"><span class="fn">上次登录设备<span class="newt">新</span></span><span class="dd">最近一次登录的客户端设备。</span></div>
+      <div class="row"><span class="fn">上次登录设备号<span class="newt">新</span></span><span class="dd">最近一次登录的稳定设备 ID。</span></div>
+      <div class="row"><span class="fn">上次登录浏览器指纹<span class="newt">新</span></span><span class="dd">最近一次登录的浏览器指纹。</span></div>
+      <div class="row"><span class="fn">一级代理<span class="newt">新</span></span><span class="dd">该会员所在代理树的顶级（根）代理。</span></div>
+      <div class="row"><span class="fn">直接上级代理<span class="newt">新</span></span><span class="dd">代理树中该会员的直接父节点。</span></div>
+      <div class="row"><span class="fn">佣金模式<span class="newt">新</span></span><span class="dd">代理收益方式：返佣 / 返利。</span></div>
+      <div class="row"><span class="fn">对上级返佣<span class="newt">新</span></span><span class="dd">行内开关：该会员有效投注是否为上级计提返佣。（『领取返佣』开关为原有列，未标新）</span></div>
+    </dl></div>
+    <div class="note"><b>表头：</b>原型当前为<b>扁平单行表头</b>（早期「9 类目分组表头 / 逐组折叠」方案已在原型移除）；新增列以低调「新」角标区分，自定义列弹窗按列勾选、保存后生效。</div>
+
+    <h3>会员详情 · 新增字段词典（仅列本期新增/调整）</h3>
+    <p class="sec-desc">仅介绍会员详情<b>本期新增或调整</b>的字段（按所属字段组归类，逐字段给出定义）；原有字段不再赘述。</p>
+    <div id="mddict"></div>
+  </section>
+
+  <!-- 三、逐页介绍 -->
+  <section id="pages">
+    <h2 class="sec">三、迁移功能逐页介绍</h2>
+    <p class="sec-desc">每页含：原型截图 + 一句话用途 + 关键功能点，标题旁「查看 ↗」直达原型对应页面。<span style="color:#15803d">绿标=全新</span> / <span style="color:#1d4ed8">蓝标=迁移</span>。</p>
+    <div id="cards"></div>
+  </section>
+
+  <!-- 四、通用交互规范 -->
+  <section id="common">
+    <h2 class="sec">四、通用交互规范（所有列表页共用骨架）</h2>
+    <p class="sec-desc">二阶段全部列表页共用同一套骨架，各页只描述专属交互。</p>
+    <table>
+      <tr><th width="110">区域</th><th>规范要点</th></tr>
+      <tr><td>筛选区</td><td>标签在上控件在下；<b>「商户」下拉恒在首位</b>（默认=顶栏当前商户，切换即过滤 + Toast）；时间合并「开始→结束」+ 快捷胶囊（今天/昨天/本周/上周/本月/上月/所有）；筛选 >6 个第 7 起折叠；会员ID 支持多 ID 空格分隔。</td></tr>
+      <tr><td>工具栏</td><td>新增（蓝主按钮）/ 导出（真实下载 CSV，文件名=页面名.csv）/ 批量（先勾选→二次确认）/ ⚙自定义列（勾选后须保存才生效）。</td></tr>
+      <tr><td>表格</td><td>ID 列蓝字 +⧉复制、会员ID 可下钻；<b>首列商户蓝色 pill</b>（商户视角下自动隐藏）；金额列右对齐 +↕排序；表尾「页面总计/总计」双行（黑字，红字仅留给新增字段）；图片悬停放大；<b>操作列冻结在最右</b>。</td></tr>
+      <tr><td>行操作</td><td>文字链接（统一用「编辑」非「修改」、「详情」非「查看」、「删除」非「移除」）；行内开关点击弹二次确认。</td></tr>
+      <tr><td>弹窗反馈</td><td>表单弹窗 760–860px；危险操作弹「操作确认」440px 小窗；<b>Toast 顶部居中、3 秒自动消失</b>；弹窗点遮罩不关闭（防误触）。</td></tr>
+      <tr><td>分页</td><td>共 N 条 / 页码 / 每页条数（10/20/50/100，各页独立记忆）/ 跳至 _ 页；页底说明框。</td></tr>
+    </table>
+  </section>
+
+  <!-- 五、验收 -->
+  <section id="accept">
+    <h2 class="sec">五、验收口径</h2>
+    <p class="sec-desc">验收人默认 eason；逐条在 <a href="http://localhost:3100" target="_blank">localhost:3100</a> 原型点验，结果列标记 待测/通过/不通过。详见《二期验收用例》《二期 PRD §11》。</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin:0 0 18px">
+      <a href="saas-phase2-acceptance-cases.html" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#16a34a;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;box-shadow:0 2px 6px rgba(22,163,74,.35)">📋 打开《二期验收用例》全表 ↗ <small style="font-weight:400;opacity:.85">逐条操作步骤 → 预期结果，可勾验</small></a>
+    </div>
+
+    <h3>5.1 通用验收口径（铁律）</h3>
+    <ul class="clean">
+      <li><b>数据真实性</b>：所有数据/交互/代码取自 /Users/eason/v1 源（SitINR 源码/UAT），无源标「新」并先问、不臆造。</li>
+      <li><b>真实交互</b>：导出真实下载 CSV、搜索真实过滤、排序真实重排、表单保存真实回写、删除真实移除——每步配 Toast。</li>
+      <li><b>商户隔离</b>：筛选区商户首位 + 表首商户列 + 商户视角隐藏商户列 + 切换即时重渲染。</li>
+      <li><b>反馈完整</b>：每个操作必有反馈；危险操作二次确认；保存校验失败标红问题字段 + 顶部错误面板列原因。</li>
+      <li><b>动态配置正确</b>：VIP 行内编辑无弹窗去 ID；返佣同级五大类费率之和 >4% 拦截；等级/经验逐级递增、数值≥0。</li>
+      <li><b>归因注入</b>：会员详情 27 红字字段在指定位置、布局不变、可点可复制；同IP/设备数值可下钻风控页。</li>
+    </ul>
+
+    <h3>5.2 分模块验收用例（节选 30 条）</h3>
+    <table>
+      <tr><th width="64">用例</th><th width="120">功能</th><th>操作</th><th>预期</th><th width="90">原型</th></tr>
+      <tr><td>UC-01</td><td>筛选与重置</td><td>填条件点搜索</td><td>即时过滤，Toast「查询完成，共 N 条」</td><td><a href="http://localhost:8200/?open=member-list" target="_blank">member-list</a></td></tr>
+      <tr><td>UC-05</td><td>自定义列</td><td>勾选后点保存</td><td>保存后列显隐才生效（未保存为临时态）</td><td><a href="http://localhost:8200/?open=member-list" target="_blank">member-list</a></td></tr>
+      <tr><td>UC-08</td><td>商户视角</td><td>顶栏切换商户</td><td>列表按该商户重渲染；商户视角隐藏商户列</td><td><a href="http://localhost:8200/?open=member-list" target="_blank">member-list</a></td></tr>
+      <tr><td>UC-11</td><td>分组管理</td><td>新增分组填阈值保存</td><td>列表新增该行，Toast 保存成功</td><td><a href="http://localhost:8200/?open=user-group" target="_blank">user-group</a></td></tr>
+      <tr><td>UC-13</td><td>登录日志</td><td>按会员ID查询</td><td>设备与浏览器指纹融合一列展示</td><td><a href="http://localhost:8200/?open=login-log" target="_blank">login-log</a></td></tr>
+      <tr><td>UC-16</td><td>会员列表开关</td><td>切换领取/对上级返佣</td><td>弹二次确认，确定后翻转并 Toast</td><td><a href="http://localhost:8200/?open=member-list" target="_blank">member-list</a></td></tr>
+      <tr><td>UC-18</td><td>站内消息</td><td>富文本+图片+指定用户导入</td><td>富文本可编辑、图片可预览、用户ID去重计数</td><td><a href="http://localhost:8200/?open=inbox-message" target="_blank">inbox-message</a></td></tr>
+      <tr><td>UC-20</td><td>轮播图管理</td><td>跳转方式选「厂商或子游戏」</td><td>游戏大类→厂商→子游戏 三级联动</td><td><a href="http://localhost:8200/?open=banner-mgmt" target="_blank">banner-mgmt</a></td></tr>
+      <tr><td>UC-21</td><td>渠道管理</td><td>新增渠道、编码留空</td><td>渠道编码自动生成，新增官方渠道行</td><td><a href="http://localhost:8200/?open=channel-config" target="_blank">channel-config</a></td></tr>
+      <tr><td>UC-24</td><td>同IP/设备检测</td><td>切页签点「人数」蓝链</td><td>跳会员列表按该 IP/设备自动查询</td><td><a href="http://localhost:8200/?open=same-ip" target="_blank">same-ip</a></td></tr>
+      <tr><td>UC-25</td><td>VIP 等级配置</td><td>双页签切换改等级</td><td>固定 11 级(VIP0–10)不可增删；ID 隐藏、名称只读</td><td><a href="http://localhost:8200/?open=vip-level-config" target="_blank">vip-level-config</a></td></tr>
+      <tr><td>UC-26</td><td>返佣费率配置</td><td>编辑某等级费率</td><td>同级五大类费率之和 >4% 校验拦截</td><td><a href="http://localhost:8200/?open=rebate-level" target="_blank">rebate-level</a></td></tr>
+      <tr><td>UC-30</td><td>IP 黑名单</td><td>批量导入粘贴/上传CSV</td><td>实时去重计数、选类型/原因，插入列表顶部</td><td><a href="http://localhost:8200/?open=ip-blacklist" target="_blank">ip-blacklist</a></td></tr>
+    </table>
+
+    <h3>5.3 验收 Checklist（5 大维度）</h3>
+    <table>
+      <tr><th width="150">维度</th><th>检查要点</th></tr>
+      <tr><td>① 真实交互</td><td>导出/搜索/排序/保存/删除/时间切换 均真实生效且有 Toast。</td></tr>
+      <tr><td>② 反馈完整</td><td>每操作有反馈；Toast 3 秒消失；危险操作二次确认；遮罩不关闭；错误面板列原因。</td></tr>
+      <tr><td>③ 入口与菜单</td><td>8 大 mega menu 可达；新/原角标正确；页签打开/激活/不重复开/至少留一个。</td></tr>
+      <tr><td>④ 来源溯源</td><td>逻辑/字段取自 SitINR 源或 UAT；全新页标「新」；红字字段与源页对齐。</td></tr>
+      <tr><td>⑤ 控件口径统一</td><td>动词统一；状态 badge 绿/红/灰；列冻结；合计行双行黑字；商户隔离。</td></tr>
+    </table>
+    <div class="note">对标验收（8200 vs SIT）：24/24 页已承载 SIT 交互排版，无框架级缺口；仅 2 处功能等价微差异（银行字典状态控件、会员卡号脱敏）可选优化。</div>
+  </section>
+
+  <!-- 六、修改记录 -->
+  <section id="changelog">
+    <h2 class="sec">六、修改记录</h2>
+
+    <h3>本页修改记录（自 2026-06-16 起记录）</h3>
+    <table>
+      <tr><th width="92">日期</th><th width="120">条目</th><th>改动摘要</th></tr>
+      <tr><td>2026-06-16</td><td>4.6 内联脉络图</td><td>归因矩阵<b>隐藏「页面呈现·归因明细」7 列</b>（主归因/推广平台/注册渠道/登录渠道/搜索引擎/邀请码/邀请类型）；「示例预览」列由点击弹窗改为<b>内联直接展示完整 5 步脉络图</b>（来源→入口→注册→采集→留存）；左 7 列保持冻结。</td></tr>
+      <tr><td>2026-06-16</td><td>4.6 铺满全宽</td><td>归因矩阵表格改为占满全宽：右侧非冻结列加宽、「注册渠道」列自适应吸收剩余宽度填满右侧空白（左 7 冻结列保持原宽、吸附不破坏）；会员详情 4 面板截图改宽网格放大（宽屏 2 列、可点击放大）。</td></tr>
+      <tr><td>2026-06-16</td><td>VIP操作日志补图</td><td>VIP操作日志原无截图，用无头 Chrome 登录原型截取真实页面存为 img/spec-vip-op-log.png 并挂到卡片。</td></tr>
+      <tr><td>2026-06-16</td><td>会员详情瘦身</td><td>会员详情卡片改为<b>只示本期改动</b>：整页大截图换为「归因面板」局部图，文案聚焦 27 红字字段 / 10 级代理关系图 / 昵称新字段，并注明原有 统计·活动奖励·VIP·保险箱 等面板本期不变；<b>删除「归因判定流程图」内嵌块</b>（attribution-flow.html iframe）。</td></tr>
+      <tr><td>2026-06-16</td><td>4.6 原样复刻</td><td>归因穷举矩阵改为<b>原样复刻</b>说明书 §4.6（字节级切片，未改一处）：生成独立页 attribution-matrix-4.6.html（含矩阵表 + 每行「脉络预览」列 + 点击编号弹完整 5 步脉络图），在产品介绍以 iframe 内嵌。</td></tr>
+      <tr><td>2026-06-16</td><td>文案加厚</td><td>补「会员详情完整字段词典（11 组，逐字段定义、新增标红）」+「会员列表新增内容定义」（领取返佣/对上级返佣 开关含义、新增列定义、9 类目分组表头）；移除所有"删除源字段/列"的表述。</td></tr>
+      <tr><td>2026-06-16</td><td>归因补全</td><td>对照说明书 §4.6 补「归因穷举矩阵（5 大类型 × 18 种枚举）」完整表 + 内嵌「归因判定流程图」（attribution-flow.html）+ 交互版判定原型入口。</td></tr>
+      <tr><td>2026-06-16</td><td>逐页交互</td><td>24 个页面卡片改为「功能要点 / 交互 / 特殊情况」三栏，逐页补充专属交互与特殊情况/校验/边界。</td></tr>
+      <tr><td>2026-06-16</td><td>创建</td><td>创建《二阶段产品介绍》页：8 Tab 定义 + 归因/会员详情 + 24 页图文 + 原型入口 + 验收口径 + 修改记录。</td></tr>
+    </table>
+
+  </section>
+
+  </main>
+</div>
+
+<div id="lb"><img src="" alt=""></div>
+<script>
+const PAGES = [
+ {grp:'m-member', gt:'① 会员管理', items:[
+  {name:'会员列表', tag:'迁移', src:'源 UserManage', key:'member-list', img:'spec-member-list.png',
+   desc:['商户筛选 + 19 项搜索（会员ID多值/账号/状态/注册时间/代理/VIP/黑名单/指纹…）','9 类目分组表头、批量操作（拉黑/启用/分组/转渠道…）、自定义列','<b class="red">红色新列</b>：领取返佣 / 对上级返佣 行内开关'],
+   ui:['会员ID 下钻打开会员详情抽屉','「领取/对上级返佣」红色行内开关 → 二次确认 → 翻转 + Toast','分组表头展开/收起列组，分组随列冻结、横滚对齐','自定义列按 9 组分块勾选、保存后生效','操作列默认显「修改密码」，「更多»」展开「三方信息」'],
+   edge:['商户筛选全局，默认=顶栏当前商户；首列商户蓝 pill','「领取/对上级返佣」为行内 toggle 红列，不并入操作列，可自定义列显隐','状态语义化：黑名单 正常(灰)/拉黑(红)；会员状态 启用(绿)/停用(灰)']},
+  {name:'会员详情', tag:'迁移', src:'源 UserDetaile', key:'member-list', img:'spec3-attr.png',
+   desc:['<b class="red">只看本期改动</b>：原有面板/字段不赘述（完整 4 面板见上节「会员详情 4 面板」）','<b class="red">注册信息(归因) 面板置顶</b>，27 个红字归因字段按指定位置注入、布局不变','代理数据含 10 级代理关系图、代理明细展开','基本信息新增「昵称」字段（仅展示不可改）'],
+   ui:['「?」图标看归因类型简介 + 归因明细折叠流程图','代理关系图节点点击复制代理ID + Toast','同IP/同设备/同指纹数值点击 → 跳风控对应维度页签并带入会员','「归因介绍」展开/收起「归因脉络·本会员」','会员状态 / 备注 可编辑（弹窗）'],
+   edge:['头部冻结、下方滚动；登录信息与最后 3 次登录合并一卡','原有 数据统计 / 活动奖励 / VIP / 保险箱 等面板本期不变，不在改动范围']},
+  {name:'分组管理', tag:'迁移', src:'源 用户分组+分组权限(融合)', key:'user-group', img:'spec-user-group.png',
+   desc:['「会员分组 + 分组表单 + 权限配置」融合为一页','新增分组填名称与自动归组阈值（充值金额/次数/投注）','系统默认分组不可改不可删'],
+   ui:['「新增分组」弹窗：名称 + 自动归组条件(充值金额≥/次数≥/投注≥) + 权限勾选 + 开启开关','整表表头与单元格居中','行内开启开关 → 二次确认 → 翻转 + Toast','表尾「已选合计」实时统计勾选行 人数/充值金额/次数/投注 四列'],
+   edge:['状态列 = badge 纯展示(开绿/关灰)不可点（行内开关已撤回）','行操作仅「编辑」，原「分组权限」并入编辑弹窗','工具栏 = 新增分组 + 刷新','「分组名称」筛选下拉来源于已建分组']},
+  {name:'登录日志', tag:'迁移', src:'源 LoginLog(增强)', key:'login-log', img:'spec-login-log.png',
+   desc:['按会员ID（多 ID 空格分隔）/ IP / 时间查询','<b>设备与浏览器指纹融合一列</b>展示','与会员列表设备信息口径统一'],
+   ui:['会员ID 下钻打开会员详情抽屉','「导出」当前筛选结果 CSV 真实下载'],
+   edge:['设备/浏览器指纹融合一列，按终端二选一：App显设备名、H5显指纹，不堆两行','IP/地区列移至登录时间前','纯查询页无行操作；聚合分析指引去风控「同IP/设备检测」']},
+  {name:'短信验证码查询', tag:'迁移', src:'源 SmsList', key:'sms-code', img:'spec-sms-code.png',
+   desc:['按手机号查询验证码 / 业务类型 / 发送时间 / 状态','纯查询页，<b>无导出按钮</b>'],
+   ui:['输入手机号查询，结果即时展示'],
+   edge:['纯查询页，无行操作','手机号脱敏显示']},
+ ]},
+ {grp:'m-op-config', gt:'② 运营管理 · 运营配置', items:[
+  {name:'站内消息', tag:'迁移', src:'源 Message', key:'inbox-message', img:'spec-inbox-message.png',
+   desc:['富文本正文 + 图片上传 + 指定用户表格导入','用户ID 导入去重计数','保存回写列表 + Toast'],
+   ui:['「新增」弹窗(800px)：标题≤100、富文本≤500、图片(720×360≤1MB)、发送时间(可预约)、推送通道(Firebase/极光)、用户(全体/指定)','指定用户：逗号/换行分隔 或 表格导入(≤1000 自动去重)','「表格导入」上传 .xlsx/.csv(首列=用户Id)，导入后 Toast 统计','「下载导入范本」真实下载 CSV','未发送可「编辑」，已发送仅「详情」(操作列按状态变)'],
+   edge:['图片字段=上传控件：选图→回显→✕移除，悬停放大','富文本支持 加粗/斜体/下划线/删除线/字号/颜色/列表/链接/图片/清除格式','状态：未发送可编辑删除，已发送仅查看；未发送/发送中/成功/部分成功/失败 彩色 badge']},
+  {name:'公告消息', tag:'迁移', src:'源 公告体系', key:'announcement-msg', img:'spec-announcement-msg.png',
+   desc:['弹窗 / 滚动 双页签','<b>7 语种独立保存</b>、切换不丢内容','筛选加渠道，列表含 商户 + 渠道 列'],
+   ui:['页签切换 弹窗消息 / 滚动消息','「新增」弹窗：7 语种页签独立填 标题≤100 / 排序(越大越前默认0) / 启用开关 / 富文本','内容摘要蓝链展开详情(ID/状态/排序/更新时间 + 标题 + 全文 + 英语对照)','行内启用开关切换 → 前台即时展示','切语种自动暂存当前输入、回填目标语种'],
+   edge:['双页签，每语种(英/泰/简中/马来/阿拉伯/泰米尔/泰卢固 共7)独立保存','筛选去快捷时间(仅时间范围)；工具栏去导出','新增「渠道」筛选+列、表单首项加「商户」必填','未配置语种显示绿点；前台回退英语；全语种标题皆空不保存']},
+  {name:'轮播图管理', tag:'迁移', src:'源 Banners', key:'banner-mgmt', img:'spec-banner-mgmt.png',
+   desc:['图片上传 + 预览','三选一跳转：URL / 厂商或子游戏（三级联动）/ 在线客服','排序、状态'],
+   ui:['「新增」弹窗：图片(768×300≤1MB) + 跳转三选一(URL / 厂商或子游戏三级联动 / 在线客服) + 排序','缩略图悬停放大(360×180)','「修改」/「删除」'],
+   edge:['表单首项加「商户」必填；ID 列后加「商户」蓝 pill 列随视角联动','跳转方式三选一，字段动态变化','筛选仅「显示状态」']},
+ ]},
+ {grp:'m-op-promo', gt:'② 运营管理 · 推广配置（本期核心）', items:[
+  {name:'渠道管理', tag:'迁移', src:'源 Channel(扩展)', key:'channel-config', img:'spec-channel-config.png',
+   desc:['渠道名 / <b>渠道ID自动生成</b> / 域名地址 / 渠道编码','渠道类型：官方渠道(H5端) / 投放渠道(多端) + 分发端','赠送金额 / 打码倍数 / 备注'],
+   ui:['「新增渠道」弹窗：渠道名≤50 / 域名 / 编码(留空自动生成) / 类型(官方/投放) / 分发端 / 赠送金额 / 打码倍数 / 备注','「编辑」修改配置','「删除」二次确认后移除'],
+   edge:['类型：官方(仅H5) / 投放(H5/Android/iOS/PWA)','渠道ID 自动生成、全局唯一，保存后只读','列表加「渠道类型」badge + 「分发端」列','筛选仅 渠道ID / 名称']},
+  {name:'域名管理', tag:'新增', src:'全新', key:'domain-mgmt', img:'spec-domain-mgmt.png',
+   desc:['4 种域名类型：主域名 / 推广域名 / 防封谷歌页 / 防封苹果页','按类型动态字段：推广→跳转域名+落地指向；防封→仿模板+落地+救援','「域名→渠道→推广→获客归因」闭环前半段'],
+   ui:['「新增域名」弹窗填域名信息','「详情」只读 / 「编辑」(按类型动态展开 推广/防封配置)','行操作「解析检测」触发该域名 DNS 检测','「防封配置」/「删除」(二次确认)'],
+   edge:['列表显示解析状态 badge(正常绿/异常红)','新增「CDN 服务商」列','按 4 种域名类型动态展开不同配置']},
+  {name:'防封救援', tag:'新增', src:'全新', key:'domain-rescue', img:'spec-domain-rescue.png',
+   desc:['救援开关 / 强制弹窗','救援域名（多选）/ 救援方案 / 救援奖金'],
+   ui:['「新增救援」弹窗：救援域名 / 方案 / 弹窗方式 / 奖金','「编辑」修改 / 「救援记录」查看触发历史','「停用」/「删除」二次确认后生效'],
+   edge:['救援开关 badge(异常红/正常绿)，二次确认生效','统计：累计切换次数 / 累计救援人数','触发链路：原域名被封→弹救援窗→随机救援域名→下载 PWA/App 自动带账号登录 + 领救援奖金']},
+  {name:'解析检测记录', tag:'新增', src:'全新', key:'domain-resolve-log', img:'spec-domain-resolve-log.png',
+   desc:['周期检测 + 手动检测','DNS 解析状态：正常=绿 / 异常=红'],
+   ui:['「手动检测」立即触发全部域名 DNS 检测 + Toast「检测中…」','「详情」只读弹窗','「重新检测」单行立即重测'],
+   edge:['系统按节点周期巡检；结果 badge(正常绿/异常红)','纯查询统计页，无编辑/删除','展示 检测节点 / 解析IP / 响应耗时 / TTL']},
+ ]},
+ {grp:'m-op-data', gt:'② 运营管理 · 运营数据', items:[
+  {name:'VIP升级奖励记录', tag:'迁移', src:'源 VipRewards', key:'vip-reward-log', img:'spec-vip-reward-log.png',
+   desc:['按会员ID查询升级奖励发放/领取','会员ID 可点弹详情'],
+   ui:['「导出」当前筛选结果 CSV','「详情」查看本条奖励完整信息(只读)'],
+   edge:['操作列「详情」是否删除待确认（文档提删除但表格仍显示）']},
+  {name:'VIP人数', tag:'迁移', src:'源 VipLevelQuantity', key:'vip-level-count', img:'spec-vip-level-count.png',
+   desc:['3 列（等级/名称/人数）共 10 行','人数蓝链下钻会员列表','无导出 / 筛选 / 商户列'],
+   ui:['点击人数蓝链下钻该 VIP 等级全部会员列表'],
+   edge:['仅 3 列 10 行(等级ID/名称/人数)，人数蓝链','去 占比/详情/导出/筛选/商户列','无批量、无工具栏，整表仅统计概览']},
+  {name:'VIP操作日志', tag:'迁移', src:'源 VipRecord', key:'vip-op-log', img:'spec-vip-op-log.png',
+   desc:['流水型日志，按 UID/订单号/状态/创建日期查询','订单号/时间/日志类型/领取(积分·余额)/经验值/明细'],
+   ui:['「导出」当前筛选结果 CSV（明细流水，无勾选合计）'],
+   edge:['明细型流水，展示每笔经验奖励/领取的时间/会员/金额/经验值','无行操作（纯查询页）','含页面总计行']},
+ ]},
+ {grp:'m-op-rebate', gt:'② 运营管理 · 返佣·等级', items:[
+  {name:'会员返佣等级', tag:'迁移', src:'源 User_RebateLv', key:'member-rebate-level', img:'spec-member-rebate-level.png',
+   desc:['按配置值<b>强制提升</b>会员返佣等级','含连续使用天数 / 失效规则'],
+   ui:['「新增」弹窗：会员ID + 返佣等级下拉 + 可连续使用天数 + 提交','「编辑」修改该会员返佣等级','「删除」二次确认'],
+   edge:['规则：所有游戏返佣等级都<配置值 → 统一改为配置值且天数+1；任一≥配置值 → 天数清零；天数≥可连续使用天数 → 失效','「批量删除」需先勾选，否则 Toast「请先勾选要操作的数据」','强制提升：列表中返佣等级<配置值的会员统一改']},
+  {name:'代理审核机制', tag:'迁移', src:'源 UserReview+EditUserRebate(自配置中心迁入)', key:'agent-audit', img:'spec-agent-audit.png',
+   desc:['返佣资格审核，返佣状态 badge','修改返佣弹窗：5 游戏基础费率 + 备注'],
+   ui:['「修改返佣」弹窗：5 个游戏基础返佣费率 + 备注，保存回写','「启用配置/停用配置」开关切换 → 二次确认后生效'],
+   edge:['返佣状态 badge(启用绿/关闭灰)','行操作 = 修改返佣(弹窗) + 启用/停用(开关)','显示 昨日佣金 / 下级总投注 / 修改返佣操作人·时间']},
+ ]},
+ {grp:'m-risk', gt:'③ 风控管理', items:[
+  {name:'异常会员处理', tag:'迁移', src:'源 AbnormalUser+批量回收', key:'abnormal-member', img:'spec-abnormal-member.png',
+   desc:['多会员ID查询（≤100）','四项处置：回收余额 / 保险箱转出 / 驳回提现 / 余额扣除','金额列页脚合计'],
+   ui:['批量勾选 → 四项处置 → 二次确认「确认对已选 N 条执行「×××」？」','单行同名四项 → 二次确认后执行','驳回提现填备注(禁中文)；余额扣除填负金额+备注；回收/保险箱转出仅二次确认'],
+   edge:['四项处置交互口径如左','页脚合计行展示总金额','展示 会员状态/钱包余额/三方余额/保险箱余额/处理中提款金额']},
+  {name:'同IP/设备检测', tag:'迁移', src:'源 报表安全族+登录信息', key:'same-ip', img:'spec-same-ip.png',
+   desc:['4 子页签：同注册IP / 同注册设备 / 同登录IP / 同登录设备','<b>设备 + 指纹合并列</b>','人数蓝链下钻会员列表并自动查询'],
+   ui:['顶部 tab 切换四个检测维度','点「人数」蓝链下钻 → 跳会员列表按该 IP/设备自动筛选','「导出」当前维度 CSV'],
+   edge:['4 子页签；设备维度「设备/浏览器指纹」合并列按终端二选一','人数下钻带入 IP/设备标识','列表去操作列、去商户筛选；4 页签共用工具栏']},
+ ]},
+ {grp:'m-config', gt:'④ 配置中心', items:[
+  {name:'VIP配置', tag:'迁移', src:'源 VipLevel+VipCurrencyExp(融合)', key:'vip-level-config', img:'spec-vip-level-config.png',
+   desc:['双页签：VIP等级（VIP0–VIP10 固定 11 级·<b>行内编辑无弹窗</b>·去 ID）+ 经验值配置(按币种换算)','顶部多商户工作区：选商户→保存→发布 + 复制模板到其他商户'],
+   ui:['双页签 VIP等级 / 经验值 切换','VIP等级行内编辑(无弹窗)，改完即时校验','顶部 选商户→保存→发布；「复制模板到其他商户」','ⓘ配置介绍 帮助弹窗'],
+   edge:['固定 11 级 VIP0–VIP10 不可增删；去 ID 列、名称只读','保存校验不过标红字段 + 顶部错误面板逐条','等级/经验逐级递增、数值≥0']},
+  {name:'返佣配置', tag:'迁移', src:'源 RebateLevel+RebateLvRateConfig(融合)', key:'rebate-level', img:'spec-rebate-level.png',
+   desc:['双页签：返佣等级管理（晋升条件表·0级基础不可删）+ 返佣费率配置（一~六级×五游戏）','ⓘ配置介绍帮助弹窗'],
+   ui:['双页签 等级管理 / 费率配置','行内编辑某等级费率','ⓘ配置介绍 帮助弹窗'],
+   edge:['<b>同级五大类费率之和 >4% 校验拦截</b>(标红 + 错误面板)','0 级基础不可删']},
+ ]},
+ {grp:'m-report', gt:'⑦ 报表管理 · 代理报表', items:[
+  {name:'代理报表', tag:'迁移', src:'源 邀请报表 A/C/D/M', key:'agent-report', img:'spec-rebate-report.png',
+   desc:['按统计周期切换：日 / 日区间 / 月 / 所有','按代理维度重建，内部=返利 / 外部=返佣'],
+   ui:['切统计周期 日/日区间/月/所有 + 翻页','「下级列表」打开真实下钻抽屉'],
+   edge:['内部=返利 / 外部=返佣','按代理维度重建']},
+  {name:'昨日返佣等级', tag:'迁移', src:'源 User_RebateLv_Last(自运营数据迁入)', key:'rebate-level-yesterday', img:'spec-rebate-level-yesterday.png',
+   desc:['五游戏列：每游戏「投注金额/返佣金额」双列分组表头','工具栏仅导出'],
+   ui:['「导出」当前筛选结果 CSV'],
+   edge:['五游戏列：每游戏「投注金额/返佣金额」双列分组表头','工具栏仅导出']},
+ ]},
+ {grp:'m-system', gt:'⑧ 系统管理', items:[
+  {name:'IP黑名单', tag:'新增', src:'源 BlackIp', key:'ip-blacklist', img:'spec-ip-blacklist.png',
+   desc:['列表：IP / 封禁类型(多标签) / 原因 / 关联会员 / 操作人·时间 / 状态','批量导入：粘贴或上传 .csv/.xlsx、模板下载、<b>实时去重 ≤500 条</b>'],
+   ui:['「新增黑名单」弹窗：IP / 商户 / 封禁类型(禁登录/禁注册/全部) / 原因','「批量导入」弹窗：粘贴IP(逗号/空格/换行)或上传 .csv/.xlsx(首列=IP)，自动识别合法IPv4、去重≤500，实时「已识别 N 个(去重后)」，选类型+原因确认','「下载导入模板」真实下载 CSV','「解封」(二次确认) / 「编辑」'],
+   edge:['列：序号 / IP(v4+v6) / 封禁类型多标签 / 原因(字数计) / 创建人 / 添加时间 / 状态，去商户列','批量导入：粘贴或 CSV/XLSX、模板下载、实时去重 ≤500、选类型与原因']},
+ ]},
+];
+const root=document.getElementById('cards');
+PAGES.forEach(g=>{
+  const sec=document.createElement('h3'); sec.id=g.grp; sec.textContent=g.gt; root.appendChild(sec);
+  g.items.forEach(p=>{
+    const tagClass = p.tag==='新增'?'new':'';
+    const shot = p.img ? `<div class="shot"><img src="img/${p.img}" alt="${p.name}" loading="lazy"></div>`
+                       : `<div class="shot"><div class="noimg">（原型见「查看 ↗」）</div></div>`;
+    const blk=(cls,lbl,arr)=> (arr&&arr.length)? `<div class="blk ${cls}"><span class="lbl">${lbl}</span><ul>${arr.map(d=>`<li>${d}</li>`).join('')}</ul></div>`:'';
+    const info = blk('fn','功能要点',p.desc)+blk('ix','交互',p.ui)+blk('ed','特殊情况',p.edge);
+    const el=document.createElement('div'); el.className='pcard';
+    el.innerHTML=`<div class="hd"><span class="name">${p.name}</span><span class="tagn ${tagClass}">${p.tag}</span><span class="src">${p.src}</span><span class="grow"></span><a class="golink" href="http://localhost:8200/?open=${p.key}" target="_blank">查看 ↗</a></div><div class="bd">${shot}<div class="info">${info}</div></div>`;
+    root.appendChild(el);
+  });
+});
+// 会员详情字段词典
+const DICT=[
+ {g:'② 归因来源组', ng:1, f:[['主归因','注册来源唯一归类：广告投放/邀请来源/官方直推/自然流量',1],['推广三方类型','识别出的推广三方类型（Facebook / Adjust / TikTok…）',1],['注册渠道','注册时命中的后台定义渠道（如 apk-fb-me001-01）',1],['登录渠道','最近一次登录命中的渠道 ID',1],['搜索引擎','由 referrer 来源域名识别的搜索引擎',1],['邀请码','注册实际使用的邀请码，关联邀请人/代理',1],['邀请类型','正常邀请 / 转盘活动邀请 / 邀请任务',1]]},
+ {g:'⑥ 代理数据组', ng:1, f:[['返佣状态','是否计提返佣（板块表头开关）',1],['对上级返佣','有效投注是否为上级计提返佣（板块表头开关）',1],['一级代理','所在代理树的顶级（根）代理',1],['直接上级代理','代理树中该会员的直接父节点',1],['直属下级数','直接下级人数',1],['团队下级数','团队总下级人数',1],['累计返佣','历史累计返佣金额',1],['邀请奖励','代理邀请奖励',1],['合伙人奖励','合伙人奖励',1],['佣金模式','代理收益方式：返佣 / 返利',1],['昨日返佣等级','昨日返佣等级档位',1]]},
+ {g:'⑩ 注册信息（归因）组', ng:1, f:[['注册设备','注册时使用的设备',1],['注册设备号','注册时稳定设备 ID（与指纹分开两列）',1],['注册浏览器指纹','注册时浏览器指纹（与设备号分开两列）',1],['注册包名','注册 App 包名 / 版本',1],['注册域名','注册时进入的域名',1],['同设备注册会员数','与本会员同一设备注册的账号总数',1]]},
+ {g:'⑪ 登录信息组', ng:1, f:[['上次登录设备','最近一次访问的设备：pc / h5 / 安卓 / ios / 壳包 / pwa',1],['上次登录设备号','最近一次登录的稳定设备 ID（与指纹分开两列）',1],['上次登录浏览器指纹','最近一次登录的浏览器指纹（与设备号分开两列）',1],['上次登录域名','最近一次登录进入的域名',1],['上次登录包名','最近一次登录的 App 包名',1],['同设备登录数','与本会员同一设备登录过的账号总数',1],['同指纹登录数','与本会员同指纹登录过的账号总数',1]]},
+];
+const md=document.getElementById('mddict');
+if(md){ DICT.forEach(grp=>{
+  const cnt=`${grp.f.length} 个新增/调整字段`;
+  const rows=grp.f.map(x=>`<div class="row"><span class="fn">${x[0]}${x[2]?'<span class="newt">新</span>':''}</span><span class="dd">${x[1]}</span></div>`).join('');
+  const el=document.createElement('div'); el.className='dict';
+  el.innerHTML=`<div class="gt ${grp.ng?'newg':''}">${grp.g}${grp.ng?' <span class="newt">整组新增</span>':''} <span class="cnt">${cnt}</span></div><dl>${rows}</dl>`;
+  md.appendChild(el);
+});}
+// 归因穷举矩阵（全步骤）
+const GCLS={'广告投放':'g-ad','邀请来源':'g-inv','官方直推':'g-off','自然流量':'g-nat'};
+const AMX=[
+ ['A1','广告投放','Facebook','广告点击ID fbclid','广告·点击 Facebook 广告进入','广告落地页 · apk-fb-me001-01','未填邀请码 · 无代理关系','主归因 广告投放 · 注册渠道 apk-fb-me001-01 · 平台 Facebook'],
+ ['A2','广告投放','Instagram','UTM utm_source=instagram','广告·Instagram 投放进入','广告落地页 · h5-ig-ay002-01','未填邀请码 · 无代理关系','主归因 广告投放 · 注册渠道 h5-ig-ay002-01 · 平台 Instagram'],
+ ['A3','广告投放','其他平台','UTM（清单外）','广告·其他平台投放进入','广告落地页 · h5-ads-me001-01','未填邀请码 · 无代理关系','主归因 广告投放 · 注册渠道 h5-ads-me001-01 · 平台 其他'],
+ ['A4','广告投放','裂变获客','广告点击ID + 有效邀请码','广告·点击 Facebook 广告进入','广告落地页 · apk-fb-me001-01','填了邀请码 AGENT100（辅证）· 仍绑上级 2250100 / 一级 2250001','主归因 广告投放（裂变）· 平台 Facebook · 邀请码 AGENT100'],
+ ['A5','广告投放','Facebook','广告点击ID + 无效邀请码','广告·点击 Facebook 广告进入','广告落地页 · apk-fb-me001-01','填了邀请码（无效）· 不绑定代理','主归因 广告投放 · 平台 Facebook · 邀请码 AGENT100（无效）'],
+ ['B2','广告投放','Facebook','官方链接 + 广告标识','广告·官方链接带广告标识进入','官方渠道 · h5-01','未填邀请码 · 无代理关系','主归因 广告投放 · 注册渠道 官方渠道 h5-01 · 平台 Facebook'],
+ ['A6','邀请来源','正常邀请（个人）','个人邀请码 AGENT100（手填）','从 Facebook-鳗鱼01 渠道进入后手填个人邀请码','渠道 Facebook-鳗鱼01（apk-fb-me001-01）','手填邀请码 AGENT100 · 绑上级 2250100（李四）/ 一级 2250001','主归因 邀请来源 · 注册渠道 apk-fb-me001-01 · 邀请码 AGENT100'],
+ ['B3','邀请来源','正常邀请（个人）','官方渠道进入 + 个人邀请码','官方渠道进入后手填个人邀请码','官方渠道 · h5-01','填了邀请码 AGENT100 · 绑上级 2250100 / 一级 2250001','主归因 邀请来源 · 注册渠道 官方渠道 h5-01 · 邀请码 AGENT100'],
+ ['B4','邀请来源','转盘邀请','转盘活动邀请码 WHEEL8001','转盘活动分享进入','官方渠道 · h5-01','填了转盘活动码 WHEEL8001 · 绑上级 2250100 / 一级 2250001','主归因 邀请来源 · 邀请码 WHEEL8001 · 邀请类型 转盘邀请'],
+ ['B5','邀请来源','任务邀请','任务活动邀请码 TASK8002','任务活动分享进入','官方渠道 · h5-01','填了任务活动码 TASK8002 · 绑上级 2250100 / 一级 2250001','主归因 邀请来源 · 邀请码 TASK8002 · 邀请类型 任务邀请'],
+ ['B6','邀请来源','正常邀请（活动过期降级）','活动邀请码已过期','活动分享进入（码已过期）','官方渠道 · h5-01','活动码过期降级正常邀请 · 仍绑上级 2250100 / 一级 2250001','主归因 邀请来源 · 邀请码 WHEEL8001 · 降级正常邀请'],
+ ['B1','官方直推','—','仅官方推广链接标识','官方·点官方推广链接进入','官方渠道 · h5-01','未填邀请码 · 无代理关系','主归因 官方直推 · 注册渠道 官方渠道 h5-01'],
+ ['A7','自然流量','其他来源','Referrer（非搜索）','自然·站外非搜索链接进入','渠道 Facebook-鳗鱼01（apk-fb-me001-01）','未填邀请码 · 无代理关系','主归因 自然流量 · 注册渠道 apk-fb-me001-01 · 搜索引擎 其他'],
+ ['B7','自然流量','Google 搜索','Referrer = Google','自然·Google 搜索结果进入','官方渠道 · h5-01','未填邀请码 · 无代理关系','主归因 自然流量 · 注册渠道 官方渠道 h5-01 · 搜索引擎 Google'],
+ ['B8','自然流量','其他来源','Referrer（清单外）','自然·清单外站外链接进入','官方渠道 · h5-01','未填邀请码 · 无代理关系','主归因 自然流量 · 注册渠道 官方渠道 h5-01 · 搜索引擎 其他'],
+ ['B9','自然流量','直接访问','无任何参数','自然·直接输入域名进入','官方渠道 · h5-01','未填邀请码 · 无代理关系','主归因 自然流量 · 注册渠道 官方渠道 h5-01 · 搜索引擎 直接访问'],
+ ['B10','自然流量','直接访问','参数全部解析失败','自然·参数损坏/伪造，兜底直接访问','官方渠道 · h5-01','未填有效邀请码 · 无代理关系','主归因 自然流量 · 直接访问（失败原因记日志）'],
+ ['B11','自然流量','直接访问','仅无效邀请码','自然·仅无效邀请码，无其他标识','官方渠道 · h5-01','邀请码无效·不绑定代理','主归因 自然流量 · 邀请码 AGENT100（无效）'],
+];
+const amx=document.getElementById('amx');
+if(amx){
+  amx.innerHTML='<tr><th width="44">编号</th><th width="80">主归因</th><th width="120">子类</th><th width="150">命中标识</th><th>① 进入方式</th><th>② 落地渠道</th><th>③ 邀请码·代理</th><th>④ 归因结果</th></tr>'+
+   AMX.map(r=>`<tr><td><b>${r[0]}</b></td><td><span class="gtag ${GCLS[r[1]]}">${r[1]}</span></td><td>${r[2]}</td><td>${r[3]}</td><td class="s">${r[4]}</td><td class="s">${r[5]}</td><td class="s">${r[6]}</td><td class="s">${r[7]}</td></tr>`).join('');
+}
+// 18 种归因脉络图（照抄参考站 §4.6 五步结构）
+const af=document.getElementById('amfigs');
+if(af){
+  const step=(n,h,lines,cls)=>`<div class="amstep ${cls||''}"><div class="sh"><span class="sn">${n}</span>${h}</div><div class="sf">${lines.map(x=>`<span>${x}</span>`).join('')}</div></div>`;
+  const ARR='<div class="amaar">→</div>';
+  af.innerHTML = AMX.map(r=>{
+    const [code,m,sub,hit,s1,s2,s3,s4]=r;
+    const a=/绑上级/.test(s3)?'代理关系（上级/一级可后台划转）':'本例无代理关系';
+    const head=`<div class="head"><span class="code">${code} ${m}</span><span class="hh">触发：${hit}</span><span class="node">${m}</span>➡️<span class="node">${sub}</span></div>`;
+    const flow='<div class="amflow">'+
+      step('①','来源 · 在哪看到',['来源：'+m,s1],'hot')+ARR+
+      step('②','入口 · 点哪条链接进来',[s2,'落地域名 m.sit-inr.com'])+ARR+
+      step('③','注册 · 是否填邀请码',[s3],'hot')+ARR+
+      step('④','采集 · 收集了哪些信息',[s4,'注册时间 / IP / 设备 / 包名'])+ARR+
+      step('⑤','留存 · 哪些固定 / 哪些可调',['🔒 固定不变：主归因 / 注册渠道 / 注册时间 / 设备·IP','✏️ 可调整：'+a],'gr')+
+      '</div>';
+    return `<div class="amfig" id="fig-${code}">${head}${flow}</div>`;
+  }).join('');
+}
+// lightbox
+const lb=document.getElementById('lb'), lbimg=lb.querySelector('img');
+document.addEventListener('click',e=>{
+  if(e.target.tagName==='IMG' && e.target.closest('.shot')){ lbimg.src=e.target.src; lb.style.display='flex'; }
+  else if(e.target===lb||e.target===lbimg){ lb.style.display='none'; }
+});
+// smooth toc
+document.querySelectorAll('#toc a').forEach(a=>a.addEventListener('click',e=>{
+  const t=document.querySelector(a.getAttribute('href')); if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}
+}));
+</script>
+<script>
+/* 原型链接更新：8200 ?open=key → 3100 真实路由 */
+(function(){
+  var M={'member-list':'/member/user','user-group':'/member/groupManage','login-log':'/member/loginLog','sms-code':'/member/smsCode','inbox-message':'/operations/inboxMessage','announcement-msg':'/operations/announcement','banner-mgmt':'/operations/banner','channel-config':'/operations/channelConfig','domain-mgmt':'/operations/domainMgmt','domain-rescue':'/operations/domainRescue','domain-resolve-log':'/operations/domainResolveLog','vip-reward-log':'/operations/vipRewardLog','vip-level-count':'/operations/vipLevelCount','vip-op-log':'/operations/vipOpLog','member-rebate-level':'/operations/memberRebateLevel','agent-audit':'/operations/agentAudit','abnormal-member':'/risk-control/abnormalMember','same-ip':'/risk-control/sameIp','vip-level-config':'/config-center/vipConfig3','rebate-level':'/config-center/rebateConfig','agent-report':'/report/agentReport','rebate-level-yesterday':'/operations/rebateLevelYesterday','ip-blacklist':'/system/ipBlacklist','hub':'/'};
+  document.querySelectorAll('a[href*="localhost:8200"]').forEach(function(a){
+    var h=a.getAttribute('href'),m=h.match(/[?&]open=([a-z0-9-]+)/);
+    a.setAttribute('href', m&&M[m[1]] ? 'http://localhost:3100'+M[m[1]] : h.replace(/https?:\/\/localhost:8200[^"'\s]*/,'http://localhost:3100'));
+  });
+})();
+</script>
+</body>
+</html>

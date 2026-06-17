@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SaaS 二阶段 · 交付总览（数据源/功能清单/阶段计划/规则）</title>
+<style>
+  :root{--blue:#1d4ed8;--ink:#1f2937;--sub:#64748b;--line:#e5e7eb;--bg:#f7f9fc;}
+  *{box-sizing:border-box}
+  a{color:#2563eb;text-decoration:none}a:hover{text-decoration:underline}
+  body{margin:0;font:14px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg);}
+  .hero{background:linear-gradient(135deg,#0f172a,#3730a3);color:#fff;padding:26px 30px;}
+  .hero h1{margin:0 0 6px;font-size:23px;}
+  .hero p{margin:0;opacity:.9;font-size:13.5px;max-width:900px;}
+  .hero .meta{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;}
+  .hero .pill{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);border-radius:20px;padding:3px 12px;font-size:12px;}
+  .layout{display:flex;gap:24px;align-items:flex-start;padding:22px 30px 80px;}
+  nav{position:sticky;top:16px;width:210px;flex:none;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 10px;font-size:12.5px;}
+  nav b{color:var(--blue);display:block;padding:2px 10px 8px;}
+  nav a{display:block;padding:5px 10px;border-radius:7px;color:#334155;}
+  nav a:hover{background:#eff6ff;color:var(--blue);text-decoration:none;}
+  main{flex:1;min-width:0;}
+  section{margin-bottom:34px;scroll-margin-top:16px;}
+  h2{font-size:18px;color:var(--blue);margin:0 0 6px;padding-bottom:8px;border-bottom:2px solid #eef2f7;}
+  .sd{color:var(--sub);font-size:13px;margin:0 0 14px;}
+  h3{font-size:15px;margin:20px 0 8px;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:14px;}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0;}
+  th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top;}
+  th{background:#f1f5f9;color:#334155;white-space:nowrap;}
+  td.mod{font-weight:700;color:var(--blue);background:#f0f4f8;white-space:nowrap;text-align:center;vertical-align:middle;}
+  .b{display:inline-block;font-size:11px;border-radius:5px;padding:1px 7px;}
+  .b.done{background:#dbeafe;color:#1d4ed8;} .b.ing{background:#dcfce7;color:#15803d;} .b.plan{background:#fef3c7;color:#b45309;}
+  ul{margin:6px 0;padding-left:20px;} li{margin:4px 0;}
+  .ruleblk{background:#fff;border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:8px;padding:12px 16px;margin:10px 0;}
+  .ruleblk.mine{border-left-color:#16a34a;}
+  .ruleblk h4{margin:0 0 6px;font-size:14px;}
+  .ruleblk.mine h4{color:#15803d;}
+  .lk{white-space:nowrap;}
+  .stage{border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:12px 0;background:#fff;}
+  .stage .st{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;}
+  .stage .links{margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;}
+  .stage .links a{background:#eff6ff;border:1px solid #bfdbfe;border-radius:7px;padding:4px 11px;font-size:12.5px;}
+  @media(max-width:820px){.layout{display:block}nav{position:static;width:auto;margin-bottom:16px}}
+</style>
+</head>
+<body>
+  <div class="hero">
+    <h1>📦 SaaS 多商户后台 · 二阶段交付总览</h1>
+    <p>一页串起本期全部交付：数据源（迁移依据）、迁移功能清单、阶段计划（含文档与原型链接）、AI 基本规则与我的规则。</p>
+    <div class="meta">
+      <span class="pill">版本 2026-06-17</span>
+      <span class="pill">实现后台 localhost:3100（V3）</span>
+      <span class="pill">文档门户 localhost:8090 / 8753</span>
+      <span class="pill">迁移来源 SitINR</span>
+    </div>
+  </div>
+  <div class="layout">
+    <nav>
+      <b>目录</b>
+      <a href="#data">1 · 数据源</a>
+      <a href="#feat">2 · 迁移功能清单</a>
+      <a href="#plan">3 · 阶段计划</a>
+      <a href="#airule">4 · AI 基本规则</a>
+      <a href="#myrule">5 · 我的规则</a>
+      <a href="#links">6 · 全部链接索引</a>
+    </nav>
+    <main>
+
+    <!-- 1 数据源 -->
+    <section id="data">
+      <h2>1 · 数据源（迁移依据与数据层）</h2>
+      <p class="sd">SaaS 后台功能由 SitINR 源系统迁移而来；下列为对照依据与功能清单来源。</p>
+      <div class="card">
+      <table>
+        <tr><th width="220">文档</th><th>内容</th></tr>
+        <tr><td><a href="feature-inventory.html" target="_blank">V1 全功能点清单</a></td><td>11 业务域、可搜索的全量功能点</td></tr>
+        <tr><td><a href="sitinr-feature-map.html" target="_blank">SitINR 功能图谱</a></td><td>旧超管源码 700+ 功能</td></tr>
+        <tr><td><a href="sit-tenant-admin-map.html" target="_blank">SIT 租户后台 · 结构图谱</a></td><td>线上 Vue · 5 模块 24 页 + 交互</td></tr>
+        <tr><td><a href="saas-8200-vs-sit-acceptance.html" target="_blank">对比验收清单</a></td><td>逐页 24 项已同步 + 2 处微差异</td></tr>
+        <tr><td><a href="saas-merchant-scope-audit.html" target="_blank">配置弹窗 · 商户作用域审计</a></td><td>单/多商户、3 类缺口</td></tr>
+        <tr><td><a href="migration-progress.html" target="_blank">迁移对照进度</a></td><td>SitINR ↔ SaaS</td></tr>
+        <tr><td><a href="../KNOWLEDGE-BASE.md" target="_blank">项目知识库</a></td><td>MD 源文件、上下文</td></tr>
+        <tr><td>源站逐页功能点（字段级）</td><td>V3 仓库 <code>Ar_V3_LottoPlatformDesign/docs/migration/01-source-inventory.md</code>（SitINR 27 Controller 全盘）</td></tr>
+      </table>
+      </div>
+    </section>
+
+    <!-- 2 迁移功能清单 -->
+    <section id="feat">
+      <h2>2 · 迁移功能清单（本期 24 功能页 · 6 模块）</h2>
+      <p class="sd">「原型」列直达 V3 实现后台（localhost:3100）真实路由。</p>
+      <div class="card"><div id="feattbl"></div></div>
+    </section>
+
+    <!-- 3 阶段计划 -->
+    <section id="plan">
+      <h2>3 · 阶段计划</h2>
+      <p class="sd">交付以 localhost:3100 可点击原型为准；进度以《工作计划书》为权威。</p>
+      <div class="stage">
+        <div class="st"><span class="b done">一阶段 · 已完成</span> 基础迁移</div>
+        <p>会员列表/层级/在线人数/财务、数据分析/运营/租户/系统监控等基础页面落地。</p>
+        <div class="links">
+          <a href="saas-workplan.html" target="_blank">📘 工作计划书</a>
+          <a href="http://localhost:3100" target="_blank">▶ 原型 localhost:3100</a>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="st"><span class="b ing">二阶段 · 进行中（本期）</span> 会员深度迁移 + 推广分发 + 归因 + 导航重组</div>
+        <p>会员管理深度迁移 22 页 + 推广分发配置 4 页 + 8 大 Tab 导航重组 + 多标签页签栏 + 会员详情归因字段/会员列表增强。详见下列本期交付文档。</p>
+        <div class="links">
+          <a href="saas-phase2-product-intro.html" target="_blank">🎯 产品介绍</a>
+          <a href="saas-phase2-prd-full.html" target="_blank">📘 PRD 整合版</a>
+          <a href="saas-phase2-feature-spec.html" target="_blank">📙 功能说明书</a>
+          <a href="saas-phase2-acceptance-cases.html" target="_blank">✅ 验收用例</a>
+          <a href="saas-phase2-schedule.html" target="_blank">📋 排期跟踪表</a>
+          <a href="attribution-matrix-4.6.html" target="_blank">🧭 归因矩阵 §4.6</a>
+          <a href="http://localhost:3100/member/user" target="_blank">▶ 原型 · 会员列表</a>
+          <a href="http://localhost:3100/config-center/vipConfig3" target="_blank">▶ 原型 · VIP 配置</a>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="st"><span class="b plan">三阶段 · 规划中</span> 延后项</div>
+        <p>财务管理（充值通道/收款方式/账变扩展）、游戏管理全线、多维报表（现金/财务/游戏/会员/安全/留存）、系统底层配置（角色类型/参数配置/推送/套餐）等。</p>
+        <div class="links"><a href="saas-workplan.html" target="_blank">📘 工作计划书（含三阶段预留）</a></div>
+      </div>
+    </section>
+
+    <!-- 4 AI 基本规则 -->
+    <section id="airule">
+      <h2>4 · AI 基本规则</h2>
+      <p class="sd">摘自 <a href="../agent.md" target="_blank">agent.md</a> 与 <a href="saas-design-workflow.html" target="_blank">标准工作流</a>，适用于本仓库所有产品梳理 / 文档 / 原型 / 开发协作。</p>
+      <div class="ruleblk"><h4>① 先读上下文</h4>动手前先读 README / handoff / 标准规范 / 关联需求包；已拍板原则优先级高于临时推测。</div>
+      <div class="ruleblk"><h4>② 需求先归档，再做原型</h4>新增需求先建/更新需求包（背景·目标·范围·规则·流程·权限·验收）；原型只表达交互，业务规则不藏在 HTML 里。</div>
+      <div class="ruleblk"><h4>③ 区分三类内容</h4>已拍板规则 / 待确认问题（标阻塞级别）/ 临时假设，三者分开，不混在一个文档。</div>
+      <div class="ruleblk"><h4>④ 维护主骨架</h4>聚焦 SaaS 包网主骨架（平台/商户/品牌/市场模板/域名/渠道/玩家/代理关系/团队权限/四端入口/配置继承），其余功能挂在骨架下、不另起层级。</div>
+      <div class="ruleblk"><h4>⑤ 遵守已拍板产品原则</h4>商户=合同/计费/团队边界；品牌=玩家/钱包/订单/风控/渠道隔离边界；一品牌一币种、不混加不折算；市场模板以国家为唯一键；域名属品牌、渠道只绑同品牌域名；来源归因/代理关系/业绩归集三者分离；不提供转代。调整须先写原因/影响/替代规则并待确认。</div>
+      <div class="ruleblk"><h4>⑥ 配置体系两层模型</h4>仅「市场模板 + 品牌覆盖」两层，不增「品牌组模板/继承层」；同市场品牌组配置=批量写入品牌覆盖；跨市场只展示切换、不同时写多个市场模板。</div>
+      <div class="ruleblk"><h4>⑦ 前端与原型原则</h4>平台/商户端只做电脑版工作台；设计顺序 多品牌多市场 → 多品牌单市场 → 单品牌单市场，复用同一套前端；原型先看原配置再变更，提交前展示作用对象/原值/新值/来源层级/差异；数组配置支持增改移、避免整套误替换。</div>
+      <div class="ruleblk"><h4>⑧ 文件组织</h4>docs/product（长期上下文）· docs/requirements（编号需求包）· docs/standards（规范）· docs/templates（模板）· prototypes（HTML 原型）；不在根目录堆临时文档。</div>
+    </section>
+
+    <!-- 5 我的规则 -->
+    <section id="myrule">
+      <h2>5 · 我的规则（协作约定 / 偏好）</h2>
+      <p class="sd">用户对协作方式的既定要求，与上述 AI 规则并列遵守。</p>
+      <div class="ruleblk mine"><h4>迁移：适配而非照搬</h4>功能迁移与新功能一律遵循 V3 现有约定，绝不逐字照搬参考站（SitINR）。</div>
+      <div class="ruleblk mine"><h4>这类编辑一律页内完成、不弹窗</h4>行编辑 / 字段编辑 / 配置全站页内完成；存量 *FormModal 逐步改页内；动非归属模块前先确认。</div>
+      <div class="ruleblk mine"><h4>迁移新增项挂可移除「新」标</h4>新增列/功能用可一键去除的「新」徽标标记，便于区分、收尾批量去除。</div>
+      <div class="ruleblk mine"><h4>原型为中文版、i18n 无原文键</h4>交付前自查无 i18n 原文键乱码。</div>
+      <div class="ruleblk mine"><h4>不开浏览器盲调，先看代码</h4>卡死/白屏等优先看代码（字典缺项 / hook override / 响应式写法），不开浏览器调试能从代码看出的问题。</div>
+      <div class="ruleblk mine"><h4>交付前自测再呈现</h4>完成后先自测（build + 渲染路径推演）确认，再展示给用户。</div>
+      <div class="ruleblk mine"><h4>模块归属边界</h4>负责 报表 / 风控 / 系统 / 财务 / 游戏管理 5 个一级模块；改 会员 / 运营 / 配置 等其它模块前先确认。</div>
+      <div class="ruleblk mine"><h4>新功能走规范链路、维护性改动走常规流程</h4>新增页面/模块/hook 走 brainstorming→planning→实现→review；改 bug/字段对齐/补 mock/文案走常规流程。</div>
+    </section>
+
+    <!-- 6 链接索引 -->
+    <section id="links">
+      <h2>6 · 全部链接索引</h2>
+      <div class="card">
+      <h3>📑 本期交付文档</h3>
+      <ul>
+        <li><a href="saas-phase2-product-intro.html" target="_blank">二阶段产品介绍</a> — 8 Tab/归因/24 页图文/字段词典/验收/修改记录</li>
+        <li><a href="saas-phase2-prd-full.html" target="_blank">二阶段 PRD · 整合版</a> — 背景/范围/21 条需求/数据字段/验收/里程碑</li>
+        <li><a href="saas-phase2-feature-spec.html" target="_blank">二阶段功能说明书</a> — 逐页交互规格</li>
+        <li><a href="saas-phase2-acceptance-cases.html" target="_blank">二期验收用例</a> — 逐条操作→预期</li>
+        <li><a href="saas-phase2-schedule.html" target="_blank">二阶段排期跟踪表</a> — 24 功能页、可复制进表格</li>
+        <li><a href="attribution-matrix-4.6.html" target="_blank">归因穷举矩阵 §4.6</a> — 5 类型×18 种 + 内联脉络图</li>
+      </ul>
+      <h3>▶ 实现后台原型（localhost:3100）</h3>
+      <ul>
+        <li><a href="http://localhost:3100" target="_blank">应用首页</a></li>
+        <li>会员：<a href="http://localhost:3100/member/user" target="_blank">会员列表</a> · <a href="http://localhost:3100/member/groupManage" target="_blank">分组管理</a> · <a href="http://localhost:3100/member/loginLog" target="_blank">登录日志</a> · <a href="http://localhost:3100/member/smsCode" target="_blank">短信验证码</a></li>
+        <li>运营：<a href="http://localhost:3100/operations/channelConfig" target="_blank">渠道</a> · <a href="http://localhost:3100/operations/domainMgmt" target="_blank">域名</a> · <a href="http://localhost:3100/operations/domainRescue" target="_blank">防封救援</a> · <a href="http://localhost:3100/operations/domainResolveLog" target="_blank">解析检测</a></li>
+        <li>风控：<a href="http://localhost:3100/risk-control/abnormalMember" target="_blank">异常会员</a> · <a href="http://localhost:3100/risk-control/sameIp" target="_blank">同IP/设备</a></li>
+        <li>配置：<a href="http://localhost:3100/config-center/vipConfig3" target="_blank">VIP 配置</a> · <a href="http://localhost:3100/config-center/rebateConfig" target="_blank">返佣配置</a></li>
+        <li>系统：<a href="http://localhost:3100/system/ipBlacklist" target="_blank">IP 黑名单</a></li>
+      </ul>
+      <h3>🏠 门户</h3>
+      <ul><li><a href="../index.html" target="_blank">功能总览与预览中枢</a>（localhost:8090 / 8753）</li></ul>
+      </div>
+    </section>
+
+    </main>
+  </div>
+<script>
+const PROTO='http://localhost:3100';
+const F=[
+ ['会员管理',[
+   ['会员列表','19项搜索·9类目分组表头·14批量操作·自定义列·领取/对上级返佣开关·下钻详情','/member/user'],
+   ['会员详情','27红字归因字段按位注入·10级代理关系图·同IP/设备/指纹下钻风控','/member/user'],
+   ['分组管理','分组+表单+权限融合一页·自动归组阈值·状态badge','/member/groupManage'],
+   ['登录日志','多ID查询·设备与浏览器指纹融合一列·纯查询','/member/loginLog'],
+   ['短信验证码查询','按手机号查验证码/类型/时间/状态·脱敏·无导出','/member/smsCode'],
+ ]],
+ ['运营管理',[
+   ['站内消息','富文本+图片+指定用户表格导入(去重)·预约发送·推送通道','/operations/inboxMessage'],
+   ['公告消息','弹窗/滚动双页签·7语种独立·渠道+商户列','/operations/announcement'],
+   ['轮播图管理','图片上传·三选一跳转(URL/厂商子游戏三级联动/客服)·排序','/operations/banner'],
+   ['渠道管理','渠道名/ID自动生成/域名/编码/类型(官方H5·投放多端)/分发端/赠送/打码倍数','/operations/channelConfig'],
+   ['域名管理','4类型(主/推广/防封谷歌/防封苹果)动态字段·解析状态·CDN','/operations/domainMgmt'],
+   ['防封救援','救援开关/域名(多选)/方案/奖金·被封自动救援领奖','/operations/domainRescue'],
+   ['解析检测记录','周期+手动检测·DNS解析状态·节点/IP/耗时/TTL','/operations/domainResolveLog'],
+   ['VIP升级奖励记录','按会员ID查升级奖励发放/领取','/operations/vipRewardLog'],
+   ['VIP人数','3列10行·人数蓝链下钻·无导出/筛选/商户列','/operations/vipLevelCount'],
+   ['VIP操作日志','明细经验/领取流水·含页面总计·纯查询','/operations/vipOpLog'],
+   ['会员返佣等级','按配置值强制提升·连续使用天数/失效规则·批量删除','/operations/memberRebateLevel'],
+   ['代理审核机制','返佣资格审核·状态badge·修改返佣弹窗(5游戏基础费率)','/operations/agentAudit'],
+   ['昨日返佣等级','五游戏「投注/返佣」双列分组表头·仅导出','/operations/rebateLevelYesterday'],
+ ]],
+ ['风控管理',[
+   ['异常会员处理','多ID查询(≤100)·四项批量处置(回收/保险箱转出/驳回提现/余额扣除)·页脚合计','/risk-control/abnormalMember'],
+   ['同IP/设备检测','4子页签·设备+指纹合并列·人数蓝链下钻','/risk-control/sameIp'],
+ ]],
+ ['配置中心',[
+   ['VIP配置','双页签(等级VIP0–10+经验值)·行内编辑去ID·商户工作区选/保存/发布+模板复制·保存校验','/config-center/vipConfig3'],
+   ['返佣配置','双页签(等级管理0级不可删+费率配置一~六级×五游戏)·同级费率和>4%校验','/config-center/rebateConfig'],
+ ]],
+ ['报表管理',[
+   ['代理报表','周期切换(日/日区间/月/所有)·内部=返利外部=返佣·下级下钻','/report/agentReport'],
+ ]],
+ ['系统管理',[
+   ['IP黑名单','IP(v4/v6)+封禁类型多标签+原因+关联会员·批量导入(粘贴/CSV/XLSX,去重≤500)','/system/ipBlacklist'],
+ ]],
+];
+var rows='<table><tr><th width="86">模块</th><th width="150">页面</th><th>设计要点</th><th width="80">原型</th></tr>';
+F.forEach(function(g){
+  g[1].forEach(function(p,i){
+    rows+='<tr>'+(i===0?'<td class="mod" rowspan="'+g[1].length+'">'+g[0]+'</td>':'')+
+      '<td><b>'+p[0]+'</b></td><td>'+p[1]+'</td>'+
+      '<td><a class="lk" href="'+PROTO+p[2]+'" target="_blank">原型 ↗</a></td></tr>';
+  });
+});
+rows+='</table>';
+document.getElementById('feattbl').innerHTML=rows;
+document.querySelectorAll('nav a').forEach(function(a){a.addEventListener('click',function(e){var t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}});});
+</script>
+</body>
+</html>
