@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-cmn-Hans">
+  <head>
+    <meta charset="UTF-8" />
+    <title>跳转中…</title>
+    <script>
+      // 仅对 lotto-v3 这个 SPA 子应用做深链兜底重定向；其它路径显示普通 404。
+      (function () {
+        var base = '/saas-desigh/prototypes/lotto-v3/';
+        var l = window.location;
+        if (l.pathname.indexOf(base) === 0 && l.pathname !== base) {
+          var deep = l.pathname.slice(base.length);
+          l.replace(
+            l.protocol + '//' + l.host + base + '?/' +
+            deep.replace(/&/g, '~and~') +
+            (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+            l.hash
+          );
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <h1>404</h1>
+    <p>Page not found. <a href="/saas-desigh/">返回首页</a></p>
+  </body>
+</html>
