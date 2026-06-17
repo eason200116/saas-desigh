@@ -61,10 +61,10 @@
     <div class="meta">
       <span class="pill">最后更新 2026-06-10</span>
       <span class="pill">实现后台 localhost:8200</span>
-      <span class="pill">文档预览 localhost:8753</span>
+      <span class="pill">文档预览 与本页同端口</span>
       <span class="pill">迁移来源 SitINR</span>
     </div>
-    <a class="cta" href="http://localhost:8200/?open=hub" target="_blank">▶ 打开实现后台 · 快捷工作台总览</a>
+    <a class="cta" href="member-app/?open=hub#/member-list" target="_blank">▶ 打开实现后台 · 快捷工作台总览</a>
   </div>
 
   <!-- ========== 数据源 ========== -->
@@ -74,10 +74,13 @@
       <h2><span class="ic">📊</span>迁移依据 · 全功能清单</h2>
       <div class="sub">SaaS 后台的功能从 SitINR 源系统迁移而来，下列为对照依据与数据层入口</div>
       <div class="doclist cols2">
-        <a href="http://localhost:8753/docs/feature-inventory.html" target="_blank"><span class="di">📋</span><span class="dt">V1 全功能点清单</span><span class="dd">11 业务域·可搜索</span></a>
-        <a href="http://localhost:8753/docs/sitinr-feature-map.html" target="_blank"><span class="di">🗺</span><span class="dt">SitINR 功能图谱</span><span class="dd">源系统 700+ 功能点</span></a>
-        <a href="http://localhost:8753/docs/migration-progress.html" target="_blank"><span class="di">📊</span><span class="dt">迁移对照进度</span><span class="dd">SitINR ↔ SaaS</span></a>
-        <a href="http://localhost:8753/KNOWLEDGE-BASE.md" target="_blank"><span class="di">📚</span><span class="dt">项目知识库</span><span class="dd">MD 源文件·上下文</span></a>
+        <a href="docs/feature-inventory.html" target="_blank"><span class="di">📋</span><span class="dt">V1 全功能点清单</span><span class="dd">11 业务域·可搜索</span></a>
+        <a href="docs/sitinr-feature-map.html" target="_blank"><span class="di">🗺</span><span class="dt">SitINR 功能图谱</span><span class="dd">旧超管·源码700+功能</span></a>
+        <a href="docs/sit-tenant-admin-map.html" target="_blank"><span class="di">🧭</span><span class="dt">SIT 租户后台 · 结构图谱</span><span class="dd">线上Vue·5模块24页+交互</span></a>
+        <a href="docs/saas-8200-vs-sit-acceptance.html" target="_blank"><span class="di">✅</span><span class="dt">8200 vs SIT · 对比验收清单</span><span class="dd">逐页24项·已同步+2微差异</span></a>
+        <a href="docs/saas-merchant-scope-audit.html" target="_blank"><span class="di">🏬</span><span class="dt">配置弹窗 · 商户作用域审计<span class="tag red">新</span></span><span class="dd">单/多商户·3类缺口</span></a>
+        <a href="docs/migration-progress.html" target="_blank"><span class="di">📊</span><span class="dt">迁移对照进度</span><span class="dd">SitINR ↔ SaaS</span></a>
+        <a href="KNOWLEDGE-BASE.md" target="_blank"><span class="di">📚</span><span class="dt">项目知识库</span><span class="dd">MD 源文件·上下文</span></a>
       </div>
     </div>
   </div>
@@ -89,8 +92,8 @@
     <!-- 实现后台·可点击原型 -->
     <div class="card full">
       <h2><span class="ic">🧩</span>实现后台 · 可点击交互原型 <span class="tag blue">localhost:8200</span></h2>
-      <div class="sub">交互设计已落地为可点击原型；下列功能均真实可用（非占位）。总览入口：<a href="http://localhost:8200/?open=hub" target="_blank">localhost:8200/?open=hub</a>（快捷工作台聚合全部）</div>
-      <div style="background:#f7faff;border:1px solid #e1ebff;border-radius:9px;padding:10px 14px;font-size:12.5px;color:#1d4ed8;margin:2px 0 16px;line-height:1.75">📐 <b>二阶段新建页面：38 项</b> · <b>5 模块 · 14 子分类</b> —— 会员管理 8 / 运营管理 18 / 风控管理 5 / 配置中心 6 / 系统管理 1。详见 <a href="http://localhost:8753/docs/saas-prd-phase2.html" target="_blank" style="color:#1d4ed8;font-weight:700;text-decoration:underline">🆕 二阶段产品文档 · PRD</a>；进度以 <a href="http://localhost:8753/docs/saas-workplan.html#member" target="_blank" style="color:#1d4ed8;text-decoration:underline">工作计划书</a> 为准。</div>
+      <div class="sub">交互设计已落地为可点击原型；下列功能均真实可用（非占位）。总览入口：<a href="member-app/?open=hub#/member-list" target="_blank">localhost:8200/?open=hub</a>（快捷工作台聚合全部）</div>
+      <div style="background:#f7faff;border:1px solid #e1ebff;border-radius:9px;padding:10px 14px;font-size:12.5px;color:#1d4ed8;margin:2px 0 16px;line-height:1.75">📐 <b>二阶段已开放功能页：20 项</b> · <b>6 模块 · 12 子分类</b> —— 会员管理 3 / 运营管理（推广配置仅渠道管理开放；TG频道管理已移除归活动管理）/ 风控管理 2 / 配置中心 5 / 系统管理 1 / 报表管理 2（新「代理报表」子分类：代理报表 · 昨日返佣等级，后者由运营数据迁入）。详见 <a href="docs/saas-prd-phase2.html" target="_blank" style="color:#1d4ed8;font-weight:700;text-decoration:underline">🆕 二阶段产品文档 · PRD</a>；进度以 <a href="docs/saas-workplan.html#member" target="_blank" style="color:#1d4ed8;text-decoration:underline">工作计划书</a> 为准。</div>
 
       <div class="sec-title">▸ 导航与框架</div>
       <ul class="feat">
@@ -102,19 +105,19 @@
       <div class="sec-title">▸ 会员管理</div>
       <ul class="feat">
         <li><b>会员列表</b> <span>17 筛选 + 14 批量操作（拉黑/拉白/禁用/启用/转代理/分组/隐藏/转渠道/导入/导出…）+ 操作列</span></li>
-        <li class="new"><b>会员列表 · 返佣配置开关</b> <span>「领取返佣」「对上级返佣」做成行内 toggle 开关，切换需二次确认；详情新增红字字段同步为红色列（可自定义列显隐）</span></li>
+        <li class="new"><b>会员列表 · 返佣配置开关</b> <span>「领取返佣」「对上级返佣」toggle 开关已并入右侧冻结的<b>操作列</b>（带标签、切换需二次确认）；详情新增红字字段同步为红色列（可自定义列显隐）</span></li>
         <li class="new"><b>会员详情 · 新增字段</b> <span>真实抽屉按指定位置注入红字字段（归因来源/归属层级/代理数据/注册登录），布局不变，邀请人·代理路径可点</span></li>
         <li><b>下级会员列表 / 会员层级</b> <span>对齐 SitINR：批量禁用/启用/拉白/拉黑、解除代理、统计列</span></li>
         <li><b>用户分组 / 分组表单</b> <span>居中卡片表单，保存即在下方生成记录（带 ID/保存时间/删除）</span></li>
-        <li><b>CPF 认证 · 登录日志 · 短信验证码 · 代理关系(DCMA)</b></li>
+        <li><b>登录日志 · 短信验证码</b></li>
       </ul>
 
       <div class="sec-title">▸ 运营 / 风控 / 配置中心</div>
       <ul class="feat">
-        <li><b>运营</b> <span>站内消息·公告消息、轮播图·TG频道、连续签到、VIP奖励/等级人数、合伙人奖励、返佣报表、昨日返佣等级、充值奖励发放、邀请奖励领取</span></li>
-        <li class="new"><b>运营 · 推广分发配置</b> <span><b>配置向导</b>（5 阶段分步：域名→打包→渠道→埋点→投放）、PWA配置、域名管理（主/推广/落地/防封页 + 防封救援）、打包管理（iOS/安卓 包·壳包 渠道包上传）、埋点管理（FB/TikTok/谷歌/Kwai 平台页签 + Click/CAPI 回传）、渠道管理</span></li>
-        <li><b>风控</b> <span>异常会员处理、互刷名单、相同IP、提现限制名单、刷通道清单、IP黑名单</span></li>
-        <li><b>配置中心</b> <span>VIP等级/经验、充值等级、会员返佣等级、代理审核机制、分组权限</span></li>
+        <li><b>运营</b> <span>站内消息·公告消息、轮播图·TG频道、VIP奖励/等级人数、返佣报表</span></li>
+        <li class="new"><b>运营 · 推广分发配置</b> <span>PWA配置、域名管理（主/推广/落地/防封页 + 防封救援）、打包管理（iOS/安卓 包·壳包 渠道包上传）、埋点管理（FB/TikTok/谷歌/Kwai 平台页签 + Click/CAPI 回传）、渠道管理</span></li>
+        <li><b>风控</b> <span>异常会员处理、同IP/设备检测、IP黑名单</span></li>
+        <li><b>配置中心</b> <span>VIP等级/经验、会员返佣等级、代理审核机制、分组权限</span></li>
       </ul>
 
       <div class="sec-title">▸ 游戏管理</div>
@@ -127,7 +130,7 @@
         <li><span>查询（按条件过滤、保留输入）· 重置 · 导出 CSV · 翻页 · 排序 · 时间快捷 · 说明</span></li>
         <li><span>批量操作（勾选拦截 + 二次确认 + 执行）· 新增/编辑弹窗 · 详情弹窗 · 删除 · 状态切换</span></li>
         <li class="new"><b>已对齐真实会员列表</b> <span>商户蓝 pill、会员ID/IP 蓝链接+复制、金额右对齐+表头点击排序、页面合计/总计双汇总行、快捷时间、<b>高级筛选</b>(前5主筛选+其余折叠) / <b>收起</b>、<b>自定义列</b>(勾选实时显隐)、全选当前页 + 跳至页</span></li>
-        <li class="new"><b>表单弹窗 · 简洁自适应</b> <span>新增/编辑/详情弹窗统一为自适应尺寸（贴合内容、不留白）；<b>图片字段</b>（图片/封面/图标等）自动渲染为<b>上传控件</b>：点击选图 → 即时预览缩略图 → ✕ 移除</span></li>
+        <li class="new"><b>表单弹窗 · 简洁自适应</b> <span>新增/编辑/详情弹窗统一为自适应尺寸（贴合内容、不留白）；<b>图片字段</b>（图片/封面/图标等）自动渲染为<b>上传控件</b>：点击选图 → 即时预览缩略图 → ✕ 移除；<b>图片悬停预览</b>：列表/详情中的图片缩略图及已上传图，鼠标移入即浮层放大预览</span></li>
       </ul>
     </div>
 
@@ -136,16 +139,19 @@
       <h2><span class="ic">📐</span>设计文档</h2>
       <div class="sub">体系流程 · 字段规格 · 计划书</div>
       <div class="doclist">
-        <a href="http://localhost:8753/docs/saas-prd-phase2.html" target="_blank" style="background:#eff6ff;border-color:#bfdbfe"><span class="di">🆕</span><span class="dt">二阶段产品文档 · PRD</span><span class="dd">38页面·推广分发·验收</span></a>
-        <a href="http://localhost:8753/docs/saas-workplan.html" target="_blank"><span class="di">📘</span><span class="dt">SaaS 工作计划书</span><span class="dd">进度权威·含一/二/三阶段</span></a>
-        <a href="http://localhost:8753/docs/group-to-member-hierarchy.html" target="_blank"><span class="di">🏛</span><span class="dt">集团→会员 层级体系</span><span class="dd">已对外发布</span></a>
-        <a href="http://localhost:8753/docs/v2-core-flows.html" target="_blank"><span class="di">🔀</span><span class="dt">V2 核心业务流程</span></a>
-        <a href="http://localhost:8753/docs/member-detail-field-glossary-full.html?new" target="_blank"><span class="di">🟥</span><span class="dt">会员详情 · 新增字段</span><span class="dd">红字=新增</span></a>
-        <a href="http://localhost:8753/docs/member-detail-fields.html" target="_blank"><span class="di">📋</span><span class="dt">会员详情 · 字段补充</span></a>
-        <a href="http://localhost:8753/docs/member-detail-field-glossary.html" target="_blank"><span class="di">📖</span><span class="dt">会员详情 · 新增字段名词解释</span></a>
-        <a href="http://localhost:8753/docs/member-detail-field-glossary-full.html" target="_blank"><span class="di">📚</span><span class="dt">会员详情 · 全字段说明</span><span class="dd">名词/场景/异常</span></a>
-        <a href="http://localhost:8753/docs/attribution-flow.html" target="_blank"><span class="di">📊</span><span class="dt">归因来源 · 判定流程图</span><span class="dd">来源归因逻辑</span></a>
-        <a href="http://localhost:8753/docs/promo-distribution-config.html" target="_blank"><span class="di">📦</span><span class="dt">推广分发配置 · 完整说明</span><span class="dd">SOP/矩阵/回传</span></a>
+        <a href="docs/saas-prd-phase2.html" target="_blank" style="background:#eff6ff;border-color:#bfdbfe"><span class="di">🆕</span><span class="dt">二阶段产品文档 · PRD</span><span class="dd">38页面·推广分发·验收</span></a>
+        <a href="docs/saas-phase2-feature-spec.html" target="_blank" style="background:#eff6ff;border-color:#bfdbfe"><span class="di">📙</span><span class="dt">二阶段功能说明书</span><span class="dd">逐页交互规格·可点验</span></a>
+        <a href="docs/saas-workplan.html" target="_blank"><span class="di">📘</span><span class="dt">SaaS 工作计划书</span><span class="dd">进度权威·含一/二/三阶段</span></a>
+        <a href="docs/saas-design-workflow.html" target="_blank"><span class="di">🔁</span><span class="dt">标准工作流<span class="tag red">新</span></span><span class="dd">7步流程·红线·四处同步</span></a>
+        <a href="docs/group-to-member-hierarchy.html" target="_blank"><span class="di">🏛</span><span class="dt">集团→会员 层级体系</span><span class="dd">已对外发布</span></a>
+        <a href="docs/v2-core-flows.html" target="_blank"><span class="di">🔀</span><span class="dt">V2 核心业务流程</span></a>
+        <a href="docs/member-detail-field-glossary-full.html?new" target="_blank"><span class="di">🟥</span><span class="dt">会员详情 · 新增字段</span><span class="dd">红字=新增</span></a>
+        <a href="docs/member-detail-fields.html" target="_blank"><span class="di">📋</span><span class="dt">会员详情 · 字段补充</span></a>
+        <a href="docs/glossary.html" target="_blank"><span class="di">📖</span><span class="dt">会员详情 · 新增字段名词解释</span></a>
+        <a href="docs/member-detail-field-glossary-full.html" target="_blank"><span class="di">📚</span><span class="dt">会员详情 · 全字段说明</span><span class="dd">名词/场景/异常</span></a>
+        <a href="docs/attribution-flow.html" target="_blank"><span class="di">📊</span><span class="dt">归因来源 · 判定流程图</span><span class="dd">来源归因逻辑</span></a>
+        <a href="docs/promo-distribution-config.html" target="_blank"><span class="di">📦</span><span class="dt">推广分发配置 · 完整说明</span><span class="dd">SOP/矩阵/回传</span></a>
+        <a href="docs/ai-prompt-template.html" target="_blank"><span class="di">🤖</span><span class="dt">产品→AI 提需求范本<span class="tag red">新</span></span><span class="dd">8要素+6场景·可复制</span></a>
       </div>
     </div>
 
@@ -154,11 +160,11 @@
       <h2><span class="ic">🎨</span>独立原型</h2>
       <div class="sub">早期 / 专题交互原型</div>
       <div class="doclist">
-        <a href="http://localhost:8753/prototypes/member-migration-flat.html" target="_blank"><span class="di">🧭</span><span class="dt">会员/运营/配置 导航结构</span></a>
-        <a href="http://localhost:8753/prototypes/group-admin.html" target="_blank"><span class="di">🏢</span><span class="dt">集团后台</span></a>
-        <a href="http://localhost:8753/prototypes/risk-config-center.html" target="_blank"><span class="di">🛡</span><span class="dt">风控配置中心</span></a>
-        <a href="http://localhost:8753/prototypes/vip-config-center.html" target="_blank"><span class="di">💎</span><span class="dt">VIP 配置中心</span></a>
-        <a href="http://localhost:8753/prototypes/finance-local-payment-account.html" target="_blank"><span class="di">🏦</span><span class="dt">本地收款账号管理</span></a>
+        <a href="prototypes/member-migration-flat.html" target="_blank"><span class="di">🧭</span><span class="dt">会员/运营/配置 导航结构</span></a>
+        <a href="prototypes/group-admin.html" target="_blank"><span class="di">🏢</span><span class="dt">集团后台</span></a>
+        <a href="prototypes/risk-config-center.html" target="_blank"><span class="di">🛡</span><span class="dt">风控配置中心</span></a>
+        <a href="prototypes/vip-config-center.html" target="_blank"><span class="di">💎</span><span class="dt">VIP 配置中心</span></a>
+        <a href="prototypes/finance-local-payment-account.html" target="_blank"><span class="di">🏦</span><span class="dt">本地收款账号管理</span></a>
       </div>
     </div>
 
@@ -168,7 +174,8 @@
     <b>使用说明：</b><br>
     · <b>实现后台（localhost:8200）</b>是可点击的交互原型 —— 交互设计的落地。改动后用<b>普通刷新（Cmd+R）</b>，勿用 Cmd+Shift+R（会触发登录态过期需重登 admin/123456）。<br>
     · <b>会员详情新增字段</b>：在任意会员列表点「详情」或点会员ID，打开详情抽屉即可见红字新增字段（按文档指定位置插入，原生布局不变）。<br>
-    · 本页与所有文档由 <b>localhost:8753</b> 提供；实现后台由 <b>localhost:8200</b> 提供，两个本地服务需保持运行。<br>
+    · 本页与所有文档由<b>同一静态服务</b>提供（文档链接已用相对路径，任意端口可用，如 localhost:8090）；实现后台由 <b>localhost:8200</b> 提供。<br>
+    · <b>⚠️ 文档门户 / 预览页（8090）重新打包或更新后</b>，若看到旧版或报错，请按 <b>Cmd+Shift+R 硬刷新</b>本页再查看（避免加载旧缓存）。<b>仅限文档/预览页</b>——8200 实现后台仍用<b>普通刷新（Cmd+R）</b>，见上。<br>
     · <b>对外只读发布（GitHub Pages）：</b>
       <a href="https://eason200116.github.io/saas-desigh/docs/group-to-member-hierarchy.html" target="_blank">层级体系</a>（短链 <a href="https://tinyurl.com/2bfqszhx" target="_blank">tinyurl.com/2bfqszhx</a>）
       · <a href="https://eason200116.github.io/saas-desigh/docs/member-detail-field-glossary-full.html?new" target="_blank">会员详情新增字段</a>（短链 <a href="https://tinyurl.com/276bbqmx" target="_blank">tinyurl.com/276bbqmx</a>）
