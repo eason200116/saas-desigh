@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>二阶段 · 新增字段介绍</title>
+<style>
+  :root{--accent:#2563eb;--ink:#1f2328;--sub:#64748b;--line:#e5e7eb;--bg:#f5f6f8}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
+  .topbar{position:sticky;top:0;z-index:20;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+  header.top{background:linear-gradient(90deg,#1e293b,#312e81);color:#fff;padding:13px 28px;display:flex;align-items:center;gap:14px}
+  header.top h1{margin:0;font-size:18px}
+  header.top .ver{font-size:12px;opacity:.75;margin-top:3px}
+  header.top .htxt{flex:1;min-width:0}
+  nav.toc{background:#fff;border-bottom:1px solid var(--line);padding:8px 22px;display:flex;gap:8px;flex-wrap:wrap}
+  nav.toc a{font-size:13px;font-weight:600;color:#334155;text-decoration:none;padding:5px 14px;border-radius:20px;background:#f1f5f9}
+  nav.toc a:hover{background:#e0e7ff;color:var(--accent)}
+  nav.toc a.active{background:#312e81;color:#fff}
+  nav.toc a.nav-proto{margin-left:auto;background:#22c55e;color:#fff}
+  nav.toc a.nav-proto:hover{background:#16a34a;color:#fff}
+  .wrap{max-width:1180px;margin:0 auto;padding:20px 22px 90px}
+  .secttl{font-size:22px;margin:14px 0 4px;padding:6px 0 8px;border-bottom:3px solid var(--accent);color:#1e293b}
+  .secsub{color:var(--sub);font-size:13px;margin:0 0 6px}
+  h2{font-size:18px;border-left:5px solid var(--accent);padding-left:12px;margin:30px 0 10px}
+  h3{font-size:15px;margin:18px 0 6px;color:#111827}
+  .lead{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:13px 18px;font-size:13.5px;line-height:1.85;margin:12px 0}
+  table{width:100%;border-collapse:collapse;font-size:13px;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:10px 0}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:#f1f5f9;color:#334155;font-weight:700;white-space:nowrap}
+  td.f{font-weight:600;color:#111827;white-space:nowrap}
+  ul{margin:8px 0;padding-left:20px}li{margin:4px 0}
+  .pill{display:inline-block;font-size:12px;padding:1px 9px;border-radius:20px;background:#eef2ff;color:#3730a3;margin:2px 4px 2px 0}
+  .note{background:#fffbeb;border:1px solid #fde68a;border-left:3px solid #f59e0b;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#92400e;margin:12px 0}
+  .muted{color:var(--sub);font-size:12.5px}
+  b.red{color:#dc2626}b.k{color:#b45309}
+  .tag{font-size:10px;border-radius:3px;padding:0 5px;margin-left:5px;font-weight:700;vertical-align:1px}
+  .tag.new{background:#faf4ec;color:#c08a4a}.tag.grp{background:#fee2e2;color:#b91c1c}
+  .legend span{display:inline-block;margin-right:16px;font-size:13px}
+  .pcard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:12px 0;box-shadow:0 1px 3px rgba(0,0,0,.03);display:flex;gap:18px}
+  .pcard .shot{width:380px;max-width:40%;flex:none}
+  .pcard .shot img{width:100%;border:1px solid var(--line);border-radius:8px;cursor:zoom-in;display:block;position:sticky;top:70px}
+  .pcard .info{flex:1;min-width:0}
+  .pcard.nopic{display:block}
+  .pcard .nm{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .pcard .route{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#0f172a;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;padding:1px 7px}
+  .pcard .use{color:var(--sub);font-size:12.5px;margin:5px 0 8px}
+  ul.ctrl{margin:0;padding-left:0;list-style:none;font-size:13px;line-height:1.7}
+  ul.ctrl li{margin:5px 0;padding-left:2px}
+  .lbl{display:inline-block;font-size:11px;font-weight:700;color:#fff;border-radius:4px;padding:1px 7px;margin-right:6px;vertical-align:1px}
+  .lbl.flt{background:#0ea5e9}.lbl.col{background:#64748b}.lbl.tb{background:#7c3aed}.lbl.act{background:#d97706}.lbl.frm{background:#16a34a}.lbl.sp{background:#dc2626}.lbl.tab{background:#1e293b}
+  .badge{font-size:10px;border-radius:3px;padding:1px 6px;font-weight:700}
+  .badge.new{background:#dcfce7;color:#15803d}.badge.built{background:#dbeafe;color:#1d4ed8}
+  code{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;padding:1px 6px;font-size:12px}
+  tr.mod td{background:#eef4ff;color:var(--accent);font-weight:700}
+  .acc-built{font-size:10px;background:#dbeafe;color:#1d4ed8;border-radius:3px;padding:0 5px;font-weight:700;margin-left:4px}
+  .hubgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:14px}
+  .hubcard{display:block;background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 20px;text-decoration:none;color:inherit;box-shadow:0 1px 4px rgba(0,0,0,.04);transition:.12s}
+  .hubcard:hover{border-color:var(--accent);box-shadow:0 4px 14px rgba(37,99,235,.12);transform:translateY(-1px)}
+  .hubcard .hc-t{font-size:16px;font-weight:700;color:#1e293b}
+  .hubcard .hc-d{color:var(--sub);font-size:12.5px;margin-top:6px;line-height:1.6}
+  #lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;align-items:center;justify-content:center;cursor:zoom-out}
+  #lb img{max-width:94vw;max-height:94vh;border-radius:6px;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+  @media(max-width:860px){.pcard{flex-direction:column}.pcard .shot{width:100%;max-width:100%}.pcard .shot img{position:static}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <header class="top"><div class="htxt"><h1>📚 二阶段 · 产品文档</h1><div class="ver">每板块独立页 · 以 3100 原型为准</div></div></header>
+  <nav class="toc"><a href="phase2-product-doc.html">🏠 目录</a><a href="phase2-doc-prd.html">① PRD · 目的与框架</a><a href="phase2-doc-interaction.html">② 交互介绍</a><a href="phase2-doc-fields.html" class="active">③ 新增字段介绍</a><a href="phase2-doc-attribution.html">④ 归因说明</a><a href="phase2-doc-accept.html">⑤ 验收口径</a><a href="phase2-doc-changelog.html">⑥ 修改记录</a><a class="nav-proto" href="http://localhost:3100/home/welcome" target="_blank">▶ 原型图</a></nav>
+</div>
+<div class="wrap">
+<div class="secttl">③ 新增字段介绍</div>
+<div class="secsub">会员列表 + 会员详情新增/调整字段，统一 字段 / 定义 / 主要用途 三列 · 口径以 3100 原型为准。</div>
+<div class="lead">
+    本文汇总二阶段<b>会员列表</b>与<b>会员详情</b>新增/调整的字段，统一按 <b>字段 · 定义 · 主要用途</b> 三列。角标口径：
+    <span class="legend" style="display:block;margin-top:6px">
+      <span><b class="tag new">新</b> 本轮新增/调整/迁移进 V3（含从源站迁入）</span>
+      <span><b>移</b> 原有功能移动了入口</span>
+      <span><b>原</b> V3 原有内容（不标）</span>
+    </span>
+  </div>
+
+  <h2>一、会员列表 · 新增列（10）</h2>
+  <p class="muted">原型以低调「新」角标标识；表头为扁平单行。<b>领取返佣</b>开关为<b>原有列</b>（未标新），<b>对上级返佣</b>为新增行内开关。</p>
+  <table>
+    <tr><th style="width:160px">字段</th><th>定义</th><th style="width:220px">主要用途</th></tr>
+    <tr><td class="f">注册域名 <span class="tag new">新</span></td><td>注册时进入的域名（属本商户）</td><td>来源上下文、渠道归因</td></tr>
+    <tr><td class="f">注册设备号 <span class="tag new">新</span></td><td>注册时稳定设备 ID（App 端有值，网页端显 -）</td><td>多开/养号识别、设备维度风控</td></tr>
+    <tr><td class="f">注册浏览器指纹 <span class="tag new">新</span></td><td>注册时浏览器指纹（网页端有值，App 端显 -）</td><td>网页端设备指纹风控</td></tr>
+    <tr><td class="f">上次登录设备 <span class="tag new">新</span></td><td>最近一次登录的客户端设备</td><td>设备分布分析、端侧问题定位</td></tr>
+    <tr><td class="f">上次登录设备号 <span class="tag new">新</span></td><td>最近一次登录的稳定设备 ID</td><td>登录设备维度风控</td></tr>
+    <tr><td class="f">上次登录浏览器指纹 <span class="tag new">新</span></td><td>最近一次登录的浏览器指纹</td><td>网页端登录风控</td></tr>
+    <tr><td class="f">一级代理 <span class="tag new">新</span></td><td>该会员所在代理树的顶级（根）代理</td><td>代理树构建、归属判定</td></tr>
+    <tr><td class="f">直接上级代理 <span class="tag new">新</span></td><td>代理树中该会员的直接父节点</td><td>佣金归属、代理树</td></tr>
+    <tr><td class="f">佣金模式 <span class="tag new">新</span></td><td>代理收益方式：盈亏返利 / 流水返佣</td><td>返佣结算口径</td></tr>
+    <tr><td class="f">对上级返佣 <span class="tag new">新</span></td><td><b>行内开关</b>：该会员有效投注是否为上级计提返佣（二次确认后翻转 + Toast）</td><td>内部号/测试号关闭，避免污染代理结算</td></tr>
+  </table>
+
+  <h2>二、会员详情 · 新增字段（按面板分节）</h2>
+  <p class="muted">详情为单页滚动；红字按指定位置注入、布局不变。标 <b class="tag grp">整组新增</b> 的面板为本轮整段迁入 V3。归因判定逻辑见《归因说明》。</p>
+
+  <h3>② 归因来源组 <span class="tag grp">整组新增</span></h3>
+  <table>
+    <tr><th style="width:150px">字段</th><th>定义</th><th style="width:210px">主要用途</th></tr>
+    <tr><td class="f">主归因 <span class="tag new">新</span></td><td>注册来源唯一归类：广告投放 / 邀请来源 / 官方直推 / 自然流量</td><td>获客成本核算、渠道质量、ROI 口径</td></tr>
+    <tr><td class="f">推广三方类型 <span class="tag new">新</span></td><td>识别出的推广三方类型（Facebook / Adjust / TikTok…）</td><td>平台维度投放效果与对账</td></tr>
+    <tr><td class="f">注册渠道 <span class="tag new">新</span></td><td>注册时命中的后台定义渠道（如 apk-fb-me001-01）</td><td>渠道维度注册转化与结算</td></tr>
+    <tr><td class="f">登录渠道 <span class="tag new">新</span></td><td>最近一次登录命中的渠道 ID</td><td>活跃来源分析、再营销渠道</td></tr>
+    <tr><td class="f">搜索引擎 <span class="tag new">新</span></td><td>由 referrer 来源域名识别的搜索引擎</td><td>SEO 效果、自然流量质量</td></tr>
+    <tr><td class="f">邀请码 <span class="tag new">新</span></td><td>注册实际使用的邀请码，关联邀请人 / 代理</td><td>代理树绑定、裂变奖励触发</td></tr>
+    <tr><td class="f">邀请类型 <span class="tag new">新</span></td><td>正常邀请 / 转盘活动邀请 / 邀请任务</td><td>区分个人邀请与活动裂变</td></tr>
+  </table>
+
+  <h3>⑩ 注册信息（归因）组 <span class="tag grp">整组新增</span></h3>
+  <table>
+    <tr><th style="width:150px">字段</th><th>定义</th><th style="width:210px">主要用途</th></tr>
+    <tr><td class="f">注册设备 <span class="tag new">新</span></td><td>注册时使用的设备 / 客户端</td><td>注册客户端转化分析、APP 渗透</td></tr>
+    <tr><td class="f">注册设备号 <span class="tag new">新</span></td><td>注册时稳定设备 ID（与指纹分开两列）</td><td>多开/养号识别、设备风控</td></tr>
+    <tr><td class="f">注册浏览器指纹 <span class="tag new">新</span></td><td>注册时浏览器指纹（与设备号分开两列）</td><td>网页端设备指纹风控</td></tr>
+    <tr><td class="f">注册包名 <span class="tag new">新</span></td><td>注册 App 包名 / 版本</td><td>渠道包追踪、版本分析</td></tr>
+    <tr><td class="f">注册域名 <span class="tag new">新</span></td><td>注册时进入的域名</td><td>来源上下文</td></tr>
+    <tr><td class="f">同设备注册会员数 <span class="tag new">新</span></td><td>与本会员同一设备注册的账号总数（可点击下钻风控）</td><td>批量注册 / 工作室识别</td></tr>
+  </table>
+
+  <h3>⑥ 代理数据组 <span class="tag grp">整组新增</span></h3>
+  <table>
+    <tr><th style="width:150px">字段</th><th>定义</th><th style="width:210px">主要用途</th></tr>
+    <tr><td class="f">返佣状态 <span class="tag new">新</span></td><td>是否计提返佣（板块表头开关）</td><td>返佣资格控制</td></tr>
+    <tr><td class="f">对上级返佣 <span class="tag new">新</span></td><td>有效投注是否为上级计提返佣（板块表头开关）</td><td>内部号/测试号关闭，避免污染结算</td></tr>
+    <tr><td class="f">一级代理 <span class="tag new">新</span></td><td>所在代理树的顶级（根）代理</td><td>代理树构建、归属</td></tr>
+    <tr><td class="f">直接上级代理 <span class="tag new">新</span></td><td>代理树中该会员的直接父节点</td><td>佣金归属</td></tr>
+    <tr><td class="f">直属下级数 / 团队下级数 <span class="tag new">新</span></td><td>直接下级人数 / 团队总下级人数</td><td>团队规模、业绩统计</td></tr>
+    <tr><td class="f">累计返佣 / 邀请奖励 / 合伙人奖励 <span class="tag new">新</span></td><td>历史累计返佣 / 代理邀请奖励 / 合伙人奖励</td><td>代理收益核算</td></tr>
+    <tr><td class="f">佣金模式 <span class="tag new">新</span></td><td>代理收益方式：盈亏返利 / 流水返佣</td><td>返佣结算口径</td></tr>
+    <tr><td class="f">昨日返佣等级 <span class="tag new">新</span></td><td>昨日返佣等级档位</td><td>等级化激励</td></tr>
+    <tr><td colspan="3" class="muted">另含 <b>10 级代理关系链</b>（节点可点击复制代理ID）与「代理明细」展开。</td></tr>
+  </table>
+
+  <h3>⑪ 登录信息组 <span class="tag grp">整组新增</span></h3>
+  <table>
+    <tr><th style="width:150px">字段</th><th>定义</th><th style="width:210px">主要用途</th></tr>
+    <tr><td class="f">上次登录设备 <span class="tag new">新</span></td><td>最近一次访问的设备：pc / h5 / 安卓 / ios / 壳包 / pwa</td><td>设备分布、端侧定位</td></tr>
+    <tr><td class="f">上次登录设备号 <span class="tag new">新</span></td><td>最近一次登录的稳定设备 ID（与指纹分开两列）</td><td>登录设备风控</td></tr>
+    <tr><td class="f">上次登录浏览器指纹 <span class="tag new">新</span></td><td>最近一次登录的浏览器指纹（与设备号分开两列）</td><td>网页端登录风控</td></tr>
+    <tr><td class="f">上次登录域名 <span class="tag new">新</span></td><td>最近一次登录进入的域名</td><td>来源上下文</td></tr>
+    <tr><td class="f">上次登录包名 <span class="tag new">新</span></td><td>最近一次登录的 App 包名</td><td>渠道包追踪</td></tr>
+    <tr><td class="f">同设备登录数 / 同指纹登录数 <span class="tag new">新</span></td><td>同设备 / 同指纹登录过的账号总数（可点击下钻风控）</td><td>关联账号 / 工作室识别</td></tr>
+  </table>
+
+  <h2>三、口径备注</h2>
+  <ul>
+    <li>「新」角标为<b>迁移期临时标记</b>，迁移收尾时可一键批量去除（原型 <code>NEW_MARK_ENABLED</code> 开关）。</li>
+    <li>设备号与浏览器指纹<b>拆为两列</b>，按端展示：App 端给设备号、网页端给指纹，另一项显「-」。</li>
+    <li>所有「同IP / 同设备 / 同指纹（注册 &amp; 登录）」数值均可点击，下钻「风控 · 同IP/设备检测」对应维度并带入该会员。</li>
+    <li>字段在页面的<b>交互行为</b>见《交互介绍》；归因判定逻辑与穷举矩阵见《归因说明》。</li>
+  </ul>
+</div>
+
+<div id="lb" onclick="this.style.display='none'"><img src="" alt=""></div>
+<script>
+  document.querySelectorAll('.pcard .shot img').forEach(function(im){im.addEventListener('click',function(){var lb=document.getElementById('lb');lb.querySelector('img').src=im.src;lb.style.display='flex';});});
+  window.addEventListener('message',function(ev){var d=ev.data;if(!d||typeof d.__frameH!=='number')return;document.querySelectorAll('iframe').forEach(function(f){if(f.contentWindow===ev.source){f.style.height=(d.__frameH+24)+'px';f.scrolling='no';}});});
+</script>
+</body>
+</html>

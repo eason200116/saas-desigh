@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>二阶段 · 验收口径</title>
+<style>
+  :root{--accent:#2563eb;--ink:#1f2328;--sub:#64748b;--line:#e5e7eb;--bg:#f5f6f8}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
+  .topbar{position:sticky;top:0;z-index:20;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+  header.top{background:linear-gradient(90deg,#1e293b,#312e81);color:#fff;padding:13px 28px;display:flex;align-items:center;gap:14px}
+  header.top h1{margin:0;font-size:18px}
+  header.top .ver{font-size:12px;opacity:.75;margin-top:3px}
+  header.top .htxt{flex:1;min-width:0}
+  nav.toc{background:#fff;border-bottom:1px solid var(--line);padding:8px 22px;display:flex;gap:8px;flex-wrap:wrap}
+  nav.toc a{font-size:13px;font-weight:600;color:#334155;text-decoration:none;padding:5px 14px;border-radius:20px;background:#f1f5f9}
+  nav.toc a:hover{background:#e0e7ff;color:var(--accent)}
+  nav.toc a.active{background:#312e81;color:#fff}
+  nav.toc a.nav-proto{margin-left:auto;background:#22c55e;color:#fff}
+  nav.toc a.nav-proto:hover{background:#16a34a;color:#fff}
+  .wrap{max-width:1180px;margin:0 auto;padding:20px 22px 90px}
+  .secttl{font-size:22px;margin:14px 0 4px;padding:6px 0 8px;border-bottom:3px solid var(--accent);color:#1e293b}
+  .secsub{color:var(--sub);font-size:13px;margin:0 0 6px}
+  h2{font-size:18px;border-left:5px solid var(--accent);padding-left:12px;margin:30px 0 10px}
+  h3{font-size:15px;margin:18px 0 6px;color:#111827}
+  .lead{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:13px 18px;font-size:13.5px;line-height:1.85;margin:12px 0}
+  table{width:100%;border-collapse:collapse;font-size:13px;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:10px 0}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:#f1f5f9;color:#334155;font-weight:700;white-space:nowrap}
+  td.f{font-weight:600;color:#111827;white-space:nowrap}
+  ul{margin:8px 0;padding-left:20px}li{margin:4px 0}
+  .pill{display:inline-block;font-size:12px;padding:1px 9px;border-radius:20px;background:#eef2ff;color:#3730a3;margin:2px 4px 2px 0}
+  .note{background:#fffbeb;border:1px solid #fde68a;border-left:3px solid #f59e0b;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#92400e;margin:12px 0}
+  .muted{color:var(--sub);font-size:12.5px}
+  b.red{color:#dc2626}b.k{color:#b45309}
+  .tag{font-size:10px;border-radius:3px;padding:0 5px;margin-left:5px;font-weight:700;vertical-align:1px}
+  .tag.new{background:#faf4ec;color:#c08a4a}.tag.grp{background:#fee2e2;color:#b91c1c}
+  .legend span{display:inline-block;margin-right:16px;font-size:13px}
+  .pcard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:12px 0;box-shadow:0 1px 3px rgba(0,0,0,.03);display:flex;gap:18px}
+  .pcard .shot{width:380px;max-width:40%;flex:none}
+  .pcard .shot img{width:100%;border:1px solid var(--line);border-radius:8px;cursor:zoom-in;display:block;position:sticky;top:70px}
+  .pcard .info{flex:1;min-width:0}
+  .pcard.nopic{display:block}
+  .pcard .nm{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .pcard .route{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#0f172a;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;padding:1px 7px}
+  .pcard .use{color:var(--sub);font-size:12.5px;margin:5px 0 8px}
+  ul.ctrl{margin:0;padding-left:0;list-style:none;font-size:13px;line-height:1.7}
+  ul.ctrl li{margin:5px 0;padding-left:2px}
+  .lbl{display:inline-block;font-size:11px;font-weight:700;color:#fff;border-radius:4px;padding:1px 7px;margin-right:6px;vertical-align:1px}
+  .lbl.flt{background:#0ea5e9}.lbl.col{background:#64748b}.lbl.tb{background:#7c3aed}.lbl.act{background:#d97706}.lbl.frm{background:#16a34a}.lbl.sp{background:#dc2626}.lbl.tab{background:#1e293b}
+  .badge{font-size:10px;border-radius:3px;padding:1px 6px;font-weight:700}
+  .badge.new{background:#dcfce7;color:#15803d}.badge.built{background:#dbeafe;color:#1d4ed8}
+  code{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;padding:1px 6px;font-size:12px}
+  tr.mod td{background:#eef4ff;color:var(--accent);font-weight:700}
+  .acc-built{font-size:10px;background:#dbeafe;color:#1d4ed8;border-radius:3px;padding:0 5px;font-weight:700;margin-left:4px}
+  .hubgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:14px}
+  .hubcard{display:block;background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 20px;text-decoration:none;color:inherit;box-shadow:0 1px 4px rgba(0,0,0,.04);transition:.12s}
+  .hubcard:hover{border-color:var(--accent);box-shadow:0 4px 14px rgba(37,99,235,.12);transform:translateY(-1px)}
+  .hubcard .hc-t{font-size:16px;font-weight:700;color:#1e293b}
+  .hubcard .hc-d{color:var(--sub);font-size:12.5px;margin-top:6px;line-height:1.6}
+  #lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;align-items:center;justify-content:center;cursor:zoom-out}
+  #lb img{max-width:94vw;max-height:94vh;border-radius:6px;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+  @media(max-width:860px){.pcard{flex-direction:column}.pcard .shot{width:100%;max-width:100%}.pcard .shot img{position:static}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <header class="top"><div class="htxt"><h1>📚 二阶段 · 产品文档</h1><div class="ver">每板块独立页 · 以 3100 原型为准</div></div></header>
+  <nav class="toc"><a href="phase2-product-doc.html">🏠 目录</a><a href="phase2-doc-prd.html">① PRD · 目的与框架</a><a href="phase2-doc-interaction.html">② 交互介绍</a><a href="phase2-doc-fields.html">③ 新增字段介绍</a><a href="phase2-doc-attribution.html">④ 归因说明</a><a href="phase2-doc-accept.html" class="active">⑤ 验收口径</a><a href="phase2-doc-changelog.html">⑥ 修改记录</a><a class="nav-proto" href="http://localhost:3100/home/welcome" target="_blank">▶ 原型图</a></nav>
+</div>
+<div class="wrap">
+<div class="secttl">⑤ 验收口径</div>
+<div class="secsub">5 维度汇总 + 30 条验收用例清单（路由对到 3100）。</div>
+<h2>汇总 · 验收 5 维度</h2>
+  <p class="muted">每个功能页都应同时满足以下 5 条；逐条点验见下方「验收用例清单」。</p>
+  <table>
+    <tr><th style="width:120px">维度</th><th>口径要求</th><th>不通过典型</th></tr>
+    <tr><td class="f">真实交互</td><td>导出真实下载 / 搜索真实过滤 / 排序真实重排 / 保存真实回写 / 删除真实移除 / 翻日真实切数据</td><td>点了无反应、假数据不变、导出无文件</td></tr>
+    <tr><td class="f">反馈完整</td><td>每个操作必有 Toast 或弹窗；危险与批量操作必有二次确认</td><td>操作后无提示、删除批量不问就执行</td></tr>
+    <tr><td class="f">入口完整</td><td>每个已开放页可从顶部菜单进入，菜单带 新/原/移 角标</td><td>菜单缺项、进不去、缺角标</td></tr>
+    <tr><td class="f">来源可溯</td><td>已建页可在 SitINR 源站找到同名/同义源页；推广分发链为 SaaS 全新强化</td><td>找不到迁移源、归属错位</td></tr>
+    <tr><td class="f">控件统一</td><td>遵循通用骨架，名词与控件全局一致；字段/行内编辑页内完成不弹窗</td><td>同义按钮命名不一、骨架不一致</td></tr>
+  </table>
+
+  <h2>验收用例清单（30 条 · 路由对到 3100）</h2>
+  <p class="muted">逐条按「验收要点」在原型操作核对；结论标 ✅通过 / ❌不通过 / ➖不适用（默认 ⬜待测）。<span class="acc-built">蓝标</span>＝本期原型已增强项。</p>
+  <table>
+    <tr><th style="width:48px">编号</th><th style="width:150px">功能</th><th style="width:230px">路由</th><th>验收要点（操作 → 预期）</th><th style="width:54px">结论</th></tr>
+    <tr class="mod"><td colspan="5">A · 通用（所有列表页）</td></tr>
+    <tr><td>1</td><td>筛选搜索</td><td><code>/member/user</code></td><td>填条件点搜索 → 即时过滤 + Toast「查询完成，共 N 条」</td><td>⬜</td></tr>
+    <tr><td>2</td><td>重置</td><td><code>/member/user</code></td><td>点重置 → 清空条件并还原列表</td><td>⬜</td></tr>
+    <tr><td>3</td><td>收起筛选</td><td><code>/member/user</code></td><td>条件 &gt;5 点收起 → 整块折叠；≤5 无「收起」</td><td>⬜</td></tr>
+    <tr><td>4</td><td>自定义列</td><td><code>/member/user</code></td><td>列 &gt;10 出现「自定义列」；≤10 不出现</td><td>⬜</td></tr>
+    <tr><td>5</td><td>列保存才生效</td><td><code>/member/user</code></td><td>勾选 → 点保存后列才增减（未保存为临时态）</td><td>⬜</td></tr>
+    <tr><td>6</td><td>导出</td><td><code>/member/user</code></td><td>导出在「自定义列」旁，点击真实下载 CSV + Toast「已导出 N 条」</td><td>⬜</td></tr>
+    <tr><td>7</td><td>翻页</td><td><code>/member/user</code></td><td>可选 10/20/50/100，按选定条数重排、各页独立记忆</td><td>⬜</td></tr>
+    <tr><td>8</td><td>切商户</td><td><code>/member/user</code></td><td>顶栏切商户 → 列表自动换该商户数据；商户视角隐藏「商户」列</td><td>⬜</td></tr>
+    <tr><td>9</td><td>危险二次确认</td><td><code>/risk-control/abnormalMember</code></td><td>删除/批量/危险操作 → 先弹二次确认 → 确定后执行 + Toast</td><td>⬜</td></tr>
+    <tr><td>10</td><td>图片放大</td><td><code>/member/user</code></td><td>悬停小图 → 浮层放大，移开/滚动收起</td><td>⬜</td></tr>
+    <tr class="mod"><td colspan="5">B · 会员管理</td></tr>
+    <tr><td>11</td><td>分组管理</td><td><code>/member/groupManage</code></td><td>新增分组填名称+自动归组阈值 → 列表新增 + 保存成功</td><td>⬜</td></tr>
+    <tr><td>12</td><td>分组状态</td><td><code>/member/groupManage</code></td><td>状态列为行内开关（点击切换 + Toast）</td><td>⬜</td></tr>
+    <tr><td>13</td><td>登录日志</td><td><code>/member/loginLog</code></td><td>多 ID 空格查 → 过滤；设备与浏览器指纹融合一列</td><td>⬜</td></tr>
+    <tr><td>14</td><td>短信验证码查询</td><td><code>/member/smsCode</code></td><td>按手机号查；列出验证码/业务类型/时间/状态；无导出</td><td>⬜</td></tr>
+    <tr><td>15</td><td>会员列表操作列</td><td><code>/member/user</code></td><td>操作并排直接显示「修改密码/三方信息」（无「更多»」）</td><td>⬜</td></tr>
+    <tr><td>16</td><td>返佣开关</td><td><code>/member/user</code></td><td>切「领取/对上级返佣」→ 二次确认 → 翻转 + Toast</td><td>⬜</td></tr>
+    <tr><td>17</td><td>会员详情归因</td><td><code>/member/user → 详情</code></td><td>下钻详情 → 红字归因字段齐；代理数据含 10 级关系图；用户积分编辑真实回写</td><td>⬜</td></tr>
+    <tr class="mod"><td colspan="5">C · 运营管理</td></tr>
+    <tr><td>18</td><td>站内消息</td><td><code>/operations/inboxMessage</code></td><td>三页签（弹窗/滚动/推送）；新增推送消息</td><td>⬜</td></tr>
+    <tr><td>19</td><td>公告消息</td><td><code>/operations/announcement</code></td><td>单列表 + 单表单（标题/图片/发布时间/角色描述/状态/内容）</td><td>⬜</td></tr>
+    <tr><td>20</td><td>轮播图管理</td><td><code>/operations/banner</code></td><td>跳转方式选「跳转子游戏」→ 大类→厂商→子游戏 三级联动；图可预览</td><td>⬜</td></tr>
+    <tr><td>21</td><td>渠道管理</td><td><code>/operations/channelConfig</code></td><td>新增渠道（编码手填）→ 列表新增；工具栏含批量设置赠送/调整推广接入</td><td>⬜</td></tr>
+    <tr><td>22</td><td>VIP人数</td><td><code>/operations/vipLevelCount</code></td><td>4 列（等级ID/名称/人数/<b>人数占比进度条</b>）；人数蓝链下钻</td><td>⬜</td></tr>
+    <tr class="mod"><td colspan="5">D · 风控管理</td></tr>
+    <tr><td>23</td><td>异常会员处理</td><td><code>/risk-control/abnormalMember</code></td><td>勾选会员「批量驳回提现」→ 二次确认 → 执行 + Toast</td><td>⬜</td></tr>
+    <tr><td>24</td><td>同IP/设备检测</td><td><code>/risk-control/sameIp</code></td><td>4 子页签切换；点「人数」蓝链 → 带标识下钻会员列表并自动查询</td><td>⬜</td></tr>
+    <tr class="mod"><td colspan="5">E · 配置中心</td></tr>
+    <tr><td>25</td><td>VIP配置</td><td><code>/config-center/vipConfig3</code></td><td>双页签；等级固定 VIP0–VIP10 共 11 级不可增删；改用行内编辑（无弹窗）</td><td>⬜</td></tr>
+    <tr><td>26</td><td>返佣配置</td><td><code>/config-center/rebateConfig</code></td><td>返佣费率配置：同级五类费率之和 &gt;5% 时校验拦截</td><td>⬜</td></tr>
+    <tr><td>27</td><td>代理审核机制</td><td><code>/operations/agentAudit</code></td><td>「修改返佣」弹 5 游戏基础费率+备注；返佣状态以 badge 展示</td><td>⬜</td></tr>
+    <tr class="mod"><td colspan="5">F · 报表管理</td></tr>
+    <tr><td>28</td><td>代理报表 <span class="acc-built">增强</span></td><td><code>/report/agentReport</code></td><td>切统计周期（日/日区间/月/所有）表格<b>真实刷新</b>；点「下级列表」打开<b>下钻抽屉</b></td><td>⬜</td></tr>
+    <tr><td>29</td><td>昨日返佣等级</td><td><code>/report/rebateLevelYesterday</code></td><td>纯查询页：列含返佣等级/团队人数/团队充值/计算·派发返佣；无工具栏/导出/行操作</td><td>⬜</td></tr>
+    <tr class="mod"><td colspan="5">G · 系统管理</td></tr>
+    <tr><td>30</td><td>IP黑名单 <span class="acc-built">增强</span></td><td><code>/system/ipBlacklist</code></td><td>「批量导入」粘贴/上传 .csv → <b>实时识别合法 IPv4 + 去重(≤500) + 忽略无效计数</b> → 确认 → 插入列表顶部 + Toast「成功导入 N 条」</td><td>⬜</td></tr>
+  </table>
+  <p class="muted">说明：原说明书原型口径为 8200，本表已统一对到你这边的 3100；若两侧点起来不一致，以 3100 实际原型 + 功能说明书为准。</p>
+</div>
+
+<div id="lb" onclick="this.style.display='none'"><img src="" alt=""></div>
+<script>
+  document.querySelectorAll('.pcard .shot img').forEach(function(im){im.addEventListener('click',function(){var lb=document.getElementById('lb');lb.querySelector('img').src=im.src;lb.style.display='flex';});});
+  window.addEventListener('message',function(ev){var d=ev.data;if(!d||typeof d.__frameH!=='number')return;document.querySelectorAll('iframe').forEach(function(f){if(f.contentWindow===ev.source){f.style.height=(d.__frameH+24)+'px';f.scrolling='no';}});});
+</script>
+</body>
+</html>

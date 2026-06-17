@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>归因穷举矩阵 §4.6（原样复刻）</title>
+<style>
+  :root{--blue:#1d4ed8;--ink:#1f2937;--sub:#64748b;--line:#e5e7eb;--bg:#f7f9fc}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
+  .wrap{max-width:none;margin:0;padding:24px 32px 80px}
+  .hero{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;border-radius:14px;padding:26px 28px;margin-bottom:22px}
+  .hero h1{margin:0 0 6px;font-size:24px}
+  .hero p{margin:0;opacity:.92;font-size:13.5px}
+  .meta{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+  .pill{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:3px 12px;font-size:12px}
+  .layout{display:flex;gap:26px;align-items:flex-start}
+  .toc{position:sticky;top:16px;width:216px;flex:none;max-height:calc(100vh - 32px);overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 10px}
+  .toc b{color:var(--blue);font-size:13px;display:block;padding:2px 10px 8px}
+  .toc a{display:block;margin:0 0 2px;padding:5px 10px;border-radius:7px;color:#334155;text-decoration:none;font-size:12.5px;line-height:1.5}
+  .toc a:hover{background:#eff6ff;color:var(--blue)}
+  .main{flex:1;min-width:0}
+  .main h2:first-child{margin-top:0}
+  @media(max-width:900px){.layout{display:block}.toc{position:static;width:auto;margin-bottom:18px}}
+  .mk-y{color:#16a34a;font-weight:700}.mk-n{color:#dc2626;font-weight:700}.mk-i{color:#94a3b8;font-weight:700}
+  .grp-cell{background:#f0f4f8;font-weight:700;color:var(--blue);vertical-align:middle!important}
+  .rule-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;background:#f6f8fb;border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+  .mx-scroll{overflow:auto;max-height:72vh}
+  .mx-scroll table{border-collapse:separate;border-spacing:0;table-layout:fixed;width:1110px;margin:0}
+  .mx-scroll th,.mx-scroll td{padding:6px 7px}
+  .mx-scroll thead th{position:sticky;top:0;z-index:5;background:#f1f5f9;white-space:normal;word-break:break-word}
+  .mx-scroll td{word-break:break-word}
+  .mx-scroll td.mxfz{position:sticky;z-index:4;background:#fff}
+  .mx-scroll th.mxfz{position:sticky;z-index:8}
+  .mx-scroll td.mxfz.grp-cell{background:#f0f4f8}
+  .mx-scroll .mxfz-last{box-shadow:2px 0 6px rgba(15,23,42,.10)}
+  h2{font-size:18px;color:var(--blue);margin:30px 0 6px;padding-bottom:8px;border-bottom:2px solid #eef2f7}
+  h3{font-size:15px;color:var(--ink);margin:20px 0 8px}
+  h4{font-size:13.5px;color:#334155;margin:14px 0 6px}
+  .sub{color:var(--sub);font-size:13px;margin:2px 0 12px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+  th,td{border:1px solid var(--line);padding:7px 11px;text-align:left;vertical-align:top}
+  th{background:#f1f5f9;color:#334155;font-weight:700;white-space:nowrap}
+  td.k{width:96px;color:var(--sub);white-space:nowrap;background:#fafbfc}
+  .tag{display:inline-block;font-size:11px;border-radius:6px;padding:1px 8px;font-weight:600;vertical-align:middle}
+  .t-new{background:#fef3c7;color:#b45309}
+  .t-core{background:#ede9fe;color:#6d28d9}
+  .t-form{background:#dbeafe;color:#1d4ed8}
+  ul.feat{margin:6px 0;padding-left:20px}
+  ul.feat li{margin:5px 0}
+  ol.flow{margin:6px 0;padding-left:22px}
+  ol.flow li{margin:4px 0}
+  .note{background:#f8fafc;border:1px solid #eef2f7;border-left:3px solid var(--blue);border-radius:8px;padding:10px 14px;font-size:12.5px;color:var(--sub);line-height:1.85;margin:10px 0}
+  .op{display:inline-block;background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:6px;padding:0 8px;font-size:12px;margin:1px 3px 1px 0;white-space:nowrap}
+  .op.warn{background:#fef2f2;border-color:#fecaca;color:#b91c1c}
+  .op.gray{background:#f1f5f9;border-color:#e2e8f0;color:#475569}
+  img.shot{display:block;width:100%;max-width:1400px;border:1px solid var(--line);border-radius:10px;margin:10px 0 4px;box-shadow:0 2px 10px rgba(15,23,42,.07)}
+  .shot-cap{font-size:12px;color:var(--sub);margin:0 0 14px}
+  a.golink{display:inline-block;margin-left:8px;font-size:12px;font-weight:600;color:#2563eb;text-decoration:none;border:1px solid #bfdbfe;border-radius:6px;padding:0 9px;background:#eff6ff;vertical-align:middle;white-space:nowrap}
+  a.golink:hover{background:#dbeafe}
+  a.lk{color:#2563eb;text-decoration:none}
+  a.lk:hover{text-decoration:underline}
+  .dlinks{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .dlink{display:flex;align-items:center;gap:11px;padding:11px 14px;border:1px solid var(--line);border-radius:10px;text-decoration:none;background:#fff;transition:.12s}
+  .dlink:hover{border-color:#bfdbfe;background:#f7faff;transform:translateY(-1px)}
+  .dlink .di{width:32px;height:32px;border-radius:8px;background:#eff6ff;display:flex;align-items:center;justify-content:center;font-size:15px;flex:none}
+  .dlink .dx{display:flex;flex-direction:column;min-width:0}
+  .dlink .dx b{font-size:13px;color:#1f2937;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dlink .dx i{font-style:normal;font-size:12px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dlink.hi{background:linear-gradient(120deg,#2563eb,#3b82f6);border-color:transparent}
+  .dlink.hi .dx b,.dlink.hi .dx i{color:#fff}
+  .dlink.hi .dx i{opacity:.85}
+  @media(max-width:760px){.dlinks{grid-template-columns:1fr}}
+  .toc-grp{display:block;margin:10px 2px 4px;padding:6px 10px 2px;font-size:11px;font-weight:700;color:#94a3b8;letter-spacing:1px;border-top:1px dashed #eef2f7}
+  .toc .toc-grp:first-of-type{border-top:none;margin-top:0;padding-top:0}
+  .toc a em{font-style:normal;float:right;font-size:11px;color:#94a3b8}
+  .plain{background:#fffbeb;border:1px solid #fde68a;border-radius:9px;padding:9px 13px;font-size:12.8px;color:#92400e;line-height:1.85;margin:8px 0 12px}
+  .plain::before{content:"💡 白话版：";font-weight:700;color:#b45309}
+  .shotgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 4px}
+  .shotgrid figure{margin:0}
+  .shotgrid img{width:100%;border:1px solid var(--line);border-radius:8px;box-shadow:0 2px 8px rgba(15,42,74,.06)}
+  .shotgrid figcaption{font-size:12px;color:var(--sub);margin-top:3px;text-align:center}
+  @media(max-width:760px){.shotgrid{grid-template-columns:1fr}}
+
+    .attr-prev{color:var(--blue);font-weight:700;cursor:pointer;background:#eff6ff;border:1px solid #bfdbfe;border-radius:5px;padding:1px 6px;white-space:nowrap;display:inline-block}.attr-prev:hover{background:#dbeafe}.attr-prev .pv-i{font-style:normal;font-size:10px;color:#60a5fa;margin-left:4px}
+    .am-mask{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:9999;display:none;align-items:center;justify-content:center}
+    .am-mask.show{display:flex}
+    .am-box{background:#fff;border-radius:14px;width:min(1180px,94vw);max-height:88vh;overflow:auto;padding:20px 22px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+    .am-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .am-h h3{margin:0;font-size:16px;color:#1f2937}
+    .am-x{cursor:pointer;color:#94a3b8;font-size:20px;border:0;background:none;line-height:1}
+    .am-case{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+    .am-lb{font-size:11px;font-weight:700;color:#b45309;background:#fef3c7;border-radius:5px;padding:3px 9px}
+    .am-code{font-size:11px;font-weight:700;color:#7c3aed;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:5px;padding:3px 8px}
+    .am-node{background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:4px 10px;color:#b45309;font-weight:600;font-size:12.5px}
+    .am-ar{color:#cbd5e1;font-weight:700}
+    .am-flow{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap}
+    .am-step{flex:1 1 0;min-width:175px;border:1px solid #e5e7eb;border-radius:10px;background:#fafbfc;padding:11px 13px}
+    .am-step.hot{border-color:#f59e0b;background:#fffbeb}
+    .am-sn{display:inline-flex;width:20px;height:20px;border-radius:50%;background:#eef2f7;color:#475569;font-size:11px;font-weight:700;align-items:center;justify-content:center;margin-right:6px}
+    .am-step.hot .am-sn{background:#f59e0b;color:#fff}
+    .am-sh{font-size:12.5px;font-weight:700;color:#1f2937;margin-bottom:6px}
+    .am-sf span{display:block;font-size:11.5px;color:#64748b;margin-top:4px;line-height:1.5}
+    .am-sf b{color:#d4380d;font-weight:600}
+    .am-step.gr .am-sn{background:#16a34a;color:#fff}
+    .am-aar{display:flex;align-items:center;color:#cbd5e1;font-weight:700;font-size:15px}
+  .mini-prev{cursor:pointer;border:1px solid #bfdbfe;border-radius:8px;background:#f8fafc;padding:7px 6px;text-align:center;transition:.12s}.mini-prev:hover{background:#eff6ff;border-color:#2563eb}.mini-prev .mp-dots{display:flex;gap:4px;justify-content:center;align-items:center}.mini-prev .mp-dots i{width:9px;height:9px;border-radius:2px;display:inline-block;background:#93c5fd}.mini-prev .mp-dots i:nth-child(1){background:#2563eb}.mini-prev .mp-dots i:nth-child(3){background:#f59e0b}.mini-prev .mp-dots i:nth-child(5){background:#16a34a}.mini-prev .mp-label{font-size:10.5px;color:#2563eb;font-weight:700;margin-top:5px;white-space:nowrap}
+  </style>
+<style>
+body{margin:0;padding:16px;background:#fff}
+/* 隐藏「页面呈现·归因明细」7 列；示例预览列改为内联展示完整 5 步脉络图 */
+.mx-scroll table{min-width:980px;width:100%;table-layout:auto}
+.mx-scroll td,.mx-scroll th{font-size:12.5px}
+.fig-cell{padding:8px!important}
+.fig-flow{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch}
+.fig-step{flex:1 1 0;min-width:148px;border:1px solid #e5e7eb;border-radius:8px;background:#fafbfc;padding:8px 10px}
+.fig-step.hot{border-color:#f59e0b;background:#fffbeb}
+.fig-step.gr{border-color:#10b981;background:#ecfdf5}
+.fig-sh{font-size:12px;font-weight:700;color:#1f2937;margin-bottom:4px;display:flex;gap:6px;align-items:center}
+.fig-sn{display:inline-flex;width:18px;height:18px;border-radius:50%;background:#2563eb;color:#fff;font-size:11px;align-items:center;justify-content:center;flex:none}
+.fig-step.hot .fig-sn{background:#f59e0b}.fig-step.gr .fig-sn{background:#10b981}
+.fig-sf span{display:block;font-size:11px;color:#475569;margin-top:3px;line-height:1.45}
+.fig-aar{align-self:center;color:#2563eb;font-weight:700;font-size:15px}
+/* 卡片流：突出示例脉络图（每条归因一张卡，头部压缩触发信息，下方整宽横向 5 步） */
+.attr-cards{display:block}
+.attr-group{font-size:15px;font-weight:700;color:#1e293b;margin:18px 0 8px;padding:4px 0 4px 10px;border-left:4px solid #2563eb}
+.attr-group:first-child{margin-top:4px}
+.attr-card{border:1px solid #e5e7eb;border-radius:10px;padding:11px 14px;margin:9px 0;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.attr-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:9px;font-size:12.5px}
+.ac-code{font-weight:700;background:#1e293b;color:#fff;border-radius:5px;padding:1px 9px;font-size:12px;letter-spacing:.3px}
+.ac-type{font-weight:700;color:#2563eb}
+.ac-sub{color:#475569}
+.ac-trig{color:#475569;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:5px;padding:1px 9px}
+.ac-trigs{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-bottom:10px;font-size:12px}
+.ac-trigs-lbl{font-weight:700;font-size:11px;background:#eef2ff;color:#3730a3;border-radius:6px;padding:3px 9px;margin-right:2px}
+.ac-tg{display:inline-flex;align-items:center;gap:5px;border:1px solid #e5e7eb;border-radius:14px;padding:2px 11px 2px 5px;background:#fff;white-space:nowrap}
+.ac-tg .tg-ic{display:inline-flex;width:16px;height:16px;border-radius:50%;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:none}
+.ac-tg b{font-weight:600;color:#475569}
+.ac-tg .tg-dt{color:#1e293b;font-weight:700}
+.ac-tg.tg-y{background:#ecfdf5;border-color:#6ee7b7}
+.ac-tg.tg-y .tg-ic{background:#10b981;color:#fff}
+.ac-tg.tg-y b,.ac-tg.tg-y .tg-dt{color:#065f46}
+.ac-tg.tg-n{opacity:.62}
+.ac-tg.tg-n .tg-ic{background:#fca5a5;color:#fff}
+.ac-tg.tg-i{opacity:.45}
+.ac-tg.tg-i .tg-ic{background:#e2e8f0;color:#94a3b8}
+.attr-card .fig-step{min-width:150px}
+</style>
+</head>
+<body>
+<h3>4.6 归因穷举矩阵（5 大类型 × 18 种情况 · 示例脉络图）</h3>
+    <div class="sub">按归因类型分组，每条归因一张卡：头部为<b>触发条件</b>，下方<b style="color:var(--blue)">整宽展开该归因的完整 5 步脉络图（来源→入口→注册→采集→留存）</b>。</div>
+    <div class="mx-scroll"><table><colgroup><col style="width:74px"><col style="width:44px"><col style="width:104px"><col style="width:74px"><col style="width:78px"><col style="width:78px"><col style="width:28px"><col style="width:72px"><col style="width:90px"><col style="width:144px"><col style="width:104px"><col style="width:72px"><col style="width:76px"><col style="width:72px"><col style="width:118px"></colgroup>
+            <thead>
+              <tr><th rowspan="2">类型</th><th rowspan="2">编号</th><th colspan="4" style="text-align:center;border-bottom:1px solid var(--border)">触发标识</th><th rowspan="2" style="text-align:center">→</th><th colspan="7" style="text-align:center;border-bottom:1px solid var(--border)">页面呈现 · 归因明细（点击表头跳转字段说明）</th><th rowspan="2" style="text-align:center">示例预览</th></tr>
+              <tr><th>推广标识<br>(clickid/UTM)</th><th>邀请码</th><th>官方链接标识</th><th>搜索 referrer</th><th><a href="#f-main" style="color:var(--blue)">主归因</a></th><th><a href="#f-platform" style="color:var(--blue)">推广平台名称</a></th><th><a href="#f-regch" style="color:var(--blue)">注册渠道</a></th><th><a href="#f-loginch" style="color:var(--blue)">登录渠道</a></th><th><a href="#f-se" style="color:var(--blue)">搜索引擎</a></th><th><a href="#f-invcode" style="color:var(--blue)">邀请码</a></th><th><a href="#f-invtype" style="color:var(--blue)">邀请类型</a></th></tr>
+            </thead>
+            <tbody>
+              <tr data-k="new"><td class="grp-cell" rowspan="6">① 广告投放</td><td><span class="attr-prev" data-attr="A1" title="点击预览该归因脉络">A1</span></td><td><span class="mk-y">✓</span> 点击ID</td><td><span class="mk-n">✗</span></td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>广告投放</td><td>Facebook</td><td><span style="white-space:nowrap">Facebook-鳗鱼01</span><br><span class="rule-code">apk-fb-me001-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>—</td><td>—</td><td><div class="mini-prev" data-attr="A1" title="点击放大预览归因脉络"><div class="mp-dots"><i></i><i></i><i></i><i></i><i></i></div><div class="mp-label">A1 脉络预览</div></div></td></tr>
+              <tr data-k="new"><td><span class="attr-prev" data-attr="A2" title="点击预览该归因脉络">A2</span></td><td><span class="mk-y">✓</span> UTM 清单内</td><td><span class="mk-n">✗</span></td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>广告投放</td><td>Instagram</td><td><span style="white-space:nowrap">Instagram-奥运01</span><br><span class="rule-code">h5-ig-ay002-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>—</td><td>—</td><td><div class="mini-prev" data-attr="A2" title="点击放大预览归因脉络"><div class="mp-dots"><i></i><i></i><i></i><i></i><i></i></div><div class="mp-label">A2 脉络预览</div></div></td></tr>
+              <tr data-k="new"><td><span class="attr-prev" data-attr="A3" title="点击预览该归因脉络">A3</span></td><td><span class="mk-y">✓</span> UTM 清单外</td><td><span class="mk-n">✗</span></td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>广告投放</td><td>其他</td><td><span style="white-space:nowrap">其他投放-鳗鱼01</span><br><span class="rule-code">h5-ads-me001-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>—</td><td>—</td><td><div class="mini-prev" data-attr="A3" title="点击放大预览归因脉络"><div class="mp-dots"><i></i><i></i><i></i><i></i><i></i></div><div class="mp-label">A3 脉络预览</div></div></td></tr>
+              <tr data-k="new"><td><span class="attr-prev" data-attr="A4" title="点击预览该归因脉络">A4</span></td><td><span class="mk-y">✓</span></td><td><span class="mk-y">✓</span> 有效码</td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>广告投放</td><td>Facebook</td><td><span style="white-space:nowrap">Facebook-鳗鱼01</span><br><span class="rule-code">apk-fb-me001-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>AGENT100</td><td>正常邀请</td><td><div class="mini-prev" data-attr="A4" title="点击放大预览归因脉络"><div class="mp-dots"><i></i><i></i><i></i><i></i><i></i></div><div class="mp-label">A4 脉络预览</div></div></td></tr>
+              <tr data-k="new"><td><span class="attr-prev" data-attr="A5" title="点击预览该归因脉络">A5</span></td><td><span class="mk-y">✓</span></td><td><span class="mk-y">✓</span> 无效码</td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>广告投放</td><td>Facebook</td><td><span style="white-space:nowrap">Facebook-鳗鱼01</span><br><span class="rule-code">apk-fb-me001-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>AGENT100</td><td>—</td><td><div class="mini-prev" data-attr="A5" title="点击放大预览归因脉络"><div class="mp-dots"><i></i><i></i><i></i><i></i><i></i></div><div class="mp-label">A5 脉络预览</div></div></td></tr>
+              <tr data-k="new"><td><span class="attr-prev" data-attr="B2" title="点击预览该归因脉络">B2</span></td><td><span class="mk-y">✓</span> 平台自动附加</td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>广告投放</td><td>Facebook</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>—</td><td>—</td><td><div class="mini-prev" data-attr="B2" title="点击放大预览归因脉络"><div class="mp-dots"><i></i><i></i><i></i><i></i><i></i></div><div class="mp-label">B2 脉络预览</div></div></td></tr>
+              <tr data-k="new"><td class="grp-cell" rowspan="5">② 邀请来源</td><td><span class="attr-prev" data-attr="A6" title="点击预览该归因脉络">A6</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 个人码·手填</td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>邀请来源</td><td>—</td><td><span style="white-space:nowrap">Facebook-鳗鱼01</span><br><span class="rule-code">apk-fb-me001-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>AGENT100</td><td>正常邀请</td><td><div class="mini-prev" data-attr="A6" title="点击放大预览归因脉络"><div class="mp-dots"><i></i><i></i><i></i><i></i><i></i></div><div class="mp-label">A6 脉络预览</div></div></td></tr>
+              <tr data-k="new"><td><span class="attr-prev" data-attr="B3" title="点击预览该归因脉络">B3</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 个人码</td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>邀请来源</td><td>—</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>AGENT100</td><td>正常邀请</td><td><div class="mini-prev" data-attr="B3" title="点击放大预览归因脉络"><div class="mp-dots"><i></i><i></i><i></i><i></i><i></i></div><div class="mp-label">B3 脉络预览</div></div></td></tr>
+              <tr data-k="new"><td><span class="attr-prev" data-attr="B4" title="点击预览该归因脉络">B4</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 转盘活动码</td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>邀请来源</td><td>—</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>WHEEL8001</td><td>转盘邀请</td><td><div class="mini-prev" data-attr="B4" title="点击放大预览归因脉络"><div class="mp-dots"><i></i><i></i><i></i><i></i><i></i></div><div class="mp-label">B4 脉络预览</div></div></td></tr>
+              <tr data-k="new"><td><span class="attr-prev" data-attr="B5" title="点击预览该归因脉络">B5</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 任务活动码</td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>邀请来源</td><td>—</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>TASK8002</td><td>任务邀请</td><td><div class="mini-prev" data-attr="B5" title="点击放大预览归因脉络"><div class="mp-dots"><i></i><i></i><i></i><i></i><i></i></div><div class="mp-label">B5 脉络预览</div></div></td></tr>
+              <tr data-k="new"><td><span class="attr-prev" data-attr="B6" title="点击预览该归因脉络">B6</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 活动码过期</td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>邀请来源</td><td>—</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>WHEEL8001</td><td>正常邀请</td><td><div class="mini-prev" data-attr="B6" title="点击放大预览归因脉络"><div class="mp-dots"><i></i><i></i><i></i><i></i><i></i></div><div class="mp-label">B6 脉络预览</div></div></td></tr>
+              <tr data-k="new"><td class="grp-cell" rowspan="1">③ 官方直推</td><td><span class="attr-prev" data-attr="B1" title="点击预览该归因脉络">B1</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>官方直推</td><td>—</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>—</td><td>—</td><td><div class="mini-prev" data-attr="B1" title="点击放大预览归因脉络"><div class="mp-dots"><i></i><i></i><i></i><i></i><i></i></div><div class="mp-label">B1 脉络预览</div></div></td></tr>
+              <tr data-k="new"><td class="grp-cell" rowspan="4">④ 自然流量</td><td><span class="attr-prev" data-attr="A7" title="点击预览该归因脉络">A7</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 非搜索</td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>自然流量</td><td>—</td><td><span style="white-space:nowrap">Facebook-鳗鱼01</span><br><span class="rule-code">apk-fb-me001-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>其他</td><td>—</td><td>—</td><td><div class="mini-prev" data-attr="A7" title="点击放大预览归因脉络"><div class="mp-dots"><i></i><i></i><i></i><i></i><i></i></div><div class="mp-label">A7 脉络预览</div></div></td></tr>
+              <tr data-k="new"><td><span class="attr-prev" data-attr="B7" title="点击预览该归因脉络">B7</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 清单内引擎</td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>自然流量</td><td>—</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>Google</td><td>—</td><td>—</td><td><div class="mini-prev" data-attr="B7" title="点击放大预览归因脉络"><div class="mp-dots"><i></i><i></i><i></i><i></i><i></i></div><div class="mp-label">B7 脉络预览</div></div></td></tr>
+              <tr data-k="new"><td><span class="attr-prev" data-attr="B8" title="点击预览该归因脉络">B8</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 清单外/非搜索</td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>自然流量</td><td>—</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>其他</td><td>—</td><td>—</td><td><div class="mini-prev" data-attr="B8" title="点击放大预览归因脉络"><div class="mp-dots"><i></i><i></i><i></i><i></i><i></i></div><div class="mp-label">B8 脉络预览</div></div></td></tr>
+              <tr data-k="new"><td><span class="attr-prev" data-attr="B9" title="点击预览该归因脉络">B9</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>自然流量</td><td>—</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>直接访问</td><td>—</td><td>—</td><td><div class="mini-prev" data-attr="B9" title="点击放大预览归因脉络"><div class="mp-dots"><i></i><i></i><i></i><i></i><i></i></div><div class="mp-label">B9 脉络预览</div></div></td></tr>
+              <tr data-k="new"><td class="grp-cell" rowspan="2">⑤ 解析失败（并入自然流量）</td><td><span class="attr-prev" data-attr="B10" title="点击预览该归因脉络">B10</span></td><td colspan="4" style="text-align:center;background:#fafbfc;color:var(--muted)">有参数但全部解析失败（损坏 / 伪造 / 过期）</td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>自然流量</td><td>—</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>直接访问</td><td>—</td><td>—</td><td><div class="mini-prev" data-attr="B10" title="点击放大预览归因脉络"><div class="mp-dots"><i></i><i></i><i></i><i></i><i></i></div><div class="mp-label">B10 脉络预览</div></div></td></tr>
+              <tr data-k="new"><td><span class="attr-prev" data-attr="B11" title="点击预览该归因脉络">B11</span></td><td><span class="mk-n">✗</span></td><td><span class="mk-y">✓</span> 无效码</td><td><span class="mk-n">✗</span></td><td><span class="mk-n">✗</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>自然流量</td><td>—</td><td><span style="white-space:nowrap">官方渠道</span><br><span class="rule-code">h5-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>直接访问</td><td>AGENT100</td><td>—</td><td><div class="mini-prev" data-attr="B11" title="点击放大预览归因脉络"><div class="mp-dots"><i></i><i></i><i></i><i></i><i></i></div><div class="mp-label">B11 脉络预览</div></div></td></tr>
+            </tbody>
+          </table></div>
+    
+<div class="am-mask" id="amMask"><div class="am-box" id="amBox"></div></div>
+  
+<script>
+    (function () {
+      var FROZEN = 7, LEFTS = [0, 74, 118, 222, 296, 374, 452];
+      document.querySelectorAll('.mx-scroll table').forEach(function (table) {
+        var grid = [], rows = table.rows;
+        for (var r = 0; r < rows.length; r++) {
+          grid[r] = grid[r] || [];
+          var c = 0;
+          for (var i = 0; i < rows[r].cells.length; i++) {
+            var cell = rows[r].cells[i];
+            while (grid[r][c]) c++;
+            var cs = cell.colSpan || 1, rs = cell.rowSpan || 1;
+            for (var rr = r; rr < r + rs; rr++) { grid[rr] = grid[rr] || []; for (var cc = c; cc < c + cs; cc++) grid[rr][cc] = true; }
+            if (c + cs <= FROZEN) { cell.classList.add('mxfz'); cell.style.left = LEFTS[c] + 'px'; if (c + cs === FROZEN) cell.classList.add('mxfz-last'); }
+            c += cs;
+          }
+        }
+        var hr = table.tHead && table.tHead.rows;
+        if (hr && hr.length > 1) { var h1 = hr[0].offsetHeight; for (var k = 0; k < hr[1].cells.length; k++) hr[1].cells[k].style.top = h1 + 'px'; }
+      });
+    })();
+    </script>
+<script>
+  (function(){
+    var AD={
+      A1:{m:'广告投放',sub:'Facebook',hit:'广告点击ID fbclid',s1:'广告·点击 Facebook 广告进入',s2:'广告落地页 · apk-fb-me001-01',s3:'未填邀请码 · 无代理关系',s4:'主归因 广告投放 · 注册渠道 apk-fb-me001-01 · 平台 Facebook',a:'本例无代理关系'},
+      A2:{m:'广告投放',sub:'Instagram',hit:'UTM utm_source=instagram',s1:'广告·Instagram 投放进入',s2:'广告落地页 · h5-ig-ay002-01',s3:'未填邀请码 · 无代理关系',s4:'主归因 广告投放 · 注册渠道 h5-ig-ay002-01 · 平台 Instagram',a:'本例无代理关系'},
+      A3:{m:'广告投放',sub:'其他平台',hit:'UTM（清单外）',s1:'广告·其他平台投放进入',s2:'广告落地页 · h5-ads-me001-01',s3:'未填邀请码 · 无代理关系',s4:'主归因 广告投放 · 注册渠道 h5-ads-me001-01 · 平台 其他',a:'本例无代理关系'},
+      A4:{m:'广告投放',sub:'裂变获客',hit:'广告点击ID + 有效邀请码',s1:'广告·点击 Facebook 广告进入',s2:'广告落地页 · apk-fb-me001-01',s3:'填了邀请码 AGENT100（辅证）· 仍绑上级 2250100 / 一级 2250001',s4:'主归因 广告投放（裂变）· 平台 Facebook · 邀请码 AGENT100',a:'代理关系（上级/一级可后台划转）'},
+      A5:{m:'广告投放',sub:'Facebook',hit:'广告点击ID + 无效邀请码',s1:'广告·点击 Facebook 广告进入',s2:'广告落地页 · apk-fb-me001-01',s3:'填了邀请码（无效）· 不绑定代理',s4:'主归因 广告投放 · 平台 Facebook · 邀请码 AGENT100（无效）',a:'本例无代理关系'},
+      B2:{m:'广告投放',sub:'Facebook',hit:'官方链接 + 广告标识',s1:'广告·官方链接带广告标识进入',s2:'官方渠道 · h5-01',s3:'未填邀请码 · 无代理关系',s4:'主归因 广告投放 · 注册渠道 官方渠道 h5-01 · 平台 Facebook',a:'本例无代理关系'},
+      A6:{m:'邀请来源',sub:'正常邀请（个人）',hit:'个人邀请码 AGENT100（手填）',s1:'从 Facebook-鳗鱼01 渠道进入后手填个人邀请码',s2:'渠道 Facebook-鳗鱼01（apk-fb-me001-01）',s3:'手填邀请码 AGENT100 · 绑上级 2250100（李四）/ 一级 2250001',s4:'主归因 邀请来源 · 注册渠道 apk-fb-me001-01 · 邀请码 AGENT100',a:'代理关系（上级/一级可后台划转）'},
+      B3:{m:'邀请来源',sub:'正常邀请（个人）',hit:'官方渠道进入 + 个人邀请码',s1:'官方渠道进入后手填个人邀请码',s2:'官方渠道 · h5-01',s3:'填了邀请码 AGENT100 · 绑上级 2250100 / 一级 2250001',s4:'主归因 邀请来源 · 注册渠道 官方渠道 h5-01 · 邀请码 AGENT100',a:'代理关系（上级/一级可后台划转）'},
+      B4:{m:'邀请来源',sub:'转盘邀请',hit:'转盘活动邀请码 WHEEL8001',s1:'转盘活动分享进入',s2:'官方渠道 · h5-01',s3:'填了转盘活动码 WHEEL8001 · 绑上级 2250100 / 一级 2250001',s4:'主归因 邀请来源 · 邀请码 WHEEL8001 · 邀请类型 转盘邀请',a:'代理关系（上级/一级可后台划转）'},
+      B5:{m:'邀请来源',sub:'任务邀请',hit:'任务活动邀请码 TASK8002',s1:'任务活动分享进入',s2:'官方渠道 · h5-01',s3:'填了任务活动码 TASK8002 · 绑上级 2250100 / 一级 2250001',s4:'主归因 邀请来源 · 邀请码 TASK8002 · 邀请类型 任务邀请',a:'代理关系（上级/一级可后台划转）'},
+      B6:{m:'邀请来源',sub:'正常邀请（活动过期降级）',hit:'活动邀请码已过期',s1:'活动分享进入（码已过期）',s2:'官方渠道 · h5-01',s3:'活动码过期降级正常邀请 · 仍绑上级 2250100 / 一级 2250001',s4:'主归因 邀请来源 · 邀请码 WHEEL8001 · 降级正常邀请',a:'代理关系（上级/一级可后台划转）'},
+      B1:{m:'官方直推',sub:'—',hit:'仅官方推广链接标识',s1:'官方·点官方推广链接进入',s2:'官方渠道 · h5-01',s3:'未填邀请码 · 无代理关系',s4:'主归因 官方直推 · 注册渠道 官方渠道 h5-01',a:'本例无代理关系'},
+      A7:{m:'自然流量',sub:'其他来源',hit:'Referrer（非搜索）',s1:'自然·站外非搜索链接进入',s2:'渠道 Facebook-鳗鱼01（apk-fb-me001-01）',s3:'未填邀请码 · 无代理关系',s4:'主归因 自然流量 · 注册渠道 apk-fb-me001-01 · 搜索引擎 其他',a:'本例无代理关系'},
+      B7:{m:'自然流量',sub:'Google 搜索',hit:'Referrer = Google',s1:'自然·Google 搜索结果进入',s2:'官方渠道 · h5-01',s3:'未填邀请码 · 无代理关系',s4:'主归因 自然流量 · 注册渠道 官方渠道 h5-01 · 搜索引擎 Google',a:'本例无代理关系'},
+      B8:{m:'自然流量',sub:'其他来源',hit:'Referrer（清单外）',s1:'自然·清单外站外链接进入',s2:'官方渠道 · h5-01',s3:'未填邀请码 · 无代理关系',s4:'主归因 自然流量 · 注册渠道 官方渠道 h5-01 · 搜索引擎 其他',a:'本例无代理关系'},
+      B9:{m:'自然流量',sub:'直接访问',hit:'无任何参数',s1:'自然·直接输入域名进入',s2:'官方渠道 · h5-01',s3:'未填邀请码 · 无代理关系',s4:'主归因 自然流量 · 注册渠道 官方渠道 h5-01 · 搜索引擎 直接访问',a:'本例无代理关系'},
+      B10:{m:'自然流量',sub:'直接访问',hit:'参数全部解析失败',s1:'自然·参数损坏/伪造，兜底直接访问',s2:'官方渠道 · h5-01',s3:'未填有效邀请码 · 无代理关系',s4:'主归因 自然流量 · 直接访问（失败原因记日志）',a:'本例无代理关系'},
+      B11:{m:'自然流量',sub:'直接访问',hit:'仅无效邀请码',s1:'自然·仅无效邀请码，无其他标识',s2:'官方渠道 · h5-01',s3:'邀请码无效·不绑定代理',s4:'主归因 自然流量 · 邀请码 AGENT100（无效）',a:'本例无代理关系'}
+    };
+    function stp(n,h,arr,cls){return '<div class="am-step '+(cls||'')+'"><div class="am-sh"><span class="am-sn">'+n+'</span>'+h+'</div><div class="am-sf">'+arr.map(function(x){return '<span>'+x+'</span>';}).join('')+'</div></div>';}
+    function ar(){return '<div class="am-aar">→</div>';}
+    window.__openAttrPrev=function(code){var d=AD[code];if(!d)return;
+      var box=document.getElementById('amBox');
+      box.innerHTML='<div class="am-h"><h3>归因脉络预览 · '+code+' '+d.m+'</h3><button class="am-x" data-amx="1">✕</button></div>'
+        +'<div class="am-case"><span class="am-lb">本会员命中</span><span class="am-code">'+code+'</span><span class="am-node">触发：'+d.hit+'</span><span class="am-ar">➡️</span><span class="am-node">'+d.m+'</span><span class="am-ar">➡️</span><span class="am-node">'+d.sub+'</span></div>'
+        +'<div class="am-flow">'
+        +stp('①','来源 · 在哪看到',['来源：'+d.m,d.s1],'hot')+ar()
+        +stp('②','入口 · 点哪条链接进来',[d.s2,'落地域名 m.sit-inr.com'],'')+ar()
+        +stp('③','注册 · 是否填邀请码',[d.s3],'hot')+ar()
+        +stp('④','采集 · 收集了哪些信息',[d.s4,'注册时间 / IP / 设备 / 包名'],'')+ar()
+        +stp('⑤','留存 · 哪些固定 / 哪些可调',['🔒 固定不变：主归因 / 注册渠道 / 注册时间 / 设备·IP','✏️ 可调整：'+d.a],'gr')
+        +'</div>';
+      document.getElementById('amMask').classList.add('show');
+    };
+    document.addEventListener('click',function(e){
+      var p=e.target.closest('[data-attr]');if(p){window.__openAttrPrev(p.getAttribute('data-attr'));return;}
+      if(e.target.closest('[data-amx]')||e.target.id==='amMask'){document.getElementById('amMask').classList.remove('show');}
+    });
+  })();
+  </script>
+<script>
+(function(){
+  var ROWS=[
+   ['A1','广告投放','Facebook','广告点击ID fbclid','广告·点击 Facebook 广告进入','广告落地页 · apk-fb-me001-01','未填邀请码 · 无代理关系','主归因 广告投放 · 注册渠道 apk-fb-me001-01 · 平台 Facebook'],
+   ['A2','广告投放','Instagram','UTM utm_source=instagram','广告·Instagram 投放进入','广告落地页 · h5-ig-ay002-01','未填邀请码 · 无代理关系','主归因 广告投放 · 注册渠道 h5-ig-ay002-01 · 平台 Instagram'],
+   ['A3','广告投放','其他平台','UTM（清单外）','广告·其他平台投放进入','广告落地页 · h5-ads-me001-01','未填邀请码 · 无代理关系','主归因 广告投放 · 注册渠道 h5-ads-me001-01 · 平台 其他'],
+   ['A4','广告投放','裂变获客','广告点击ID + 有效邀请码','广告·点击 Facebook 广告进入','广告落地页 · apk-fb-me001-01','填了邀请码 AGENT100（辅证）· 仍绑上级 2250100 / 一级 2250001','主归因 广告投放（裂变）· 平台 Facebook · 邀请码 AGENT100'],
+   ['A5','广告投放','Facebook','广告点击ID + 无效邀请码','广告·点击 Facebook 广告进入','广告落地页 · apk-fb-me001-01','填了邀请码（无效）· 不绑定代理','主归因 广告投放 · 平台 Facebook · 邀请码 AGENT100（无效）'],
+   ['B2','广告投放','Facebook','官方链接 + 广告标识','广告·官方链接带广告标识进入','官方渠道 · h5-01','未填邀请码 · 无代理关系','主归因 广告投放 · 注册渠道 官方渠道 h5-01 · 平台 Facebook'],
+   ['A6','邀请来源','正常邀请（个人）','个人邀请码 AGENT100（手填）','从 Facebook-鳗鱼01 渠道进入后手填个人邀请码','渠道 Facebook-鳗鱼01（apk-fb-me001-01）','手填邀请码 AGENT100 · 绑上级 2250100（李四）/ 一级 2250001','主归因 邀请来源 · 注册渠道 apk-fb-me001-01 · 邀请码 AGENT100'],
+   ['B3','邀请来源','正常邀请（个人）','官方渠道进入 + 个人邀请码','官方渠道进入后手填个人邀请码','官方渠道 · h5-01','填了邀请码 AGENT100 · 绑上级 2250100 / 一级 2250001','主归因 邀请来源 · 注册渠道 官方渠道 h5-01 · 邀请码 AGENT100'],
+   ['B4','邀请来源','转盘邀请','转盘活动邀请码 WHEEL8001','转盘活动分享进入','官方渠道 · h5-01','填了转盘活动码 WHEEL8001 · 绑上级 2250100 / 一级 2250001','主归因 邀请来源 · 邀请码 WHEEL8001 · 邀请类型 转盘邀请'],
+   ['B5','邀请来源','任务邀请','任务活动邀请码 TASK8002','任务活动分享进入','官方渠道 · h5-01','填了任务活动码 TASK8002 · 绑上级 2250100 / 一级 2250001','主归因 邀请来源 · 邀请码 TASK8002 · 邀请类型 任务邀请'],
+   ['B6','邀请来源','正常邀请（活动过期降级）','活动邀请码已过期','活动分享进入（码已过期）','官方渠道 · h5-01','活动码过期降级正常邀请 · 仍绑上级 2250100 / 一级 2250001','主归因 邀请来源 · 邀请码 WHEEL8001 · 降级正常邀请'],
+   ['B1','官方直推','—','仅官方推广链接标识','官方·点官方推广链接进入','官方渠道 · h5-01','未填邀请码 · 无代理关系','主归因 官方直推 · 注册渠道 官方渠道 h5-01'],
+   ['A7','自然流量','其他来源','Referrer（非搜索）','自然·站外非搜索链接进入','渠道 Facebook-鳗鱼01（apk-fb-me001-01）','未填邀请码 · 无代理关系','主归因 自然流量 · 注册渠道 apk-fb-me001-01 · 搜索引擎 其他'],
+   ['B7','自然流量','Google 搜索','Referrer = Google','自然·Google 搜索结果进入','官方渠道 · h5-01','未填邀请码 · 无代理关系','主归因 自然流量 · 注册渠道 官方渠道 h5-01 · 搜索引擎 Google'],
+   ['B8','自然流量','其他来源','Referrer（清单外）','自然·清单外站外链接进入','官方渠道 · h5-01','未填邀请码 · 无代理关系','主归因 自然流量 · 注册渠道 官方渠道 h5-01 · 搜索引擎 其他'],
+   ['B9','自然流量','直接访问','无任何参数','自然·直接输入域名进入','官方渠道 · h5-01','未填邀请码 · 无代理关系','主归因 自然流量 · 注册渠道 官方渠道 h5-01 · 搜索引擎 直接访问'],
+   ['B10','自然流量','直接访问','参数全部解析失败','自然·参数损坏/伪造，兜底直接访问','官方渠道 · h5-01','未填有效邀请码 · 无代理关系','主归因 自然流量 · 直接访问（失败原因记日志）'],
+   ['B11','自然流量','直接访问','仅无效邀请码','自然·仅无效邀请码，无其他标识','官方渠道 · h5-01','邀请码无效·不绑定代理','主归因 自然流量 · 邀请码 AGENT100（无效）'],
+  ];
+  var AD2={};ROWS.forEach(function(r){AD2[r[0]]={m:r[1],sub:r[2],hit:r[3],s1:r[4],s2:r[5],s3:r[6],s4:r[7]};});
+  function step(n,h,lines,cls){return '<div class="fig-step '+(cls||'')+'"><div class="fig-sh"><span class="fig-sn">'+n+'</span>'+h+'</div><div class="fig-sf">'+lines.map(function(x){return '<span>'+x+'</span>';}).join('')+'</div></div>';}
+  var ARR='<div class="fig-aar">→</div>';
+  function flow(code){var d=AD2[code];if(!d)return '';var a=/绑上级/.test(d.s3)?'代理关系（上级/一级可后台划转）':'本例无代理关系';
+    return '<div class="fig-flow">'+
+      step('①','来源 · 在哪看到',['来源：'+d.m,d.s1],'hot')+ARR+
+      step('②','入口 · 点哪条链接进来',[d.s2,'落地域名 m.sit-inr.com'])+ARR+
+      step('③','注册 · 是否填邀请码',[d.s3],'hot')+ARR+
+      step('④','采集 · 收集了哪些信息',[d.s4,'注册时间 / IP / 设备 / 包名'])+ARR+
+      step('⑤','留存 · 哪些固定 / 哪些可调',['🔒 固定不变：主归因 / 注册渠道 / 注册时间 / 设备·IP','✏️ 可调整：'+a],'gr')+
+      '</div>';}
+  var TRIG_LABELS=['推广标识','邀请码','官方链接标识','搜索 referrer'];
+  function run(){
+    var table=document.querySelector('.mx-scroll table'); var scroll=document.querySelector('.mx-scroll');
+    if(!table||!scroll)return; var tbody=table.querySelector('tbody'); if(!tbody)return;
+    var html='<div class="attr-cards">';
+    [].slice.call(tbody.rows).forEach(function(tr){
+      var grp=tr.querySelector('.grp-cell');
+      if(grp){ html+='<div class="attr-group">'+grp.textContent.trim()+'</div>'; }
+      var codeEl=tr.querySelector('[data-attr]'); if(!codeEl)return;
+      var code=codeEl.getAttribute('data-attr'); var d=AD2[code]||{};
+      var cells=[].slice.call(tr.cells);
+      var codeIdx=cells.indexOf(codeEl.closest('td'));
+      var arrowIdx=-1; for(var i=0;i<cells.length;i++){ if(cells[i].textContent.trim()==='→'){arrowIdx=i;break;} }
+      var trig=(arrowIdx>codeIdx)?cells.slice(codeIdx+1,arrowIdx):[];
+      var trigHtml;
+      if(trig.length===1 && (trig[0].colSpan||1)>1){
+        trigHtml='<span class="ac-tg tg-i"><i class="tg-ic">!</i>'+trig[0].textContent.replace(/\s+/g,' ').trim()+'</span>';
+      } else {
+        trigHtml=trig.map(function(c,i){ var raw=c.textContent.replace(/\s+/g,' ').trim();
+          var icon=/✓/.test(raw)?'✓':(/✗/.test(raw)?'✗':'—');
+          var detail=raw.replace(/^[✓✗－—\s]+/,'').trim();
+          var cls=icon==='✓'?'tg-y':(icon==='✗'?'tg-n':'tg-i');
+          return '<span class="ac-tg '+cls+'"><i class="tg-ic">'+icon+'</i><b>'+(TRIG_LABELS[i]||'')+'</b>'+(detail?'<span class="tg-dt">'+detail+'</span>':'')+'</span>'; }).join('');
+      }
+      html+='<div class="attr-card">'
+        +'<div class="attr-head"><span class="ac-code">'+code+'</span>'
+        +(d.m?'<span class="ac-type">'+d.m+'</span>':'')
+        +(d.sub&&d.sub!=='—'?'<span class="ac-sub">'+d.sub+'</span>':'')+'</div>'
+        +'<div class="ac-trigs"><span class="ac-trigs-lbl">触发条件</span>'+trigHtml+'</div>'
+        +flow(code)+'</div>';
+    });
+    html+='</div>';
+    scroll.innerHTML=html; scroll.style.maxHeight='none'; scroll.style.overflow='visible';
+  }
+  if(document.readyState!=='loading') setTimeout(run,50); else document.addEventListener('DOMContentLoaded',function(){setTimeout(run,50);});
+})();
+</script>
+<script>
+/* 子页：向父级上报内容高度，供父级撑开 iframe（整体平铺、不内部滚动）*/
+(function(){
+  function ph(){ try{ if(window.parent!==window) parent.postMessage({__frameH: Math.max(document.body.scrollHeight, document.documentElement.scrollHeight)}, '*'); }catch(e){} }
+  window.addEventListener('load', ph); window.addEventListener('resize', ph);
+  [300,800,1400].forEach(function(t){ setTimeout(ph, t); });
+})();
+</script>
+</body>
+</html>

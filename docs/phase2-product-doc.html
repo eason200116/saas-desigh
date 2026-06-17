@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>二阶段 · 产品文档目录</title>
+<style>
+  :root{--accent:#2563eb;--ink:#1f2328;--sub:#64748b;--line:#e5e7eb;--bg:#f5f6f8}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
+  .topbar{position:sticky;top:0;z-index:20;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+  header.top{background:linear-gradient(90deg,#1e293b,#312e81);color:#fff;padding:13px 28px;display:flex;align-items:center;gap:14px}
+  header.top h1{margin:0;font-size:18px}
+  header.top .ver{font-size:12px;opacity:.75;margin-top:3px}
+  header.top .htxt{flex:1;min-width:0}
+  nav.toc{background:#fff;border-bottom:1px solid var(--line);padding:8px 22px;display:flex;gap:8px;flex-wrap:wrap}
+  nav.toc a{font-size:13px;font-weight:600;color:#334155;text-decoration:none;padding:5px 14px;border-radius:20px;background:#f1f5f9}
+  nav.toc a:hover{background:#e0e7ff;color:var(--accent)}
+  nav.toc a.active{background:#312e81;color:#fff}
+  nav.toc a.nav-proto{margin-left:auto;background:#22c55e;color:#fff}
+  nav.toc a.nav-proto:hover{background:#16a34a;color:#fff}
+  .wrap{max-width:1180px;margin:0 auto;padding:20px 22px 90px}
+  .secttl{font-size:22px;margin:14px 0 4px;padding:6px 0 8px;border-bottom:3px solid var(--accent);color:#1e293b}
+  .secsub{color:var(--sub);font-size:13px;margin:0 0 6px}
+  h2{font-size:18px;border-left:5px solid var(--accent);padding-left:12px;margin:30px 0 10px}
+  h3{font-size:15px;margin:18px 0 6px;color:#111827}
+  .lead{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:13px 18px;font-size:13.5px;line-height:1.85;margin:12px 0}
+  table{width:100%;border-collapse:collapse;font-size:13px;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:10px 0}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:#f1f5f9;color:#334155;font-weight:700;white-space:nowrap}
+  td.f{font-weight:600;color:#111827;white-space:nowrap}
+  ul{margin:8px 0;padding-left:20px}li{margin:4px 0}
+  .pill{display:inline-block;font-size:12px;padding:1px 9px;border-radius:20px;background:#eef2ff;color:#3730a3;margin:2px 4px 2px 0}
+  .note{background:#fffbeb;border:1px solid #fde68a;border-left:3px solid #f59e0b;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#92400e;margin:12px 0}
+  .muted{color:var(--sub);font-size:12.5px}
+  b.red{color:#dc2626}b.k{color:#b45309}
+  .tag{font-size:10px;border-radius:3px;padding:0 5px;margin-left:5px;font-weight:700;vertical-align:1px}
+  .tag.new{background:#faf4ec;color:#c08a4a}.tag.grp{background:#fee2e2;color:#b91c1c}
+  .legend span{display:inline-block;margin-right:16px;font-size:13px}
+  .pcard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:12px 0;box-shadow:0 1px 3px rgba(0,0,0,.03);display:flex;gap:18px}
+  .pcard .shot{width:380px;max-width:40%;flex:none}
+  .pcard .shot img{width:100%;border:1px solid var(--line);border-radius:8px;cursor:zoom-in;display:block;position:sticky;top:70px}
+  .pcard .info{flex:1;min-width:0}
+  .pcard.nopic{display:block}
+  .pcard .nm{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .pcard .route{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#0f172a;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;padding:1px 7px}
+  .pcard .use{color:var(--sub);font-size:12.5px;margin:5px 0 8px}
+  ul.ctrl{margin:0;padding-left:0;list-style:none;font-size:13px;line-height:1.7}
+  ul.ctrl li{margin:5px 0;padding-left:2px}
+  .lbl{display:inline-block;font-size:11px;font-weight:700;color:#fff;border-radius:4px;padding:1px 7px;margin-right:6px;vertical-align:1px}
+  .lbl.flt{background:#0ea5e9}.lbl.col{background:#64748b}.lbl.tb{background:#7c3aed}.lbl.act{background:#d97706}.lbl.frm{background:#16a34a}.lbl.sp{background:#dc2626}.lbl.tab{background:#1e293b}
+  .badge{font-size:10px;border-radius:3px;padding:1px 6px;font-weight:700}
+  .badge.new{background:#dcfce7;color:#15803d}.badge.built{background:#dbeafe;color:#1d4ed8}
+  code{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;padding:1px 6px;font-size:12px}
+  tr.mod td{background:#eef4ff;color:var(--accent);font-weight:700}
+  .acc-built{font-size:10px;background:#dbeafe;color:#1d4ed8;border-radius:3px;padding:0 5px;font-weight:700;margin-left:4px}
+  .hubgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:14px}
+  .hubcard{display:block;background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 20px;text-decoration:none;color:inherit;box-shadow:0 1px 4px rgba(0,0,0,.04);transition:.12s}
+  .hubcard:hover{border-color:var(--accent);box-shadow:0 4px 14px rgba(37,99,235,.12);transform:translateY(-1px)}
+  .hubcard .hc-t{font-size:16px;font-weight:700;color:#1e293b}
+  .hubcard .hc-d{color:var(--sub);font-size:12.5px;margin-top:6px;line-height:1.6}
+  #lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;align-items:center;justify-content:center;cursor:zoom-out}
+  #lb img{max-width:94vw;max-height:94vh;border-radius:6px;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+  @media(max-width:860px){.pcard{flex-direction:column}.pcard .shot{width:100%;max-width:100%}.pcard .shot img{position:static}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <header class="top"><div class="htxt"><h1>📚 二阶段 · 产品文档</h1><div class="ver">每板块独立页 · 以 3100 原型为准</div></div></header>
+  <nav class="toc"><a href="phase2-product-doc.html" class="active">🏠 目录</a><a href="phase2-doc-prd.html">① PRD · 目的与框架</a><a href="phase2-doc-interaction.html">② 交互介绍</a><a href="phase2-doc-fields.html">③ 新增字段介绍</a><a href="phase2-doc-attribution.html">④ 归因说明</a><a href="phase2-doc-accept.html">⑤ 验收口径</a><a href="phase2-doc-changelog.html">⑥ 修改记录</a><a class="nav-proto" href="http://localhost:3100/home/welcome" target="_blank">▶ 原型图</a></nav>
+</div>
+<div class="wrap">
+<div class="secttl">二阶段 · 产品文档目录</div>
+<div class="secsub">点击进入各板块（每个板块为独立页面，顶部导航条可互相跳转）。</div>
+<div class="hubgrid"><a class="hubcard" href="phase2-doc-prd.html"><div class="hc-t">① PRD · 目的与框架</div><div class="hc-d">一句话：把旧后台（SitINR）会员相关功能搬进新 SaaS 后台并升级——功能页 + 新导航 + 归因体系 + 推广分发链。</div></a><a class="hubcard" href="phase2-doc-interaction.html"><div class="hc-t">② 交互介绍</div><div class="hc-d">每页逐控件：筛选 / 列 / 工具栏 / 行操作 / 表单 / 特殊行为 · 截图可点击放大 · 以 3100 原型源码为准。</div></a><a class="hubcard" href="phase2-doc-fields.html"><div class="hc-t">③ 新增字段介绍</div><div class="hc-d">会员列表 + 会员详情新增/调整字段，统一 字段 / 定义 / 主要用途 三列 · 口径以 3100 原型为准。</div></a><a class="hubcard" href="phase2-doc-attribution.html"><div class="hc-t">④ 归因说明</div><div class="hc-d">归因体系（盖章 / 优先级 / 五步固化）+ 归因穷举矩阵（按主类型分组卡片流 · 整宽 5 步脉络图）。</div></a><a class="hubcard" href="phase2-doc-accept.html"><div class="hc-t">⑤ 验收口径</div><div class="hc-d">5 维度汇总 + 30 条验收用例清单（路由对到 3100）。</div></a><a class="hubcard" href="phase2-doc-changelog.html"><div class="hc-t">⑥ 修改记录</div><div class="hc-d">本套文档与原型的版本变更历史（近期在前）。</div></a></div>
+</div>
+
+<div id="lb" onclick="this.style.display='none'"><img src="" alt=""></div>
+<script>
+  document.querySelectorAll('.pcard .shot img').forEach(function(im){im.addEventListener('click',function(){var lb=document.getElementById('lb');lb.querySelector('img').src=im.src;lb.style.display='flex';});});
+  window.addEventListener('message',function(ev){var d=ev.data;if(!d||typeof d.__frameH!=='number')return;document.querySelectorAll('iframe').forEach(function(f){if(f.contentWindow===ev.source){f.style.height=(d.__frameH+24)+'px';f.scrolling='no';}});});
+</script>
+</body>
+</html>
