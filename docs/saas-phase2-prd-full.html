@@ -21,7 +21,7 @@
   nav a:hover{background:#eef2ff;color:var(--accent);}
   nav a.sub{padding-left:22px;color:var(--muted);font-size:12px;}
   nav .grp{font-weight:700;margin-top:10px;color:#111827;padding:4px 10px;}
-  main{flex:1;min-width:0;padding:26px 40px 100px;max-width:1180px;}
+  main{flex:1;min-width:0;padding:26px 40px 100px;max-width:none;}
   section{margin-bottom:42px;scroll-margin-top:70px;}
   h2.sec{font-size:21px;border-left:5px solid var(--accent);padding-left:12px;margin:0 0 6px;}
   .sd{color:var(--muted);font-size:13.5px;margin:0 0 16px;}
@@ -48,19 +48,49 @@
   .flow .step{background:#fff;border:1px solid var(--border);border-radius:8px;padding:7px 13px;font-size:13px;}
   .flow .arr{color:var(--accent);font-weight:700;}
   code{background:#f3f4f6;padding:1px 5px;border-radius:4px;font-size:12.5px;}
+  /* 顶部 Tab（融合产品原型 / 交互介绍 / 研发说明 / 验收用例，页内切换不跳出） */
+  header{align-items:stretch;}
+  header .logo,header .ver{align-self:center;}
+  header .tabs{display:flex;gap:4px;align-items:flex-end;margin-bottom:-12px;}
+  header .tabbtn{background:rgba(255,255,255,.10);color:rgba(255,255,255,.82);border:0;padding:9px 18px;border-radius:10px 10px 0 0;font-size:13px;cursor:pointer;line-height:1.2;transition:background .15s,color .15s;white-space:nowrap;}
+  header .tabbtn:hover{background:rgba(255,255,255,.22);color:#fff;}
+  header .tabbtn.active{background:var(--bg);color:#1e293b;font-weight:700;box-shadow:inset 0 3px 0 var(--accent);}
+  header .crumb{align-self:center;font-size:14px;font-weight:600;color:#c7d2fe}
+  header .crumb:empty{display:none}
+  header .hopen{align-self:center;color:#93c5fd;text-decoration:none;font-size:12px;margin-right:6px}
+  header .hopen:hover{text-decoration:underline}
+  .embed-view{height:calc(100vh - 53px);display:flex;flex-direction:column;}
+  .embed-bar{flex:none;display:flex;align-items:center;gap:10px;padding:5px 16px;background:#1e293b;color:#cbd5e1;font-size:12px;}
+  .embed-bar .u{font-family:ui-monospace,Menlo,monospace;color:#93c5fd;}
+  .embed-bar a{margin-left:auto;color:#93c5fd;text-decoration:none;}
+  .embed-bar a:hover{text-decoration:underline;}
+  .embed-view iframe{flex:1;width:100%;border:0;background:#fff;}
 </style>
 </head>
 <body>
 <header>
   <span class="logo">📘 SaaS 多商户后台 · 二阶段 PRD</span>
-  <span class="ver">整合版 v1.0 · 2026-06-17</span>
+  <span class="crumb" id="crumb"></span>
+  <span class="ver">整合版 v1.2 · 2026-06-22</span>
   <span class="grow"></span>
-  <a class="lnk" href="http://localhost:3100/member/user" target="_blank">产品原型 ↗</a>
-  <a class="lnk" href="phase2-interaction-guide.html" target="_blank">交互介绍 ↗</a>
-  <a class="lnk" href="saas-phase2-tech-design.html" target="_blank">研发说明 ↗</a>
-  <a class="lnk" href="saas-phase2-acceptance-cases-v3.html" target="_blank">验收用例 ↗</a>
+  <div class="tabs">
+    <button class="tabbtn active" data-view="prd">📘 PRD 文档</button>
+    <button class="tabbtn" data-proto="1" data-src="https://eason200116.github.io/saas-desigh/prototypes/lotto-v3/#/home/welcome">产品原型</button>
+    <button class="tabbtn" data-src="phase2-interaction-guide.html">交互介绍</button>
+    <button class="tabbtn" data-src="saas-phase2-tech-design.html">研发说明</button>
+    <button class="tabbtn" data-src="saas-phase2-acceptance-cases-v3.html">验收用例</button>
+  </div>
 </header>
-<div class="layout">
+<div class="embed-view" id="embedView" style="display:none">
+  <div class="embed-bar">
+    <span class="ebt" id="embedTitle"></span>
+    <span class="u" id="embedUrl"></span>
+    <a id="embedOpen2" href="#" target="_blank" rel="noopener"
+       style="border:1px solid #475569;padding:3px 12px;border-radius:6px;">↗ 新窗口打开</a>
+  </div>
+  <iframe id="embedFrame" title="嵌入页"></iframe>
+</div>
+<div class="layout" id="prdView">
   <nav>
     <a href="#info">0 · 文档信息</a>
     <a href="#bg">1 · 背景与目标</a>
@@ -90,8 +120,8 @@
     <table>
       <tr><th width="120">项</th><th>内容</th></tr>
       <tr><td>文档名称</td><td>SaaS 多商户后台 · 二阶段产品需求文档（PRD · 整合版）</td></tr>
-      <tr><td>版本 / 日期</td><td>v1.1 · 2026-06-22（同步：商户筛选多选+全部+互斥、多商户能力地图、站内信状态筛选 / 公告状态列只读 / 弹窗商户多选）</td></tr>
-      <tr><td>状态</td><td>评审用稿（交付以 <a href="http://localhost:3100" target="_blank">localhost:3100</a> 可点击原型为准）</td></tr>
+      <tr><td>版本 / 日期</td><td>v1.2 · 2026-06-22（对外分享基建：顶部 Tab 融合嵌入 / 在线发布 Pages / 链接环境自适应 R40 / 原型内文档直达。产品内容同 v1.1）</td></tr>
+      <tr><td>状态</td><td>评审用稿（交付以 <a href="https://eason200116.github.io/saas-desigh/prototypes/lotto-v3/#/home/welcome" target="_blank">线上原型</a> 可点击原型为准）</td></tr>
       <tr><td>权威来源</td><td>《二阶段功能说明书》v1.15、《二期验收用例》、迁移源盘点（SitINR 旧后台）</td></tr>
       <tr><td>适用范围</td><td>将旧后台 SitINR 的会员相关能力深度迁移至 V3 SaaS 多商户后台，并同步完成导航重组、归因体系建设与推广分发配置三项配套升级。</td></tr>
     </table>
@@ -124,7 +154,7 @@
       <tr><td>会员管理</td><td>会员列表增强、会员详情归因增强、分组管理（融合）、登录日志（增强）、短信验证码查询</td></tr>
       <tr><td>运营管理</td><td>站内消息、公告消息、轮播图管理；<b>推广配置</b>（渠道/域名/防封救援/解析检测）；运营数据（VIP 升级奖励/人数/操作日志）；返佣·等级（会员返佣等级/代理审核机制）</td></tr>
       <tr><td>风控管理</td><td>异常会员处理、同 IP/设备检测</td></tr>
-      <tr><td>配置中心</td><td>VIP 配置（等级 + 经验值）、返佣配置（等级 + 费率）</td></tr>
+      <tr><td>配置中心</td><td>基础配置：VIP 配置（等级 + 经验值）、返佣配置（等级 + 费率）；系统配置：注册管理、前台配置（语言）、系统参数配置、配置开关</td></tr>
       <tr><td>报表管理</td><td>代理报表、昨日返佣等级</td></tr>
       <tr><td>系统管理</td><td>IP 黑名单</td></tr>
     </table>
@@ -156,7 +186,7 @@
       <tr><td>① 会员管理</td><td>会员行为与数据查询</td><td>账号查询、分组管理、登录·验证</td></tr>
       <tr><td>② 运营管理</td><td>拉新促活的运营工具</td><td>运营配置、推广配置、返佣·等级、运营数据</td></tr>
       <tr><td>③ 风控管理 <span class="pill p-done">↑一级</span></td><td>会员行为风控</td><td>异常·检测</td></tr>
-      <tr><td>④ 配置中心 <span class="pill p-done">↑一级</span></td><td>低频规则配置</td><td>VIP 配置、返佣配置</td></tr>
+      <tr><td>④ 配置中心 <span class="pill p-done">↑一级</span></td><td>低频规则配置</td><td>基础配置（VIP 配置、返佣配置）、系统配置（注册管理、前台配置、系统参数配置、配置开关）</td></tr>
       <tr><td>⑤ 财务管理</td><td>资金变动配置与数据</td><td>（一期已建，本期不动）</td></tr>
       <tr><td>⑥ 游戏管理</td><td>游戏配置与数据</td><td>（后续迭代）</td></tr>
       <tr><td>⑦ 报表管理</td><td>经营数据报表与预警</td><td>代理报表</td></tr>
@@ -268,15 +298,18 @@
     <h2 class="sec">6 · 功能需求</h2>
     <p class="sd">按 6 个模块拆分，每条需求标注唯一编号（<code>REQ-模块-序号</code>）便于追踪；「来源」标明对应的 SitINR 旧页或「全新」，「验收」给出该条的关键判据。通用交互（筛选/表格/弹窗/反馈）统一遵循 <a href="#global">第 4 节 · 全局框架与通用交互</a>，下文只描述各功能的专属需求。</p>
     <h3 id="r-member-h">6.1 会员管理</h3>
+    <p class="sd"><b>账号查询</b>：会员全量档案与查询入口（会员列表 / 会员详情）。</p>
     <div class="req"><div class="rh"><span class="rid">REQ-MBR-01</span><span class="rn">会员列表增强</span><span class="src">源 UserManage</span></div>
       <ul><li>19 项搜索 + 商户筛选（<b>多选 + 全部</b>）；批量操作（拉黑/启用/分组/转渠道等）；自定义列。</li><li>新增红色列 +「领取返佣 / 对上级返佣」行内开关（二次确认）。</li><li><b>横版 / 竖版切换</b>（工具栏右侧分段按钮，默认横版）：横版＝扁平列一字段一列（约 38 列）；竖版＝同类字段并成「标签在上 / 值在下」复合列（约 16 列，行更高、横向更短）。</li><li>会员 ID 下钻会员详情；操作全部平铺一行（无「更多」折叠）；<b>操作列恒为最后一列、默认右侧冻结</b>（横/竖版都是），自定义列中不可取消冻结 / 拖拽、仅可显隐。</li><li>设备字段（注册 / 登录端）统一为 <b>7 种术语</b>：H5 / PC / 安卓原生 / iOS原生 / 安卓壳包 / iOS壳包 / PWA。</li></ul>
       <div class="ac"><b>验收：</b>切换开关弹二次确认并 Toast；商户切换列表重渲染；自定义列保存后才生效；横/竖版切换后操作列始终冻结在最右且不可取消冻结。</div></div>
     <div class="req"><div class="rh"><span class="rid">REQ-MBR-02</span><span class="rn">会员详情归因增强</span><span class="src">源 UserDetaile + A_UserRelative</span></div>
       <ul><li>27 红字归因字段按指定位置注入，布局不变；代理数据含 10 级代理关系图。</li><li>同 IP/设备/指纹数值可下钻<a href="#r-risk">风控页</a>；邀请人可点击下钻。</li></ul>
       <div class="ac"><b>验收：</b>红字字段齐全、可点可复制；原有面板（统计/活动奖励/VIP/保险箱等）不变。</div></div>
+    <p class="sd" style="margin-top:18px"><b>分组管理</b>：会员分类与自动归组。</p>
     <div class="req"><div class="rh"><span class="rid">REQ-MBR-03</span><span class="rn">分组管理（融合页）</span><span class="src">源 用户分组+分组表单+权限</span></div>
       <ul><li>「会员分组 + 分组表单 + 权限配置」融合为一页；新增填名称与自动归组阈值（充值金额/次数/投注）。</li><li>状态列 badge 纯展示（开绿/关灰）；系统默认分组不可改不可删。</li></ul>
       <div class="ac"><b>验收：</b>新增分组回写列表并 Toast；表尾「已选合计」实时统计。</div></div>
+    <p class="sd" style="margin-top:18px"><b>登录 · 验证</b>：登录明细与短信验证码下发查询。</p>
     <div class="req"><div class="rh"><span class="rid">REQ-MBR-04</span><span class="rn">登录日志（增强迁移）</span><span class="src">源 LoginLog</span></div>
       <ul><li>按会员 ID（多 ID 空格分隔）/IP/时间查询；设备与浏览器指纹融合一列（按终端二选一）。</li></ul>
       <div class="ac"><b>验收：</b>纯查询页无行操作；聚合分析指引至 <a href="#r-risk">风控同 IP/设备检测</a>。</div></div>
@@ -287,12 +320,14 @@
 
   <section id="r-ops">
     <h3>6.2 运营管理</h3>
+    <p class="sd"><b>运营配置（opsConfig）</b>：面向运营的消息与展示素材配置。</p>
     <div class="req"><div class="rh"><span class="rid">REQ-OPS-01</span><span class="rn">站内消息</span><span class="src">源 Message</span></div>
       <ul><li>弹窗/滚动/推送三页签；新增推送弹窗：标题≤100、富文本正文≤500、图片上传、发送时间（可预约）、推送通道（Firebase/极光）、用户（全体/指定）。</li><li>指定用户支持表格导入（≤1000 自动去重）；未发送可编辑、已发送仅详情。</li><li><b>本期调整</b>：弹窗/滚动 Tab 新增「状态」(启用/禁用)筛选（推送 Tab 本就有「发送状态」筛选）；新增/编辑弹窗加<b>商户多选下拉</b>；商户筛选多选 + 全部。</li></ul></div>
     <div class="req"><div class="rh"><span class="rid">REQ-OPS-02</span><span class="rn">公告消息</span><span class="src">源 公告体系</span></div>
       <ul><li>弹窗/滚动双页签；7 语种独立保存、切换不丢内容；未配置语种前台回退英语。</li><li>筛选加渠道，列表含商户+渠道列；表单首项加商户（<b>多选下拉</b>）。</li><li><b>本期调整</b>：<b>状态列改为只读展示</b>（启用/禁用，不在列表直接切换），状态改到编辑弹窗内维护；商户筛选多选 + 全部。</li></ul></div>
     <div class="req"><div class="rh"><span class="rid">REQ-OPS-03</span><span class="rn">轮播图管理</span><span class="src">源 Banners</span></div>
       <ul><li>图片上传+预览；三选一跳转：URL / 厂商或子游戏（三级联动）/ 在线客服；排序。</li><li>表单首项加商户（<b>多选下拉</b>）；列表加商户列；商户筛选多选 + 全部。</li></ul></div>
+    <p class="sd" style="margin-top:18px"><b>推广配置（opsPromotion）</b>：「域名 → 渠道 → 推广 → 获客」链路配置。</p>
     <div class="req"><div class="rh"><span class="rid">REQ-OPS-04</span><span class="rn">渠道管理</span><span class="src">源 Channel（扩展）</span></div>
       <ul><li>渠道名/渠道 ID（自动生成、唯一、只读）/域名/编码/类型（官方仅 H5 / 投放多端）/分发端/赠送金额/打码倍数/备注。</li></ul></div>
     <div class="req"><div class="rh"><span class="rid">REQ-OPS-05</span><span class="rn">域名管理（全新）</span><span class="src">全新</span></div>
@@ -301,14 +336,17 @@
       <ul><li>救援开关/救援域名（多选）/救援方案/救援奖金；触发链路：原域名被封→弹救援窗→随机救援域名→下载 PWA/App 自动带账号登录+领奖。</li></ul></div>
     <div class="req"><div class="rh"><span class="rid">REQ-OPS-07</span><span class="rn">解析检测记录（全新）</span><span class="src">全新</span></div>
       <ul><li>周期巡检 + 手动检测；DNS 解析状态 正常绿/异常红；展示检测节点/解析 IP/响应耗时/TTL。</li></ul></div>
+    <p class="sd" style="margin-top:18px"><b>运营数据（opsData）</b>：VIP 相关只读统计与日志。</p>
     <div class="req"><div class="rh"><span class="rid">REQ-OPS-08</span><span class="rn">运营数据：VIP 升级奖励 / VIP 人数 / VIP 操作日志</span><span class="src">源 VipRewards/VipLevelQuantity/VipRecord</span></div>
       <ul><li>升级奖励记录（发放/领取）；VIP 人数（3 列 10 行，人数蓝链下钻）；VIP 操作日志（明细流水，含页面总计）。</li></ul></div>
+    <p class="sd" style="margin-top:18px"><b>返佣 · 等级（opsRebateLevel）</b>：会员返佣等级与代理返佣资格审核。</p>
     <div class="req"><div class="rh"><span class="rid">REQ-OPS-09</span><span class="rn">返佣·等级：会员返佣等级 / 代理审核机制</span><span class="src">源 User_RebateLv / UserReview+EditUserRebate</span></div>
       <ul><li>会员返佣等级：按配置值强制提升（含连续使用天数/失效规则）；新增/编辑弹窗加<b>商户多选下拉</b>；商户筛选多选 + 全部。</li><li>代理审核机制：返佣资格审核，返佣状态 badge，修改返佣弹窗（5 游戏基础费率+备注）。</li></ul></div>
   </section>
 
   <section id="r-risk">
     <h3>6.3 风控管理</h3>
+    <p class="sd"><b>异常 · 检测</b>：异常会员处置与同 IP/设备关联检测。</p>
     <div class="req"><div class="rh"><span class="rid">REQ-RSK-01</span><span class="rn">异常会员处理</span><span class="src">源 AbnormalUser + 批量回收</span></div>
       <ul><li>多会员 ID 查询（≤100）；四项批量处置：回收余额/保险箱转出/驳回提现/余额扣除。</li><li>驳回提现填备注（禁中文）；余额扣除填负金额+备注；金额列页脚合计。</li></ul>
       <div class="ac"><b>验收：</b>危险操作二次确认后执行并 Toast。</div></div>
@@ -318,16 +356,31 @@
 
   <section id="r-config">
     <h3>6.4 配置中心</h3>
+    <p class="sd"><b>基础配置组（cfgBasic）</b>：按商户独立、可模板套用复用的 VIP / 返佣 核心规则。</p>
     <div class="req"><div class="rh"><span class="rid">REQ-CFG-01</span><span class="rn">VIP 配置</span><span class="src">源 VipLevel + VipCurrencyExp</span></div>
-      <ul><li>双页签：VIP 等级（VIP0–VIP10 固定 11 级，行内编辑无弹窗、去 ID 列、名称只读）+ 经验值配置（按币种换算）。</li><li>顶部商户工作区（选商户→保存→发布）+ 复制模板到其他商户；保存校验标红+错误面板；ⓘ 配置介绍。</li><li><b>配置模式</b>用分段单选按钮（非下拉），右侧灰字显示当前模式说明；当前两种：使用自定义模版 / 使用商户模版（「单商户配置」暂隐藏）。</li></ul>
-      <div class="ac"><b>验收：</b>等级固定不可增删；等级/经验逐级递增、数值≥0；配置模式为分段单选、仅两种可选。</div></div>
+      <ul><li>双页签：VIP 等级（VIP0–VIP10 固定 11 级，行内编辑无弹窗、去 ID 列、名称只读；含升级/续级/降级经验、各项奖励、五游戏洗码率、保险箱利率、每日提现上限等列）+ 经验值配置（按币种换算「金额→经验」比例）。</li><li>顶部商户工作区（选商户 → 保存 → 发布）+「以当前商户复制到其他商户」；保存前弹<b>内容预览确认弹窗</b>（只读 mini 表），校验失败标红 + 错误面板。</li><li><b>配置模式</b>用分段单选按钮（非下拉），右侧灰字显示当前模式说明；当前两种：使用自定义模版 / 使用商户模版（「单商户配置」暂隐藏）。</li></ul>
+      <div class="ac"><b>验收：</b>等级固定不可增删；等级/经验逐级递增、数值≥0；保存先弹内容预览再确认；配置模式为分段单选、仅两种可选。</div></div>
     <div class="req"><div class="rh"><span class="rid">REQ-CFG-02</span><span class="rn">返佣配置</span><span class="src">源 RebateLevel + RebateLvRateConfig</span></div>
-      <ul><li>双页签：返佣等级管理（晋升条件表，0 级基础不可删）+ 返佣费率配置（一~六级 × 五游戏）。</li><li><b>配置模式</b>与 VIP 配置一致：分段单选按钮 + 右侧灰字说明；当前两种：使用自定义模版 / 使用商户模版（「单商户配置」暂隐藏）。</li></ul>
-      <div class="ac"><b>验收：</b>同级五大类费率之和 &gt;4% 校验拦截（标红+错误面板）；配置模式为分段单选、仅两种可选。</div></div>
+      <ul><li>双页签：返佣等级管理（晋升条件表：每级含「团队 / 直属」各 充值人数·充值金额·游戏金额 共 6 项阈值，0 级基础不可删，行内增删改 + 保存前预览）+ 返佣费率配置（按等级卡片排列，每卡为「六层级（1–6 级）× 五游戏大类」矩阵，费率 6 位小数逐格编辑）。</li><li>五游戏大类＝彩票 / 电子 / 直播 / 体育 / 棋牌；ⓘ 配置介绍按钮。</li><li><b>配置模式</b>与 VIP 配置一致：分段单选按钮 + 右侧灰字说明；当前两种：使用自定义模版 / 使用商户模版（「单商户配置」暂隐藏）。</li></ul>
+      <div class="ac"><b>验收：</b>每个游戏大类「跨 1–6 级纵向合计」≤ 5%（对齐源站 RebateLvRateConfig），越限整列标红 + 指名该游戏及合计百分比；配置模式为分段单选、仅两种可选。</div></div>
+
+    <p class="sd" style="margin-top:18px"><b>系统配置组（cfgSystem）</b>：以下为配置中心「系统配置」分组下的商户级配置页，均顶部商户切换条、按商户配置，统一「保存（草稿）→ 发布（对外生效）」两步，保存前弹内容预览确认。</p>
+    <div class="req"><div class="rh"><span class="rid">REQ-CFG-03</span><span class="rn">注册管理</span><span class="src">源 SystemController（RegisterState 等）+ IsOpenCaptcha</span></div>
+      <ul><li>单页平铺、不分 Tab；<b>5 板块</b>：① 注册开关（8 开关：开启注册 + 短信/手机/邮箱/图形验证码/邀请码必填/隐私默认勾选/游客登录 + 关闭注册提示文案）· ② 注册限制（同IP/同浏览器/同设备 注册数）· ③ 注册赠送（金额 + 打码倍数）· ④ 可注册手机号（当前默认区号 + 区号+长度卡片平铺、页内增删）· ⑤ 图形验证码（启用/类型〔数字·字母·算术·滑块〕/位数〔算术·滑块时禁用〕/有效期/错误上限 + 实时预览 + 适用场景〔登录/注册/找回密码/绑定谷歌 4 选〕）。</li><li>顶部商户切换条，全页单一「保存（草稿）→ 发布」，统一校验。</li></ul>
+      <div class="ac"><b>验收：</b>可注册手机号区号格式红框；图形验证码启用时位数（非算术/滑块）·有效期必填红框；关闭「开启注册」展开前台提示文案；保存前弹内容预览。</div></div>
+    <div class="req"><div class="rh"><span class="rid">REQ-CFG-04</span><span class="rn">前台配置（语言配置）</span><span class="src">源 H5Setting 全集</span></div>
+      <ul><li>前台 C 端展示配置，<b>3 板块</b>：① 品牌素材（站点名〔必填〕 + 主 Logo / 头部 Logo / 浏览器 icon，图片上传占位）· ② 语言（支持语言 15 种多选〔必填，≥1〕 + 默认语言〔必填，限已选范围〕）· ③ 展示（货币符号 10 选 + 提现人姓名大小写）。</li><li>注：「当前默认区号」已并入「注册管理 · 可注册手机号」，本页不再含国家区号。</li></ul>
+      <div class="ac"><b>验收：</b>站点名 / 支持语言（≥1）/ 默认语言必填红框；默认语言须 ∈ 支持语言（否则红框）；保存前弹内容预览。</div></div>
+    <div class="req"><div class="rh"><span class="rid">REQ-CFG-05</span><span class="rn">系统参数配置</span><span class="src">源 SystemController 参数族</span></div>
+      <ul><li>商户级系统参数（数值/选择/开关/文本型），左侧二级锚点联动分 <b>8 大类</b>：注册与登录安全 · 资金与绑定 · 汇率 · 营销与奖励 · 代理 · 预警监控 · 下发限制 · 第三方与外观（73 参数 · 30 源组归并 8 大类，每类含子组）。</li></ul>
+      <div class="ac"><b>验收：</b>数值参数范围校验，失败红框 + 错误提示；保存（草稿）→ 发布两步，保存前弹内容预览。</div></div>
+    <div class="req"><div class="rh"><span class="rid">REQ-CFG-06</span><span class="rn">配置开关</span><span class="src">源 SystemController 开关族</span></div>
+      <ul><li>商户级功能开关总览（双列开关网格），左侧二级锚点 <b>9 组</b>：登录与安全 · 充值与支付 · 提现 · 活动与奖励 · 财务与积分 · 彩票与游戏 · 代理与风控 · 推广与链接 · 数据追踪与推送（62 开关 · 源站「登录与注册」13 开关中 5 个注册流程开关归「注册管理」、其余 8 个登录/安全类收入本页，两页不重复）。</li><li>每项 = 开关 + 名称 + 说明；保存（草稿）→ 发布两步，保存前弹内容预览。</li></ul></div>
   </section>
 
   <section id="r-report">
     <h3>6.5 报表管理</h3>
+    <p class="sd"><b>代理报表</b>：代理维度的返佣经营报表（代理报表 / 昨日返佣等级 / 返佣报表）。</p>
     <div class="req"><div class="rh"><span class="rid">REQ-RPT-01</span><span class="rn">代理报表</span><span class="src">源 邀请报表 A/C/D/M</span></div>
       <ul><li>按统计周期切换（日/日区间/月/所有）+ 翻页；内部=返利、外部=返佣；「下级列表」真实下钻抽屉。</li></ul></div>
     <div class="req"><div class="rh"><span class="rid">REQ-RPT-02</span><span class="rn">昨日返佣等级</span><span class="src">源 User_RebateLv_Last</span></div>
@@ -339,6 +392,7 @@
 
   <section id="r-system">
     <h3>6.6 系统管理</h3>
+    <p class="sd"><b>访问控制 · 日志</b>：账号权限与安全名单（本期新增 IP 黑名单）。</p>
     <div class="req"><div class="rh"><span class="rid">REQ-SYS-01</span><span class="rn">IP 黑名单（新增）</span><span class="src">源 BlackIp</span></div>
       <ul><li>列表：IP（v4+v6）/封禁类型（多标签）/原因（字数计）/关联会员/操作人·时间/状态。</li><li>批量导入（<b>弹窗</b>）：点「批量导入」打开弹窗，粘贴或上传 .csv/.xlsx（首列=IP），自动识别合法 IP、实时去重 ≤500 条，选类型+原因后确认。</li></ul></div>
   </section>
@@ -421,7 +475,7 @@
       <tr><td>二阶段（本期）</td><td>会员深度迁移 22 页 + 推广分发配置 4 页 + 导航重组 + 归因字段</td><td><span class="pill p-in">进行中</span></td></tr>
       <tr><td>三阶段</td><td>预留（财务/游戏/多维报表/系统底层配置等延后项）</td><td><span class="pill p-late">规划中</span></td></tr>
     </table>
-    <p class="sd">交付以 localhost:3100 可点击原型为准（真实交互、非占位）。详细迁移对照表见工作计划书（158 项）。</p>
+    <p class="sd">交付以线上原型为准（真实交互、非占位）。详细迁移对照表见工作计划书（158 项）。</p>
   </section>
 
   <section id="risk">
@@ -440,7 +494,7 @@
     <table>
       <tr><th width="280">文档</th><th>内容</th></tr>
       <tr><td colspan="2" style="background:#f1f5f9;font-weight:700;color:#0f172a">关联四件套（产品原型 · 交互介绍 · 研发说明 · 验收用例）</td></tr>
-      <tr><td><b>①&nbsp;产品原型</b> · <a href="http://localhost:3100/member/user" target="_blank">可点击原型（localhost:3100）↗</a></td><td>真实交互原型，交付以此为准；默认入口 · 会员列表</td></tr>
+      <tr><td><b>①&nbsp;产品原型</b> · <a href="https://eason200116.github.io/saas-desigh/prototypes/lotto-v3/#/home/welcome" target="_blank">可点击原型（线上）↗</a></td><td>真实交互原型，交付以此为准；默认入口 · 首页欢迎</td></tr>
       <tr><td><b>②&nbsp;交互介绍</b> · <a href="phase2-interaction-guide.html" target="_blank">交互介绍（控件级）↗</a></td><td>逐页控件级「怎么用、点了会发生什么」：6 模块通用骨架 + 各页专属交互</td></tr>
       <tr><td><b>③&nbsp;研发说明</b> · <a href="saas-phase2-tech-design.html" target="_blank">二阶段技术方案 ↗</a></td><td>归因体系研发口径：数据模型 / 采集埋点 / 接口与落库</td></tr>
       <tr><td><b>④&nbsp;验收用例</b> · <a href="saas-phase2-acceptance-cases-v3.html" target="_blank">二期验收用例（V3 原型版）↗</a></td><td>逐条操作步骤 → 预期结果，对齐 V3 原型逐条点验</td></tr>
@@ -453,6 +507,16 @@
     <table>
       <tr><th width="90">版本</th><th width="110">日期</th><th>变更摘要</th></tr>
       <tr>
+        <td>v1.2</td><td>2026-06-22</td>
+        <td>
+          <b>对外分享基建（不改产品内容，仅文档/原型的发布与互链）：</b><br>
+          ① <b>顶部 Tab 融合嵌入</b>：PRD 文档 / 产品原型 / 交互介绍 / 研发说明 / 验收用例，页内 iframe 切换不跳出。<br>
+          ② <b>在线发布</b>：原型站与本文档套件发布到 GitHub Pages，生成对外可分享链接（公网可访问）。<br>
+          ③ <b>链接环境自适应</b>（R40）：本地看文档 → 产品原型/各文档走本地（localhost:3100 / 8090）；线上看文档 → 自动走公网地址，互不残留。<br>
+          ④ <b>原型内文档直达</b>：右下角浮窗新增「交互介绍」「二阶段 PRD」两条文档链、顶栏「产品与服务」下拉新增「产品文档 PRD」入口（均按 R40 语境自适应）。
+        </td>
+      </tr>
+      <tr>
         <td>v1.1</td><td>2026-06-22</td>
         <td>
           ① <b>多商户能力地图</b>（§3）：新增「一查询 + 两配置」三态——分数据查询 / 模板化配置 / 单站点配置。<br>
@@ -462,7 +526,8 @@
           ⑤ <b>轮播图 / 会员返佣等级</b>（§6.2 / §6.9）：新增/编辑弹窗加商户多选。<br>
           ⑥ <b>短信验证码</b>（§6.1）：移除商户筛选。<br>
           ⑦ <b>关联文档</b>（§12）：收敛为「关联四件套」（产品原型 / 交互介绍 / 研发说明 / 验收用例），删除「补充参照」子块。<br>
-          ⑧ <b>通用交互规范补充</b>（§4.2）：新增 列对齐与状态 / 校验反馈 / 导出按钮条件 / 设备术语(7种) / 编辑形态 / 空态与加载 / 迁移「新」标 共 7 条规范。
+          ⑧ <b>通用交互规范补充</b>（§4.2）：新增 列对齐与状态 / 校验反馈 / 导出按钮条件 / 设备术语(7种) / 编辑形态 / 空态与加载 / 迁移「新」标 共 7 条规范。<br>
+          ⑨ <b>配置中心补全</b>（§6.4 / §4.1）：新增「系统配置」组 4 页 —— 注册管理(REQ-CFG-03) / 前台配置(04) / 系统参数配置(05) / 配置开关(06)。
         </td>
       </tr>
       <tr>
@@ -479,6 +544,43 @@
     const h=a.getAttribute('href'); if(h.length<2)return;
     const t=document.querySelector(h); if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});history.replaceState(null,'',h);}
   }));
+  // 环境自适应：本地(localhost)看文档 → 产品原型走本地 3100；线上(github.io)看文档 → 走线上原型。
+  // 交互介绍/研发说明/验收用例为相对链接，自动跟随当前站点（本地/线上各自对应），无需处理。
+  (function(){
+    const PROTO_ONLINE='https://eason200116.github.io/saas-desigh/prototypes/lotto-v3/#/home/welcome';
+    const isLocal=/^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/.test(location.hostname);
+    const PROTO_LOCAL='http://localhost:3100/'+(PROTO_ONLINE.split('#/')[1]||'');
+    const PROTO=isLocal?PROTO_LOCAL:PROTO_ONLINE;
+    const protoBtn=document.querySelector('.tabbtn[data-proto]');
+    if(protoBtn) protoBtn.dataset.src=PROTO;
+    // 本地环境下，把正文里指向线上原型的 <a> 也改为本地 3100，保持「本地文档↔本地原型」
+    if(isLocal){
+      document.querySelectorAll('a[href*="github.io/saas-desigh/prototypes/lotto-v3"]').forEach(a=>{ a.href=PROTO; });
+    }
+  })();
+  // 顶部 Tab：PRD 文档 / 产品原型 / 交互介绍 / 研发说明 / 验收用例，页内切换不跳出（iframe 懒加载）
+  (function(){
+    const tabs=[...document.querySelectorAll('.tabbtn')];
+    const prd=document.getElementById('prdView');
+    const embed=document.getElementById('embedView');
+    const frame=document.getElementById('embedFrame');
+    const crumb=document.getElementById('crumb');
+    const embedTitle=document.getElementById('embedTitle');
+    const embedUrl=document.getElementById('embedUrl');
+    const embedOpen2=document.getElementById('embedOpen2');
+    tabs.forEach(b=>b.addEventListener('click',()=>{
+      tabs.forEach(x=>x.classList.remove('active')); b.classList.add('active');
+      if(b.dataset.view==='prd'){ embed.style.display='none'; prd.style.display='flex'; crumb.textContent=''; return; }
+      const src=b.dataset.src;
+      if(frame.getAttribute('src')!==src) frame.setAttribute('src',src);
+      crumb.textContent='› '+b.textContent;                 // 文档名作为 PRD 子标题（面包屑）
+      // 子标题下方栏：文档名 + 新窗口打开按钮（含产品原型）
+      embedTitle.textContent=b.textContent.trim();
+      embedUrl.textContent=src;
+      embedOpen2.href=src;
+      prd.style.display='none'; embed.style.display='flex';
+    }));
+  })();
 </script>
 </body>
 </html>
