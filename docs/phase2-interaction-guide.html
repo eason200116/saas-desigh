@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>二阶段 · 交互介绍（控件级）</title>
+<style>
+  :root{--accent:#2563eb;--ink:#1f2328;--sub:#64748b;--line:#e5e7eb;--bg:#f5f6f8}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
+  header{position:sticky;top:0;z-index:9;background:linear-gradient(90deg,#1e293b,#312e81);color:#fff;padding:14px 28px}
+  header h1{margin:0;font-size:18px}
+  header .ver{font-size:12px;opacity:.75;margin-top:3px}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 22px 80px}
+  h2{font-size:19px;border-left:5px solid var(--accent);padding-left:12px;margin:32px 0 10px}
+  .lead{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:13px 18px;font-size:13.5px;line-height:1.85;margin:12px 0}
+  .pcard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:12px 0;box-shadow:0 1px 3px rgba(0,0,0,.03);display:flex;gap:18px}
+  .pcard .shot{width:380px;max-width:40%;flex:none}
+  .pcard .shot img{width:100%;border:1px solid var(--line);border-radius:8px;cursor:zoom-in;display:block;position:sticky;top:70px}
+  .pcard .info{flex:1;min-width:0}
+  .pcard.nopic{display:block}
+  .pcard .nm{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .pcard .route{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#0f172a;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;padding:1px 7px}
+  .pcard .use{color:var(--sub);font-size:12.5px;margin:5px 0 8px}
+  ul.ctrl{margin:0;padding-left:0;list-style:none;font-size:13px;line-height:1.7}
+  ul.ctrl li{margin:5px 0;padding-left:2px}
+  .lbl{display:inline-block;font-size:11px;font-weight:700;color:#fff;border-radius:4px;padding:1px 7px;margin-right:6px;vertical-align:1px}
+  .lbl.flt{background:#0ea5e9}.lbl.col{background:#64748b}.lbl.tb{background:#7c3aed}.lbl.act{background:#d97706}.lbl.frm{background:#16a34a}.lbl.sp{background:#dc2626}.lbl.tab{background:#1e293b}
+  .badge{font-size:10px;border-radius:3px;padding:1px 6px;font-weight:700}
+  .badge.new{background:#dcfce7;color:#15803d}.badge.built{background:#dbeafe;color:#1d4ed8}
+  b.k{color:#b45309}
+  .muted{color:var(--sub);font-size:12px}
+  code{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;padding:0 5px;font-size:11.5px}
+  #lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;align-items:center;justify-content:center;cursor:zoom-out}
+  #lb img{max-width:94vw;max-height:94vh;border-radius:6px;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+  @media(max-width:860px){.pcard{flex-direction:column}.pcard .shot{width:100%;max-width:100%}.pcard .shot img{position:static}}
+  .ctab{width:100%;border-collapse:collapse;font-size:13px;line-height:1.6}
+  .ctab th,.ctab td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  .ctab th{background:#f8fafc;font-weight:700;white-space:nowrap}
+  .ctab td:first-child{white-space:nowrap}
+  .sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:7px;border:1px solid rgba(0,0,0,.12)}
+  .hex{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#0f172a}
+</style>
+</head>
+<body>
+<header>
+  <h1>🟣 二阶段 · 交互介绍（控件级）</h1>
+  <div class="ver">每页逐控件：筛选 / 列 / 工具栏 / 行操作 / 表单 / 特殊行为 · 截图可点击放大 · 以 3100 原型源码为准</div>
+</header>
+<div class="wrap">
+
+  <div class="lead">
+    <b>读法</b>：每页按 <span class="lbl flt">筛选</span><span class="lbl col">列</span><span class="lbl tb">工具栏</span><span class="lbl act">行操作</span><span class="lbl frm">表单</span><span class="lbl sp">特殊</span> 六类逐控件说明；<span class="lbl tab">页签</span> 标多页签。<span class="badge built">已增强</span>=本期原型已补全。字段含义见《新增字段介绍》。
+  </div>
+
+  <h2>通用骨架（所有列表页共用，下文不再重复）</h2>
+  <div class="pcard nopic">
+    <ul class="ctrl">
+      <li><span class="lbl flt">筛选</span>条件即时过滤；「搜索/重置」；pin 项常驻、其余「展开/收起」；日期区间带「今天/昨天/本周/上周/本月/上月/所有」快捷。</li>
+      <li><span class="lbl col">列</span>内容默认居中；列 &gt;10 出「自定义列」（勾选<b>保存才生效</b>）；状态/类型列渲染为彩色 Tag；金额列千分位、按商户时区显示时间。</li>
+      <li><span class="lbl tb">工具栏</span>导出点击真实下载 CSV + Toast；分页 10/20/50/100 各页独立记忆。</li>
+      <li><span class="lbl sp">特殊</span>顶栏切商户 → 列表按该商户重渲染、隐藏「商户」列；删除/批量/危险操作弹二次确认；字段/行内编辑<b>页内完成</b>；缩略图悬停放大。</li>
+    </ul>
+  </div>
+
+  <h2>控件交互色彩规范 <span class="badge new">新</span></h2>
+  <div class="lead">
+    全站控件颜色取自 3100 原型主题 token（主色默认 <span class="hex">#009688</span>）。<b>一种颜色 = 一种含义，不得混用</b>：青绿 = 可点 / 主操作，绿 = 成功 / 启用，橙 = 警告 / 待办，红 = 危险 / 失败 / 校验错误，灰 = 只读 / 禁用。下表是各页彩色按钮、链接、状态 Tag、红字字段背后的统一口径。
+  </div>
+  <div class="pcard nopic">
+    <table class="ctab">
+      <tr><th>色值</th><th>角色</th><th>用在哪些控件</th><th>交互态 / 备注</th></tr>
+      <tr>
+        <td><span class="sw" style="background:#009688"></span><span class="hex">#009688</span></td>
+        <td><b>品牌主色</b><br>可点 / 主操作</td>
+        <td>主按钮（搜索 / 保存 / 确定 / 新增）、文字链接、会员ID·注册IP 等可下钻数值、选中的页签与筛选快捷、行内开关「开」、分页当前页、加载/进度。</td>
+        <td>悬停加深（≈#00897b）、按下更深；禁用时降透明度并禁点。</td>
+      </tr>
+      <tr>
+        <td><span class="sw" style="background:#18a058"></span><span class="hex">#18a058</span></td>
+        <td><b>成功 / 启用</b></td>
+        <td>「成功 / 正常 / 已启用 / 在线」状态 Tag、保存成功 Toast、校验通过提示。</td>
+        <td>仅表「状态」，不用于可点元素，避免与主色混淆。</td>
+      </tr>
+      <tr>
+        <td><span class="sw" style="background:#f0a020"></span><span class="hex">#f0a020</span></td>
+        <td><b>警告 / 待办</b></td>
+        <td>「待处理 / 审核中 / 即将到期」状态 Tag、风险提醒、需关注但非错误的提示。</td>
+        <td>提示性，不阻断操作。</td>
+      </tr>
+      <tr>
+        <td><span class="sw" style="background:#d03050"></span><span class="hex">#d03050</span></td>
+        <td><b>危险 / 失败 / 错误</b></td>
+        <td>删除 / 拉黑 / 禁用等危险按钮、「失败 / 已禁用 / 已拉黑」Tag、<b>归因红字字段</b>、<b>必填校验未过的红框 + 顶部错误面板</b>、红包充值等强提醒链接。</td>
+        <td>危险操作主按钮用红并弹二次确认；校验失败需红框定位到错误字段。</td>
+      </tr>
+      <tr>
+        <td><span class="sw" style="background:#6b7280"></span><span class="hex">#6b7280</span></td>
+        <td><b>中性 / 只读 / 禁用</b></td>
+        <td>正文与次要说明、列默认文字、灰色指纹/设备号副行、未勾选时置灰的「批量操作」、不可点的禁用控件。</td>
+        <td>灰 = 当前不可交互或纯展示。</td>
+      </tr>
+    </table>
+  </div>
+
+  <h2>① 会员管理</h2>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-member-list.png" alt="会员列表"></div>
+    <div class="info">
+      <div class="nm">会员列表 · 增强 <span class="route">/member/user</span></div>
+      <div class="use">会员全量档案与查询入口。</div>
+      <ul class="ctrl">
+        <li><span class="lbl flt">筛选</span>商户(必填) · 会员ID(多ID空格) · 账号 · 会员状态 · 注册时间区间；高级区：代理ID/注册IP/登录IP/邀请码/备注 · 渠道/注册设备/登录设备/代理状态/VIP等级/会员分组/活跃时间 · 黑名单/活动黑名单/注册指纹。</li>
+        <li><span class="lbl col">列</span>商户 · 会员ID(可复制·点击下钻详情) · 昵称 · 账号 · 余额/三方/安全/红包 · 邀请码 · 渠道号 · <b>注册域名/设备号/浏览器指纹「新」</b> · 注册IP(可下钻) · <b>上次登录端/设备号/指纹「新」</b> · 投注额 · 分组 · 类型 · 黑名单(Tag) · 会员状态(Tag) · 在线(Tag) · <b>首充代理/佣金模式「新」</b> · 充值次数/金额 · VIP等级 · 备注(红字)；<b>含本页/总计合计行</b>。</li>
+        <li><span class="lbl tb">工具栏</span>批量导入 · 导出 · <b>批量操作下拉</b>(未勾选置灰)：拉黑/洗白/禁用/启用/分组/加标签/转渠道/删备注/重置谷歌。</li>
+        <li><span class="lbl act">行操作</span>修改密码 · 三方信息。</li>
+        <li><span class="lbl frm">表单</span>修改密码弹窗(新密码≥6) · 三方信息弹窗(FireBase/极光 Token) · 批量分组/转渠道/加标签参数弹窗 · 批量导入弹窗(下载模板 + 上传 Excel + 校验列 + 一键操作)。</li>
+        <li><span class="lbl sp">特殊</span><b>领取返佣 / 对上级返佣「新」两开关</b>切换均弹二次确认；批量状态类走二确、需参数类走参数弹窗；接受外部 query 下钻预填(IP/设备)。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec3-detail-full.png" alt="会员详情·增强"></div>
+    <div class="info">
+      <div class="nm">会员详情 · 增强 <span class="route">/member/user → 详情弹窗</span></div>
+      <div class="use">弹窗内 6 个 Tab；首个「基本信息」为单页滚动多面板，注册信息（归因）置顶、红字按位置注入（截图即该 Tab）。</div>
+      <ul class="ctrl">
+        <li><span class="lbl tb">顶部</span>会员ID 输入(回车查) · 日期区间(按商户时区) · 「查询」；多会员历史标签条(可切换/关闭，≤10)。</li>
+        <li><span class="lbl tab">Tab</span>基本信息 / 充提信息 / 投注统计 / 钱包 / 资金记录 / 操作日志（懒加载）。</li>
+        <li><span class="lbl col">基本信息面板</span>基础信息(会员状态「编辑」→单选弹窗 · 备注「编辑」→textarea弹窗) · <b>注册信息·归因「新」</b>(设备/设备号/指纹/包名/域名/推广三方/同X注册数) · 数据统计(今日/累计 充值·提现·投注·输赢·优惠) · 活动彩金 · <b>代理数据「新」</b>(头部 领取返佣/对上级返佣 两开关 + 10级代理关系链可点 + 代理明细展开) · VIP · 安全箱 · 投注洗码(投注额「编辑」) · <b>登录信息「新」</b>(访问端/末次登录端/设备号/指纹/域名/包名 + 同IP/同设备/同指纹登录数) · 最后3次登录。</li>
+        <li><span class="lbl frm">编辑(页内弹窗)</span>会员状态(单选) · 备注(textarea) · 打码量(数字) · <b>用户积分(数字·真实回写)</b><span class="badge built">已增强</span>；代理线逐级详情表格。</li>
+        <li><span class="lbl sp">特殊</span>返佣类开关切换二次确认；<b>所有 同IP/同设备/同指纹 数值点击 → 跳风控对应维度页签并带入该会员</b>；最后3次登录表头「同IP合计 N 人」可下钻。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-user-group.png" alt="分组管理"></div>
+    <div class="info">
+      <div class="nm">分组管理 <span class="badge new">新</span> <span class="route">/member/groupManage</span></div>
+      <div class="use">会员分类管理（分组+表单融合一页）。</div>
+      <ul class="ctrl">
+        <li><span class="lbl flt">筛选</span>分组名称 · 所属商户。</li>
+        <li><span class="lbl col">列</span>分组ID · 商户 · 分组名称 · 会员数 · 充值金额 · 充值次数 · 投注额 · 创建/更新时间 · <b>状态(行内开关 1/0，直接切换、无二次确认)</b>。</li>
+        <li><span class="lbl tb">工具栏</span>新增 · 刷新。</li>
+        <li><span class="lbl act">行操作</span>编辑。</li>
+        <li><span class="lbl frm">表单(弹窗)</span>分组名称(必填) · 分组类型(手动/自动) · 充值金额≥ · 充值次数≥ · 投注额≥ · 备注。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-login-log.png" alt="登录日志"></div>
+    <div class="info">
+      <div class="nm">登录日志 <span class="badge new">新</span> <span class="route">/member/loginLog</span></div>
+      <div class="use">查谁、用什么设备登过（纯查询）。</div>
+      <ul class="ctrl">
+        <li><span class="lbl flt">筛选</span>会员ID · IP · 设备号 · 指纹 · 时间区间。</li>
+        <li><span class="lbl col">列</span>会员ID(下钻详情) · <b>登录设备/指纹(合并双行：设备名+灰色指纹)</b> · 设备号 · <b>登录IP/地区(合并双行)</b> · 登录时间。</li>
+        <li><span class="lbl act">行操作</span>无（纯查询页）。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-sms-code.png" alt="短信验证码查询"></div>
+    <div class="info">
+      <div class="nm">短信验证码查询 <span class="badge new">新</span> <span class="route">/member/smsCode</span></div>
+      <div class="use">按手机号/验证码查记录。</div>
+      <ul class="ctrl">
+        <li><span class="lbl flt">筛选</span>手机号 · 验证码。</li>
+        <li><span class="lbl col">列</span>手机号 · 验证码 · 业务类型(登录/注册/绑定手机/重置密码) · 内容 · 发送时间 · 状态(成功/失败 Tag) · 发送IP。</li>
+        <li><span class="lbl sp">特殊</span>无工具栏、无导出、无行操作。</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>② 运营管理</h2>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-inbox-message.png" alt="站内消息"></div>
+    <div class="info">
+      <div class="nm">站内消息 <span class="badge new">新</span> <span class="route">/operations/inboxMessage</span></div>
+      <div class="use">站内信 / 推送。</div>
+      <ul class="ctrl">
+        <li><span class="lbl tab">页签</span>弹窗消息 · 滚动消息 · 推送消息（三个独立列表）。</li>
+        <li><span class="lbl col">弹窗/滚动</span>列：ID/标题/内容/排序/状态(Tag)/添加时间；表单：标题 · 排序 · 状态开关 · 内容(textarea)。</li>
+        <li><span class="lbl col">推送消息</span>筛选 通知标题 + 状态(未发送/发送中/成功/部分成功/失败)；列：ID/标题/文字/图片(hover放大)/名称/推送通道(Firebase·极光)/类型(全体·指定)/状态/发送·修改时间/操作人。</li>
+        <li><span class="lbl frm">推送表单</span>标题 · 文字(textarea) · 图片上传 · 推送通道(Firebase/极光) · <b>极光端(联动：选极光才显，WEB/APP复选)</b> · 名称/链接(<b>按通道变 label 与显隐</b>) · 发送时间 · 类型(全体/指定用户) · <b>用户ID(联动：选「指定用户」才显)</b>。</li>
+        <li><span class="lbl act">行操作</span>未发送→编辑+删除；已发送→只读详情。</li>
+        <li><span class="lbl sp">特殊</span>正文为多行文本（非富文本）、指定用户为 textarea（无表格导入）——比设计稿简化。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-announcement-msg.png" alt="公告消息"></div>
+    <div class="info">
+      <div class="nm">公告消息 <span class="badge new">新</span> <span class="route">/operations/announcement</span></div>
+      <div class="use">前台公告（单列表单表单）。</div>
+      <ul class="ctrl">
+        <li><span class="lbl flt">筛选</span>关键字(标题+描述) · 状态(启用/禁用) · 数据排序(时间降/升·排序号·ID降/升)。</li>
+        <li><span class="lbl col">列</span>ID · 公告标题 · 发布时间 · 角色描述 · <b>状态(行内开关，切换即生效)</b>。</li>
+        <li><span class="lbl tb">工具栏</span>新增公告 · <b>批量删除</b>(带选中数、未选禁用)。</li>
+        <li><span class="lbl act">行操作</span>查看(详情弹窗) · 编辑 · 删除(二确)。</li>
+        <li><span class="lbl frm">表单</span>标题(必填) · 图片 · 发布时间 · 角色描述 · 排序 · 状态开关 · 内容(textarea，必填)。</li>
+        <li><span class="lbl sp">特殊</span>无双页签/多语种（设计稿的「双页签+7语种」实为站内消息特性）。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-banner-mgmt.png" alt="轮播图管理"></div>
+    <div class="info">
+      <div class="nm">轮播图管理 <span class="badge new">新</span> <span class="route">/operations/banner</span></div>
+      <div class="use">App 首页轮播大图。</div>
+      <ul class="ctrl">
+        <li><span class="lbl tab">页签</span>系统轮播 · 商城轮播。</li>
+        <li><span class="lbl col">系统轮播</span>列：ID/图片(hover放大)/跳转方式(链接·子游戏·客服 Tag)/跳转链接/排序/状态。</li>
+        <li><span class="lbl frm">表单(跳转方式三选一联动)</span>图片(必填) · 跳转方式：①跳转链接→填 URL；②<b>跳转子游戏→游戏大类(电子/真人/体育/棋牌)→厂商→子游戏 三级联动</b>(上级切换清空下级)；③在线客服→无附加 · 排序 · 状态。</li>
+        <li><span class="lbl col">商城轮播</span>列：ID/图片/跳转链接/状态；表单：图片 · 跳转链接 · 状态。</li>
+        <li><span class="lbl act">行操作</span>编辑 · 删除(二确)。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-channel-config.png" alt="渠道管理"></div>
+    <div class="info">
+      <div class="nm">渠道管理 <span class="badge new">新</span> <span class="route">/operations/channelConfig</span></div>
+      <div class="use">推广渠道配置 + 充提统计。</div>
+      <ul class="ctrl">
+        <li><span class="lbl flt">筛选</span>渠道ID · 渠道名 · 时间范围(快捷)。</li>
+        <li><span class="lbl col">列(20列·统计)</span>渠道编码 · 是否推广(Tag) · 渠道名 · 域名地址 · 总人数 · 首充人数/金额 · 赠送金额 · 二充人数/金额 · 总充值/总提现 · 今日 注册/首充/二充/充值/提现 · 备注。</li>
+        <li><span class="lbl tb">工具栏</span>新增渠道。</li>
+        <li><span class="lbl act">行操作</span>编辑 · 删除(二确)。</li>
+        <li><span class="lbl frm">表单</span>渠道名(必填) · 域名地址(必填) · 渠道编码(数字·手填) · 赠送金额 · 打码量倍数 · 备注(≤400)。</li>
+        <li><span class="lbl sp">特殊</span>「批量设置赠送金额 / 批量调整推广接入」组件与文案<b>已预留但未接线</b>，当前页无批量按钮；无「渠道类型/分发端/编码自动生成」。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-domain-mgmt.png" alt="域名管理"></div>
+    <div class="info">
+      <div class="nm">域名管理 <span class="badge new">新</span> <span class="route">/operations/domainMgmt</span></div>
+      <div class="use">推广/防封域名管理。</div>
+      <ul class="ctrl">
+        <li><span class="lbl flt">筛选</span>商户 · 域名 · 域名类型(主/推广/防封谷歌页/防封苹果页) · 解析状态(生效/检测中/失效) · 创建时间。</li>
+        <li><span class="lbl col">列</span>域名ID · 域名 · 类型(Tag) · 节点 · CDN · <b>解析状态(生效绿/检测中橙/失效红)</b> · 跳转域名 · 落地指向 · <b>防封救援(行内开关)</b> · 关联渠道 · 创建人/时间 · 备注 · <b>状态(行内开关)</b>。</li>
+        <li><span class="lbl tb">工具栏</span>新增域名。</li>
+        <li><span class="lbl act">行操作</span>编辑 · 解析检测(提示) · 防封配置(只读弹窗) · 删除(二确)。</li>
+        <li><span class="lbl frm">表单</span>域名(必填·<b>须 https:// 开头·≤50·唯一性校验</b>) · 备注。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-domain-rescue.png" alt="防封救援"></div>
+    <div class="info">
+      <div class="nm">防封救援 <span class="badge new">新</span> <span class="route">/operations/domainRescue</span></div>
+      <div class="use">域名被封时的救援切换。</div>
+      <ul class="ctrl">
+        <li><span class="lbl flt">筛选</span>主域名 · 救援状态(正常/已切换) · 创建时间。</li>
+        <li><span class="lbl col">列</span>ID · 主域名 · 备用域名 · 当前生效域名 · 页面类型(谷歌/苹果/H5页) · 救援方案 · 弹窗方式(自动/点击) · 救援奖金 · 累计救援人数 · 救援状态(Tag) · 累计切换次数 · 最近切换时间 · 状态(Tag)。</li>
+        <li><span class="lbl tb">工具栏</span>新增救援配置。</li>
+        <li><span class="lbl act">行操作</span>救援记录(只读弹窗) · 编辑 · 停用(二确) · 删除(二确)。</li>
+        <li><span class="lbl frm">表单</span>主域名(必填) · 备用域名(textarea多行) · 检测间隔(分钟) · 自动救援(开关) · 状态(开关)。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-domain-resolve-log.png" alt="解析检测记录"></div>
+    <div class="info">
+      <div class="nm">解析检测记录 <span class="badge new">新</span> <span class="route">/operations/domainResolveLog</span></div>
+      <div class="use">域名解析检测流水（只读日志）。</div>
+      <ul class="ctrl">
+        <li><span class="lbl flt">筛选</span>域名 · 检测结果(成功/失败) · 执行时间。</li>
+        <li><span class="lbl col">列</span>ID · 域名 · 域名类型(Tag) · 解析IP · 检测节点 · 检测方式(自动巡检/手动) · <b>检测结果(成功绿/失败红)</b> · 响应时间(ms) · TTL(秒) · 执行时间。</li>
+        <li><span class="lbl tb">工具栏</span>手动检测(提示)。</li>
+        <li><span class="lbl act">行操作</span>详情(只读弹窗) · 重新检测(提示)。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-member-rebate-level.png" alt="会员返佣等级"></div>
+    <div class="info">
+      <div class="nm">会员返佣等级 <span class="badge new">新</span> <span class="route">/operations/memberRebateLevel</span></div>
+      <div class="use">把返佣等级偏低的会员强制提到指定等级。</div>
+      <ul class="ctrl">
+        <li><span class="lbl flt">筛选</span>会员ID。</li>
+        <li><span class="lbl col">列</span>会员ID(蓝链下钻详情) · <b>返佣等级(Lv，可点→只读「等级费率表」弹窗)</b> · 已连续使用天数 · 可连续使用天数 · 已连续使用期号 · 状态(已用≥可用则禁用) · 添加/更新时间。</li>
+        <li><span class="lbl tb">工具栏</span>新增 · 批量删除(未选禁用·带数量)。</li>
+        <li><span class="lbl act">行操作</span>编辑 · 删除(二确)。</li>
+        <li><span class="lbl frm">表单</span>会员ID(编辑态禁用) · 返佣等级(Lv1~5) · 可连续使用天数(1~30，默认7)；状态由系统按天数推导(表单无状态字段)。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-agent-audit.png" alt="代理审核机制"></div>
+    <div class="info">
+      <div class="nm">代理审核机制 <span class="badge new">新</span> <span class="route">/operations/agentAudit</span></div>
+      <div class="use">审核代理返佣资格、改基础费率。</div>
+      <ul class="ctrl">
+        <li><span class="lbl flt">筛选</span>代理ID · 代理类型(外部/内部) · 返佣状态(已启用/已禁用) · 最小/最大天数(下级0首充天数)。</li>
+        <li><span class="lbl col">列</span>代理ID(蓝链下钻) · 上级ID · 直属下级 · 代理类型(Tag) · 下级0首充天数 · <b>返佣状态(启用绿/禁用灰 Tag)</b> · 昨日佣金 · 下级总投注 · 返佣/状态 最后操作人·时间。</li>
+        <li><span class="lbl act">行操作</span>修改返佣 · <b>启用/禁用配置(按当前态动态切换，点击直接 toggle 无二确)</b>。</li>
+        <li><span class="lbl frm">修改返佣弹窗</span>彩票/电子/真人/体育/棋牌 5 项基础返佣费率(数字 %·step0.01) · 备注(textarea)。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-vip-reward-log.png" alt="VIP升级奖励记录"></div>
+    <div class="info">
+      <div class="nm">VIP升级奖励记录 <span class="badge new">新</span> <span class="route">/operations/vipRewardLog</span></div>
+      <div class="use">VIP 升级奖励发放/领取记录（只看数）。</div>
+      <ul class="ctrl">
+        <li><span class="lbl flt">筛选</span>会员ID(必填) · VIP等级(VIP1~10) · 发放时间区间。</li>
+        <li><span class="lbl col">列</span>会员ID(蓝链下钻) · VIP等级(Tag) · 奖励金额 · 领取状态(已领/未领 Tag) · 发放时间 · 领取时间。</li>
+        <li><span class="lbl tb">工具栏</span>导出(演示提示)。</li>
+        <li><span class="lbl act">行操作</span><b>无操作列</b>。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-vip-level-count.png" alt="VIP人数"></div>
+    <div class="info">
+      <div class="nm">VIP人数 <span class="badge new">新</span> <span class="route">/operations/vipLevelCount</span></div>
+      <div class="use">各 VIP 等级有多少人。</div>
+      <ul class="ctrl">
+        <li><span class="lbl flt">筛选</span>无。</li>
+        <li><span class="lbl col">列</span>等级ID · 等级名称(VIP0~9) · <b>人数(蓝链 → 跳 <code>/member/user?vipLevel=</code> 下钻)</b> · <b>占比(进度条 NProgress·inside 百分比)</b>。</li>
+        <li><span class="lbl sp">特殊</span>无工具栏、无导出、无行操作。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-vip-op-log.png" alt="VIP操作日志"></div>
+    <div class="info">
+      <div class="nm">VIP操作日志 <span class="badge new">新</span> <span class="route">/operations/vipOpLog</span></div>
+      <div class="use">VIP 经验操作流水明细。</div>
+      <ul class="ctrl">
+        <li><span class="lbl flt">筛选</span>会员ID · 订单号 · 日志类型(升级/月奖励/充值/降级) · 状态(成功/失败) · 创建日期(必填)。</li>
+        <li><span class="lbl col">列</span>订单号 · 时间 · 会员ID · 日志类型(Tag) · 领取类型(积分/余额) · 领取数值 · 经验值 · 总经验 · 明细 · 状态(Tag)。</li>
+        <li><span class="lbl tb">工具栏</span>导出(演示提示)。</li>
+        <li><span class="lbl act">行操作</span>无操作列。</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>③ 报表管理</h2>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-rebate-report.png" alt="代理报表"></div>
+    <div class="info">
+      <div class="nm">代理报表 <span class="badge new">新</span> <span class="badge built">已增强</span> <span class="route">/report/agentReport</span></div>
+      <div class="use">按代理维度汇总团队业绩。</div>
+      <ul class="ctrl">
+        <li><span class="lbl flt">筛选</span><b>统计周期(日/日区间/月/所有，切换真实刷新——金额按 ×1/×7/×30/×120 缩放、日期口径随变)</b> · 代理ID。</li>
+        <li><span class="lbl col">列</span>代理ID · 代理账号 · 下级数 · 充值 · 提现 · 投注 · 返佣 · 平台盈亏(正绿负红) · 日期。</li>
+        <li><span class="lbl tb">工具栏</span>导出。</li>
+        <li><span class="lbl act">行操作</span><b>下级列表 → 右侧下钻抽屉</b>(宽660·标题含父代理ID·只读表：下级代理ID/账号/下级数/充值/投注/返佣/日期)。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-rebate-level-yesterday.png" alt="昨日返佣等级"></div>
+    <div class="info">
+      <div class="nm">昨日返佣等级 <span class="badge new">新</span> <span class="route">/operations/rebateLevelYesterday</span></div>
+      <div class="use">昨日各会员返佣等级与团队数据。</div>
+      <ul class="ctrl">
+        <li><span class="lbl flt">筛选</span>会员ID · 返佣等级(Lv1~6) · 最小团队人数。</li>
+        <li><span class="lbl col">列</span>日期 · 会员ID · 返佣等级(Lv) · 团队人数 · 团队充值 · 游戏量 · 计算返佣 · 实发返佣 · 发放时间。</li>
+        <li><span class="lbl tb">工具栏</span>导出。</li>
+        <li><span class="lbl act">行操作</span>无。</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>④ 风控管理 <span class="muted" style="font-weight:400">（↑提升为一级）</span></h2>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-abnormal-member.png" alt="异常会员处理"></div>
+    <div class="info">
+      <div class="nm">异常会员处理 <span class="badge new">新</span> <span class="route">/risk-control/abnormalMember</span></div>
+      <div class="use">处置可疑会员、批量回收/驳回。</div>
+      <ul class="ctrl">
+        <li><span class="lbl flt">筛选</span>所属商户 · 会员ID · 账号 · 设备(安卓/iOS/PC/H5) · 会员状态 · 黑名单状态。</li>
+        <li><span class="lbl col">列</span>商户 · 会员ID · 账号 · 会员状态(Tag) · 钱包/三方/保险箱余额 · 处理中提款金额 · VIP等级 · 上级ID · 黑名单(Tag) · 设备 · 投注·充值·提现(各「金额/笔数」合并列) · 注册时间。</li>
+        <li><span class="lbl tb">工具栏(批量·未勾选禁用)</span>回收余额 · 保险箱转出 · 驳回提现 · 余额扣除。</li>
+        <li><span class="lbl act">行操作</span>同名四项(单条)。</li>
+        <li><span class="lbl sp">特殊(处置确认弹窗)</span>回收/转出仅二确；<b>驳回提现</b>需填备注(必填·不能含中文)；<b>余额扣除</b>需填金额(必须为负)+备注(同上)。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-same-ip.png" alt="同IP/设备检测"></div>
+    <div class="info">
+      <div class="nm">同IP/设备检测 <span class="badge new">新</span> <span class="route">/risk-control/sameIp</span></div>
+      <div class="use">揪出一个 IP/设备注册一堆小号的工作室。</div>
+      <ul class="ctrl">
+        <li><span class="lbl tab">页签</span>同注册IP · 同注册设备 · 同登录IP · 同登录设备（切换 reload）。</li>
+        <li><span class="lbl flt">筛选(随页签)</span>会员ID · 维度值(注册IP/注册设备/登录IP/登录设备) · 日期区间。</li>
+        <li><span class="lbl col">列</span>维度值(IP 或设备指纹) · <b>人数(蓝链 → 跳 <code>/member/user</code> 带当前维度=该值 下钻)</b> · 最近时间。</li>
+        <li><span class="lbl sp">特殊</span>无工具栏/无导出/无行操作；4 页签共用同一聚合形状、数据源不同。</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>⑤ 配置中心 <span class="muted" style="font-weight:400">（↑提升为一级）</span></h2>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-vip-level-config.png" alt="VIP配置"></div>
+    <div class="info">
+      <div class="nm">VIP配置 <span class="badge new">新</span> <span class="route">/config-center/vipConfig</span></div>
+      <div class="use">VIP 等级与经验值规则（多商户/模板）。</div>
+      <ul class="ctrl">
+        <li><span class="lbl tb">配置模式</span>三选一：使用自定义模板(模板画廊) / 使用商户模板 / 单商户配置；「正在配置」栏：商户 select + 来源 + <b>状态三态(未配置/待发布/已发布)</b> + 保存 + 复制到其他商户。</li>
+        <li><span class="lbl tab">子页签</span>VIP等级配置 · 经验值配置。</li>
+        <li><span class="lbl col">等级表(行内常驻可编辑)</span>名称(固定左) · 升级/保级/扣除经验 · 升级/月/充值奖励 · 赠送金额上限 · 保险箱日利率 · 电子/真人/体育/彩票/棋牌洗码率 · 单日提款次数 · 月奖励领取次数 · 结算日（各数值列行内编辑、不同步长）。</li>
+        <li><span class="lbl col">经验值页签</span>币种 / 金额=1EXP（行内编辑）。</li>
+        <li><span class="lbl frm">复制弹窗</span>源配置预览 + 目标商户多选(全选/反选) + 覆盖警示(已配置实时计数) + 确认复制。</li>
+        <li><span class="lbl sp">特殊</span><b>行内编辑无弹窗</b>；保存/发布前必弹只读预览确认；模板删除二确(转自定义)。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-rebate-level.png" alt="返佣配置"></div>
+    <div class="info">
+      <div class="nm">返佣配置 <span class="badge new">新</span> <span class="route">/config-center/rebateConfig</span></div>
+      <div class="use">返佣等级与费率规则。</div>
+      <ul class="ctrl">
+        <li><span class="lbl tb">配置模式</span>同 VIP（三模式 + 模板画廊 + 复制弹窗）。</li>
+        <li><span class="lbl tab">子页签</span>返佣等级管理 · 返佣费率配置。</li>
+        <li><span class="lbl col">等级管理(多级表头)</span>等级 L{lv}；团队条件【充值人数/金额/游戏量 + 各满足人数】；直属条件【同上】；<b>L0 基础等级不可编辑/删</b>。行操作：编辑(行内)/删除(二确)；工具栏：新增等级 · 说明。</li>
+        <li><span class="lbl col">费率配置</span>每等级一张卡：行=一~六级 × 列=彩票/电子/真人/体育/棋牌，逐格行内编辑(6位小数)。</li>
+        <li><span class="lbl sp">特殊</span><b>同级合计 ≤5% 校验</b>：保存时逐层级对 5 类求和，&gt;5% 报错拦截、不保存；行内编辑无弹窗。</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>⑥ 系统管理</h2>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-ip-blacklist-batch.png" alt="IP黑名单·批量导入"></div>
+    <div class="info">
+      <div class="nm">IP黑名单 <span class="badge new">新</span> <span class="badge built">已增强</span> <span class="route">/system/ipBlacklist</span></div>
+      <div class="use">把恶意 IP 拉进黑名单（列表 + 两个互斥页内面板）。</div>
+      <ul class="ctrl">
+        <li><span class="lbl flt">筛选</span>IP地址 · 关键字 · 封禁类型(禁止登录/禁止注册) · 状态(生效中/已解除)。</li>
+        <li><span class="lbl col">列</span>ID · IP · 封禁类型(注册warning/登录error Tag) · <b>状态(ConfirmSwitch 开关·二确·失败回滚)</b> · 封禁原因 · 命中次数(&gt;1000标红) · 备注 · 创建人/时间 · 最后修改人/时间。</li>
+        <li><span class="lbl tb">工具栏</span>新增 IP(开表单面板) · 批量导入(开批量面板)。</li>
+        <li><span class="lbl act">行操作</span>编辑(IP 不可改) · 删除。</li>
+        <li><span class="lbl frm">新增/编辑面板</span>IP地址(textarea·新增可多行) · 封禁类型 · 封禁原因(≤50) · 备注(≤100)；提交前 IPv4 逐项校验。</li>
+        <li><span class="lbl frm">批量导入面板</span><span class="badge built">已增强</span>IP列表 textarea + 选择文件(.csv/.txt) + 下载模板 + <b>实时「已识别 N 个(去重后，忽略 M 个无效)」</b> + 封禁类型 + 封禁原因(默认「批量导入」) + 确认导入(N)。</li>
+        <li><span class="lbl sp">特殊</span>批量解析：按 逗号/空格/换行/分号 拆 → IPv4 校验(每段0~255) → 去重 → <b>单次上限 500</b>；确认后插入列表顶部 + Toast「成功导入 N 条」。</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+<div id="lb" onclick="this.style.display='none'"><img src="" alt=""></div>
+<script>
+  document.querySelectorAll('.pcard .shot img').forEach((im) => {
+    im.addEventListener('click', () => {
+      const lb = document.getElementById('lb');
+      lb.querySelector('img').src = im.src;
+      lb.style.display = 'flex';
+    });
+  });
+</script>
+</body>
+</html>

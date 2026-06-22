@@ -1,1 +1,0 @@
-import{$ as e,l as t,tt as n}from"./index-DDcyBw19.js";import"./useRouteTabs-lEWhIzkK.js";function r(e){console.error(e)}function i(i){let a;i||(a=t());let{push:o,replace:s}=i||a;function c(t=n.BASE_HOME,i=!1){if(t)if(e(t))i?s(t).catch(r):o(t).catch(r);else{let e=t;i?s(e).catch(r):o(e).catch(r)}}return c}export{i as t};

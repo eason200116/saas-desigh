@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SaaS 多商户后台 · 二阶段技术方案（归因体系）</title>
+<style>
+  :root{--accent:#2563eb;--accent2:#7c3aed;--bg:#f5f6f8;--card:#fff;--border:#e5e7eb;--muted:#6b7280;--red:#dc2626;--green:#16a34a;--amber:#d97706;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:#1f2328;background:var(--bg);line-height:1.65;}
+  a{color:var(--accent);}
+  header{position:sticky;top:0;z-index:30;background:linear-gradient(90deg,#0f172a,#3730a3);color:#fff;padding:12px 24px;display:flex;align-items:center;gap:16px;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+  header .logo{font-size:16px;font-weight:700;}
+  header .ver{font-size:12px;opacity:.75;}
+  header .grow{flex:1;}
+  header a.top{background:#22c55e;color:#fff;padding:7px 14px;border-radius:8px;text-decoration:none;font-size:12.5px;font-weight:600;}
+  .layout{display:flex;width:100%;}
+  nav{width:250px;flex:none;position:sticky;top:57px;align-self:flex-start;height:calc(100vh - 57px);overflow:auto;padding:16px 8px;font-size:12.5px;border-right:1px solid var(--border);background:#fafbfc;}
+  nav a{display:block;padding:4px 10px;color:#374151;text-decoration:none;border-radius:5px;line-height:1.5;}
+  nav a:hover{background:#eef2ff;color:var(--accent);}
+  nav a.sub{padding-left:22px;color:var(--muted);font-size:12px;}
+  nav .grp{font-weight:700;margin-top:10px;color:#111827;padding:4px 10px;}
+  main{flex:1;min-width:0;padding:24px 40px 120px;max-width:1180px;}
+  section{margin-bottom:46px;scroll-margin-top:70px;}
+  h2.sec{font-size:22px;border-left:5px solid var(--accent);padding-left:12px;margin:0 0 6px;}
+  .sec-desc{color:var(--muted);font-size:13.5px;margin:0 0 18px;}
+  h3{font-size:17px;margin:26px 0 10px;scroll-margin-top:70px;}
+  h4{font-size:14.5px;margin:18px 0 8px;color:#334155;}
+  .lead{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:16px 20px;font-size:14px;line-height:1.85;}
+  .note{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#92400e;margin:12px 0;}
+  .ok{background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#065f46;margin:12px 0;}
+  pre.fig{background:#0d1117;color:#e6edf3;padding:16px;border-radius:10px;overflow:auto;font-size:12.5px;line-height:1.55;}
+  table{border-collapse:collapse;width:100%;font-size:12.5px;margin:12px 0;}
+  th,td{border:1px solid var(--border);padding:6px 9px;text-align:left;vertical-align:top;}
+  th{background:#f3f4f6;}
+  tr:nth-child(even) td{background:#fafbfc;}
+  code{background:#f1f5f9;padding:1px 6px;border-radius:4px;font-size:12px;font-family:ui-monospace,Menlo,monospace;color:#0f766e;}
+  .st{display:inline-block;font-size:11px;font-weight:700;border-radius:4px;padding:1px 7px;white-space:nowrap;}
+  .st.yes{background:#dcfce7;color:#15803d;} .st.sug{background:#ffedd5;color:#9a3412;}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;}
+  .ccard{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+  .ccard .t{font-weight:700;font-size:14.5px;margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+  .ccard .t .n{font-size:11px;background:var(--accent);color:#fff;border-radius:20px;padding:1px 9px;}
+  .ccard p{margin:6px 0 0;font-size:12.5px;color:#475569;}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0;}
+  .flow .step{background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 13px;font-size:13px;}
+  .flow .step b{color:#1d4ed8;}
+  .flow .arr{color:var(--accent);font-weight:700;font-size:18px;}
+  .gtag{display:inline-block;font-size:11px;font-weight:700;border-radius:4px;padding:1px 7px;white-space:nowrap;}
+  .g-ad{background:#fee2e2;color:#b91c1c;} .g-inv{background:#fef3c7;color:#92400e;} .g-off{background:#dbeafe;color:#1d4ed8;} .g-nat{background:#dcfce7;color:#15803d;}
+  .mx-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:8px;}
+  table.mx{margin:0;min-width:1180px;font-size:11.5px;border:0;}
+  table.mx th{position:sticky;top:0;background:#eef2ff;z-index:1;}
+  .mxframe{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#fff;margin:6px 0;}
+  .mxframe iframe{width:100%;height:1500px;border:0;display:block;}
+  .dlink{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px 16px;margin:0 0 10px;text-decoration:none;color:#1f2937;transition:.12s;}
+  .dlink:hover{border-color:#bcd0ff;background:#f7faff;}
+  .dlink .di{font-size:20px;}
+  .dlink .dx{display:flex;flex-direction:column;}
+  .dlink .dx b{font-size:14px;color:#111827;}
+  .dlink .dx i{font-style:normal;font-size:12px;color:#64748b;}
+  /* 能力地图（图形版） */
+  .capmap{display:flex;flex-direction:column;align-items:center;margin:16px 0 8px;}
+  .capmap .root{background:linear-gradient(90deg,#1e293b,#3730a3);color:#fff;font-weight:700;font-size:14px;padding:9px 24px;border-radius:30px;box-shadow:0 4px 12px rgba(49,46,129,.28);}
+  .capmap .trunk{width:2px;height:18px;background:#cbd5e1;}
+  .capmap .panels{display:flex;gap:18px;align-items:stretch;justify-content:center;width:100%;flex-wrap:wrap;}
+  .capmap .panel{border-radius:14px;padding:14px;border:1px solid;}
+  .capmap .panel.data{flex:1 1 250px;background:#eff6ff;border-color:#bfdbfe;}
+  .capmap .panel.cfg{flex:2 1 430px;background:#f5f3ff;border-color:#ddd6fe;}
+  .capmap .ph{font-weight:700;font-size:13px;margin-bottom:11px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+  .capmap .ph span{font-weight:400;font-size:11.5px;color:#94a3b8;}
+  .capmap .panel.data .ph{color:#1d4ed8;} .capmap .panel.cfg .ph{color:#6d28d9;}
+  .capmap .modes{display:flex;gap:10px;}
+  .capmap .mode{flex:1;background:#fff;border:1px solid var(--border);border-radius:10px;padding:11px 13px;box-shadow:0 1px 4px rgba(0,0,0,.05);min-width:0;}
+  .capmap .mt2{font-weight:700;font-size:14px;margin:0 0 7px;display:flex;align-items:center;gap:8px;color:#0f172a;}
+  .capmap .mno{display:inline-flex;width:22px;height:22px;border-radius:50%;color:#fff;align-items:center;justify-content:center;font-size:12px;flex:none;}
+  .capmap .m1 .mno{background:#2563eb;} .capmap .m2 .mno,.capmap .m3 .mno{background:#7c3aed;}
+  .capmap .desc{font-size:12px;color:#475569;margin:0 0 8px;line-height:1.6;}
+  .capmap .ctl{font-size:11.5px;color:#334155;background:#f8fafc;border:1px solid #eef2f7;border-radius:7px;padding:6px 9px;margin-bottom:7px;line-height:1.7;}
+  .capmap .tag{display:inline-block;font-size:10.5px;background:#dbeafe;color:#1d4ed8;border-radius:4px;padding:1px 6px;margin-top:3px;}
+  .capmap .tag.p{background:#ede9fe;color:#6d28d9;}
+  .capmap .use{font-size:11.5px;color:#64748b;}
+  .capmap .use b{color:#334155;}
+  @media(max-width:760px){.capmap .modes{flex-direction:column;}}
+  /* 归因 5 步流程（图形版） */
+  .aflow{display:flex;align-items:stretch;gap:6px;flex-wrap:wrap;margin:14px 0 0;}
+  .aflow .astep{flex:1;min-width:148px;background:#fff;border:1px solid var(--border);border-top:3px solid var(--accent);border-radius:10px;padding:10px 12px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+  .aflow .an{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:6px;}
+  .aflow .at{font-weight:700;font-size:13.5px;color:#0f172a;margin-bottom:5px;}
+  .aflow .ad{font-size:11.5px;color:#475569;line-height:1.6;}
+  .aflow .aarr{align-self:center;color:#cbd5e1;font-weight:700;font-size:18px;flex:none;}
+  .aflow .s1{border-top-color:#2563eb;} .aflow .s1 .an{background:#2563eb;}
+  .aflow .s2{border-top-color:#4f46e5;} .aflow .s2 .an{background:#4f46e5;}
+  .aflow .s3{border-top-color:#7c3aed;} .aflow .s3 .an{background:#7c3aed;}
+  .aflow .s4{border-top-color:#d97706;} .aflow .s4 .an{background:#d97706;}
+  .aflow .s5{border-top-color:#16a34a;} .aflow .s5 .an{background:#16a34a;}
+  .afoot{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 0;}
+  .afoot .fx{flex:1;min-width:280px;font-size:12px;border-radius:8px;padding:9px 12px;line-height:1.6;}
+  .afoot .lock{background:#f1f5f9;border:1px solid #e2e8f0;color:#334155;}
+  .afoot .edit{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;}
+  @media(max-width:760px){.aflow .aarr{display:none;}}
+  @media(max-width:900px){nav{display:none;}main{padding:18px;}}
+</style>
+</head>
+<body>
+<header>
+  <span class="logo">🧩 SaaS 多商户后台 · 二阶段技术方案</span>
+  <span class="ver">v1.0 · 归因体系 / 字段定义 / 矩阵 · 结合二期 PRD</span>
+  <span class="grow"></span>
+  <a class="top" href="saas-phase2-product-intro.html">▶ 交互介绍</a>
+</header>
+<div class="layout">
+  <nav>
+    <a href="#concept">一、基础概念</a>
+    <a class="sub" href="#c-multi">多商户三态</a>
+    <a class="sub" href="#c-attr">归因体系</a>
+    <a class="sub" href="#c-chain">推广闭环 / 代理体系</a>
+    <a class="sub" href="#c-device">设备 / 指纹 / 埋点</a>
+    <a href="#fields">二、字段定义介绍</a>
+    <a class="sub" href="#f-attr">归因·注册设备组</a>
+    <a class="sub" href="#f-agent">代理体系组</a>
+    <a class="sub" href="#f-login">登录设备组</a>
+    <a class="sub" href="#f-list">会员列表新增列/开关</a>
+    <a class="sub" href="#f-suggest">建议字段（非强制）</a>
+    <a href="#attr">三、归因流程图与矩阵</a>
+    <a class="sub" href="#a-priority">优先级与判定</a>
+    <a class="sub" href="#a-flow">5 步固化流程</a>
+    <a class="sub" href="#a-matrix">18 种穷举矩阵</a>
+    <a href="#supplement">四、还需补充（建议）</a>
+    <a href="#related">五、关联文档</a>
+  </nav>
+  <main>
+
+  <!-- 一、基础概念 -->
+  <section id="concept">
+    <h2 class="sec">一、基础概念</h2>
+    <p class="sec-desc">先把二阶段绕不开的几个核心概念讲清楚，后面的字段与流程都建立在这上面。结合二期 PRD（会员管理深度迁移与归因体系）。</p>
+
+    <h3 id="c-multi">1.1 多商户：一查询 + 两配置（能力地图）</h3>
+    <p>一个总控后台管很多商户站点，所以同一功能要回答两个问题——<b>「现在看/管哪个（些）商户？」</b>（数据维度）和 <b>「一套参数怎么省力铺给一堆商户？」</b>（配置维度）。原型用三种形态解决：</p>
+    <div class="capmap">
+      <div class="root">多商户 · 一个总控管多站点</div>
+      <div class="trunk"></div>
+      <div class="panels">
+        <div class="panel data">
+          <div class="ph">📊 数据维度（看）<span>现在看 / 管哪些商户</span></div>
+          <div class="modes">
+            <div class="mode m1">
+              <div class="mt2"><span class="mno">①</span>分数据查询</div>
+              <div class="desc">一屏看 <b>一个 / 多个 / 全部</b> 商户的数据</div>
+              <div class="ctl">控件 <code>MerchantFilterSelect</code><br><span class="tag">多选 + 全部 + 互斥</span></div>
+              <div class="use"><b>用于</b>：会员 / 运营 / 报表 / 风控 列表</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel cfg">
+          <div class="ph">⚙️ 配置维度（设）<span>一套参数怎么省力铺给一堆商户</span></div>
+          <div class="modes">
+            <div class="mode m2">
+              <div class="mt2"><span class="mno">②</span>模板化配置</div>
+              <div class="desc">一套配置<b>铺给一批商户、互相复制</b></div>
+              <div class="ctl">载体 配置工作区<br><span class="tag p">模板画廊 + 套用/复制 + 按商户分库</span></div>
+              <div class="use"><b>用于</b>：VIP配置、返佣配置</div>
+            </div>
+            <div class="mode m3">
+              <div class="mt2"><span class="mno">③</span>单站点配置</div>
+              <div class="desc">一次<b>只配一个商户</b>自己那套</div>
+              <div class="ctl">控件 <code>MerchantSwitchBar</code><br><span class="tag p">单选切换</span></div>
+              <div class="use"><b>用于</b>：注册管理 / 语言 / 系统参数 / 配置开关</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="note">详见《二期 PRD》第 12 节「多商户能力地图」与 V3《改动清单》同名章节。本技术方案聚焦 <b>① 分数据查询所依赖的会员归因字段</b>。</div>
+
+    <h3 id="c-attr">1.2 归因体系：会员"从哪儿来"</h3>
+    <p>归因 = 在会员<b>注册那一刻</b>，按优先级判定其首个命中的来源，写入会员档案并<b>固化不再变更</b>。解决运营/代理「这个会员是谁带来的、从哪个渠道来的」。共 <b>4 大归因类型</b>（广告投放 / 邀请来源 / 官方直推 / 自然流量）× <b>18 种枚举情况</b>，详见第三章。</p>
+
+    <h3 id="c-chain">1.3 推广闭环 + 代理体系</h3>
+    <div class="cards">
+      <div class="ccard"><div class="t">推广闭环</div><p>「<b>域名 → 渠道 → 推广 → 获客归因</b>」：投放域名/渠道带参 → 用户点击进入 → 注册时采集参数 → 判定归因。本期开放 渠道管理 / 域名管理 / 防封救援 / 解析检测 四页承载前半段。</p></div>
+      <div class="ccard"><div class="t">代理体系</div><p>会员可绑定上级代理，形成最深 <b>10 级</b>代理树。收益方式分 <b>返佣 / 返利</b>两种佣金模式；返佣等级 Lv0–Lv8，支持「对上级返佣」「领取返佣」两个行内开关控制结算口径。</p></div>
+      <div class="ccard"><div class="t">设备 / 指纹</div><p>同一自然人可能多账号。用 <b>设备号</b>（App 端稳定 ID）+ <b>浏览器指纹</b>（H5 端）+ <b>IP</b> 三类标识做关联，派生「同IP/同设备/同指纹 注册数·登录数」，供风控下钻。</p></div>
+    </div>
+
+    <h3 id="c-device">1.4 埋点采集口径</h3>
+    <p>归因判定依赖 5 类埋点：<b>激活 / 注册 / 登录 / 首充 / 付费</b>。注册时点采集 来源参数（广告点击ID/UTM/Referrer/邀请码）+ 设备环境（设备号/指纹/IP/包名/版本），判定后落库固化。设备维度按终端二选一：<b>App 端有设备号、H5 端有指纹</b>，不堆两行。</p>
+  </section>
+
+  <!-- 二、字段定义 -->
+  <section id="fields">
+    <h2 class="sec">二、字段定义介绍</h2>
+    <p class="sec-desc">逐字段给出 中文名 / 实际字段 key / 落地状态 / 说明。<b>落地状态经 V3 原型代码逐字段核查</b>：<span class="st yes">已实现</span> = 代码中真实存在并被读取/渲染（附 key）；<span class="st sug">建议</span> = 代码中暂无、仅设计建议、<b>非强制</b>。</p>
+    <div class="ok">✅ 核查结论：PRD 列出的 4 组共 <b>42 个字段全部已在 V3 原型代码中实现</b>（mock 数据 <code>src/api/index.ts</code> + 详情转换 <code>buildDetailData.ts</code> + 列表 <code>useUserPage.ts</code>），无"画了但没做"的字段。本章字段状态均为 <span class="st yes">已实现</span>；另在 §2.5 给出几个<b>建议新增</b>字段（非强制）。</div>
+
+    <h3 id="f-attr">2.1 归因 / 来源 + 注册设备组</h3>
+    <div id="t-attr"></div>
+
+    <h3 id="f-agent">2.2 代理体系组</h3>
+    <div id="t-agent"></div>
+
+    <h3 id="f-login">2.3 登录设备组</h3>
+    <div id="t-login"></div>
+
+    <h3 id="f-list">2.4 会员列表 · 新增列 / 行内开关</h3>
+    <div id="t-list"></div>
+
+    <h3 id="f-suggest">2.5 建议字段（<span class="st sug">非强制</span>，代码暂无）</h3>
+    <p class="sec-desc">以下为基于归因/风控/投放分析角度<b>建议补充</b>的字段，当前代码中<b>不存在</b>，仅作设计建议，是否纳入由产品决定。</p>
+    <div id="t-suggest"></div>
+  </section>
+
+  <!-- 三、归因流程图与矩阵 -->
+  <section id="attr">
+    <h2 class="sec">三、归因流程图与介绍（含矩阵）</h2>
+    <p class="sec-desc">归因如何判定、判定结果如何落库、18 种情况如何穷举。</p>
+
+    <h3 id="a-priority">3.1 优先级与判定规则</h3>
+    <div class="flow">
+      <span class="step"><b>①</b> 广告投放</span><span class="arr">›</span>
+      <span class="step"><b>②</b> 邀请来源</span><span class="arr">›</span>
+      <span class="step"><b>③</b> 官方直推</span><span class="arr">›</span>
+      <span class="step"><b>④</b> 自然流量</span>
+    </div>
+    <p>注册时按上述<b>优先级从高到低</b>取首个命中的来源作为「主归因」，写入档案后<b>固化不再变更</b>。例：既有广告点击ID 又填了有效邀请码 → 命中更高优先级「广告投放（裂变）」，邀请码作辅证保留绑定关系。</p>
+
+    <h3 id="a-flow">3.2 5 步固化流程</h3>
+    <div class="aflow">
+      <div class="astep s1"><div class="an">1</div><div class="at">进入</div><div class="ad">用户点链接 / 域名进入</div></div>
+      <div class="aarr">→</div>
+      <div class="astep s2"><div class="an">2</div><div class="at">采集</div><div class="ad">埋点采集：激活 / 注册 / 登录 / 首充 / 付费 + 设备环境</div></div>
+      <div class="aarr">→</div>
+      <div class="astep s3"><div class="an">3</div><div class="at">判定</div><div class="ad">按优先级取首个命中来源 ① &gt; ② &gt; ③ &gt; ④</div></div>
+      <div class="aarr">→</div>
+      <div class="astep s4"><div class="an">4</div><div class="at">固化</div><div class="ad">写会员档案，归因相关字段固化</div></div>
+      <div class="aarr">→</div>
+      <div class="astep s5"><div class="an">5</div><div class="at">展示</div><div class="ad">会员详情红字字段 + 列表红色新列</div></div>
+    </div>
+    <div class="afoot">
+      <div class="fx lock">🔒 <b>固定不变</b>：主归因 / 注册渠道 / 注册时间 / 设备·IP</div>
+      <div class="fx edit">✏️ <b>可后台调整</b>：代理关系（上级 / 一级可划转）</div>
+    </div>
+    <div class="note">「同IP / 同设备 / 同指纹」数值在会员详情/列表均<b>可点击下钻</b>到「风控 · 同IP/设备检测」对应维度并自动带入会员 ID。</div>
+
+    <h3 id="a-matrix">3.3 归因穷举矩阵（4 类 × 18 种，原样对齐说明书 §4.6）</h3>
+    <p class="sec-desc">每行 = 一种进入路径：命中标识 → 进入方式 → 落地渠道 → 邀请码·代理 → 最终归因结果。下方<b>速览表</b>快速对照；再往下是<b>融合进本方案的完整可交互矩阵</b>（每行可点编号展开 5 步脉络图），无需跳转外页。</p>
+    <h4>速览表（18 种一览）</h4>
+    <div class="mx-scroll"><table class="mx" id="t-matrix"></table></div>
+    <h4>完整可交互矩阵（含每行 5 步脉络图）</h4>
+    <div class="mxframe"><iframe src="attribution-matrix-4.6.html" title="归因穷举矩阵 §4.6（完整可交互）" loading="lazy"></iframe></div>
+    <p class="sec-desc" style="margin-top:6px">如需全屏单独查看：<a href="attribution-matrix-4.6.html" target="_blank">在新窗口打开 §4.6 完整矩阵 ↗</a></p>
+  </section>
+
+  <!-- 四、补充建议 -->
+  <section id="supplement">
+    <h2 class="sec">四、还需补充（建议）</h2>
+    <p class="sec-desc">在核查 + 通读 PRD 后，认为以下方面值得补充/明确（均为<b>建议</b>，非本期强制）。</p>
+    <table>
+      <tr><th width="120">方向</th><th>建议补充内容</th><th width="90">类型</th></tr>
+      <tr><td>归因纠正机制</td><td>归因当前「固化不可变」。建议补一条<b>人工纠正 + 审计留痕</b>通道（误判/作弊场景），改前/改后值与操作人入日志，而非完全锁死。</td><td><span class="st sug">流程建议</span></td></tr>
+      <tr><td>归因置信度</td><td>多标识冲突时（如广告ID + 无效邀请码）建议记录<b>判定依据与置信度</b>（命中规则编号 A1–B11 + 失败原因），便于复盘，对应 §2.5 <code>attributionRuleCode</code> / <code>attributionConfidence</code>。</td><td><span class="st sug">字段建议</span></td></tr>
+      <tr><td>地理与运营商</td><td>注册/登录 IP 建议派生<b>归属地 / 运营商</b>（GEO），风控判定与投放地域分析都用得上（§2.5 <code>registerGeo</code>）。</td><td><span class="st sug">字段建议</span></td></tr>
+      <tr><td>首充归因一致性</td><td>建议补<b>首充渠道 vs 注册渠道是否一致</b>标记，识别"注册一个渠道、首充走另一个"的异常/搬运。</td><td><span class="st sug">字段建议</span></td></tr>
+      <tr><td>跨端归因合并</td><td>同人「H5 注册→App 登录」时设备号与指纹分属不同端，建议明确<b>跨端关联口径</b>（以账号为锚，设备/指纹各端二选一已实现，关联规则待定）。</td><td><span class="st sug">规则建议</span></td></tr>
+      <tr><td>数据脱敏口径</td><td>手机号/IP/设备号在列表与详情的<b>脱敏规则</b>建议统一成文（哪些角色看全量、哪些打码），目前各页零散。</td><td><span class="st sug">规范建议</span></td></tr>
+      <tr><td>多商户隔离校验</td><td>归因/设备聚合统计（同IP数等）建议明确<b>是否跨商户统计</b>（默认应限当前商户口径），避免跨租户数据串味。</td><td><span class="st sug">规则建议</span></td></tr>
+      <tr><td>矩阵边界</td><td>18 种已覆盖 参数损坏/伪造(B10)、仅无效邀请码(B11) 等兜底；建议补一条<b>"多广告平台参数同时命中"</b>的取舍规则说明（目前按平台优先级，未文档化）。</td><td><span class="st sug">文档建议</span></td></tr>
+    </table>
+  </section>
+
+  <!-- 五、关联文档 -->
+  <section id="related">
+    <h2 class="sec">五、关联文档</h2>
+    <p class="sec-desc">本方案配套入口链接。</p>
+    <a class="dlink" href="saas-phase2-product-intro.html" target="_blank"><span class="di">🖱️</span><span class="dx"><b>交互介绍</b><i>逐页内嵌可点击原型（活介绍）+ 8 Tab 定义 + 归因/会员详情图文</i></span></a>
+    <a class="dlink" href="glossary.html" target="_blank"><span class="di">📖</span><span class="dx"><b>名词定义</b><i>会员详情新增字段 名词解释 / 应用场景 / 异常情况</i></span></a>
+    <a class="dlink" href="saas-workplan.html" target="_blank"><span class="di">📘</span><span class="dx"><b>迁移对照表</b><i>工作计划书 · 迁移对照与进度（权威口径）</i></span></a>
+    <a class="dlink" href="feature-inventory.html" target="_blank"><span class="di">🗂️</span><span class="dx"><b>SitINR 原站介绍</b><i>V1 旧后台全功能点清单（迁移基线，源站逐功能点）</i></span></a>
+  </section>
+
+  </main>
+</div>
+
+<script>
+// 字段定义数据（中文名, key, 状态 yes|sug, 说明）。yes=代码已实现（核查确认），sug=建议字段
+const ATTR=[
+ ['归因类型(主归因)','mainAttribution','yes','注册来源唯一归类：广告投放/邀请来源/官方直推/自然流量'],
+ ['推广三方类型','promoThirdType','yes','识别出的推广三方平台（Facebook/Adjust/TikTok…）'],
+ ['注册渠道','registerChannel','yes','注册时命中的后台渠道（如 apk-fb-me001-01 / ag010）'],
+ ['登录渠道','loginChannel','yes','最近一次登录命中的渠道'],
+ ['搜索引擎','searchEngine','yes','由 referrer 来源域名识别的搜索引擎'],
+ ['邀请码','attrInviteCode','yes','注册实际使用的邀请码，关联邀请人/代理'],
+ ['邀请类型','inviteType','yes','正常邀请 / 转盘活动邀请 / 邀请任务'],
+ ['访问端','accessClient','yes','H5/PC/安卓原生/iOS原生/安卓壳包/iOS壳包/PWA'],
+ ['注册域名','registerDomain','yes','注册时进入的域名（属本商户）'],
+ ['注册设备','registerClient','yes','注册时使用的设备类型'],
+ ['注册设备号(设备ID)','registerDeviceId','yes','注册时稳定设备 ID（App 端有值）'],
+ ['是否模拟器','isEmulator','yes','注册设备是否为模拟器（boolean）'],
+ ['注册IP','userRegisterIP','yes','注册时 IP'],
+ ['同IP注册数','userRegisterSameIPCount','yes','与本会员同 IP 注册的账号数（可下钻）'],
+ ['注册浏览器指纹','registerBrowserFp','yes','注册时浏览器指纹（H5 端有值）'],
+ ['同指纹注册数','sameFingerprintRegisterCount','yes','与本会员同指纹注册的账号数（可下钻）'],
+ ['包名','registerPackage','yes','注册 App 包名（含版本号，如 com.daman.app（v2.3.1））'],
+ ['版本号','registerPackage','yes','与包名合并在 registerPackage 字段'],
+];
+const AGENT=[
+ ['邀请人','inviter','yes','邀请该会员的人（含昵称 + ID）'],
+ ['一级代理','firstAgent','yes','所在代理树的顶级（根）代理'],
+ ['直接上级代理','directParentAgent','yes','代理树中该会员的直接父节点'],
+ ['代理层级','level（agentLineDetail 内）','yes','代理关系链明细每级层级，如 1级·总代 / 9级·直属上级'],
+ ['佣金模式','commissionMode','yes','代理收益方式：返佣 / 返利'],
+ ['返佣等级','rebateLevel（agentLineDetail 内）','yes','代理关系链每级返佣等级 Lv1–Lv5'],
+ ['对上级返佣','isRebateToParent','yes','有效投注是否为上级计提返佣（行内开关）'],
+ ['返佣状态','rebateLevelType','yes','动态 / 固定 / 保底 三态'],
+ ['直属下级数','children_1_Total','yes','直接下级人数'],
+ ['团队下级数','teamSubCount','yes','团队总下级人数'],
+ ['累计返佣','financeCommission','yes','历史累计返佣金额'],
+ ['邀请奖励','agentInviteReward','yes','代理邀请奖励'],
+ ['合伙人奖励','agentPartnerReward','yes','合伙人奖励'],
+ ['昨日返佣等级','yesterdayRebateLevel','yes','昨日返佣等级档位（含升降指示）'],
+];
+const LOGIN=[
+ ['登录客户端','loginClient','yes','最近一次登录的客户端设备'],
+ ['登录设备号(设备ID)','loginDeviceId','yes','最近一次登录的稳定设备 ID'],
+ ['登录域名','loginDomain','yes','最近一次登录进入的域名'],
+ ['最后3次登录(IP/同IP数)','loginLogList + ip_UserID_Count','yes','最近 3 次登录明细（IP + 同 IP 数）'],
+ ['登录浏览器指纹','loginFingerprint','yes','最近一次登录的浏览器指纹'],
+ ['上次登录设备','loginClient','yes','与「登录客户端」同字段'],
+ ['同设备登录数','sameDeviceLoginCount','yes','与本会员同设备登录过的账号数'],
+ ['同指纹登录数','sameFingerprintLoginCount','yes','与本会员同指纹登录过的账号数'],
+ ['上次登录包名','lastLoginPackage','yes','最近一次登录的 App 包名'],
+];
+const LIST=[
+ ['领取返佣（行内开关）','commissionEnabled / rebateStateBet','yes','控制该会员是否可领取自己的返佣（点击二次确认）'],
+ ['对上级返佣（行内开关）','isRebateToParent','yes','控制该会员有效投注是否为上级计提返佣'],
+ ['注册域名列','registerDomain','yes','会员列表新增展示列'],
+ ['注册设备号列','registerDeviceId','yes','会员列表新增展示列'],
+ ['注册浏览器指纹列','registerFingerprint','yes','会员列表新增展示列'],
+ ['上次登录设备列','loginDeviceId','yes','会员列表新增展示列'],
+ ['一级代理列','firstAgent','yes','会员列表新增展示列'],
+ ['直接上级代理列','directParentAgent','yes','会员列表新增展示列'],
+ ['佣金模式列','commissionMode','yes','会员列表新增展示列'],
+ ['登录客户端列','loginClient','yes','会员列表新增展示列'],
+ ['登录设备号列','loginDeviceId','yes','会员列表新增展示列'],
+ ['登录浏览器指纹列','loginFingerprint','yes','会员列表新增展示列'],
+];
+const SUGGEST=[
+ ['归因规则编号','attributionRuleCode','sug','命中的矩阵规则编号（A1–B11），便于复盘判定依据'],
+ ['归因置信度','attributionConfidence','sug','多标识冲突时的判定置信度 / 失败原因'],
+ ['注册IP归属地','registerGeo','sug','由注册 IP 派生的 国家/地区/运营商，供风控与投放地域分析'],
+ ['首充渠道一致性','firstDepositChannelMatch','sug','首充渠道是否与注册渠道一致（识别搬运/异常）'],
+ ['设备风险评分','deviceRiskScore','sug','综合 同设备/同指纹/模拟器 的设备风险分'],
+];
+function renderFields(id,rows){
+  const el=document.getElementById(id); if(!el) return;
+  const head='<tr><th width="200">字段中文名</th><th width="240">实际字段 key</th><th width="86">落地状态</th><th>说明</th></tr>';
+  const body=rows.map(r=>`<tr><td><b>${r[0]}</b></td><td><code>${r[1]}</code></td><td><span class="st ${r[2]}">${r[2]==='yes'?'已实现':'建议'}</span></td><td>${r[3]}</td></tr>`).join('');
+  el.innerHTML=`<table>${head}${body}</table>`;
+}
+renderFields('t-attr',ATTR);renderFields('t-agent',AGENT);renderFields('t-login',LOGIN);renderFields('t-list',LIST);renderFields('t-suggest',SUGGEST);
+
+// 归因矩阵（4 类 × 18 种）
+const GCLS={'广告投放':'g-ad','邀请来源':'g-inv','官方直推':'g-off','自然流量':'g-nat'};
+const AMX=[
+ ['A1','广告投放','Facebook','广告点击ID fbclid','广告·点击 Facebook 广告进入','广告落地页 apk-fb-me001-01','未填邀请码·无代理','主归因 广告投放 · 渠道 apk-fb-me001-01 · 平台 Facebook'],
+ ['A2','广告投放','Instagram','UTM utm_source=instagram','广告·Instagram 投放进入','广告落地页 h5-ig-ay002-01','未填邀请码·无代理','主归因 广告投放 · 渠道 h5-ig-ay002-01 · 平台 Instagram'],
+ ['A3','广告投放','其他平台','UTM（清单外）','广告·其他平台投放进入','广告落地页 h5-ads-me001-01','未填邀请码·无代理','主归因 广告投放 · 平台 其他'],
+ ['A4','广告投放','裂变获客','广告点击ID + 有效邀请码','广告·点击 Facebook 广告进入','广告落地页 apk-fb-me001-01','填邀请码 AGENT100（辅证）·绑上级 2250100/一级 2250001','主归因 广告投放（裂变）· 平台 Facebook · 邀请码 AGENT100'],
+ ['A5','广告投放','Facebook','广告点击ID + 无效邀请码','广告·点击 Facebook 广告进入','广告落地页 apk-fb-me001-01','填邀请码（无效）·不绑代理','主归因 广告投放 · 平台 Facebook · 邀请码无效'],
+ ['B2','广告投放','Facebook','官方链接 + 广告标识','广告·官方链接带广告标识进入','官方渠道 h5-01','未填邀请码·无代理','主归因 广告投放 · 渠道 官方 h5-01 · 平台 Facebook'],
+ ['A6','邀请来源','正常邀请(个人)','个人邀请码 AGENT100(手填)','Facebook-鳗鱼01 渠道进入后手填邀请码','渠道 apk-fb-me001-01','手填 AGENT100·绑上级 2250100/一级 2250001','主归因 邀请来源 · 渠道 apk-fb-me001-01 · 邀请码 AGENT100'],
+ ['B3','邀请来源','正常邀请(个人)','官方渠道 + 个人邀请码','官方渠道进入后手填邀请码','官方渠道 h5-01','填 AGENT100·绑上级/一级','主归因 邀请来源 · 渠道 官方 h5-01 · 邀请码 AGENT100'],
+ ['B4','邀请来源','转盘邀请','转盘活动码 WHEEL8001','转盘活动分享进入','官方渠道 h5-01','填 WHEEL8001·绑上级/一级','主归因 邀请来源 · 邀请码 WHEEL8001 · 类型 转盘邀请'],
+ ['B5','邀请来源','任务邀请','任务活动码 TASK8002','任务活动分享进入','官方渠道 h5-01','填 TASK8002·绑上级/一级','主归因 邀请来源 · 邀请码 TASK8002 · 类型 任务邀请'],
+ ['B6','邀请来源','活动过期降级','活动邀请码已过期','活动分享进入（码已过期）','官方渠道 h5-01','活动码过期降级正常邀请·仍绑上级/一级','主归因 邀请来源 · 邀请码 WHEEL8001 · 降级正常邀请'],
+ ['B1','官方直推','—','仅官方推广链接标识','官方·点官方推广链接进入','官方渠道 h5-01','未填邀请码·无代理','主归因 官方直推 · 渠道 官方 h5-01'],
+ ['A7','自然流量','其他来源','Referrer（非搜索）','自然·站外非搜索链接进入','渠道 apk-fb-me001-01','未填邀请码·无代理','主归因 自然流量 · 渠道 apk-fb-me001-01 · 搜索引擎 其他'],
+ ['B7','自然流量','Google 搜索','Referrer = Google','自然·Google 搜索结果进入','官方渠道 h5-01','未填邀请码·无代理','主归因 自然流量 · 渠道 官方 h5-01 · 搜索引擎 Google'],
+ ['B8','自然流量','其他来源','Referrer（清单外）','自然·清单外站外链接进入','官方渠道 h5-01','未填邀请码·无代理','主归因 自然流量 · 渠道 官方 h5-01 · 搜索引擎 其他'],
+ ['B9','自然流量','直接访问','无任何参数','自然·直接输入域名进入','官方渠道 h5-01','未填邀请码·无代理','主归因 自然流量 · 渠道 官方 h5-01 · 直接访问'],
+ ['B10','自然流量','直接访问','参数全部解析失败','自然·参数损坏/伪造，兜底直接访问','官方渠道 h5-01','未填有效邀请码·无代理','主归因 自然流量 · 直接访问（失败原因记日志）'],
+ ['B11','自然流量','直接访问','仅无效邀请码','自然·仅无效邀请码，无其他标识','官方渠道 h5-01','邀请码无效·不绑代理','主归因 自然流量 · 邀请码无效'],
+];
+const mx=document.getElementById('t-matrix');
+mx.innerHTML='<tr><th width="44">编号</th><th width="78">主归因</th><th width="110">子类</th><th width="150">命中标识</th><th>① 进入方式</th><th>② 落地渠道</th><th>③ 邀请码·代理</th><th>④ 归因结果</th></tr>'+
+ AMX.map(r=>`<tr><td><b>${r[0]}</b></td><td><span class="gtag ${GCLS[r[1]]}">${r[1]}</span></td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td><td>${r[7]}</td></tr>`).join('');
+
+// 平滑滚动
+document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',e=>{
+  const t=document.querySelector(a.getAttribute('href')); if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}
+}));
+</script>
+</body>
+</html>

@@ -59,7 +59,7 @@
 <tr><td class="cid">UC-12</td><td>查看「状态」列</td><td>为 badge 纯展示（开=绿/关=灰），不可点击</td><td class="res">待测</td><td class="who">eason</td></tr>
 <tr><td class="cid">UC-13</td><td rowspan="1"><b>登录日志</b><br><a class="golink" href="http://localhost:8200/?open=login-log" target="_blank">查看 ↗</a></td><td>按会员ID（多 ID 空格分隔）查询</td><td>列表按 ID 过滤；设备与浏览器指纹融合一列展示</td><td class="res">待测</td><td class="who">eason</td></tr>
 <tr><td class="cid">UC-14</td><td rowspan="1"><b>短信验证码查询</b><br><a class="golink" href="http://localhost:8200/?open=sms-code" target="_blank">查看 ↗</a></td><td>按手机号查询</td><td>列出验证码/业务类型/发送时间/状态；页面无导出按钮</td><td class="res">待测</td><td class="who">eason</td></tr>
-<tr><td class="cid">UC-15</td><td rowspan="2"><b>会员列表 · 操作列与开关</b><br><a class="golink" href="http://localhost:8200/?open=member-list" target="_blank">查看 ↗</a></td><td>查看操作列</td><td>默认展开、直接显示各行操作（无「更多」折叠按钮）</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-15</td><td rowspan="2"><b>会员列表 · 操作列与开关</b><br><a class="golink" href="http://localhost:8200/?open=member-list" target="_blank">查看 ↗</a></td><td>查看操作列</td><td>各行操作全部平铺一行（无「更多」折叠按钮）；操作列恒为最后一列、冻结在最右</td><td class="res">待测</td><td class="who">eason</td></tr>
 <tr><td class="cid">UC-16</td><td>切换「领取返佣 / 对上级返佣」开关</td><td>弹二次确认，确定后开关翻转并 Toast</td><td class="res">待测</td><td class="who">eason</td></tr>
 <tr><td class="cid">UC-17</td><td rowspan="1"><b>会员详情 · 归因来源</b><br><a class="golink" href="http://localhost:8200/?open=member-list" target="_blank">查看 ↗</a></td><td>点会员ID下钻详情 → 看「归因来源」板块</td><td>红字归因字段齐全；代理数据含 10 级代理关系图</td><td class="res">待测</td><td class="who">eason</td></tr>
 <tr class="mod"><td colspan="6">运营管理</td></tr>
@@ -72,7 +72,7 @@
 <tr><td class="cid">UC-23</td><td rowspan="1"><b>异常会员处理</b><br><a class="golink" href="http://localhost:8200/?open=abnormal-member" target="_blank">查看 ↗</a></td><td>勾选若干会员点「批量驳回提现」</td><td>弹二次确认，确定后执行并 Toast；金额列有页脚合计</td><td class="res">待测</td><td class="who">eason</td></tr>
 <tr><td class="cid">UC-24</td><td rowspan="1"><b>同IP/设备检测</b><br><a class="golink" href="http://localhost:8200/?open=same-ip" target="_blank">查看 ↗</a></td><td>在 4 个子页签间切换，点某行「人数」蓝链</td><td>跳会员列表并按该 IP/设备自动查询，Toast 命中数</td><td class="res">待测</td><td class="who">eason</td></tr>
 <tr class="mod"><td colspan="6">配置中心</td></tr>
-<tr><td class="cid">UC-25</td><td rowspan="1"><b>VIP 等级配置</b><br><a class="golink" href="http://localhost:8200/?open=vip-level-config" target="_blank">查看 ↗</a></td><td>在「VIP等级 / 经验值配置」双页签切换；改某等级</td><td>等级固定 10 级（VIP0–9）不可增删；修改弹窗 ID 隐藏、名称只读</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-25</td><td rowspan="1"><b>VIP 等级配置</b><br><a class="golink" href="http://localhost:8200/?open=vip-level-config" target="_blank">查看 ↗</a></td><td>在「VIP等级 / 经验值配置」双页签切换；改某等级</td><td>等级固定 11 级（VIP0–10）不可增删；修改弹窗 ID 隐藏、名称只读</td><td class="res">待测</td><td class="who">eason</td></tr>
 <tr><td class="cid">UC-26</td><td rowspan="1"><b>返佣等级配置</b><br><a class="golink" href="http://localhost:8200/?open=rebate-level" target="_blank">查看 ↗</a></td><td>在「返佣费率配置」页签编辑某等级费率</td><td>同级五大类费率之和 >4% 时校验拦截</td><td class="res">待测</td><td class="who">eason</td></tr>
 <tr><td class="cid">UC-27</td><td rowspan="1"><b>代理审核机制</b><br><a class="golink" href="http://localhost:8200/?open=agent-audit" target="_blank">查看 ↗</a></td><td>点某行「修改返佣」</td><td>弹 5 游戏基础费率+备注弹窗；返佣状态以 badge 展示</td><td class="res">待测</td><td class="who">eason</td></tr>
 <tr class="mod"><td colspan="6">报表管理</td></tr>
@@ -80,8 +80,24 @@
 <tr><td class="cid">UC-29</td><td rowspan="1"><b>昨日返佣等级</b><br><a class="golink" href="http://localhost:8200/?open=rebate-level-yesterday" target="_blank">查看 ↗</a></td><td>查看五游戏列</td><td>每游戏为「投注金额/返佣金额」双列分组表头；工具栏仅导出</td><td class="res">待测</td><td class="who">eason</td></tr>
 <tr class="mod"><td colspan="6">系统管理</td></tr>
 <tr><td class="cid">UC-30</td><td rowspan="1"><b>IP 黑名单</b><br><a class="golink" href="http://localhost:8200/?open=ip-blacklist" target="_blank">查看 ↗</a></td><td>点「批量导入」，粘贴多个 IP 或上传 CSV</td><td>实时识别去重计数、选封禁类型/原因，确认后插入列表顶部并 Toast</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr class="mod"><td colspan="6">本期新增交互（横/竖版 · 操作列锁定 · 配置模式 · 设备术语）</td></tr>
+<tr><td class="cid">UC-31</td><td rowspan="2"><b>会员列表 · 横/竖版排布</b><br><a class="golink" href="http://localhost:3100/member/user" target="_blank">查看 ↗</a></td><td>点工具栏右侧「竖版」</td><td>列由扁平多列（约 38）切为约 16 个「标签在上/值在下」复合列，行更高、横向更短；再点「横版」复原。默认横版</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-32</td><td>横/竖版切换后查看操作列与自定义列</td><td>操作列始终为最后一列、冻结在最右；打开自定义列，操作列不可取消冻结、不可拖拽排序，仅可显隐</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-33</td><td rowspan="1"><b>配置中心 · 配置模式</b><br><a class="golink" href="http://localhost:3100/config-center/vipConfig" target="_blank">查看 ↗</a></td><td>查看 VIP / 返佣配置顶部「配置模式」</td><td>为分段单选按钮（非下拉），右侧灰字显示当前模式说明；仅「使用自定义模版 / 使用商户模版」两项（无「单商户配置」）</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-34</td><td rowspan="1"><b>设备术语统一</b><br><a class="golink" href="http://localhost:3100/member/user" target="_blank">查看 ↗</a></td><td>查看会员列表 / 详情的注册端、登录端设备字段</td><td>取值仅限 7 种术语：H5 / PC / 安卓原生 / iOS原生 / 安卓壳包 / iOS壳包 / PWA</td><td class="res">待测</td><td class="who">eason</td></tr>
+<tr><td class="cid">UC-35</td><td rowspan="1"><b>返佣报表（新增实页）</b><br><a class="golink" href="http://localhost:3100/report/rebateReport" target="_blank">查看 ↗</a></td><td>在「流水返佣 / 返佣报表 / 层级返佣报表」三页签间切换</td><td>三页签均可切换并展示对应列（五游戏：彩票/电子/视讯/体育/棋牌），手机号脱敏，页脚「页面总计/总计」双行随筛选刷新，工具栏有导出</td><td class="res">待测</td><td class="who">eason</td></tr>
     </tbody>
   </table>
 </div>
+<script>
+/* 原型链接更新：8200 ?open=key → 3100 真实路由（与产品介绍同款） */
+(function(){
+  var M={'member-list':'/member/user','user-group':'/member/groupManage','login-log':'/member/loginLog','sms-code':'/member/smsCode','inbox-message':'/operations/inboxMessage','announcement-msg':'/operations/announcement','banner-mgmt':'/operations/banner','channel-config':'/operations/channelConfig','domain-mgmt':'/operations/domainMgmt','domain-rescue':'/operations/domainRescue','domain-resolve-log':'/operations/domainResolveLog','vip-reward-log':'/operations/vipRewardLog','vip-level-count':'/operations/vipLevelCount','vip-op-log':'/operations/vipOpLog','member-rebate-level':'/operations/memberRebateLevel','agent-audit':'/operations/agentAudit','abnormal-member':'/risk-control/abnormalMember','same-ip':'/risk-control/sameIp','vip-level-config':'/config-center/vipConfig','rebate-level':'/config-center/rebateConfig','agent-report':'/report/agentReport','rebate-report':'/report/rebateReport','rebate-level-yesterday':'/operations/rebateLevelYesterday','ip-blacklist':'/system/ipBlacklist','hub':'/'};
+  document.querySelectorAll('a[href*="localhost:8200"]').forEach(function(a){
+    var h=a.getAttribute('href'),m=h.match(/[?&]open=([a-z0-9-]+)/);
+    a.setAttribute('href', m&&M[m[1]] ? 'http://localhost:3100'+M[m[1]] : h.replace(/https?:\/\/localhost:8200[^"'\s]*/,'http://localhost:3100'));
+  });
+})();
+</script>
 </body>
 </html>

@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>会员列表 · 方案A 复合列 Demo</title>
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --border: #eceef2;
+      --line: #f3f4f6;
+      --sep: #f4f5f7;
+      --bg: #f6f7f9;
+      --text: #2b3038;
+      --sub: #aab0bb;
+      --label: #9ca3af;
+      --success: #16a34a;
+      --error: #e0455e;
+      --warn: #d08700;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 13px/1.55 -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      padding: 24px 28px 64px;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1 { font-size: 19px; font-weight: 650; margin: 0 0 5px; letter-spacing: .2px; }
+    .sub { color: var(--sub); margin: 0 0 18px; font-size: 13px; }
+    .sub code { background: #eef0f3; padding: 1px 6px; border-radius: 5px; color: #6b7280; }
+    .toolbar { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+    .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 9px; overflow: hidden; background: #fff; }
+    .seg button { border: 0; background: #fff; padding: 8px 18px; cursor: pointer; font-size: 13px; color: #6b7280; transition: .15s; }
+    .seg button.active { background: var(--primary); color: #fff; }
+    .stat { font-size: 13px; color: var(--sub); }
+    .stat b { color: var(--text); font-weight: 600; }
+
+    .pill {
+      display: inline-flex; align-items: center; padding: 0 9px; height: 21px;
+      border-radius: 6px; font-size: 12px; font-weight: 500; white-space: nowrap; line-height: 1;
+    }
+    .pill.blue { background: #eef4ff; color: var(--primary); }
+    .pill.good { background: #e9f7ee; color: var(--success); }
+    .pill.bad  { background: #fdecef; color: var(--error); }
+    .pill.gray { background: #f2f3f5; color: #8a909c; }
+    .pill.warn { background: #fdf3e2; color: var(--warn); }
+
+    .card { background: #fff; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 2px rgba(20,28,45,.03); }
+    .scroller { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; }
+    thead th {
+      background: #fbfcfd; color: #8b93a1; font-weight: 600; font-size: 12px; letter-spacing: .3px;
+      padding: 12px 16px; text-align: left; white-space: nowrap;
+      border-bottom: 1px solid var(--border); position: sticky; top: 0;
+    }
+    thead th:not(:last-child) { border-right: 1px solid var(--sep); }
+    tbody td {
+      padding: 13px 16px; vertical-align: top; text-align: left;
+      border-bottom: 1px solid var(--line);
+    }
+    tbody td:not(:last-child) { border-right: 1px solid var(--sep); }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover td { background: #f8fbff; }
+    .center { text-align: center; }
+
+    /* 开关(代理/返佣) */
+    .sw { display: inline-block; width: 34px; height: 18px; border-radius: 9px; background: #d3d7df; position: relative; transition: .15s; vertical-align: middle; }
+    .sw.on { background: var(--success); }
+    .sw::after { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.15); transition: .15s; }
+    .sw.on::after { left: 18px; }
+
+    .link { color: var(--primary); cursor: pointer; white-space: nowrap; font-weight: 500; }
+    .link:hover { opacity: .78; }
+    .link.danger { color: var(--error); }
+    .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 11.5px; color: #79818e; }
+    .amt  { font-variant-numeric: tabular-nums; color: #2b3038; }
+
+    /* 复合单元格:上下结构 —— 标签在上(灰小字)、值在下,列更窄、标签可写全称 */
+    .kv { display: flex; flex-direction: column; gap: 9px; }
+    .kv .f { line-height: 1.3; }
+    .kv .k { color: var(--label); font-size: 11px; margin-bottom: 1px; }
+    .kv .v { color: var(--text); font-size: 12.5px; }
+    .kv .v .amt { font-weight: 600; }
+
+    /* 会员身份:商户 → 账号(含在线) → 昵称 → ID */
+    .who .merchant { margin-bottom: 6px; }
+    .who .acc { font-weight: 600; font-size: 13.5px; color: #1f2329; display: flex; align-items: center; gap: 6px; }
+    .who .nick { color: var(--sub); margin-top: 3px; }
+    .who .mid { margin-top: 6px; }
+    /* 在线状态红绿灯 */
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: 0 0 auto; vertical-align: middle; }
+    .dot.on  { background: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,.16); }
+    .dot.off { background: #c4c8d0; }
+    .ostat { font-size: 11px; font-weight: 500; }
+    .ostat.on  { color: var(--success); }
+    .ostat.off { color: #aab0bb; }
+
+    .ops { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+
+    /* 批量操作栏 */
+    .batchbar {
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+      background: #fff; border: 1px solid var(--border); border-radius: 12px;
+      padding: 11px 16px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(20,28,45,.03);
+    }
+    .batchbar .bcount { font-size: 13px; color: var(--sub); }
+    .batchbar .bcount b { color: var(--primary); font-weight: 600; }
+    .bbtns { display: flex; flex-wrap: wrap; gap: 8px; }
+    .bbtns button {
+      border: 1px solid var(--border); background: #fff; color: #4b5563;
+      border-radius: 7px; padding: 6px 13px; font-size: 12.5px; cursor: pointer; transition: .15s;
+    }
+    .bbtns button:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); background: #f5f9ff; }
+    .bbtns button:disabled { color: #cfd4dc; cursor: not-allowed; background: #fbfcfd; }
+    .ck { width: 15px; height: 15px; cursor: pointer; vertical-align: middle; accent-color: var(--primary); }
+    td.ckcell, th.ckcell { text-align: center; width: 42px; }
+
+    .note { background: #f0f7ff; border: 1px solid #d6e8ff; color: #2b5b8c; border-radius: 8px; padding: 10px 14px; margin: 14px 0 0; font-size: 13px; }
+    .legend { margin-top: 10px; color: var(--sub); font-size: 12px; }
+    .legend code { background: #eceff3; padding: 1px 5px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>会员列表 · 方案A 复合列 Demo</h1>
+  <p class="sub">仅原型演示 · 数据取自 <code>member/user/data.ts</code> · 与正式会员页隔离,不影响目标站</p>
+
+  <div class="toolbar">
+    <div class="seg">
+      <button id="btn-after" class="active" onclick="setView('after')">改造后 · 复合列</button>
+      <button id="btn-before" onclick="setView('before')">改造前 · 38 列</button>
+    </div>
+    <div class="stat" id="stat"></div>
+  </div>
+
+  <div class="batchbar">
+    <span class="bcount">已选 <b id="selcount">0</b> 项</span>
+    <div class="bbtns" id="bbtns">
+      <button>批量拉黑</button><button>批量拉白</button><button>批量启用</button>
+      <button>批量禁用</button><button>批量分组</button><button>批量更改代理模式</button>
+      <button>批量重置谷歌</button><button>导入批量操作</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="scroller"><table id="tbl"></table></div>
+  </div>
+
+  <div class="note" id="note"></div>
+  <p class="legend">复合列把<b>同类字段</b>并进一个单元格,标签灰、值左对齐、左边缘网格对齐,信息一个不丢;横向滚动从 ~5300px 降到约 1 屏。设备指纹/域名等最次要字段后续可再按方案B 挪进详情抽屉。</p>
+
+<script>
+const RAW = [
+  {userId:1100001,tenantId:1050,userName:'rahul.k@gmail.com',mobile:'+91 98765 43210',email:'rahul.k@gmail.com',nickName:'Rahul',userState:1,isBlock:0,userType:0,phoneType:1,amount:12500.50,safeAmount:'5000.00',thirdamout:230.5,redAmount:50,inviterCode:'INV1050A',channelCode:'CH01',registerIp:'49.36.180.21',userLoginIp:'49.36.180.45',amountOfCode:256000,userGroupName:'VIP1',isOnlineStr:'在线',userLoginDate:'2026-05-21 08:55:10',parentUserId:'1100023',agentType:0,rebateStateBet:1,isValidator:1,googleVerifyBind:0,userStartDate:'2025-08-12 11:20:00',vipLevel:3,rechargeTimes:45,rechargeAmounts:56800,rechargeTimeFirst:'2025-08-13 14:23:11',rechargeTimeLast:'2026-05-20 19:45:30',remark:''},
+  {userId:1100002,tenantId:1050,userName:'+91 98220 11234',mobile:'+91 98220 11234',email:'priya.s@gmail.com',nickName:'Priya',userState:1,isBlock:0,userType:0,phoneType:2,amount:3420.00,safeAmount:'1200.00',thirdamout:0,redAmount:25,inviterCode:'INV1050B',channelCode:'CH02',registerIp:'157.49.20.7',userLoginIp:'157.49.20.7',amountOfCode:45200,userGroupName:'普通会员',isOnlineStr:'离线',userLoginDate:'2026-05-19 22:00:00',parentUserId:'',agentType:0,rebateStateBet:0,isValidator:0,googleVerifyBind:0,userStartDate:'2025-12-03 09:00:00',vipLevel:1,rechargeTimes:8,rechargeAmounts:4200,rechargeTimeFirst:'2025-12-03 10:11:22',rechargeTimeLast:'2026-05-15 18:30:00',remark:'高价值客户'},
+  {userId:1100003,tenantId:1048,userName:'carlos.silva@hotmail.com',mobile:'+55 11 99876 5432',email:'carlos.silva@hotmail.com',nickName:'Carlos',userState:1,isBlock:0,userType:1,phoneType:3,amount:85420.80,safeAmount:'20000.00',thirdamout:1240.6,redAmount:320,inviterCode:'INV1048X',channelCode:'CH03',registerIp:'177.45.12.88',userLoginIp:'177.45.13.20',amountOfCode:1280000,userGroupName:'代理-超级',isOnlineStr:'在线',userLoginDate:'2026-05-21 09:30:00',parentUserId:'1100000',agentType:2,rebateStateBet:1,isValidator:1,googleVerifyBind:1,userStartDate:'2024-11-05 16:00:00',vipLevel:5,rechargeTimes:320,rechargeAmounts:458000,rechargeTimeFirst:'2024-11-06 09:15:00',rechargeTimeLast:'2026-05-21 09:50:00',remark:'kyc真实用户'},
+  {userId:1100004,tenantId:1048,userName:'+86 138 0013 8000',mobile:'+86 138 0013 8000',email:'',nickName:'美琳',userState:0,isBlock:1,userType:2,phoneType:1,amount:0.00,safeAmount:'0.00',thirdamout:0,redAmount:0,inviterCode:'INV1048Y',channelCode:'CH01',registerIp:'120.85.6.14',userLoginIp:'120.85.6.14',amountOfCode:0,userGroupName:'测试组',isOnlineStr:'离线',userLoginDate:'2026-03-01 09:00:00',parentUserId:'',agentType:0,rebateStateBet:0,isValidator:0,googleVerifyBind:0,userStartDate:'2026-03-01 09:00:00',vipLevel:0,rechargeTimes:0,rechargeAmounts:0,rechargeTimeFirst:'',rechargeTimeLast:'',remark:'风控冻结'},
+  {userId:1100005,tenantId:1050,userName:'ahmed_ali@yahoo.com',mobile:'',email:'ahmed_ali@yahoo.com',nickName:'Ahmed',userState:1,isBlock:0,userType:0,phoneType:3,amount:9945.10,safeAmount:'800.00',thirdamout:45.2,redAmount:10,inviterCode:'INV1050C',channelCode:'CH04',registerIp:'41.62.18.90',userLoginIp:'41.62.18.99',amountOfCode:88000,userGroupName:'VIP2',isOnlineStr:'在线',userLoginDate:'2026-06-15 11:25:12',parentUserId:'1100001',agentType:1,rebateStateBet:1,isValidator:0,googleVerifyBind:1,userStartDate:'2025-07-04 08:00:00',vipLevel:2,rechargeTimes:3,rechargeAmounts:11945,rechargeTimeFirst:'2025-07-04 09:00:00',rechargeTimeLast:'2026-06-15 10:00:00',remark:''},
+];
+const CLI = {1:'安卓壳包',2:'iOS壳包',3:'PC网页'};
+const CLICODE = {1:'AND',2:'IOS',3:'PC'};
+function enrich(r){
+  const cc = CLICODE[r.phoneType]||'H5';
+  return {...r,
+    registerDomain:`m.sit-${r.tenantId}.com`,
+    registerDeviceId:`${cc}-${r.userId}-9f3c`,
+    registerFingerprint:`fp_${cc.toLowerCase()}_${r.userId}r`,
+    loginClient:CLI[r.phoneType]||'H5',
+    loginDeviceId:`${cc}-${r.userId}-7e8d`,
+    loginFingerprint:`fp_${cc.toLowerCase()}_${r.userId}l`,
+    commissionMode:r.rebateStateBet?'流水返佣':'盈亏返利',
+    frontGoogle:r.isValidator===1,
+    backGoogle:r.googleVerifyBind===1,
+  };
+}
+const DATA = RAW.map(enrich);
+
+const money = n => Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const amt = n => `<span class="amt">${money(n)}</span>`;
+const mono = s => `<span class="mono">${s}</span>`;
+const typeTxt = r => ({0:'真实用户',1:'代理',2:'测试账号'})[r.userType];
+const gLink = ok => ok?'<span class="link">点击查看</span>':'<span class="pill gray">未绑定</span>';
+const sw = on => `<span class="sw ${on?'on':''}"></span>`;
+function kv(rows){ return '<div class="kv">'+rows.map(([k,v])=>`<div class="f"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('')+'</div>'; }
+
+const AFTER_COLS = [
+  {t:'会员', r:r=>{
+    const on = r.isOnlineStr==='在线';
+    return kv([
+      ['商户', `#${r.tenantId}`],
+      ['昵称', `<b>${r.nickName}</b> <span class="dot ${on?'on':'off'}"></span><span class="ostat ${on?'on':'off'}">${on?'在线':'离线'}</span>`],
+      ['会员ID', r.userId],
+    ]);
+  }},
+  {t:'账号', r:r=>kv([
+    ['手机', r.mobile?mono(r.mobile):'<span class="pill gray">未绑定</span>'],
+    ['邮箱', r.email?mono(r.email):'<span class="pill gray">未绑定</span>'],
+  ])},
+  {t:'资金', r:r=>kv([['账户余额',amt(r.amount)],['三方余额',amt(r.thirdamout)],['保险箱余额',amt(r.safeAmount)]])},
+  {t:'红包/打码', r:r=>kv([['红包余额',amt(r.redAmount)],['打码量',amt(r.amountOfCode)]])},
+  {t:'充值', r:r=>kv([['充值次数',r.rechargeTimes],['充值金额',amt(r.rechargeAmounts)]])},
+  {t:'充值时间', r:r=>kv([['首充时间',r.rechargeTimeFirst||'—'],['末次充值',r.rechargeTimeLast||'—']])},
+  {t:'等级/分组', r:r=>kv([['VIP等级',`<span class="pill warn">L${r.vipLevel}</span>`],['会员类型',`<span class="pill blue">${typeTxt(r)}</span>`],['会员分组',`<span class="pill gray">${r.userGroupName}</span>`]])},
+  {t:'状态', r:r=>kv([
+    ['会员状态', r.userState?'<span class="pill good">启用</span>':'<span class="pill bad">禁用</span>'],
+    ['黑名单', r.isBlock?'<span class="pill bad">已拉黑</span>':'<span class="pill gray">正常</span>'],
+    ['最后在线', r.userLoginDate],
+  ])},
+  {t:'注册信息', r:r=>kv([['注册时间',r.userStartDate],['注册IP',mono(r.registerIp)],['注册域名',mono(r.registerDomain)]])},
+  {t:'注册设备', r:r=>kv([['设备类型',CLI[r.phoneType]||'H5'],['注册设备号',mono(r.registerDeviceId)],['注册指纹',mono(r.registerFingerprint)]])},
+  {t:'登录设备', r:r=>kv([['登录设备',r.loginClient],['登录设备号',mono(r.loginDeviceId)],['登录指纹',mono(r.loginFingerprint)]])},
+  {t:'代理', r:r=>kv([['一级代理',r.parentUserId||'—'],['佣金模式',r.commissionMode]])},
+  {t:'返佣', r:r=>{
+    const isAgent = r.agentType!==0;
+    return kv([['领取返佣',sw(isAgent)],['对上级返佣',sw(isAgent && r.rebateStateBet===1)]]);
+  }},
+  {t:'谷歌验证', r:r=>kv([['前台谷歌',gLink(r.frontGoogle)],['后台谷歌',gLink(r.backGoogle)]])},
+  {t:'来源', r:r=>kv([['邀请码',r.inviterCode],['渠道号',r.channelCode]])},
+  {t:'备注', r:r=>r.remark?`<span style="color:#d03050">${r.remark}</span>`:'<span class="pill gray">无</span>'},
+  {t:'操作', r:r=>{
+    let btns = '<span class="link">修改密码</span><span class="link">三方信息</span>';
+    if(r.commissionMode==='盈亏返利') btns += '<span class="link">红包充值</span>';
+    if(r.backGoogle) btns += '<span class="link danger">后台谷歌重置</span>';
+    return `<div class="ops">${btns}</div>`;
+  }},
+];
+
+const BEFORE_COLS = [
+  ['商户',r=>'#'+r.tenantId],['会员ID',r=>r.userId],['账号',r=>r.userName],['昵称',r=>r.nickName],
+  ['余额',r=>money(r.amount)],['三方余额',r=>money(r.thirdamout)],['保险箱余额',r=>money(r.safeAmount)],['红包剩余',r=>money(r.redAmount)],
+  ['邀请码',r=>r.inviterCode],['渠道号',r=>r.channelCode],['注册域名',r=>r.registerDomain],['注册IP',r=>r.registerIp],
+  ['注册设备',r=>CLI[r.phoneType]||'H5'],['注册设备号',r=>r.registerDeviceId],['注册指纹',r=>r.registerFingerprint],
+  ['上次登录设备',r=>r.loginClient],['登录设备号',r=>r.loginDeviceId],
+  ['打码量',r=>money(r.amountOfCode)],['会员分组',r=>r.userGroupName],['会员类型',r=>typeTxt(r)],['黑名单',r=>r.isBlock?'拉黑':'正常'],
+  ['会员状态',r=>r.userState?'启用':'禁用'],['在线状态',r=>r.isOnlineStr],['最后在线',r=>r.userLoginDate],
+  ['一级代理',r=>r.parentUserId||'—'],['佣金模式',r=>r.commissionMode],['领取返佣',r=>r.rebateStateBet?'是':'否'],['对上级返佣',r=>r.rebateStateBet?'开':'关'],
+  ['前台谷歌',r=>r.frontGoogle?'已绑定':'未绑定'],['后台谷歌',r=>r.backGoogle?'已绑定':'未绑定'],
+  ['首次登录',r=>r.userLoginDate],['注册时间',r=>r.userStartDate],['VIP等级',r=>'L'+r.vipLevel],
+  ['充值次数',r=>r.rechargeTimes],['充值金额',r=>money(r.rechargeAmounts)],['首充时间',r=>r.rechargeTimeFirst||'—'],['最后充值',r=>r.rechargeTimeLast||'—'],
+  ['备注',r=>r.remark||'—'],
+];
+
+const selected = new Set();
+const ckHead = '<th class="ckcell"><input type="checkbox" class="ck" id="selall" onchange="toggleAll(this.checked)"></th>';
+const ckCell = r => `<td class="ckcell"><input type="checkbox" class="ck rowck" ${selected.has(r.userId)?'checked':''} onchange="toggleRow(${r.userId},this.checked)"></td>`;
+
+function render(view){
+  const tbl = document.getElementById('tbl');
+  let html = '<thead><tr>' + ckHead;
+  if(view==='after'){
+    html += AFTER_COLS.map(c=>`<th>${c.t}</th>`).join('') + '</tr></thead><tbody>';
+    html += DATA.map(r=>'<tr>'+ckCell(r)+AFTER_COLS.map(c=>`<td>${c.r(r)}</td>`).join('')+'</tr>').join('');
+  } else {
+    html += BEFORE_COLS.map(c=>`<th>${c[0]}</th>`).join('')+'<th>操作</th></tr></thead><tbody>';
+    html += DATA.map(r=>'<tr>'+ckCell(r)+BEFORE_COLS.map(c=>`<td class="mono">${c[1](r)}</td>`).join('')+'<td><span class="link">修改密码</span> <span class="link">三方信息</span></td></tr>').join('');
+  }
+  tbl.innerHTML = html + '</tbody>';
+  syncBatch();
+}
+function toggleRow(id, on){ on?selected.add(id):selected.delete(id); syncBatch(); }
+function toggleAll(on){ selected.clear(); if(on) DATA.forEach(r=>selected.add(r.userId)); render(currentView); }
+function syncBatch(){
+  document.getElementById('selcount').textContent = selected.size;
+  document.querySelectorAll('#bbtns button').forEach(b=>{ b.disabled = selected.size===0 && b.textContent!=='导入批量操作'; });
+  const all = document.getElementById('selall');
+  if(all){ all.checked = selected.size===DATA.length; all.indeterminate = selected.size>0 && selected.size<DATA.length; }
+}
+let currentView = 'after';
+function setView(v){
+  currentView = v;
+  document.getElementById('btn-after').classList.toggle('active', v==='after');
+  document.getElementById('btn-before').classList.toggle('active', v==='before');
+  const after = v==='after';
+  document.getElementById('stat').innerHTML = after
+    ? '列数:<b>15</b> 列 · <b>每列≤3条数据</b> · 估算宽度 <b>~2200px</b>'
+    : '列数:<b>39</b> 列 · 估算宽度 <b>~5300px</b>(横向滚 5 屏 →)';
+  document.getElementById('note').innerHTML = after
+    ? '✅ <b>改造后(均衡版)</b>:38 字段并进 16 个复合列 + 操作列,<b>每格最多 3 行</b> → 行高更矮、一页能显示更多条;信息一个不丢。宽度比原来仍砍掉约一半。'
+    : '⚠️ <b>改造前</b>:每个字段各占一列,表格宽 ~5300px,要横向拖 5 屏才能看完一行 —— 试试拖底部滚动条。';
+  render(v);
+}
+setView('after');
+</script>
+</body>
+</html>

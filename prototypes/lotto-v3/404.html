@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <script>
-      // SPA 深链还原（配合根目录 404.html 重定向）：把 /base/?/home/welcome 还原成 /base/home/welcome
+      // [部署兜底] SPA 深链还原：配合 GitHub Pages 根 404.html 重定向，把 /base/?/x/y 还原成 /base/x/y
       (function (l) {
         if (l.search[1] === '/') {
           var decoded = l.search.slice(1).split('&').map(function (s) {
@@ -12,6 +12,15 @@
           window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
         }
       })(window.location);
+      // [部署兜底] 线上(github.io)注入演示 token 跳过登录；本地 dev 不受影响
+      try {
+        if (location.hostname.endsWith('github.io')) {
+          var __k = 'ACCESS-TOKEN';
+          if (!localStorage.getItem(__k)) {
+            localStorage.setItem(__k, JSON.stringify({ value: 'prototype-demo', expire: null }));
+          }
+        }
+      } catch (e) {}
     </script>
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
     <meta content="webkit" name="renderer" />
@@ -388,21 +397,19 @@
       })();
     </script>
     <title>AR 原型平台</title>
-    <script>try{if(location.hostname.endsWith('github.io')){var k='ACCESS-TOKEN';if(!localStorage.getItem(k))localStorage.setItem(k,JSON.stringify({value:'prototype-demo',expire:null}));}}catch(e){}</script>
-    <script type="module" crossorigin src="/saas-desigh/prototypes/lotto-v3/assets/index-DDcyBw19.js"></script>
+    <script type="module" crossorigin src="/saas-desigh/prototypes/lotto-v3/assets/index-Bn063ns8.js"></script>
     <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/_plugin-vue_export-helper-BbECKVuF.js">
     <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/rolldown-runtime-S-ySWqyJ.js">
     <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/preload-helper-BAi-n3Z7.js">
     <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/vendor-lodash-csEIXGwb.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/vendor-naive-pem5K3pO.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/role-Di7qoSVh.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/index-DDcyBw19.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/vendor-codemirror-B-hIaHu7.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/vendor-editor-ATvumkoX.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/usePermission-ClFO63Wo.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/components-C9y51Oqd.js">
-    <link rel="stylesheet" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/components-Ccv_EmRM.css">
-    <link rel="stylesheet" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/index-CK9CL_0i.css">
+    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/vendor-naive-DvOjZDLH.js">
+    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/role-DQH-OSKk.js">
+    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/index-Bn063ns8.js">
+    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/vendor-editor-CBIVqtW_.js">
+    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/usePermission-DDyjkYzY.js">
+    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/components-ImZ6R0P2.js">
+    <link rel="stylesheet" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/components-DhZapYai.css">
+    <link rel="stylesheet" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/index-CzceI9ze.css">
   </head>
   <body>
     <div id="appProvider" style="display: none"></div>

@@ -115,9 +115,9 @@
     <h1>SaaS 多商户后台 · 二阶段功能说明书</h1>
     <p>二阶段全部新增功能的<b>使用说明与交互规格</b> —— 每个页面的筛选、列表、操作、弹窗与反馈逐项讲清，可按本说明书逐条点验原型。</p>
     <div class="meta">
-      <span class="pill">版本 v1.15 · 2026-06-13</span>
+      <span class="pill">版本 v1.16 · 2026-06-20</span>
       <span class="pill">范围：二阶段（已建 23 功能页 · 开放 19 · 5 模块）</span>
-      <span class="pill">原型 localhost:8200（真实交互）</span>
+      <span class="pill">原型 localhost:3100（真实交互）</span>
       <span class="pill">文档性质：功能说明书</span>
       <span class="pill">💡 每个功能配「白话版」说明 + 原型截图</span>
     </div>
@@ -268,7 +268,7 @@
     <ul class="feat">
       <li>详情抽屉「归因来源」红字字段展示<b>主归因</b>结果，旁带 <b>?</b> 图标，点击弹出四种类型简介；下方「归因明细」可折叠展开判定流程图。</li>
       <li><b>判定优先级（命中即停）</b>：广告投放 ＞ 邀请来源 ＞ 官方直推 ＞ 自然流量；全部解析失败并入自然流量。</li>
-      <li>归因明细呈现 9 个字段：主归因 / 推广平台名称 / 注册渠道 / 登录渠道 / 搜索引擎 / 邀请码 / 邀请类型 / 包名 / 版本号；逐项定义见 4.3 字段表。</li>
+      <li>归因明细呈现 9 个字段：主归因 / 推广三方类型 / 注册渠道 / 登录渠道 / 搜索引擎 / 邀请码 / 邀请类型 / 包名 / 版本号；逐项定义见 4.3 字段表。</li>
     </ul>
     <img class="shot" src="img/spec3-basic.png?v=0613e" alt="原型截图 · 会员详情「基本信息」：红字新增字段 邀请人（可点击下钻）与 访问端">
     <div class="shot-cap">原型截图 · 会员详情「基本信息」：红字新增字段 邀请人（可点击下钻）与 访问端</div>
@@ -289,7 +289,7 @@
       <tr><td style="white-space:nowrap"><b style="color:#d4380d">邀请人</b><br><code style="font-size:11px;color:#7c3aed">inviterId</code></td><td>邀请码发起人 ID（通常＝直接上级代理），点击可下钻该会员详情。</td><td>裂变追踪、代理树构建、佣金归属判定</td></tr>
       <tr><td style="white-space:nowrap"><b style="color:#d4380d">访问端</b><br><code style="font-size:11px;color:#7c3aed">accessClient</code></td><td>最近一次访问的客户端类型：pc / h5 / 安卓 / ios / 安卓壳包 / ios壳包。</td><td>设备分布分析、端侧问题定位、风控识别</td></tr>
       <tr id="f-main"><td style="white-space:nowrap"><b style="color:#d4380d">主归因</b><br><code style="font-size:11px;color:#7c3aed">mainAttribution</code></td><td>注册来源唯一归类：广告投放 / 邀请来源 / 官方直推 / 自然流量（解析失败并入自然流量）；优先级唯一、命中即停。</td><td>获客成本核算、渠道质量评估、ROI 口径</td></tr>
-      <tr id="f-platform"><td style="white-space:nowrap"><b style="color:#d4380d">推广平台名称</b><br><code style="font-size:11px;color:#7c3aed">promoPlatform</code></td><td>识别出的外部推广平台：带平台点击ID精确识别（Google-gclid / Meta-fbclid / TikTok-ttclid 等）。</td><td>平台维度投放效果与对账</td></tr>
+      <tr id="f-platform"><td style="white-space:nowrap"><b style="color:#d4380d">推广三方类型</b><br><code style="font-size:11px;color:#7c3aed">promoPlatform</code></td><td>识别出的外部推广平台：带平台点击ID精确识别（Google-gclid / Meta-fbclid / TikTok-ttclid 等）。</td><td>平台维度投放效果与对账</td></tr>
       <tr id="f-regch"><td style="white-space:nowrap"><b style="color:#d4380d">注册渠道</b><br><code style="font-size:11px;color:#7c3aed">regChannelId</code></td><td>注册时命中的后台定义渠道（如 apk-fb-me001-01＝Facebook-鳗鱼01；邀请/自然流量记实际入口的官方渠道）。</td><td>渠道维度注册转化统计与结算</td></tr>
       <tr id="f-loginch"><td style="white-space:nowrap"><b style="color:#d4380d">登录渠道</b><br><code style="font-size:11px;color:#7c3aed">loginChannelId</code></td><td>最近一次登录命中的渠道 ID，可与注册渠道不同。</td><td>活跃来源分析、再营销渠道评估</td></tr>
       <tr id="f-se"><td style="white-space:nowrap"><b style="color:#d4380d">搜索引擎</b><br><code style="font-size:11px;color:#7c3aed">searchEngine</code></td><td>由 referrer 来源域名识别（Google / Bing / Yahoo / DuckDuckGo 等，未识别记「其他」，无 referrer 记「直接访问」）。</td><td>SEO 效果评估、自然流量质量</td></tr>
@@ -334,7 +334,7 @@
     <div class="mx-scroll"><table><colgroup><col style="width:74px"><col style="width:44px"><col style="width:104px"><col style="width:74px"><col style="width:78px"><col style="width:78px"><col style="width:28px"><col style="width:72px"><col style="width:90px"><col style="width:144px"><col style="width:104px"><col style="width:72px"><col style="width:76px"><col style="width:72px"><col style="width:118px"></colgroup>
             <thead>
               <tr><th rowspan="2">类型</th><th rowspan="2">编号</th><th colspan="4" style="text-align:center;border-bottom:1px solid var(--border)">触发标识</th><th rowspan="2" style="text-align:center">→</th><th colspan="7" style="text-align:center;border-bottom:1px solid var(--border)">页面呈现 · 归因明细（点击表头跳转字段说明）</th><th rowspan="2" style="text-align:center">示例预览</th></tr>
-              <tr><th>推广标识<br>(clickid/UTM)</th><th>邀请码</th><th>官方链接标识</th><th>搜索 referrer</th><th><a href="#f-main" style="color:var(--blue)">主归因</a></th><th><a href="#f-platform" style="color:var(--blue)">推广平台名称</a></th><th><a href="#f-regch" style="color:var(--blue)">注册渠道</a></th><th><a href="#f-loginch" style="color:var(--blue)">登录渠道</a></th><th><a href="#f-se" style="color:var(--blue)">搜索引擎</a></th><th><a href="#f-invcode" style="color:var(--blue)">邀请码</a></th><th><a href="#f-invtype" style="color:var(--blue)">邀请类型</a></th></tr>
+              <tr><th>推广标识<br>(clickid/UTM)</th><th>邀请码</th><th>官方链接标识</th><th>搜索 referrer</th><th><a href="#f-main" style="color:var(--blue)">主归因</a></th><th><a href="#f-platform" style="color:var(--blue)">推广三方类型</a></th><th><a href="#f-regch" style="color:var(--blue)">注册渠道</a></th><th><a href="#f-loginch" style="color:var(--blue)">登录渠道</a></th><th><a href="#f-se" style="color:var(--blue)">搜索引擎</a></th><th><a href="#f-invcode" style="color:var(--blue)">邀请码</a></th><th><a href="#f-invtype" style="color:var(--blue)">邀请类型</a></th></tr>
             </thead>
             <tbody>
               <tr data-k="new"><td class="grp-cell" rowspan="6">① 广告投放</td><td><span class="attr-prev" data-attr="A1" title="点击预览该归因脉络">A1</span></td><td><span class="mk-y">✓</span> 点击ID</td><td><span class="mk-n">✗</span></td><td><span class="mk-i">－</span></td><td><span class="mk-i">－</span></td><td style="color:var(--muted);font-weight:700;text-align:center">→</td><td>广告投放</td><td>Facebook</td><td><span style="white-space:nowrap">Facebook-鳗鱼01</span><br><span class="rule-code">apk-fb-me001-01</span></td><td><span style="white-space:nowrap">同注册渠道</span></td><td>—</td><td>—</td><td>—</td><td><div class="mini-prev" data-attr="A1" title="点击放大预览归因脉络"><div class="mp-dots"><i></i><i></i><i></i><i></i><i></i></div><div class="mp-label">A1 脉络预览</div></div></td></tr>
@@ -389,12 +389,13 @@
 
   <div class="card">
     <h3>4.8 会员列表 / 会员详情（二阶段增强） <span class="tag t-new">既有页增强</span> <a class="golink" href="http://localhost:8200/?open=member-list" target="_blank" title="在原型中打开该页面">查看 ↗</a></h3>
-    <div class="plain">老页面加新料：统一加了商户筛选与商户列；操作列收窄成「修改密码 + 更多」；返佣开关做成可显隐的红色列；会员详情新增可编辑昵称，并按原布局插入红字新字段——红字＝本期新增，一眼分清新旧。</div><img class="shot" src="img/spec-member-list.png?v=0613e" alt="原型截图 · 会员列表：商户筛选 + 批量操作 + 红色归因列（自定义列可开）" loading="lazy"><div class="shot-cap">原型截图 · 会员列表：商户筛选 + 批量操作 + 红色归因列（自定义列可开）</div>
+    <div class="plain">老页面加新料：统一加了商户筛选与商户列；操作全部平铺一行（修改密码 / 三方信息 等，无「更多」折叠）；新增<b>横版 / 竖版排布切换</b>；返佣开关做成可显隐的红色列；会员详情新增可编辑昵称，并按原布局插入红字新字段——红字＝本期新增，一眼分清新旧。</div><img class="shot" src="img/spec-member-list.png?v=0620a" alt="原型截图 · 会员列表：横版/竖版切换 + 商户筛选 + 批量操作 + 红色归因列（自定义列可开）" loading="lazy"><div class="shot-cap">原型截图 · 会员列表（横版）：工具栏右侧「横版 / 竖版」切换 + 商户筛选 + 批量操作 + 红色归因列（自定义列可开）</div>
     <ul class="feat">
       <li><b>商户筛选 + 商户列</b> <span class="tag t-new">本期</span>：筛选区首位「商户」下拉（选项 = 所有商户 + 各商户），<b>默认＝顶栏当前商户</b>，切换即过滤下方数据；列表首列展示「商户」蓝 pill。此为<b>全局规范</b>，所有查询页一致（见 §2.1 / §2.3）。</li>
-      <li><b>操作列精简 + 折叠展开</b> <span class="tag t-new">本期</span>：操作列默认只显示「<span class="op">修改密码</span>」，末尾「<span class="op">更多 »</span>」展开「<span class="op">三方信息</span>」、「<span class="op">« 收起</span>」收起（原「修改用户名 / 删除」已去除）；操作列冻结贴右、按内容收窄不留白。</li>
+      <li><b>操作平铺一行 + 操作列锁定冻结</b> <span class="tag t-new">本期</span>：操作<b>全部平铺一行</b>显示（「<span class="op">修改密码</span>」「<span class="op">三方信息</span>」+ 按条件出现的「<span class="op">红包充值</span>」等，原「修改用户名 / 删除」及「更多 »」折叠均已去除）；<b>操作列恒为最后一列、默认右侧冻结</b>（横版/竖版都是），在「自定义列」里<b>不可取消冻结、不可拖拽排序，仅可显隐</b>（lockFixed）。</li>
+      <li><b>横版 / 竖版排布切换</b> <span class="tag t-new">本期</span>：工具栏右侧「<b>横版 ｜ 竖版</b>」分段按钮（默认横版）。<b>横版</b>＝扁平列、一字段一列（约 38 列），横向较长；<b>竖版</b>＝把同类字段并成「<b>标签在上 / 值在下</b>」的复合列（约 16 列，行更高、横向更短），长字段（邮箱/设备号/指纹/域名/IP）整段换行显示全文。切换记忆本页。</li>
       <li><b>返佣配置开关（红色列）</b> <span class="tag t-new">本期调整</span>：「领取返佣」「对上级返佣」为<b>行内 toggle 红色列</b>（默认随其它红列显示，可在「自定义列」显隐），<b>不并入操作列</b>；点击弹「确认要开启/关闭该会员的「××」吗？」，确定后翻转并 Toast。</li>
-      <li><b>表头分组归类（数据列重排）</b>：会员列表所有数据列<b>按类目重新排列并归组</b>，列名行之上新增一行<b>分组标签</b>——<b>商户 / 会员 / 账户资金 / 等级分组 / 状态 / 渠道归因 / 代理数据 / 注册设备 / 登录设备 / 其它</b>；分组随列一起冻结，横向滚动时分组标签与所属列始终对齐。<b>「自定义列」弹窗同样按组分块</b>展示（每组小标题带计数 + 组内两列复选框），与表头归类一致。</li>
+      <li><b>表头与归类</b>：横版为<b>扁平单行表头</b>（早期「9 类目分组表头 / 逐组折叠」方案已移除），数据列按类目顺序排列；同类字段的「归组」概念由<b>竖版</b>承担（竖版把同类字段并成上下结构复合列：会员 / 账号 / 资金 / 等级分组 / 状态 / 注册信息 / 注册设备 / 登录信息 / 代理 / 返佣 等）。「自定义列」弹窗<b>按列勾选、保存后生效</b>。</li>
       <li><b>列精简</b> <span class="tag t-new">本期</span>：移除「三方余额」「积分」列（与「余额」重复 / 低频，详情可查）；其余列可经「自定义列」自由显隐。</li>
       <li><b>状态列语义化</b> <span class="tag t-new">本期</span>：「黑名单状态」显示 正常（中性灰）/ 拉黑（红）；「会员状态」显示 启用（绿）/ 停用（灰）——按各自语义着色，不再统一「正常 / 异常」。</li>
       <li><b>会员详情 · 新增昵称（只读）</b> <span class="tag t-new">本期</span>：基本信息区「账号」后新增「昵称」字段，<b>仅展示、不可修改</b>（无「修改」按钮）；会员状态 / 会员备注仍为同款可编辑交互。</li>
@@ -565,11 +566,12 @@
 
   <div class="card">
     <h3>7.6 报表管理 · 代理报表（新增子分类）</h3>
-    <div class="plain">报表管理新增「代理报表」子分类，归集代理 / 返佣维度的两张报表（由原运营数据迁入 + 新增）。</div>
+    <div class="plain">报表管理新增「代理报表」子分类，归集代理 / 返佣维度的三张报表（由原运营数据迁入 + 新增）。其中<b>返佣报表</b>本期已落地为实页（早期 v1.12 曾标"已下线"，现已按 3100 重新交付）。</div><img class="shot" src="img/spec-rebatereport.png?v=0620a" alt="原型截图 · 返佣报表：流水返佣 / 返佣报表 / 层级返佣报表 三页签" loading="lazy"><div class="shot-cap">原型截图 · 返佣报表（流水返佣页签）：会员ID/手机号 + 五游戏 + 可得佣金，页脚双行合计</div>
     <table>
       <tr><th style="width:130px">页面</th><th>字段与交互</th></tr>
       <tr><td>代理报表<br><a class="golink" href="http://localhost:8200/?open=agent-report" target="_blank" title="在原型中打开该页面">查看 ↗</a></td><td>按<b>代理维度</b>汇总团队业绩：代理ID / 账号 / 类型 · 直属下级 / 全部下级 · 团队 投注 / 中奖 / 充值 / 提现 / 盈亏 · 返佣金额 · 佣金模式 · 统计日期；筛选 商户 / 代理ID / 代理账号 / 代理类型 / 时间范围 + 快捷时间；导出；行 详情 / 下级列表；含页面总计</td></tr>
       <tr><td>昨日返佣等级<br><a class="golink" href="http://localhost:8200/?open=rebate-level-yesterday" target="_blank" title="在原型中打开该页面">查看 ↗</a></td><td>（由运营数据迁入）日期默认昨日，团队人数 / 团队充值 / 游戏金额 · 返佣等级 · 五类游戏(投注金额/返佣金额) · 计算/派发返佣金额 · 派发时间；工具栏 仅导出（翻日按钮与行操作「详情」已按§十一移除）；五游戏各拆 投注金额/返佣金额 双列；含页面总计</td></tr>
+      <tr><td><b>返佣报表</b> <span class="tag t-new">新增</span><br><a class="golink" href="http://localhost:8200/?open=rebate-report" target="_blank" title="在原型中打开该页面">查看 ↗</a></td><td>源 UserRebate。<b>三页签</b>：<b>流水返佣</b>（会员ID · 手机号(脱敏) · 五游戏(彩票/电子/视讯/体育/棋牌) · 可得佣金；筛选 日期 / 相对层级）、<b>返佣报表</b>（日期 · 五游戏；按日汇总）、<b>层级返佣报表</b>（相对层级 · 充值人数 · 充值金额 · 五游戏）；三页签均 tenant、含<b>页面总计 / 总计 双行合计</b>、工具栏<b>导出</b> + 自定义列。</td></tr>
     </table>
   </div>
 
@@ -585,11 +587,11 @@
 
   <h2 id="s7">九、配置中心（2 功能点）</h2>
   <div class="card">
-    <div class="plain">不常改的规则都集中在这：VIP 怎么升级、多少钱换 1 点经验、返佣比例怎么定——设置一次管很久，改动要谨慎。</div><div class="shotgrid"><figure><img src="img/spec-vip-level-config.png?v=0613e" alt="VIP配置（VIP等级 / 经验值双页签 · 多商户配置）" loading="lazy"><figcaption>VIP配置（VIP等级 / 经验值双页签 · 多商户配置）</figcaption></figure><figure><img src="img/spec-vip-exp-config.png?v=0613e" alt="VIP配置（按币种换算）" loading="lazy"><figcaption>VIP配置（按币种换算）</figcaption></figure><figure><img src="img/spec-rebate-level.png?v=0613e" alt="返佣配置（返佣等级管理 / 返佣费率配置）" loading="lazy"><figcaption>返佣配置（返佣等级管理 / 返佣费率配置）</figcaption></figure></div>
+    <div class="plain">不常改的规则都集中在这：VIP 怎么升级、多少钱换 1 点经验、返佣比例怎么定——设置一次管很久，改动要谨慎。</div><div class="shotgrid"><figure><img src="img/spec-vip-level-config.png?v=0620a" alt="VIP配置（VIP等级 / 经验值双页签 · 配置模式分段单选 · 多商户）" loading="lazy"><figcaption>VIP配置（VIP等级 / 经验值双页签 · 配置模式分段单选）</figcaption></figure><figure><img src="img/spec-vip-exp-config.png?v=0613e" alt="VIP配置（按币种换算）" loading="lazy"><figcaption>VIP配置（按币种换算）</figcaption></figure><figure><img src="img/spec-rebate-level.png?v=0620a" alt="返佣配置（返佣等级管理 / 返佣费率配置 · 配置模式分段单选）" loading="lazy"><figcaption>返佣配置（返佣等级管理 / 返佣费率配置）</figcaption></figure></div>
     <table>
       <tr><th style="width:130px">页面</th><th>字段与交互</th></tr>
-      <tr><td><b>VIP配置</b><br><a class="golink" href="http://localhost:8200/?open=vip-level-config" target="_blank" title="在原型中打开该页面">查看 ↗</a></td><td><b>双页签</b>（VIP等级 / 经验值配置）。VIP等级<b>固定 VIP0–VIP10 共 11 级</b>（不可增删、仅修改）、<b>去 ID 列</b>，点「修改」<b>行内编辑（无弹窗）</b>；含 升级/保级/扣除经验 · 升级/月/充值奖励 · 保险箱日利率 · 洗码率 等参数；经验值配置按币种「金额 = 1 EXP」换算。顶部<b>配置商户</b>工作区：选商户 → 保存 → <b>发布</b>（三态：未配置/有未发布修改/已发布），「<b>复制到其他商户</b>」弹窗以当前商户为模板批量套用（待发布）；<b>保存校验</b>不通过则标红问题字段并在顶部错误面板逐条列原因（提示 3 秒自动消失）。</td></tr>
-      <tr><td><b>返佣配置</b><br><a class="golink" href="http://localhost:8200/?open=rebate-level" target="_blank" title="在原型中打开该页面">查看 ↗</a></td><td><b>双页签</b>（返佣等级管理 / 返佣费率配置）。等级晋升条件表（团队/直属 当日充值 人数·金额·游戏金额，0 级基础级不可改删、删级后高级递减保持连续）；费率配置 一~六级 × 五游戏、<b>同级合计 ≤4% 校验</b>。<b>行内编辑</b>；顶部<b>配置商户</b>工作区（选商户→保存→发布）+「<b>复制到其他商户</b>」；两页签各设「<b>ⓘ 配置介绍</b>」帮助弹窗；保存校验不通过标红问题单元格并顶部错误面板列原因。</td></tr>
+      <tr><td><b>VIP配置</b><br><a class="golink" href="http://localhost:8200/?open=vip-level-config" target="_blank" title="在原型中打开该页面">查看 ↗</a></td><td><b>双页签</b>（VIP等级 / 经验值配置）。VIP等级<b>固定 VIP0–VIP10 共 11 级</b>（不可增删、仅修改）、<b>去 ID 列</b>，点「修改」<b>行内编辑（无弹窗）</b>；含 升级/保级/扣除经验 · 升级/月/充值奖励 · 保险箱日利率 · 洗码率 等参数；经验值配置按币种「金额 = 1 EXP」换算。顶部<b>配置模式分段单选</b> <span class="tag t-new">本期</span>（<b>使用自定义模版 / 使用商户模版</b>，右侧灰字说明当前模式；「单商户配置」暂隐藏）+ <b>配置商户</b>工作区：选商户 → 保存 → <b>发布</b>（三态：未配置/有未发布修改/已发布），「<b>复制到其他商户</b>」弹窗以当前商户为模板批量套用（待发布）；<b>保存校验</b>不通过则标红问题字段并在顶部错误面板逐条列原因（提示 3 秒自动消失）。</td></tr>
+      <tr><td><b>返佣配置</b><br><a class="golink" href="http://localhost:8200/?open=rebate-level" target="_blank" title="在原型中打开该页面">查看 ↗</a></td><td><b>双页签</b>（返佣等级管理 / 返佣费率配置）。等级晋升条件表（团队/直属 当日充值 人数·金额·游戏金额，0 级基础级不可改删、删级后高级递减保持连续）；费率配置 一~六级 × 五游戏、<b>同级合计 ≤4% 校验</b>。<b>行内编辑</b>；顶部<b>配置模式分段单选</b> <span class="tag t-new">本期</span>（<b>使用自定义模版 / 使用商户模版</b>，右侧灰字说明；「单商户配置」暂隐藏）+ <b>配置商户</b>工作区（选商户→保存→发布）+「<b>复制到其他商户</b>」；两页签各设「<b>ⓘ 配置介绍</b>」帮助弹窗；保存校验不通过标红问题单元格并顶部错误面板列原因。</td></tr>
     </table>
   </div>
 
@@ -597,7 +599,7 @@
   <div class="card">
     <h3>IP黑名单 <span class="tag t-new">新增</span> <a class="golink" href="http://localhost:8200/?open=ip-blacklist" target="_blank" title="在原型中打开该页面">查看 ↗</a></h3>
     <div class="sub">入口：系统管理 → 访问控制。源 BlackIp/BlackIpView。与「IP白名单」（一阶段）相邻。</div>
-    <div class="plain">把恶意 IP 拉进黑名单：可以只禁登录、只禁注册或全部禁止；支持一次粘贴几百个 IP 批量导入，系统自动识别、自动去重。</div><img class="shot" src="img/spec-ip-blacklist.png?v=0613e" alt="原型截图 · IP黑名单：封禁类型 + 批量导入" loading="lazy"><div class="shot-cap">原型截图 · IP黑名单：封禁类型 + 批量导入</div>
+    <div class="plain">把恶意 IP 拉进黑名单：可以只禁登录、只禁注册或全部禁止；支持一次粘贴几百个 IP 批量导入，系统自动识别、自动去重。</div><img class="shot" src="img/spec-ip-blacklist.png?v=0617a" alt="原型截图 · IP黑名单：封禁类型 + 批量导入" loading="lazy"><div class="shot-cap">原型截图 · IP黑名单：封禁类型 + 批量导入</div>
     <table>
       <tr><td class="k">筛选</td><td>IP地址 / 商户 / 时间范围 + 快捷时间</td></tr>
       <tr><td class="k">列表字段</td><td>IP地址 · 封禁类型（禁止登录 / 禁止注册 / 全部禁止）· 封禁原因 · 关联会员 · 操作人 · 添加时间 · 状态</td></tr>
@@ -687,6 +689,7 @@
       <tr><td>v1.13</td><td>2026-06-13</td><td>eason</td><td>会员详情「代理数据」面板重截为<b>代理明细展开</b>态（含 代理关系 + 业绩与返佣 明细）；按最新交互<b>去掉「代理状态」</b>（8200 原型 + §4.4 代理体系字段 同步移除，字段 8→7）。缓存戳 d→e。</td></tr>
       <tr><td>v1.14</td><td>2026-06-13</td><td>eason</td><td>对照截图修正 4 处不符：① §4.1 归因链路"代理"拆为"直接上级代理→一级代理"；② 归因明细字段 8→9（邀请人→包名/版本号）；③ §7.2 公告消息筛选加渠道、列表加商户+渠道列（ID→序号）；④ §4.8 操作列去掉"更多 »"折叠描述（8200 已改为直接展开）。</td></tr>
       <tr><td>v1.15</td><td>2026-06-13</td><td>eason</td><td>§六推广分发配置全面重写：① <b>渠道管理</b>换为当前实际内容（去掉旧 SitINR 内容和⚠注释，改为渠道名/ID/域名地址/渠道编码/类型+分发端/赠送金额/打码倍数/备注，新增弹窗字段对齐8200原型）；② <b>新增三张截图</b>（域名管理/防封救援/解析检测记录）；③ 调整顺序为菜单顺序（渠道管理 → 域名管理 → 防封救援 → 解析检测记录）。</td></tr>
+      <tr><td>v1.16</td><td>2026-06-20</td><td>eason</td><td><b>以 3100 活原型为准反向对齐（6-18/6-19 改动）</b>：① §4.8 会员列表新增<b>横版 / 竖版排布切换</b>、操作改<b>平铺一行 + 操作列锁定冻结(lockFixed，不可取消冻结/拖拽、仅显隐)</b>，去掉过时的「更多 »」折叠与「9 类目分组表头」描述（横版扁平表头，归组概念由竖版承担）；② §九 VIP配置 / 返佣配置补<b>配置模式分段单选</b>（使用自定义模版 / 使用商户模版，单商户配置暂隐藏）；③ §7.6 <b>返佣报表重新作为已交付实页</b>（流水返佣 / 返佣报表 / 层级返佣报表 三页签，撤销 v1.12「已下线」），新增截图 spec-rebatereport.png；④ <b>从 localhost:3100 重截 3 张</b>（会员列表 / VIP配置 / 返佣配置，缓存戳 e→0620a）；⑤ <b>原型链接 8200 → 3100</b>：注入运行时重写器，全部「查看 ↗」落到 3100 真实路由；头部原型地址改 localhost:3100。</td></tr>
     </table>
   </div>
 
@@ -758,6 +761,16 @@
     document.addEventListener('click',function(e){
       var p=e.target.closest('[data-attr]');if(p){window.__openAttrPrev(p.getAttribute('data-attr'));return;}
       if(e.target.closest('[data-amx]')||e.target.id==='amMask'){document.getElementById('amMask').classList.remove('show');}
+    });
+  })();
+  </script>
+  <script>
+  /* 原型链接更新：8200 ?open=key → 3100 真实路由（与产品介绍/验收用例同款） */
+  (function(){
+    var M={'member-list':'/member/user','user-group':'/member/groupManage','login-log':'/member/loginLog','sms-code':'/member/smsCode','inbox-message':'/operations/inboxMessage','announcement-msg':'/operations/announcement','banner-mgmt':'/operations/banner','channel-config':'/operations/channelConfig','domain-mgmt':'/operations/domainMgmt','domain-rescue':'/operations/domainRescue','domain-resolve-log':'/operations/domainResolveLog','vip-reward-log':'/operations/vipRewardLog','vip-level-count':'/operations/vipLevelCount','vip-op-log':'/operations/vipOpLog','member-rebate-level':'/operations/memberRebateLevel','agent-audit':'/operations/agentAudit','abnormal-member':'/risk-control/abnormalMember','same-ip':'/risk-control/sameIp','vip-level-config':'/config-center/vipConfig','rebate-level':'/config-center/rebateConfig','agent-report':'/report/agentReport','rebate-report':'/report/rebateReport','rebate-level-yesterday':'/operations/rebateLevelYesterday','ip-blacklist':'/system/ipBlacklist','hub':'/'};
+    document.querySelectorAll('a[href*="localhost:8200"]').forEach(function(a){
+      var h=a.getAttribute('href'),m=h.match(/[?&]open=([a-z0-9-]+)/);
+      a.setAttribute('href', m&&M[m[1]] ? 'http://localhost:3100'+M[m[1]] : h.replace(/https?:\/\/localhost:8200[^"'\s]*/,'http://localhost:3100'));
     });
   })();
   </script>

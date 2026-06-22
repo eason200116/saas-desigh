@@ -55,9 +55,10 @@
   <span class="logo">📘 SaaS 多商户后台 · 二阶段 PRD</span>
   <span class="ver">整合版 v1.0 · 2026-06-17</span>
   <span class="grow"></span>
-  <a class="lnk" href="saas-phase2-product-intro.html" target="_blank">产品介绍 ↗</a>
-  <a class="lnk" href="saas-phase2-acceptance-cases.html" target="_blank">验收用例 ↗</a>
-  <a class="lnk" href="http://localhost:3100/config-center/vipConfig3" target="_blank">原型 ↗</a>
+  <a class="lnk" href="http://localhost:3100/member/user" target="_blank">产品原型 ↗</a>
+  <a class="lnk" href="phase2-interaction-guide.html" target="_blank">交互介绍 ↗</a>
+  <a class="lnk" href="saas-phase2-tech-design.html" target="_blank">研发说明 ↗</a>
+  <a class="lnk" href="saas-phase2-acceptance-cases-v3.html" target="_blank">验收用例 ↗</a>
 </header>
 <div class="layout">
   <nav>
@@ -80,6 +81,7 @@
     <a href="#milestone">10 · 里程碑与交付</a>
     <a href="#risk">11 · 风险与待确认</a>
     <a href="#ref">12 · 关联文档</a>
+    <a href="#changelog">13 · 修改日志</a>
   </nav>
   <main>
 
@@ -88,7 +90,7 @@
     <table>
       <tr><th width="120">项</th><th>内容</th></tr>
       <tr><td>文档名称</td><td>SaaS 多商户后台 · 二阶段产品需求文档（PRD · 整合版）</td></tr>
-      <tr><td>版本 / 日期</td><td>v1.0 · 2026-06-17</td></tr>
+      <tr><td>版本 / 日期</td><td>v1.1 · 2026-06-22（同步：商户筛选多选+全部+互斥、多商户能力地图、站内信状态筛选 / 公告状态列只读 / 弹窗商户多选）</td></tr>
       <tr><td>状态</td><td>评审用稿（交付以 <a href="http://localhost:3100" target="_blank">localhost:3100</a> 可点击原型为准）</td></tr>
       <tr><td>权威来源</td><td>《二阶段功能说明书》v1.15、《二期验收用例》、迁移源盘点（SitINR 旧后台）</td></tr>
       <tr><td>适用范围</td><td>将旧后台 SitINR 的会员相关能力深度迁移至 V3 SaaS 多商户后台，并同步完成导航重组、归因体系建设与推广分发配置三项配套升级。</td></tr>
@@ -130,13 +132,18 @@
 
   <section id="role">
     <h2 class="sec">3 · 角色与多商户模型</h2>
-    <p class="sd">数据以「集团 → 市场 → 商户」三层组织，所有功能在商户维度上严格隔离。<b>现阶段仅设一个「商户」角色</b>（不细分子角色 / 权限分级），但后台<b>支持跨商户的查询与配置</b>——通过顶栏商户切换、筛选区商户下拉与按商户独立配置实现。本节定义这套统一规则，作为后续各功能页的共同前提。</p>
+    <p class="sd">数据以<b>「商户」为唯一组织维度</b>（现阶段不设集团 / 市场等上级层级），所有功能在商户维度上严格隔离。<b>现阶段仅设一个「商户」角色</b>（不细分子角色 / 权限分级），但后台<b>支持跨商户的查询与配置</b>——通过顶栏商户切换、筛选区商户下拉与按商户独立配置实现。本节定义这套统一规则，作为后续各功能页的共同前提。</p>
     <div class="note"><b>现阶段角色口径：</b>仅一个商户角色，登录后即以该角色操作；不区分运营 / 风控 / 配置等子角色。多商户能力体现在<b>数据与配置维度</b>（可查多商户、按商户配置），而非角色维度。</div>
     <ul>
-      <li><b>多商户结构</b>：集团 → 市场 → 商户 三层视角。顶栏切换商户后，所有列表页按该商户数据自动隔离重渲染。</li>
-      <li><b>多商户查询</b>：所有查询页筛选区「商户」下拉<b>恒在首位</b>，选项 =「所有商户」+ 各商户，默认 = 顶栏当前商户；可选「所有商户」做跨商户查询。</li>
+      <li><b>多商户结构</b>：以「商户」为唯一组织维度（现阶段不设集团 / 市场上级层级）。顶栏切换商户后，所有列表页按该商户数据自动隔离重渲染。</li>
+      <li><b>多商户能力地图（一查询 + 两配置）</b>：同一功能要回答两个问题——「看哪些商户」（数据维度）与「一套参数怎么省力铺给一堆商户」（配置维度），分三种形态：
+        <ul>
+          <li><b>① 分数据查询</b>：筛选区「商户」下拉，<b>多选 + 顶部「全部」选项</b>，「全部」与具体商户<b>互斥</b>（点「全部」仅留全部、点具体自动去全部）；空值＝全部、<b>不再必填</b>；总控端统一<b>扁平多选</b>。用于 会员 / 运营 / 报表 / 风控 列表。</li>
+          <li><b>② 模板化配置</b>：一套配置铺给一批商户、互相复制——多套模板 +「选商户 → 保存 → 发布」+ 复制模板到其他商户 + 按商户分库。用于 VIP 配置 / 返佣配置。</li>
+          <li><b>③ 单站点配置</b>：一次只配一个商户自己那套（顶部商户切换条，切谁配谁）。用于 注册管理 / 语言 / 系统参数 / 配置开关。</li>
+        </ul>
+      </li>
       <li><b>商户列</b>：列表首列展示「商户」蓝色 pill；单一商户视角下自动隐藏该列。</li>
-      <li><b>多商户配置</b>：VIP 配置 / 返佣配置等按商户独立配置，支持「选商户 → 保存 → 发布」+ 复制模板到其他商户，实现一处配置、多商户复用。</li>
     </ul>
   </section>
 
@@ -160,10 +167,11 @@
     <h3>4.2 通用交互规范（所有列表页共用骨架）</h3>
     <table>
       <tr><th width="110">区域</th><th>规范要点</th></tr>
-      <tr><td>筛选区</td><td>「商户」下拉恒首位；时间合并「开始→结束」+ 快捷胶囊（今天/昨天/本周/上周/本月/上月/所有）；筛选 &gt;6 个第 7 起折叠；会员 ID 支持多 ID 空格分隔。</td></tr>
+      <tr><td>筛选区</td><td>「商户」下拉恒首位，<b>多选 + 顶部「全部」选项（与具体商户互斥）、不再必填</b>，总控端扁平多选；时间合并「开始→结束」+ 快捷胶囊（今天/昨天/本周/上周/本月/上月/所有）；筛选 &gt;6 个第 7 起折叠；会员 ID 支持多 ID 空格分隔。</td></tr>
       <tr><td>工具栏</td><td>新增（蓝主按钮）/ 导出（真实下载 CSV，文件名=页面名.csv）/ 批量（先勾选→二次确认）/ ⚙自定义列（勾选后须保存才生效）。</td></tr>
-      <tr><td>表格</td><td>ID 列蓝字+⧉复制、会员 ID 可下钻；首列商户 pill（商户视角隐藏）；金额列右对齐+↕排序；表尾「页面总计/总计」双行（黑字，红字仅留给新增字段）；图片悬停放大；操作列冻结在最右。</td></tr>
-      <tr><td>行操作</td><td>文字链接（统一「编辑/详情/删除」）；行内开关点击弹二次确认。</td></tr>
+      <tr><td>表格</td><td>ID 列蓝字+⧉复制、会员 ID 可下钻；首列商户 pill（商户视角隐藏）；金额列右对齐+↕排序；表尾「页面总计/总计」双行（黑字，红字仅留给新增字段）；图片悬停放大；操作列恒为最后一列、默认右侧冻结，横滚始终可见，且在「⚙自定义列」中不可取消冻结 / 不可拖拽排序、仅可显隐。</td></tr>
+      <tr><td>表格排布</td><td>列多的查询页支持「横版 / 竖版」两种排布（工具栏右侧分段切换，默认横版）：横版＝扁平列一字段一列；竖版＝同类字段并成「标签在上 / 值在下」复合列，列数压缩、行更高、横向更短。</td></tr>
+      <tr><td>行操作</td><td>文字链接（统一「编辑/详情/删除」），全部平铺一行（无「更多」折叠）；行内开关点击弹二次确认。</td></tr>
       <tr><td>弹窗反馈</td><td>表单弹窗 760–860px；危险操作弹「操作确认」440px 小窗；Toast 顶部居中、3 秒自动消失；弹窗点遮罩不关闭。</td></tr>
       <tr><td>分页</td><td>共 N 条 / 页码 / 每页条数（10/20/50/100，各页独立记忆）/ 跳至 _ 页 + 页底说明框。</td></tr>
     </table>
@@ -212,15 +220,15 @@
     <table>
       <tr><th width="140">字段</th><th>定义</th></tr>
       <tr><td>主归因</td><td>注册来源唯一归类：广告投放 / 邀请来源 / 官方直推 / 自然流量。</td></tr>
-      <tr><td>推广平台名称</td><td>识别出的外部推广平台（Facebook / Adjust / TikTok 等）。</td></tr>
+      <tr><td>推广三方类型</td><td>识别出的外部推广平台（Facebook / Adjust / TikTok 等）。</td></tr>
       <tr><td>注册渠道</td><td>注册时命中的后台定义渠道（如 apk-fb-me001-01）。</td></tr>
       <tr><td>登录渠道</td><td>最近一次登录命中的渠道 ID。</td></tr>
       <tr><td>搜索引擎</td><td>由 referrer 来源域名识别的搜索引擎（Google / 其他 / 直接访问）。</td></tr>
       <tr><td>邀请码</td><td>注册实际使用的邀请码，关联邀请人 / 代理。</td></tr>
       <tr><td>邀请类型</td><td>正常邀请 / 转盘活动邀请 / 邀请任务。</td></tr>
       <tr><td>邀请人</td><td>邀请码发起人 ID，通常＝直接上级代理，可点击下钻。</td></tr>
-      <tr><td>访问客户端</td><td>最近一次访问的客户端：pc / h5 / 安卓 / ios / 壳包。</td></tr>
-      <tr><td>注册客户端</td><td>注册时使用的客户端类型。</td></tr>
+      <tr><td>访问客户端</td><td>最近一次访问的客户端，7 种术语之一：H5 / PC / 安卓原生 / iOS原生 / 安卓壳包 / iOS壳包 / PWA。</td></tr>
+      <tr><td>注册客户端</td><td>注册时使用的客户端类型（同上 7 种术语）。</td></tr>
       <tr><td>注册设备号 / 指纹</td><td>设备号（App 端稳定）+ 浏览器指纹（网页端采集）合并展示。</td></tr>
       <tr><td>是否模拟器</td><td>注册设备是否为模拟器 / 虚拟环境，用于作弊识别。</td></tr>
       <tr><td>注册域名</td><td>注册时进入的域名（属本商户），定来源上下文。</td></tr>
@@ -254,8 +262,8 @@
     <p class="sd">按 6 个模块拆分，每条需求标注唯一编号（<code>REQ-模块-序号</code>）便于追踪；「来源」标明对应的 SitINR 旧页或「全新」，「验收」给出该条的关键判据。通用交互（筛选/表格/弹窗/反馈）统一遵循 <a href="#global">第 4 节 · 全局框架与通用交互</a>，下文只描述各功能的专属需求。</p>
     <h3 id="r-member-h">6.1 会员管理</h3>
     <div class="req"><div class="rh"><span class="rid">REQ-MBR-01</span><span class="rn">会员列表增强</span><span class="src">源 UserManage</span></div>
-      <ul><li>19 项搜索 + 商户筛选；9 类目分组表头；批量操作（拉黑/启用/分组/转渠道等）；自定义列。</li><li>新增红色列 +「领取返佣 / 对上级返佣」行内开关（二次确认）。</li><li>会员 ID 下钻会员详情；操作列默认展开。</li></ul>
-      <div class="ac"><b>验收：</b>切换开关弹二次确认并 Toast；商户切换列表重渲染；自定义列保存后才生效。</div></div>
+      <ul><li>19 项搜索 + 商户筛选（<b>多选 + 全部</b>）；批量操作（拉黑/启用/分组/转渠道等）；自定义列。</li><li>新增红色列 +「领取返佣 / 对上级返佣」行内开关（二次确认）。</li><li><b>横版 / 竖版切换</b>（工具栏右侧分段按钮，默认横版）：横版＝扁平列一字段一列（约 38 列）；竖版＝同类字段并成「标签在上 / 值在下」复合列（约 16 列，行更高、横向更短）。</li><li>会员 ID 下钻会员详情；操作全部平铺一行（无「更多」折叠）；<b>操作列恒为最后一列、默认右侧冻结</b>（横/竖版都是），自定义列中不可取消冻结 / 拖拽、仅可显隐。</li><li>设备字段（注册 / 登录端）统一为 <b>7 种术语</b>：H5 / PC / 安卓原生 / iOS原生 / 安卓壳包 / iOS壳包 / PWA。</li></ul>
+      <div class="ac"><b>验收：</b>切换开关弹二次确认并 Toast；商户切换列表重渲染；自定义列保存后才生效；横/竖版切换后操作列始终冻结在最右且不可取消冻结。</div></div>
     <div class="req"><div class="rh"><span class="rid">REQ-MBR-02</span><span class="rn">会员详情归因增强</span><span class="src">源 UserDetaile + A_UserRelative</span></div>
       <ul><li>27 红字归因字段按指定位置注入，布局不变；代理数据含 10 级代理关系图。</li><li>同 IP/设备/指纹数值可下钻<a href="#r-risk">风控页</a>；邀请人可点击下钻。</li></ul>
       <div class="ac"><b>验收：</b>红字字段齐全、可点可复制；原有面板（统计/活动奖励/VIP/保险箱等）不变。</div></div>
@@ -266,18 +274,18 @@
       <ul><li>按会员 ID（多 ID 空格分隔）/IP/时间查询；设备与浏览器指纹融合一列（按终端二选一）。</li></ul>
       <div class="ac"><b>验收：</b>纯查询页无行操作；聚合分析指引至 <a href="#r-risk">风控同 IP/设备检测</a>。</div></div>
     <div class="req"><div class="rh"><span class="rid">REQ-MBR-05</span><span class="rn">短信验证码查询（新增）</span><span class="src">源 SmsList</span></div>
-      <ul><li>按手机号查询验证码/业务类型/发送时间/状态；手机号脱敏。</li></ul>
-      <div class="ac"><b>验收：</b>纯查询页、无导出按钮。</div></div>
+      <ul><li>按手机号查询验证码/业务类型/发送时间/状态；手机号脱敏。<b>本页不设商户筛选</b>（已移除）。</li></ul>
+      <div class="ac"><b>验收：</b>纯查询页、无导出按钮、无商户筛选。</div></div>
   </section>
 
   <section id="r-ops">
     <h3>6.2 运营管理</h3>
     <div class="req"><div class="rh"><span class="rid">REQ-OPS-01</span><span class="rn">站内消息</span><span class="src">源 Message</span></div>
-      <ul><li>新增推送弹窗：标题≤100、富文本正文≤500、图片上传、发送时间（可预约）、推送通道（Firebase/极光）、用户（全体/指定）。</li><li>指定用户支持表格导入（≤1000 自动去重）；未发送可编辑、已发送仅详情。</li></ul></div>
+      <ul><li>弹窗/滚动/推送三页签；新增推送弹窗：标题≤100、富文本正文≤500、图片上传、发送时间（可预约）、推送通道（Firebase/极光）、用户（全体/指定）。</li><li>指定用户支持表格导入（≤1000 自动去重）；未发送可编辑、已发送仅详情。</li><li><b>本期调整</b>：弹窗/滚动 Tab 新增「状态」(启用/禁用)筛选（推送 Tab 本就有「发送状态」筛选）；新增/编辑弹窗加<b>商户多选下拉</b>；商户筛选多选 + 全部。</li></ul></div>
     <div class="req"><div class="rh"><span class="rid">REQ-OPS-02</span><span class="rn">公告消息</span><span class="src">源 公告体系</span></div>
-      <ul><li>弹窗/滚动双页签；7 语种独立保存、切换不丢内容；未配置语种前台回退英语。</li><li>筛选加渠道，列表含商户+渠道列；表单首项加商户必填。</li></ul></div>
+      <ul><li>弹窗/滚动双页签；7 语种独立保存、切换不丢内容；未配置语种前台回退英语。</li><li>筛选加渠道，列表含商户+渠道列；表单首项加商户（<b>多选下拉</b>）。</li><li><b>本期调整</b>：<b>状态列改为只读展示</b>（启用/禁用，不在列表直接切换），状态改到编辑弹窗内维护；商户筛选多选 + 全部。</li></ul></div>
     <div class="req"><div class="rh"><span class="rid">REQ-OPS-03</span><span class="rn">轮播图管理</span><span class="src">源 Banners</span></div>
-      <ul><li>图片上传+预览；三选一跳转：URL / 厂商或子游戏（三级联动）/ 在线客服；排序。</li><li>表单首项加商户必填；列表加商户列。</li></ul></div>
+      <ul><li>图片上传+预览；三选一跳转：URL / 厂商或子游戏（三级联动）/ 在线客服；排序。</li><li>表单首项加商户（<b>多选下拉</b>）；列表加商户列；商户筛选多选 + 全部。</li></ul></div>
     <div class="req"><div class="rh"><span class="rid">REQ-OPS-04</span><span class="rn">渠道管理</span><span class="src">源 Channel（扩展）</span></div>
       <ul><li>渠道名/渠道 ID（自动生成、唯一、只读）/域名/编码/类型（官方仅 H5 / 投放多端）/分发端/赠送金额/打码倍数/备注。</li></ul></div>
     <div class="req"><div class="rh"><span class="rid">REQ-OPS-05</span><span class="rn">域名管理（全新）</span><span class="src">全新</span></div>
@@ -289,7 +297,7 @@
     <div class="req"><div class="rh"><span class="rid">REQ-OPS-08</span><span class="rn">运营数据：VIP 升级奖励 / VIP 人数 / VIP 操作日志</span><span class="src">源 VipRewards/VipLevelQuantity/VipRecord</span></div>
       <ul><li>升级奖励记录（发放/领取）；VIP 人数（3 列 10 行，人数蓝链下钻）；VIP 操作日志（明细流水，含页面总计）。</li></ul></div>
     <div class="req"><div class="rh"><span class="rid">REQ-OPS-09</span><span class="rn">返佣·等级：会员返佣等级 / 代理审核机制</span><span class="src">源 User_RebateLv / UserReview+EditUserRebate</span></div>
-      <ul><li>会员返佣等级：按配置值强制提升（含连续使用天数/失效规则）。</li><li>代理审核机制：返佣资格审核，返佣状态 badge，修改返佣弹窗（5 游戏基础费率+备注）。</li></ul></div>
+      <ul><li>会员返佣等级：按配置值强制提升（含连续使用天数/失效规则）；新增/编辑弹窗加<b>商户多选下拉</b>；商户筛选多选 + 全部。</li><li>代理审核机制：返佣资格审核，返佣状态 badge，修改返佣弹窗（5 游戏基础费率+备注）。</li></ul></div>
   </section>
 
   <section id="r-risk">
@@ -304,11 +312,11 @@
   <section id="r-config">
     <h3>6.4 配置中心</h3>
     <div class="req"><div class="rh"><span class="rid">REQ-CFG-01</span><span class="rn">VIP 配置</span><span class="src">源 VipLevel + VipCurrencyExp</span></div>
-      <ul><li>双页签：VIP 等级（VIP0–VIP10 固定 11 级，行内编辑无弹窗、去 ID 列、名称只读）+ 经验值配置（按币种换算）。</li><li>顶部商户工作区（选商户→保存→发布）+ 复制模板到其他商户；保存校验标红+错误面板；ⓘ 配置介绍。</li></ul>
-      <div class="ac"><b>验收：</b>等级固定不可增删；等级/经验逐级递增、数值≥0。</div></div>
+      <ul><li>双页签：VIP 等级（VIP0–VIP10 固定 11 级，行内编辑无弹窗、去 ID 列、名称只读）+ 经验值配置（按币种换算）。</li><li>顶部商户工作区（选商户→保存→发布）+ 复制模板到其他商户；保存校验标红+错误面板；ⓘ 配置介绍。</li><li><b>配置模式</b>用分段单选按钮（非下拉），右侧灰字显示当前模式说明；当前两种：使用自定义模版 / 使用商户模版（「单商户配置」暂隐藏）。</li></ul>
+      <div class="ac"><b>验收：</b>等级固定不可增删；等级/经验逐级递增、数值≥0；配置模式为分段单选、仅两种可选。</div></div>
     <div class="req"><div class="rh"><span class="rid">REQ-CFG-02</span><span class="rn">返佣配置</span><span class="src">源 RebateLevel + RebateLvRateConfig</span></div>
-      <ul><li>双页签：返佣等级管理（晋升条件表，0 级基础不可删）+ 返佣费率配置（一~六级 × 五游戏）。</li></ul>
-      <div class="ac"><b>验收：</b>同级五大类费率之和 &gt;4% 校验拦截（标红+错误面板）。</div></div>
+      <ul><li>双页签：返佣等级管理（晋升条件表，0 级基础不可删）+ 返佣费率配置（一~六级 × 五游戏）。</li><li><b>配置模式</b>与 VIP 配置一致：分段单选按钮 + 右侧灰字说明；当前两种：使用自定义模版 / 使用商户模版（「单商户配置」暂隐藏）。</li></ul>
+      <div class="ac"><b>验收：</b>同级五大类费率之和 &gt;4% 校验拦截（标红+错误面板）；配置模式为分段单选、仅两种可选。</div></div>
   </section>
 
   <section id="r-report">
@@ -317,12 +325,15 @@
       <ul><li>按统计周期切换（日/日区间/月/所有）+ 翻页；内部=返利、外部=返佣；「下级列表」真实下钻抽屉。</li></ul></div>
     <div class="req"><div class="rh"><span class="rid">REQ-RPT-02</span><span class="rn">昨日返佣等级</span><span class="src">源 User_RebateLv_Last</span></div>
       <ul><li>五游戏列：每游戏「投注金额/返佣金额」双列分组表头；工具栏仅导出。</li></ul></div>
+    <div class="req"><div class="rh"><span class="rid">REQ-RPT-03</span><span class="rn">返佣报表（新增）</span><span class="src">源 UserRebate</span></div>
+      <ul><li><b>三页签</b>：流水返佣（会员ID/手机号脱敏 + 五游戏 + 可得佣金）/ 返佣报表（按日 + 五游戏）/ 层级返佣报表（相对层级 + 充值人数/金额 + 五游戏）。</li><li>五游戏＝彩票/电子/视讯/体育/棋牌；三页签均含「页面总计/总计」双行合计、工具栏导出、自定义列；tenant 端。</li></ul>
+      <div class="ac"><b>验收：</b>三页签可切换；手机号脱敏；页脚合计随筛选刷新；导出真实下载 CSV。</div></div>
   </section>
 
   <section id="r-system">
     <h3>6.6 系统管理</h3>
     <div class="req"><div class="rh"><span class="rid">REQ-SYS-01</span><span class="rn">IP 黑名单（新增）</span><span class="src">源 BlackIp</span></div>
-      <ul><li>列表：IP（v4+v6）/封禁类型（多标签）/原因（字数计）/关联会员/操作人·时间/状态。</li><li>批量导入：粘贴或上传 .csv/.xlsx（首列=IP），自动识别合法 IP、实时去重 ≤500 条，选类型+原因后确认。</li></ul></div>
+      <ul><li>列表：IP（v4+v6）/封禁类型（多标签）/原因（字数计）/关联会员/操作人·时间/状态。</li><li>批量导入（<b>弹窗</b>）：点「批量导入」打开弹窗，粘贴或上传 .csv/.xlsx（首列=IP），自动识别合法 IP、实时去重 ≤500 条，选类型+原因后确认。</li></ul></div>
   </section>
 
   <section id="data">
@@ -338,7 +349,7 @@
     <table>
       <tr><th width="190">字段组</th><th>本期新增字段</th></tr>
       <tr><td>① 基本信息组</td><td>昵称、邀请人、访问客户端</td></tr>
-      <tr><td>② 归因来源组（整组新增）</td><td>主归因、推广平台名称、注册渠道、登录渠道、搜索引擎、邀请码、邀请类型</td></tr>
+      <tr><td>② 归因来源组（整组新增）</td><td>主归因、推广三方类型、注册渠道、登录渠道、搜索引擎、邀请码、邀请类型</td></tr>
       <tr><td>⑥ 代理数据组</td><td>一级代理、直接上级代理、代理层级、代理路径、佣金模式、返佣等级、是否给上级返佣、代理状态</td></tr>
       <tr><td>⑩ 注册信息组</td><td>注册客户端、注册设备号/指纹、是否模拟器、注册域名、同设备注册会员数</td></tr>
       <tr><td>⑪ 登录信息组（整组新增）</td><td>上一次登录客户端、上一次登录设备号/指纹、上一次同设备登录数、上一次同指纹登录数、上一次登录域名</td></tr>
@@ -383,7 +394,7 @@
   <section id="accept">
     <h2 class="sec">9 · 验收标准</h2>
     <p class="sd">验收人默认 eason；逐条在原型点验，结果标记 待测/通过/不通过。</p>
-    <p><a href="saas-phase2-acceptance-cases.html" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#16a34a;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600">📋 打开《二期验收用例》全表 ↗</a></p>
+    <p><a href="saas-phase2-acceptance-cases-v3.html" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#16a34a;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600">📋 打开《二期验收用例（V3 原型版）》全表 ↗</a></p>
     <h3>验收 Checklist（5 维度）</h3>
     <table>
       <tr><th width="150">维度</th><th>检查要点</th></tr>
@@ -421,12 +432,11 @@
     <h2 class="sec">12 · 关联文档</h2>
     <table>
       <tr><th width="280">文档</th><th>内容</th></tr>
-      <tr><td><a href="saas-phase2-product-intro.html" target="_blank">产品介绍（本期）</a></td><td>8 Tab 定义 / 归因 / 逐页图文 / 字段词典 / 验收 / 修改记录</td></tr>
-      <tr><td><a href="saas-phase2-feature-spec.html" target="_blank">二阶段功能说明书 v1.15</a></td><td>逐功能「怎么用、点了会发生什么」（权威）</td></tr>
-      <tr><td><a href="saas-phase2-acceptance-cases.html" target="_blank">二期验收用例</a></td><td>逐条操作步骤 → 预期结果</td></tr>
-      <tr><td><a href="attribution-matrix-4.6.html" target="_blank">§4.6 归因穷举矩阵</a></td><td>5 大类型 × 18 种 + 内联脉络图</td></tr>
-      <tr><td>saas-workplan.html</td><td>迁移对照表（158 项）</td></tr>
-      <tr><td>Ar_V3 · docs/migration/01-source-inventory.md</td><td>SitINR 源站 27 模块逐页功能点（迁移基线）</td></tr>
+      <tr><td colspan="2" style="background:#f1f5f9;font-weight:700;color:#0f172a">关联四件套（产品原型 · 交互介绍 · 研发说明 · 验收用例）</td></tr>
+      <tr><td><b>①&nbsp;产品原型</b> · <a href="http://localhost:3100/member/user" target="_blank">可点击原型（localhost:3100）↗</a></td><td>真实交互原型，交付以此为准；默认入口 · 会员列表</td></tr>
+      <tr><td><b>②&nbsp;交互介绍</b> · <a href="phase2-interaction-guide.html" target="_blank">交互介绍（控件级）↗</a></td><td>逐页控件级「怎么用、点了会发生什么」：6 模块通用骨架 + 各页专属交互</td></tr>
+      <tr><td><b>③&nbsp;研发说明</b> · <a href="saas-phase2-tech-design.html" target="_blank">二阶段技术方案 ↗</a></td><td>归因体系研发口径：数据模型 / 采集埋点 / 接口与落库</td></tr>
+      <tr><td><b>④&nbsp;验收用例</b> · <a href="saas-phase2-acceptance-cases-v3.html" target="_blank">二期验收用例（V3 原型版）↗</a></td><td>逐条操作步骤 → 预期结果，对齐 V3 原型逐条点验</td></tr>
     </table>
   </section>
 
