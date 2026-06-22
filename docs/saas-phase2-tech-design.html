@@ -126,8 +126,7 @@
     <a class="sub" href="#a-priority">优先级与判定</a>
     <a class="sub" href="#a-flow">5 步固化流程</a>
     <a class="sub" href="#a-matrix">18 种穷举矩阵</a>
-    <a href="#supplement">四、还需补充（建议）</a>
-    <a href="#related">五、关联文档</a>
+    <a href="#related">四、关联文档</a>
   </nav>
   <main>
 
@@ -252,26 +251,9 @@
     <p class="sec-desc" style="margin-top:6px">如需全屏单独查看：<a href="attribution-matrix-4.6.html" target="_blank">在新窗口打开 §4.6 完整矩阵 ↗</a></p>
   </section>
 
-  <!-- 四、补充建议 -->
-  <section id="supplement">
-    <h2 class="sec">四、还需补充（建议）</h2>
-    <p class="sec-desc">在核查 + 通读 PRD 后，认为以下方面值得补充/明确（均为<b>建议</b>，非本期强制）。</p>
-    <table>
-      <tr><th width="120">方向</th><th>建议补充内容</th><th width="90">类型</th></tr>
-      <tr><td>归因纠正机制</td><td>归因当前「固化不可变」。建议补一条<b>人工纠正 + 审计留痕</b>通道（误判/作弊场景），改前/改后值与操作人入日志，而非完全锁死。</td><td><span class="st sug">流程建议</span></td></tr>
-      <tr><td>归因置信度</td><td>多标识冲突时（如广告ID + 无效邀请码）建议记录<b>判定依据与置信度</b>（命中规则编号 A1–B11 + 失败原因），便于复盘，对应 §2.5 <code>attributionRuleCode</code> / <code>attributionConfidence</code>。</td><td><span class="st sug">字段建议</span></td></tr>
-      <tr><td>地理与运营商</td><td>注册/登录 IP 建议派生<b>归属地 / 运营商</b>（GEO），风控判定与投放地域分析都用得上（§2.5 <code>registerGeo</code>）。</td><td><span class="st sug">字段建议</span></td></tr>
-      <tr><td>首充归因一致性</td><td>建议补<b>首充渠道 vs 注册渠道是否一致</b>标记，识别"注册一个渠道、首充走另一个"的异常/搬运。</td><td><span class="st sug">字段建议</span></td></tr>
-      <tr><td>跨端归因合并</td><td>同人「H5 注册→App 登录」时设备号与指纹分属不同端，建议明确<b>跨端关联口径</b>（以账号为锚，设备/指纹各端二选一已实现，关联规则待定）。</td><td><span class="st sug">规则建议</span></td></tr>
-      <tr><td>数据脱敏口径</td><td>手机号/IP/设备号在列表与详情的<b>脱敏规则</b>建议统一成文（哪些角色看全量、哪些打码），目前各页零散。</td><td><span class="st sug">规范建议</span></td></tr>
-      <tr><td>多商户隔离校验</td><td>归因/设备聚合统计（同IP数等）建议明确<b>是否跨商户统计</b>（默认应限当前商户口径），避免跨租户数据串味。</td><td><span class="st sug">规则建议</span></td></tr>
-      <tr><td>矩阵边界</td><td>18 种已覆盖 参数损坏/伪造(B10)、仅无效邀请码(B11) 等兜底；建议补一条<b>"多广告平台参数同时命中"</b>的取舍规则说明（目前按平台优先级，未文档化）。</td><td><span class="st sug">文档建议</span></td></tr>
-    </table>
-  </section>
-
-  <!-- 五、关联文档 -->
+  <!-- 四、关联文档 -->
   <section id="related">
-    <h2 class="sec">五、关联文档</h2>
+    <h2 class="sec">四、关联文档</h2>
     <p class="sec-desc">本方案配套入口链接。</p>
     <a class="dlink" href="saas-phase2-product-intro.html" target="_blank"><span class="di">🖱️</span><span class="dx"><b>交互介绍</b><i>逐页内嵌可点击原型（活介绍）+ 8 Tab 定义 + 归因/会员详情图文</i></span></a>
     <a class="dlink" href="glossary.html" target="_blank"><span class="di">📖</span><span class="dx"><b>名词定义</b><i>会员详情新增字段 名词解释 / 应用场景 / 异常情况</i></span></a>
