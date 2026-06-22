@@ -717,7 +717,7 @@
       toc.appendChild(a); spy.push({id,el});
       if(route){
         const url=proto(route.textContent);
-        const info=el.querySelector('.info');
+        const info=el.querySelector('.info') || el; // nopic 卡无 .info 包裹层，回退到 .pcard 本身，避免 null.insertBefore 抛错中断后续卡（风控以下整片丢按钮的根因）
         const btn=document.createElement('button'); btn.type='button'; btn.className='trybtn'; btn.textContent='▶ 展开试用';
         nm.appendChild(btn);
         // 内联原型：插在标题(.nm)之后、文案之前 —— 原型在上、所有文案介绍在下方

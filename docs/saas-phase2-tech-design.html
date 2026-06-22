@@ -13,20 +13,20 @@
   *{box-sizing:border-box;}
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:#1f2328;background:var(--bg);line-height:1.65;}
   a{color:var(--accent);}
-  header{position:sticky;top:0;z-index:30;background:linear-gradient(90deg,#0f172a,#3730a3);color:#fff;padding:12px 24px;display:flex;align-items:center;gap:16px;box-shadow:0 2px 8px rgba(0,0,0,.15);}
-  header .logo{font-size:16px;font-weight:700;}
-  header .ver{font-size:12px;opacity:.75;}
-  header .grow{flex:1;}
-  header a.top{background:#22c55e;color:#fff;padding:7px 14px;border-radius:8px;text-decoration:none;font-size:12.5px;font-weight:600;}
-  .layout{display:flex;width:100%;}
-  nav{width:250px;flex:none;position:sticky;top:57px;align-self:flex-start;height:calc(100vh - 57px);overflow:auto;padding:16px 8px;font-size:12.5px;border-right:1px solid var(--border);background:#fafbfc;}
-  nav a{display:block;padding:4px 10px;color:#374151;text-decoration:none;border-radius:5px;line-height:1.5;}
-  nav a:hover{background:#eef2ff;color:var(--accent);}
-  nav a.sub{padding-left:22px;color:var(--muted);font-size:12px;}
-  nav .grp{font-weight:700;margin-top:10px;color:#111827;padding:4px 10px;}
+  /* 与「交互介绍」同套排版：深色渐变页眉 + 自动目录(滚动高亮) */
+  header{position:sticky;top:0;z-index:30;background:linear-gradient(90deg,#1e293b,#312e81);color:#fff;padding:14px 28px;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+  header h1{margin:0;font-size:18px;}
+  header .ver{font-size:12px;opacity:.75;margin-top:3px;}
+  .layout{display:flex;align-items:flex-start;width:100%;}
+  nav.toc{width:236px;flex:none;position:sticky;top:56px;align-self:flex-start;height:calc(100vh - 56px);overflow:auto;padding:14px 8px 40px;font-size:12.5px;border-right:1px solid var(--border);background:#fafbfc;}
+  nav.toc a{display:block;padding:3px 10px;color:#374151;text-decoration:none;border-radius:5px;line-height:1.5;}
+  nav.toc a:hover{background:#eef2ff;color:var(--accent);}
+  nav.toc a.sub{padding-left:22px;color:var(--muted);font-size:12px;}
+  nav.toc a.grp{font-weight:700;margin-top:8px;color:#111827;}
+  nav.toc a.act{background:#eef2ff;color:var(--accent);font-weight:700;}
   main{flex:1;min-width:0;padding:24px 40px 120px;}
   section{margin-bottom:46px;scroll-margin-top:70px;}
-  h2.sec{font-size:22px;border-left:5px solid var(--accent);padding-left:12px;margin:0 0 6px;}
+  h2.sec{font-size:19px;border-left:5px solid var(--accent);padding-left:12px;margin:32px 0 8px;}
   .sec-desc{color:var(--muted);font-size:13.5px;margin:0 0 18px;}
   h3{font-size:17px;margin:26px 0 10px;scroll-margin-top:70px;}
   h4{font-size:14.5px;margin:18px 0 8px;color:#334155;}
@@ -108,31 +108,17 @@
 </head>
 <body>
 <header>
-  <span class="logo">🧩 SaaS 多商户后台 · 二阶段技术方案</span>
-  <span class="ver">v1.0 · 归因体系 / 字段定义 / 矩阵 · 结合二期 PRD</span>
-  <span class="grow"></span>
-  <a class="top" href="saas-phase2-product-intro.html">▶ 交互介绍</a>
+  <h1>🧩 SaaS 多商户后台 · 二阶段技术方案（研发说明）</h1>
+  <div class="ver">归因体系 / 字段定义 / 流程矩阵 · 结合二期 PRD · 与「交互介绍」同套排版</div>
 </header>
 <div class="layout">
-  <nav>
-    <a href="#concept">一、基础概念</a>
-    <a class="sub" href="#c-multi">多商户三态</a>
-    <a class="sub" href="#c-attr">归因体系</a>
-    <a class="sub" href="#c-chain">推广闭环 / 代理体系</a>
-    <a class="sub" href="#c-device">设备 / 指纹 / 埋点</a>
-    <a href="#fields">二、字段定义介绍</a>
-    <a class="sub" href="#f-attr">归因·注册设备组</a>
-    <a class="sub" href="#f-agent">代理体系组</a>
-    <a class="sub" href="#f-login">登录设备组</a>
-    <a class="sub" href="#f-list">会员列表新增列/开关</a>
-    <a class="sub" href="#f-suggest">建议字段（非强制）</a>
-    <a href="#attr">三、归因流程图与矩阵</a>
-    <a class="sub" href="#a-priority">优先级与判定</a>
-    <a class="sub" href="#a-flow">5 步固化流程</a>
-    <a class="sub" href="#a-matrix">18 种穷举矩阵</a>
-    <a href="#related">四、关联文档</a>
-  </nav>
+  <nav class="toc" id="toc"></nav>
   <main>
+
+  <div class="lead">
+    <b>读法</b>：本页是<b>研发说明（研发口径）</b>——讲清归因体系怎么算、字段怎么落库、流程如何固化。<b>左侧目录随滚动高亮</b>当前章节、点击平滑跳转。字段表中 <b style="color:#16a34a">新增</b> / <b style="color:#64748b">原有</b> / <b style="color:#ea580c">漏斗</b> / <b style="color:#e0524d">未展示</b> 徽标标明字段来源。<br>
+    控件级「怎么点、点了发生什么」见<b>「交互介绍」</b>；需求「做什么、为什么」见 <b>PRD</b>；本页只讲<b>研发落地口径</b>。
+  </div>
 
   <!-- 一、基础概念 -->
   <section id="concept">
@@ -178,7 +164,7 @@
     <div class="note">详见《二期 PRD》第 12 节「多商户能力地图」与 V3《改动清单》同名章节。本技术方案聚焦 <b>① 分数据查询所依赖的会员归因字段</b>。</div>
 
     <h3 id="c-attr">1.2 归因体系：会员"从哪儿来"</h3>
-    <p>归因 = 在会员<b>注册那一刻</b>，按优先级判定其首个命中的来源，写入会员档案并<b>固化不再变更</b>。解决运营/代理「这个会员是谁带来的、从哪个渠道来的」。共 <b>4 大归因类型</b>（广告投放 / 邀请来源 / 官方直推 / 自然流量）× <b>18 种枚举情况</b>，详见第三章。</p>
+    <p>归因 = 在会员<b>注册那一刻</b>，按优先级判定其首个命中的来源，写入会员档案并<b>固化不再变更</b>。解决运营/代理「这个会员是谁带来的、从哪个渠道来的」。共 <b>4 大归因类型</b>（广告投放 / 邀请来源 / 官方直推 / 自然流量）× <b>22 种枚举情况</b>，详见第三章。</p>
 
     <h3 id="c-chain">1.3 推广闭环 + 代理体系</h3>
     <div class="cards">
@@ -194,10 +180,12 @@
   <!-- 二、字段定义 -->
   <section id="fields">
     <h2 class="sec">二、字段定义介绍</h2>
-    <p class="sec-desc">逐字段给出 中文名 / 实际字段 key / 落地状态 / 说明。<b>落地状态经 V3 原型代码逐字段核查</b>：<span class="st yes">已实现</span> = 代码中真实存在并被读取/渲染（附 key）；<span class="st sug">建议</span> = 代码中暂无、仅设计建议、<b>非强制</b>。</p>
-    <div class="ok">✅ 核查结论：PRD 列出的 4 组共 <b>42 个字段全部已在 V3 原型代码中实现</b>（mock 数据 <code>src/api/index.ts</code> + 详情转换 <code>buildDetailData.ts</code> + 列表 <code>useUserPage.ts</code>），无"画了但没做"的字段。本章字段状态均为 <span class="st yes">已实现</span>；另在 §2.5 给出几个<b>建议新增</b>字段（非强制）。</div>
+    <p class="sec-desc">逐字段给出 中文名 / 实际字段 key / <b>状态</b> / <b>取值·格式·示例</b> / <b>详细说明</b>（含义·来源·展示位置·应用场景）。<b>状态口径</b>：<b style="color:#16a34a">新增</b>＝本期会员详情新增字段；<b style="color:#64748b">原有</b>＝迁移前已存在；<b style="color:#ea580c">漏斗</b>＝数据存在、经「归因脉络」漏斗体现而非独立网格字段；<b style="color:#e0524d">未展示</b>＝mock 已具备但会员详情页当前未渲染（待补/可选）。</p>
+    <div class="ok">✅ 核查口径：以 V3 原型会员详情转换 <code>buildDetailData.ts</code> 为基准，对照 mock <code>src/api/index.ts</code> 与列表 <code>useUserPage.ts</code> 逐字段比对（详情段：基础 / 注册信息(归因) / 代理数据 / 登录信息 / 最后3次登录）。</div>
+    <div class="note">⚠️ 与会员详情比对发现 <b>4 处缺口（本次已修订对齐）</b>：① <b>同设备注册数</b> sameDeviceRegisterCount — 详情已渲染、原字段表漏列 → 补入；② <b>上次登录IP / 同IP登录数</b> loginIp · sameIpLoginCount — 详情已渲染、原表漏列 → 补入；③ <b>搜索引擎 / 登录渠道 / 是否模拟器</b> — mock 有值但详情页未渲染 → 标「未展示」；④ <b>邀请人 inviter</b> — mock 与详情弹窗逻辑均在，但详情页缺入口字段 → 标「未展示」，建议补展示。</div>
 
     <h3 id="f-attr">2.1 归因 / 来源 + 注册设备组</h3>
+    <p class="sec-desc">这组字段记录会员「<b>从哪个第三方平台、走哪条渠道、用什么设备</b>」注册进来。其中「推广三方类型 <code>promoThirdType</code>」= 识别出的第三方推广 / 归因平台。</p>
     <div id="t-attr"></div>
 
     <h3 id="f-agent">2.2 代理体系组</h3>
@@ -209,15 +197,12 @@
     <h3 id="f-list">2.4 会员列表 · 新增列 / 行内开关</h3>
     <div id="t-list"></div>
 
-    <h3 id="f-suggest">2.5 建议字段（<span class="st sug">非强制</span>，代码暂无）</h3>
-    <p class="sec-desc">以下为基于归因/风控/投放分析角度<b>建议补充</b>的字段，当前代码中<b>不存在</b>，仅作设计建议，是否纳入由产品决定。</p>
-    <div id="t-suggest"></div>
   </section>
 
   <!-- 三、归因流程图与矩阵 -->
   <section id="attr">
     <h2 class="sec">三、归因流程图与介绍（含矩阵）</h2>
-    <p class="sec-desc">归因如何判定、判定结果如何落库、18 种情况如何穷举。</p>
+    <p class="sec-desc">归因如何判定、判定结果如何落库、22 种情况如何穷举。</p>
 
     <h3 id="a-priority">3.1 优先级与判定规则</h3>
     <div class="flow">
@@ -228,7 +213,46 @@
     </div>
     <p>注册时按上述<b>优先级从高到低</b>取首个命中的来源作为「主归因」，写入档案后<b>固化不再变更</b>。例：既有广告点击ID 又填了有效邀请码 → 命中更高优先级「广告投放（裂变）」，邀请码作辅证保留绑定关系。</p>
 
-    <h3 id="a-flow">3.2 5 步固化流程</h3>
+    <h3 id="a-sources">3.2 五类来源简介与举例</h3>
+    <p class="sec-desc">主归因往下细分为 <b>5 类来源</b>（在 3.1 的 4 类判定基础上补「未知来源」兜底）。来源出处：《集团核心层级 · 归因来源》§4。</p>
+    <table>
+      <tr><th width="110">主归因来源</th><th>简介</th><th>举例</th></tr>
+      <tr><td><b>自然流量</b></td><td>无明确推广参数的直接访问或搜索进入，是每个商户必备的兜底来源。</td><td>用户在搜索引擎搜商户名点进官网。</td></tr>
+      <tr><td><b>广告投放</b></td><td>来自广告链接、UTM、媒体买量、落地页 campaign，用于核算投放效果与 ROI。</td><td>Facebook 广告带 fbclid 进入落地页。</td></tr>
+      <tr><td><b>官方直推</b></td><td>商户运营创建的官方推广入口。</td><td>线下活动二维码、KOL 专属短链、商务直推链接、活动落地页。</td></tr>
+      <tr><td><b>邀请来源</b></td><td>由玩家、邀请人或外部代理的邀请码 / 链接带来，同时形成代理树。再分三类：<b>正常邀请</b>＝个人邀请；<b>转盘活动邀请</b>＝分享邀请转盘裂变；<b>邀请任务</b>＝完成邀请任务拉新。</td><td>老玩家分享带自己 ID 的邀请链接（正常邀请）；分享「邀请转盘」拉新（转盘活动邀请）；完成「邀请任务」拉新（邀请任务）。</td></tr>
+      <tr><td><b>未知来源</b></td><td>参数缺失、失效、过期、跨商户或无法识别 referrer，应可追踪失败原因。</td><td>链接过期后直接打开域名。</td></tr>
+    </table>
+
+    <h3 id="a-entry">3.3 各来源的入口与采集方式</h3>
+    <p class="sec-desc">每类主归因对应的<b>入口形态</b>，以及注册时<b>如何采集 / 识别</b>。</p>
+    <table>
+      <tr><th width="150">主归因</th><th width="140">入口形态</th><th>采集 / 识别方式与举例</th></tr>
+      <tr><td>自然流量</td><td>搜索进入 / 直接访问</td><td>解析请求 <code>referrer</code> 的来源域名识别搜索引擎名称，无 referrer 则记为直接访问。可识别 Google、Bing、Yahoo、DuckDuckGo、Yandex、Naver 等海外搜索引擎；<b>中国搜索引擎（百度 / 搜狗 / 360 / 神马等）及未在白名单内的一律归「其他」。</b><br>另按 <code>User-Agent</code> 识别访问浏览器，覆盖主流海外浏览器：<b>Chrome、Safari、Edge、Firefox、Opera、Samsung Internet、Brave、Vivaldi</b> 等；未在白名单内的浏览器一律归「其他」。</td></tr>
+      <tr><td>广告投放</td><td>广告链接 / 落地页</td><td>读取 UTM 参数（<code>utm_source / utm_medium / utm_campaign / utm_content / utm_term</code>）+ 各平台点击 ID 回传。<b>暂定支持 4 个广告平台系列</b>：<br>• <b>谷歌系列</b>：Google Ads / YouTube / Google Display（含 AdMob 应用广告），点击 ID <code>gclid</code>（iOS ATT 后另有 <code>gbraid / wbraid</code>），<code>utm_source=google</code>。<br>• <b>Meta 系列</b>：Facebook / Instagram / Messenger / Audience Network，点击 ID <code>fbclid</code>，<code>utm_source=facebook</code> 或 <code>instagram</code>。<br>• <b>TikTok 系列</b>：TikTok Ads / TikTok for Business，点击 ID <code>ttclid</code>，<code>utm_source=tiktok</code>。<br>• <b>Kwai 系列（快手海外版）</b>：Kwai Ads / Kwai for Business，<code>utm_source=kwai</code>，点击 ID 随平台回传（参数名以对接 Kwai SDK 为准）。<br>例：<code>?utm_source=facebook&amp;utm_campaign=th_618</code>。</td></tr>
+      <tr><td>官方直推</td><td>专属链接 / 二维码</td><td>商户在「官方直推渠道」生成带渠道标识的短链或二维码，扫码 / 点击即带上渠道 ID。例：线下展会物料二维码、KOL 专属 <code>?ch=kol_anna</code>。</td></tr>
+      <tr><td>邀请来源 · 正常邀请</td><td>个人邀请码 / 邀请链接</td><td>链接或邀请码内含上级玩家 / 代理 ID，注册时写入代理树上级关系，<code>invite_type=normal</code>。例：<code>/r/INV8K3D</code> 或填邀请码 <code>8K3D</code>。</td></tr>
+      <tr><td>邀请来源 · 转盘活动邀请</td><td>邀请转盘专属链接 / 海报</td><td>链接含上级 ID + 活动 ID，注册时既挂代理树又触发转盘奖励，<code>invite_type=wheel</code> 并记 <code>invite_activity_id</code>。例：<code>/act/wheel?inv=8K3D&amp;act=2026spin</code>。</td></tr>
+      <tr><td>邀请来源 · 邀请任务</td><td>邀请任务活动页 / 任务链接</td><td>链接含上级 ID + 活动 ID，注册时既挂代理树又触发任务奖励，<code>invite_type=task</code> 并记 <code>invite_activity_id</code>。例：<code>/act/task?inv=8K3D&amp;act=2026invite</code>。</td></tr>
+      <tr><td>未知来源</td><td>兜底</td><td>上述均无法识别时落入未知来源，记录失败原因（参数无效 / 过期 / 跨商户）。例：referrer 与 UTM 均为空且非已知直接入口。</td></tr>
+    </table>
+    <div class="note">优先级冲突：若邀请链接与 UTM 同时存在，<b>按优先级判为广告投放</b>（广告 / UTM 高于邀请），邀请链接作辅证保留；来源归因与代理树归属相互独立。来源出处：<code>group-to-member-hierarchy.html#attribution</code> §4。</div>
+
+    <h3 id="a-clients">3.4 访问端（七类）</h3>
+    <p class="sec-desc">玩家访问入口的客户端（设备）类型在注册时记录为 <code>client_type</code>，与主归因<b>正交</b>——端只回答「从哪种客户端进来」，来源回答「从哪个入口来」。共 7 类：</p>
+    <table>
+      <tr><th width="110">访问端</th><th width="110">字段规范</th><th>说明</th><th>举例</th></tr>
+      <tr><td><b>iOS 原生</b></td><td><code>IOS</code></td><td>上架 App Store 的原生 iOS 应用，原生壳 + 原生界面。</td><td>从 App Store 下载的官方 App；或通过<b>个签 / 企业签 / TF签（TestFlight）</b>等方式安装的原生 App。</td></tr>
+      <tr><td><b>安卓原生</b></td><td><code>Android</code></td><td>原生 Android 应用（APK），原生壳 + 原生界面。</td><td>从官网、Google Play 或第三方应用市场下载安装的原生 APK。</td></tr>
+      <tr><td><b>iOS 壳包</b></td><td><code>IOS（壳包）</code></td><td>iOS WebView 套壳应用，外壳为原生、内容为 H5。</td><td>用<b>个签 / 企业签</b>分发的 WebView 套壳 iOS 包（绕过商店审核）。</td></tr>
+      <tr><td><b>安卓壳包</b></td><td><code>Android（壳包）</code></td><td>Android WebView 套壳 APK，外壳为原生、内容为 H5。</td><td>渠道分发的 WebView 套壳 APK（外壳原生、内容 H5）。</td></tr>
+      <tr><td><b>PC 端（含平板）</b></td><td><code>PC</code></td><td>桌面浏览器访问，含平板等大屏设备。</td><td>Windows / Mac 桌面浏览器，或 iPad 等大屏平板横屏访问。</td></tr>
+      <tr><td><b>手机 H5 端</b></td><td><code>H5</code></td><td>移动浏览器直接访问的 H5 页面，无需安装。</td><td>手机移动浏览器直接打开推广短链 / H5 页面，无需安装。</td></tr>
+      <tr><td><b>PWA</b></td><td><code>PWA</code></td><td>渐进式 Web 应用，浏览器「添加到主屏幕」即安装，免商店、可离线、独立桌面图标。</td><td>用户在手机 / PC 浏览器点「添加到主屏幕（安装）」，从桌面图标启动的 PWA。</td></tr>
+    </table>
+    <div class="note">DB 现以 <code>tab_Users.PhoneType / RegType</code> 粗粒度记录，需扩展为 7 端枚举：<code>ios_native / android_native / ios_wrapper / android_wrapper / pc</code>（含平板）<code>/ h5 / pwa</code>。</div>
+
+    <h3 id="a-flow">3.5 5 步固化流程</h3>
     <div class="aflow">
       <div class="astep s1"><div class="an">1</div><div class="at">进入</div><div class="ad">用户点链接 / 域名进入</div></div>
       <div class="aarr">→</div>
@@ -246,17 +270,67 @@
     </div>
     <div class="note">「同IP / 同设备 / 同指纹」数值在会员详情/列表均<b>可点击下钻</b>到「风控 · 同IP/设备检测」对应维度并自动带入会员 ID。</div>
 
-    <h3 id="a-matrix">3.3 归因穷举矩阵（4 类 × 18 种，原样对齐说明书 §4.6）</h3>
+    <h3 id="a-matrix">3.6 归因穷举矩阵（4 类 × 22 种，§4.6 的 18 种基础上补 4 种极端冲突/降级穷举）</h3>
     <p class="sec-desc">每行 = 一种进入路径：命中标识 → 进入方式 → 落地渠道 → 邀请码·代理 → 最终归因结果。下方<b>速览表</b>快速对照；再往下是<b>融合进本方案的完整可交互矩阵</b>（每行可点编号展开 5 步脉络图），无需跳转外页。</p>
-    <h4>速览表（18 种一览）</h4>
+    <h4>速览表（22 种一览）</h4>
     <div class="mx-scroll"><table class="mx" id="t-matrix"></table></div>
     <h4>完整可交互矩阵（含每行 5 步脉络图）</h4>
     <div class="mxframe"><iframe src="attribution-matrix-4.6.html" title="归因穷举矩阵 §4.6（完整可交互）" loading="lazy"></iframe></div>
     <p class="sec-desc" style="margin-top:6px">如需全屏单独查看：<a href="attribution-matrix-4.6.html" target="_blank">在新窗口打开 §4.6 完整矩阵 ↗</a></p>
   </section>
 
-  <!-- 四、关联文档 -->
-  <section id="related">
+  <!-- 四、通用交互 · 研发落地要点 -->
+  <section id="uxdev">
+    <h2 class="sec">四、通用交互 · 研发落地要点</h2>
+    <p class="sec-desc">归因之外，《交互介绍（控件级）》里还有一批<b>贯穿全站的通用交互</b>，研发实现时按本节口径落地，逐页不再重复。控件级细节以《交互介绍》为准，本节给<b>技术锚点</b>。</p>
+
+    <h3 id="ux-list">4.1 列表骨架（统一用 ProCrudTable）</h3>
+    <p>所有列表页（搜索表单 + 表格 + 分页 + 行操作）统一走自研 <code>ProCrudTable</code>，不要各页另起一套。</p>
+    <ul>
+      <li><b>搜索</b>：条件即时过滤；pin 项常驻、其余「展开/收起」；日期区间带快捷（今天/昨天/本周/上周/本月/上月/所有）。</li>
+      <li><b>列</b>：内容默认<b>居中</b>；状态/类型列渲染彩色 Tag；金额千分位；时间按<b>商户时区</b>展示；空值统一「-」。</li>
+      <li><b>操作列</b>：<b>恒最后一列、默认右侧冻结</b>（横/竖版都冻、不可取消），横向滚动始终可见。</li>
+      <li><b>自定义列</b>：列 &gt;10 才出；勾选<b>保存后才生效</b>；锁定列 <code>lockFixed</code> 在面板内<b>不可取消勾选 / 不可拖拽</b>，仅显隐其它列；按 <code>tableId</code> 记忆（<code>useColumnSetting</code>）。</li>
+      <li><b>分页</b>：10/20/50/100，各页<b>独立记忆</b>；列表页 <code>keepAlive</code> 保留滚动与筛选态。</li>
+      <li><b>合计行</b>：含统计意义的列表带「本页合计 / 总计」，随筛选实时刷新。</li>
+      <li><b>导出</b>：<b>仅「报表类页面」或「列数 &gt;20」</b>才提供，点击真实下载 CSV + Toast；其余列表不放（R21）。</li>
+    </ul>
+
+    <h3 id="ux-cfg">4.2 配置类页 · 保存 / 发布两段式</h3>
+    <p>注册管理 / 系统参数 / 配置开关 / 前台配置等配置页统一：</p>
+    <ul>
+      <li><b>两段式</b>：<b>保存 = 存草稿</b>（先弹「保存预览」确认，提示「已保存（草稿），发布后对外生效」）；<b>发布 = 上线</b>（再走「确认发布」二次确认）。</li>
+      <li><b>按钮位置</b>：保存 / 发布放在顶部「配置商户」选择条<b>同一行右侧</b>（MerchantSwitchBar <code>#actions</code> 插槽）。</li>
+      <li><b>校验</b>：保存/发布前校验，<b>失败必红框定位出错字段并指明错在哪</b>（顶部错误提示 + 字段红框）；行内表格用单元格 invalid 高亮 + errorTip；业务规则（如同级费率之和超限）直接拦截标红。</li>
+    </ul>
+
+    <h3 id="ux-modal">4.3 弹窗规范（全站统一）</h3>
+    <ul>
+      <li><b>类型</b>：表单弹窗（取消/确定 + 就地校验）/ 详情弹窗（只读描述列表 + 关闭）/ 二次确认（删除·拉黑·禁用·开关·发布）/ 侧滑抽屉（权限树·长详情）。</li>
+      <li><b>排版四标准</b>：① 左对齐表单 label 自适应宽度、<b>一行不换行</b>（顶部标签布局不受限）；② 宽度三档 <code>440 / 600 / 860</code>；③ 底部按钮右对齐、间距 12、上距 16、顺序 [取消/关闭][确定/保存(主色)]；④ 统一 <code>size="small"</code> 与分组小标题/间距。超大表格弹窗保留响应式宽度。</li>
+    </ul>
+
+    <h3 id="ux-global">4.4 多商户隔离 / 下钻联动 / 多标签</h3>
+    <ul>
+      <li><b>商户隔离</b>：顶栏切换商户 → 列表/配置<b>整体重渲染、数据隔离</b>，并隐藏「商户」列。</li>
+      <li><b>下钻联动</b>：会员详情/列表的「同IP / 同设备 / 同指纹」数值<b>可点击下钻</b>到「风控 · 同IP/设备检测」对应维度，并自动带入会员 ID。</li>
+      <li><b>顶部多标签</b>：支持按住左右拖动 / 触控板横滑、拖拽排序、关闭（其它 / 左侧 / 右侧 / 全部）；当前页签主色高亮。</li>
+      <li><b>二级分类导航</b>：左侧分类锚点（系统参数 / 配置开关等）点选 → 右侧对应卡牌边框 + 标题高亮，并随滚动联动高亮。</li>
+    </ul>
+
+    <h3 id="ux-visual">4.5 视觉 / 标记 / 设备口径</h3>
+    <ul>
+      <li><b>颜色一色一义</b>（主色 <code>#009688</code>）：<span class="gtag g-off">青绿 可点/主操作</span> <span class="gtag g-nat">绿 成功/启用</span> <span class="gtag g-inv">橙 警告/待办</span> <span class="gtag g-ad">红 危险/失败/校验错</span> <span class="gtag" style="background:#e5e7eb;color:#374151">灰 只读/禁用</span>，不得混用。</li>
+      <li><b>「新」标记</b>：本期迁移新增的字段/列/功能带可一键移除的「新」角标，便于评审区分新旧；技术上走 <code>src/utils/newMark.ts</code>，上线时把 <code>NEW_MARK_ENABLED</code> 置 false 即全局去除。</li>
+      <li><b>设备术语</b>：全站「设备」固定 <b>7 种</b>——H5 / PC / 安卓原生 / iOS 原生 / 安卓壳包 / iOS 壳包 / PWA（不再用「端」字）。</li>
+      <li><b>编辑形态</b>：行「编辑」按页面约定为<b>弹窗编辑</b>或<b>页内编辑</b>（不混用，以各页说明为准）；危险操作与行内开关切换均<b>二次确认 + Toast</b>。</li>
+      <li><b>操作反馈</b>：导出/搜索/排序/保存/删除/状态切换等<b>每个真实操作都配 Toast</b>，非占位。</li>
+    </ul>
+    <div class="note">控件级逐页明细（筛选/列/工具栏/行操作/表单/特殊 + 弹窗）见《交互介绍（控件级）》——本节只做研发落地口径汇总，二者配合阅读。</div>
+  </section>
+
+  <!-- 关联文档（已隐藏） -->
+  <section id="related" style="display:none">
     <h2 class="sec">四、关联文档</h2>
     <p class="sec-desc">本方案配套入口链接。</p>
     <a class="dlink" href="saas-phase2-product-intro.html" target="_blank"><span class="di">🖱️</span><span class="dx"><b>交互介绍</b><i>逐页内嵌可点击原型（活介绍）+ 8 Tab 定义 + 归因/会员详情图文</i></span></a>
@@ -269,84 +343,81 @@
 </div>
 
 <script>
-// 字段定义数据（中文名, key, 状态 yes|sug, 说明）。yes=代码已实现（核查确认），sug=建议字段
+// 字段定义数据（中文名, key, 状态, 取值/格式/示例, 详细说明）。状态=新增/原有/漏斗/未展示。
+// 对照基准：V3 原型会员详情转换 buildDetailData.ts + 归因脉络漏斗 + mock api/index.ts + 列表 useUserPage.ts。
 const ATTR=[
- ['归因类型(主归因)','mainAttribution','yes','注册来源唯一归类：广告投放/邀请来源/官方直推/自然流量'],
- ['推广三方类型','promoThirdType','yes','识别出的推广三方平台（Facebook/Adjust/TikTok…）'],
- ['注册渠道','registerChannel','yes','注册时命中的后台渠道（如 apk-fb-me001-01 / ag010）'],
- ['登录渠道','loginChannel','yes','最近一次登录命中的渠道'],
- ['搜索引擎','searchEngine','yes','由 referrer 来源域名识别的搜索引擎'],
- ['邀请码','attrInviteCode','yes','注册实际使用的邀请码，关联邀请人/代理'],
- ['邀请类型','inviteType','yes','正常邀请 / 转盘活动邀请 / 邀请任务'],
- ['访问端','accessClient','yes','H5/PC/安卓原生/iOS原生/安卓壳包/iOS壳包/PWA'],
- ['注册域名','registerDomain','yes','注册时进入的域名（属本商户）'],
- ['注册设备','registerClient','yes','注册时使用的设备类型'],
- ['注册设备号(设备ID)','registerDeviceId','yes','注册时稳定设备 ID（App 端有值）'],
- ['是否模拟器','isEmulator','yes','注册设备是否为模拟器（boolean）'],
- ['注册IP','userRegisterIP','yes','注册时 IP'],
- ['同IP注册数','userRegisterSameIPCount','yes','与本会员同 IP 注册的账号数（可下钻）'],
- ['注册浏览器指纹','registerBrowserFp','yes','注册时浏览器指纹（H5 端有值）'],
- ['同指纹注册数','sameFingerprintRegisterCount','yes','与本会员同指纹注册的账号数（可下钻）'],
- ['包名','registerPackage','yes','注册 App 包名（含版本号，如 com.daman.app（v2.3.1））'],
- ['版本号','registerPackage','yes','与包名合并在 registerPackage 字段'],
-];
+ ['注册时间','userRegisterTime / createTime','原有','日期时间，如 2026-06-22 16:51:43','会员注册成功的时点，落库后<b>固化不变</b>。列表与详情统一按<b>当前商户时区</b>换算展示（非 UTC 原值），切商户会重算。归因脉络的时间基准。'],
+ ['注册IP','userRegisterIP','原有','IPv4/IPv6，如 103.21.xx.xx','注册请求来源 IP。与「同IP注册数」联动；点击可下钻「风控 · 同IP检测」并带入本会员 ID，排查批量注册。'],
+ ['同IP注册数','userRegisterSameIPCount','原有','整数 ≥1','与本会员<b>同一注册 IP</b> 的账号总数（含本人）。>1 提示多账号/工作室风险，列表该数可标红；点击下钻风控同IP维度。'],
+ ['同指纹注册数','sameFingerprintRegisterCount','原有','整数 ≥1','同一<b>浏览器指纹</b>注册的账号数，H5 端为主要识别手段；可下钻。与设备号互补（App 看设备号、H5 看指纹）。'],
+ ['注册设备','registerClient','新增','7 端枚举：H5/PC/安卓原生/iOS原生/安卓壳包/iOS壳包/PWA','注册时所用设备类型，取全站固定 7 端口径之一。<b>决定下方展示哪类标识</b>：App 类显设备号、H5 类显指纹，不堆两行。'],
+ ['注册设备号(设备ID)','registerDeviceId','新增','设备唯一ID 串，如 DID-8838xx（App 端有值）','App 端注册时采集的稳定设备标识；H5 端通常为空（改看指纹）。用于「同设备」风控聚合，识别同机多号。'],
+ ['注册浏览器指纹','registerBrowserFp','新增','指纹串，如 fp_9a2c…（H5 端有值）','H5 端注册时的浏览器指纹；App 端通常为空。与「同指纹注册数」联动，弥补无设备号场景下的设备识别。'],
+ ['同设备注册数','sameDeviceRegisterCount','新增','整数 ≥1；仅本账号时标注「仅本账号」','同一设备号注册的账号数；可下钻风控同设备维度。<b>原字段表漏列，本次补入</b>（会员详情已渲染）。'],
+ ['包名(含版本号)','registerPackage','新增','字符串，如 com.daman.app（v2.3.1）','注册所用 App 的包名，版本号合并括号展示。用于区分壳包/马甲包来源与版本分布；H5 端为空。'],
+ ['注册域名','registerDomain','新增','域名，如 m.daman1.com','注册时进入的落地域名，须<b>属本商户</b>。对应推广闭环「域名 → 渠道 → 推广」前半段，可回溯投放域名。'],
+ ['推广三方类型','promoThirdType','新增','平台名枚举：Facebook / Google Ads / TikTok / Telegram / Adjust / DSP / 联盟广告（mock 示例 Facebook）','识别出的<b>第三方推广 / 归因平台</b>名（取值来源见 §2.1「本系统接入的第三方后台」表）。与注册渠道(具体渠道编码)区分：此为平台、彼为渠道。'],
+ ['主归因(归因类型)','mainAttribution','漏斗','枚举：广告投放 / 邀请来源 / 官方直推 / 自然流量','注册时按<b>优先级 ①广告&gt;②邀请&gt;③官方&gt;④自然</b> 取首个命中来源，固化不变。详情页经「归因脉络」漏斗 <code>source</code> 体现，非独立网格字段。'],
+ ['注册渠道','registerChannel','漏斗','渠道编码，如 apk-fb-me001-01 / ag010（代理专属链接）','注册命中的<b>后台具体渠道</b>（由「运营 · 渠道管理」逐条配置、带前缀编码）。漏斗 <code>entryChannel</code> 体现；是平台(promoThirdType)之下更细的获客位置。'],
+ ['邀请码','attrInviteCode','漏斗','字符串，如 AGENT100 / WHEEL8001','注册<b>实际使用</b>的邀请码，关联邀请人/代理绑定关系。无效或活动码过期会按 §3 矩阵<b>降级</b>处理；漏斗 <code>registerInvite</code> 体现。'],
+ ['邀请类型','inviteType','漏斗','枚举：正常邀请 / 转盘活动邀请 / 邀请任务','邀请码的来源场景。活动码（转盘/任务）过期则降级为「正常邀请」甚至「自然流量」；漏斗 <code>inviteType</code> 体现。'],
+ ['搜索引擎','searchEngine','未展示','枚举：Google / Bing / 其他','由 <code>referrer</code> 识别的搜索引擎，<b>自然流量</b>归因细分用（见矩阵 B7/B8）。mock 有值，会员详情页当前未渲染（待补/可选）。'],
+ ['登录渠道','loginChannel','未展示','渠道编码','最近一次登录命中的渠道。mock 有值，详情页未渲染；语义上更应归「登录设备组」而非注册组。'],];
 const AGENT=[
- ['邀请人','inviter','yes','邀请该会员的人（含昵称 + ID）'],
- ['一级代理','firstAgent','yes','所在代理树的顶级（根）代理'],
- ['直接上级代理','directParentAgent','yes','代理树中该会员的直接父节点'],
- ['代理层级','level（agentLineDetail 内）','yes','代理关系链明细每级层级，如 1级·总代 / 9级·直属上级'],
- ['佣金模式','commissionMode','yes','代理收益方式：返佣 / 返利'],
- ['返佣等级','rebateLevel（agentLineDetail 内）','yes','代理关系链每级返佣等级 Lv1–Lv5'],
- ['对上级返佣','isRebateToParent','yes','有效投注是否为上级计提返佣（行内开关）'],
- ['返佣状态','rebateLevelType','yes','动态 / 固定 / 保底 三态'],
- ['直属下级数','children_1_Total','yes','直接下级人数'],
- ['团队下级数','teamSubCount','yes','团队总下级人数'],
- ['累计返佣','financeCommission','yes','历史累计返佣金额'],
- ['邀请奖励','agentInviteReward','yes','代理邀请奖励'],
- ['合伙人奖励','agentPartnerReward','yes','合伙人奖励'],
- ['昨日返佣等级','yesterdayRebateLevel','yes','昨日返佣等级档位（含升降指示）'],
+ ['是否领取返佣(表头开关)','isRebate_Bet','新增','布尔（开 / 关）','代理数据段<b>表头开关</b>。控制本会员是否可领取「自己的」返佣；关闭则其有效投注不再产生自得返佣。切换走二次确认 + Toast。'],
+ ['对上级返佣(表头开关)','isRebateToParent','新增','布尔（开 / 关）','代理数据段表头开关。控制本会员有效投注是否为<b>各级上级计提返佣</b>；关闭后上级拿不到该会员返佣，<b>不影响代理结构</b>，仅影响计佣。'],
+ ['一级代理','firstAgent','新增','会员ID / 账号','所在代理树的<b>顶级（根）代理</b>。用于团队归属、报表按总代汇总；列表亦新增同名列。'],
+ ['直接上级代理','directParentAgent','新增','会员ID / 账号','代理树中本会员的<b>直接父节点</b>。属归因里的<b>可后台调整</b>项（一级 / 上级可划转），划转后关系链重算。'],
+ ['代理关系链','agentChainIds','新增','ID 链：1级总代 → … → 直属上级 → 本会员','头部以<b>流程图</b>展示完整上级链路，每个节点可点击查看；体现该会员在代理树中的位置。'],
+ ['代理线逐级明细','agentLineDetail','新增','展开详情（层级 / 返佣等级 Lv1–Lv5 / 佣金模式）','点击关系链 → 展开<b>全链路逐级详情</b>，逐层给出层级、返佣等级、佣金模式，便于核对分润。'],
+ ['佣金模式','commissionMode','新增','枚举：返佣 / 返利','代理收益的计算方式。返佣＝按下级有效投注比例计提；返利＝按充值/流水返还。列表亦新增列。'],
+ ['返佣状态(三态)','rebateLevelType','新增','枚举：动态 / 固定 / 保底','返佣等级的计算态——动态随业绩浮动、固定锁定档位、保底兜底最低档。对应「返佣配置」规则。'],
+ ['昨日返佣等级','yesterdayRebateLevel','新增','等级 Lv1–Lv10 + 升 / 降指示','昨日结算的返佣等级档位，含较前一日的升/降箭头；对应运营「昨日返佣等级」页，便于追踪等级变动。'],
+ ['直属下级数','children_1_Total','新增','整数','直接下级（第一层）人数。'],
+ ['团队下级数','teamSubCount','新增','整数','团队全链路总下级人数（多层累计）。'],
+ ['累计返佣','financeCommission','新增','金额（商户币种，千分位）','历史累计已结算返佣金额。'],
+ ['邀请奖励','agentInviteReward','新增','金额','代理邀请新成员获得的奖励累计。'],
+ ['合伙人奖励','agentPartnerReward','新增','金额','合伙人身份对应的奖励累计。'],
+ ['邀请人','inviter','未展示','会员ID / 账号','<b>实际邀请本会员的人</b>（与邀请码关联）。mock 与「邀请人详情」弹窗逻辑均在，但会员详情页当前缺入口字段渲染——<b>建议补展示</b>。'],
 ];
 const LOGIN=[
- ['登录客户端','loginClient','yes','最近一次登录的客户端设备'],
- ['登录设备号(设备ID)','loginDeviceId','yes','最近一次登录的稳定设备 ID'],
- ['登录域名','loginDomain','yes','最近一次登录进入的域名'],
- ['最后3次登录(IP/同IP数)','loginLogList + ip_UserID_Count','yes','最近 3 次登录明细（IP + 同 IP 数）'],
- ['登录浏览器指纹','loginFingerprint','yes','最近一次登录的浏览器指纹'],
- ['上次登录设备','loginClient','yes','与「登录客户端」同字段'],
- ['同设备登录数','sameDeviceLoginCount','yes','与本会员同设备登录过的账号数'],
- ['同指纹登录数','sameFingerprintLoginCount','yes','与本会员同指纹登录过的账号数'],
- ['上次登录包名','lastLoginPackage','yes','最近一次登录的 App 包名'],
+ ['上次登录端/客户端','loginClient','新增','7 端枚举','最近一次登录所用设备类型（同 7 端口径）。与「注册设备」对照，可看出会员是否换端。'],
+ ['上次登录IP','loginIp','新增','IP，如 103.21.xx.xx','最近一次登录 IP；与「同IP登录数」联动、可下钻。<b>原字段表漏列，本次补入</b>（详情已渲染）。'],
+ ['上次登录设备号(设备ID)','loginDeviceId','新增','设备唯一ID（App 端有值）','最近一次登录的稳定设备 ID；与注册设备号对比可识别异地/换机登录。'],
+ ['上次登录浏览器指纹','loginFingerprint','新增','指纹串（H5 端有值）','最近一次登录的浏览器指纹；H5 端设备识别主手段。'],
+ ['上次登录域名','loginDomain','新增','域名','最近一次登录进入的域名；与注册域名对比可见入口变化。'],
+ ['上次登录包名','lastLoginPackage','新增','包名，如 com.daman.app','最近一次登录所用 App 包名（含壳包区分）。'],
+ ['同IP登录数','sameIpLoginCount','新增','整数','与本会员<b>同 IP 登录</b>过的账号数；可下钻会员列表筛同 IP。<b>原字段表漏列，本次补入</b>。'],
+ ['同设备登录数','sameDeviceLoginCount','新增','整数','同一设备号登录过的账号数；可下钻。识别共用设备的多账号。'],
+ ['同指纹登录数','sameFingerprintLoginCount','新增','整数','同一指纹登录过的账号数（H5 场景）。'],
+ ['最后3次登录(时间/IP/同IP数)','loginLogList + ip_UserID_Count','原有','列表：时间 / IP / 同IP数','<b>独立分区</b>，展示最近 3 次登录明细，每条 IP 可逐条下钻风控同IP，辅助判断登录环境异常。'],
 ];
 const LIST=[
- ['领取返佣（行内开关）','commissionEnabled / rebateStateBet','yes','控制该会员是否可领取自己的返佣（点击二次确认）'],
- ['对上级返佣（行内开关）','isRebateToParent','yes','控制该会员有效投注是否为上级计提返佣'],
- ['注册域名列','registerDomain','yes','会员列表新增展示列'],
- ['注册设备号列','registerDeviceId','yes','会员列表新增展示列'],
- ['注册浏览器指纹列','registerFingerprint','yes','会员列表新增展示列'],
- ['上次登录设备列','loginDeviceId','yes','会员列表新增展示列'],
- ['一级代理列','firstAgent','yes','会员列表新增展示列'],
- ['直接上级代理列','directParentAgent','yes','会员列表新增展示列'],
- ['佣金模式列','commissionMode','yes','会员列表新增展示列'],
- ['登录客户端列','loginClient','yes','会员列表新增展示列'],
- ['登录设备号列','loginDeviceId','yes','会员列表新增展示列'],
- ['登录浏览器指纹列','loginFingerprint','yes','会员列表新增展示列'],
+ ['领取返佣（行内开关）','commissionEnabled / rebateStateBet','新增','行内开关（开 / 关），点击二次确认','列表行内直接切换本会员是否可领取自得返佣，<b>无需进详情</b>；点击弹二次确认 + Toast，与详情段表头开关 <code>isRebate_Bet</code> 同源。'],
+ ['对上级返佣（行内开关）','isRebateToParent','新增','行内开关（开 / 关），点击二次确认','行内切换本会员有效投注是否为上级计提返佣；与详情同名开关同源，二次确认。'],
+ ['注册域名列','registerDomain','新增','展示列（域名）','列表新增列，等于详情「注册域名」；默认可经「自定义列」显隐。'],
+ ['注册设备号列','registerDeviceId','新增','展示列（设备ID）','列表新增列；App 端有值、H5 端 -。'],
+ ['注册浏览器指纹列','registerFingerprint','新增','展示列（指纹串）','列表新增列；H5 端有值。'],
+ ['上次登录设备列','loginDeviceId','新增','展示列（设备ID）','列表新增列，对应详情「上次登录设备号」。'],
+ ['一级代理列','firstAgent','新增','展示列（会员ID/账号）','列表新增列，便于按总代筛选/排序。'],
+ ['直接上级代理列','directParentAgent','新增','展示列（会员ID/账号）','列表新增列。'],
+ ['佣金模式列','commissionMode','新增','展示列（返佣 / 返利）','列表新增列。'],
+ ['登录客户端列','loginClient','新增','展示列（7 端枚举）','列表新增列，对应详情「上次登录端」。'],
+ ['登录设备号列','loginDeviceId','新增','展示列（设备ID）','列表新增列（与「上次登录设备列」同字段，按布局取用）。'],
+ ['登录浏览器指纹列','loginFingerprint','新增','展示列（指纹串）','列表新增列。'],
 ];
-const SUGGEST=[
- ['归因规则编号','attributionRuleCode','sug','命中的矩阵规则编号（A1–B11），便于复盘判定依据'],
- ['归因置信度','attributionConfidence','sug','多标识冲突时的判定置信度 / 失败原因'],
- ['注册IP归属地','registerGeo','sug','由注册 IP 派生的 国家/地区/运营商，供风控与投放地域分析'],
- ['首充渠道一致性','firstDepositChannelMatch','sug','首充渠道是否与注册渠道一致（识别搬运/异常）'],
- ['设备风险评分','deviceRiskScore','sug','综合 同设备/同指纹/模拟器 的设备风险分'],
-];
+// 说明：以上列均为「会员列表」新增，超 10 列时经统一「自定义列」勾选显隐（锁定列不可取消），列内容默认居中。
 function renderFields(id,rows){
   const el=document.getElementById(id); if(!el) return;
-  const head='<tr><th width="200">字段中文名</th><th width="240">实际字段 key</th><th width="86">落地状态</th><th>说明</th></tr>';
-  const body=rows.map(r=>`<tr><td><b>${r[0]}</b></td><td><code>${r[1]}</code></td><td><span class="st ${r[2]}">${r[2]==='yes'?'已实现':'建议'}</span></td><td>${r[3]}</td></tr>`).join('');
+  const SB={'新增':'#16a34a','原有':'#64748b','漏斗':'#ea580c','未展示':'#e0524d'};
+  const badge=s=>`<span style="display:inline-block;min-width:42px;text-align:center;padding:1px 9px;border-radius:10px;font-size:12px;font-weight:600;color:${SB[s]||'#64748b'};background:${(SB[s]||'#64748b')}1a">${s||'—'}</span>`;
+  const head='<tr><th width="148">字段中文名</th><th width="186">实际字段 key</th><th width="58">状态</th><th width="200">取值 / 格式 / 示例</th><th>详细说明（含义 · 来源 · 展示位置 · 应用场景）</th></tr>';
+  const body=rows.map(r=>`<tr><td><b>${r[0]}</b></td><td><code>${r[1]}</code></td><td>${badge(r[2])}</td><td>${r[3]||'—'}</td><td>${r[4]||''}</td></tr>`).join('');
   el.innerHTML=`<table>${head}${body}</table>`;
 }
-renderFields('t-attr',ATTR);renderFields('t-agent',AGENT);renderFields('t-login',LOGIN);renderFields('t-list',LIST);renderFields('t-suggest',SUGGEST);
+renderFields('t-attr',ATTR);renderFields('t-agent',AGENT);renderFields('t-login',LOGIN);renderFields('t-list',LIST);
 
-// 归因矩阵（4 类 × 18 种）
+// 归因矩阵（4 类 × 22 种，含 4 种极端冲突/降级补充）
 const GCLS={'广告投放':'g-ad','邀请来源':'g-inv','官方直推':'g-off','自然流量':'g-nat'};
 const AMX=[
  ['A1','广告投放','Facebook','广告点击ID fbclid','广告·点击 Facebook 广告进入','广告落地页 apk-fb-me001-01','未填邀请码·无代理','主归因 广告投放 · 渠道 apk-fb-me001-01 · 平台 Facebook'],
@@ -354,6 +425,9 @@ const AMX=[
  ['A3','广告投放','其他平台','UTM（清单外）','广告·其他平台投放进入','广告落地页 h5-ads-me001-01','未填邀请码·无代理','主归因 广告投放 · 平台 其他'],
  ['A4','广告投放','裂变获客','广告点击ID + 有效邀请码','广告·点击 Facebook 广告进入','广告落地页 apk-fb-me001-01','填邀请码 AGENT100（辅证）·绑上级 2250100/一级 2250001','主归因 广告投放（裂变）· 平台 Facebook · 邀请码 AGENT100'],
  ['A5','广告投放','Facebook','广告点击ID + 无效邀请码','广告·点击 Facebook 广告进入','广告落地页 apk-fb-me001-01','填邀请码（无效）·不绑代理','主归因 广告投放 · 平台 Facebook · 邀请码无效'],
+ ['A8','广告投放','全标识冲突(裂变)','广告点击ID + 有效邀请码 + 官方标识 + Referrer（四信号齐发）','广告·四类信号同时携带进入','广告落地页 apk-fb-me001-01（按优先级取广告落地）','邀请码 AGENT100 辅证·绑上级/一级','主归因 广告投放（裂变）· 平台 Facebook · 邀请码/官方/referrer 均作辅证'],
+ ['A9','广告投放','裂变(活动码)','广告点击ID + 活动邀请码 WHEEL8001','广告·点广告进入后参与活动','广告落地页 apk-fb-me001-01','活动码 WHEEL8001 辅证·绑上级/一级','主归因 广告投放（裂变）· 平台 Facebook · 邀请码 WHEEL8001 · 类型 转盘邀请'],
+ ['A10','广告投放','多广告信号','广告点击ID fbclid + UTM 同时存在','广告·多广告参数并存进入','广告落地页 apk-fb-me001-01','未填邀请码·无代理','主归因 广告投放 · 平台 Facebook（点击ID 优先于 UTM）'],
  ['B2','广告投放','Facebook','官方链接 + 广告标识','广告·官方链接带广告标识进入','官方渠道 h5-01','未填邀请码·无代理','主归因 广告投放 · 渠道 官方 h5-01 · 平台 Facebook'],
  ['A6','邀请来源','正常邀请(个人)','个人邀请码 AGENT100(手填)','Facebook-鳗鱼01 渠道进入后手填邀请码','渠道 apk-fb-me001-01','手填 AGENT100·绑上级 2250100/一级 2250001','主归因 邀请来源 · 渠道 apk-fb-me001-01 · 邀请码 AGENT100'],
  ['B3','邀请来源','正常邀请(个人)','官方渠道 + 个人邀请码','官方渠道进入后手填邀请码','官方渠道 h5-01','填 AGENT100·绑上级/一级','主归因 邀请来源 · 渠道 官方 h5-01 · 邀请码 AGENT100'],
@@ -367,15 +441,35 @@ const AMX=[
  ['B9','自然流量','直接访问','无任何参数','自然·直接输入域名进入','官方渠道 h5-01','未填邀请码·无代理','主归因 自然流量 · 渠道 官方 h5-01 · 直接访问'],
  ['B10','自然流量','直接访问','参数全部解析失败','自然·参数损坏/伪造，兜底直接访问','官方渠道 h5-01','未填有效邀请码·无代理','主归因 自然流量 · 直接访问（失败原因记日志）'],
  ['B11','自然流量','直接访问','仅无效邀请码','自然·仅无效邀请码，无其他标识','官方渠道 h5-01','邀请码无效·不绑代理','主归因 自然流量 · 邀请码无效'],
+ ['B12','自然流量','直接访问(降级兜底)','活动码过期 + 无有效上级可绑','自然·活动分享进入（码过期且无人可绑）','官方渠道 h5-01','活动码过期且无上级·二级降级不绑代理','主归因 自然流量 · 直接访问（二级降级，失败原因记日志）'],
 ];
 const mx=document.getElementById('t-matrix');
 mx.innerHTML='<tr><th width="44">编号</th><th width="78">主归因</th><th width="110">子类</th><th width="150">命中标识</th><th>① 进入方式</th><th>② 落地渠道</th><th>③ 邀请码·代理</th><th>④ 归因结果</th></tr>'+
  AMX.map(r=>`<tr><td><b>${r[0]}</b></td><td><span class="gtag ${GCLS[r[1]]}">${r[1]}</span></td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td><td>${r[7]}</td></tr>`).join('');
 
-// 平滑滚动
-document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',e=>{
-  const t=document.querySelector(a.getAttribute('href')); if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}
-}));
+// 自动目录 + 滚动高亮（与「交互介绍」同套）：章(section→h2.sec) 作 grp、节(h3[id]) 作 sub
+(function(){
+  const main=document.querySelector('main'), toc=document.getElementById('toc'); if(!main||!toc) return;
+  const spy=[];
+  main.querySelectorAll('section[id], h3[id]').forEach(el=>{
+    if(el.closest('[style*="display:none"]')) return;            // 跳过隐藏区块（如关联文档占位）
+    if(el.tagName==='SECTION'){
+      if(getComputedStyle(el).display==='none') return;
+      const h2=el.querySelector('h2.sec'); if(!h2) return;
+      const a=document.createElement('a'); a.href='#'+el.id; a.className='grp'; a.dataset.id=el.id;
+      a.textContent=h2.textContent.trim();
+      toc.appendChild(a); spy.push({id:el.id,el});
+    }else{
+      const a=document.createElement('a'); a.href='#'+el.id; a.className='sub'; a.dataset.id=el.id;
+      a.textContent=el.textContent.replace(/^[\d.]+\s*/,'').replace(/\s*[（(].*$/,'').trim();
+      toc.appendChild(a); spy.push({id:el.id,el});
+    }
+  });
+  toc.querySelectorAll('a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const t=document.getElementById(a.dataset.id);if(t)t.scrollIntoView({behavior:'smooth',block:'start'});}));
+  const links=[...toc.querySelectorAll('a')];
+  function onScroll(){let cur=spy[0]&&spy[0].id;for(const s of spy){if(s.el.getBoundingClientRect().top<=120)cur=s.id;else break;}links.forEach(l=>l.classList.toggle('act',l.dataset.id===cur));}
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+})();
 </script>
 </body>
 </html>
