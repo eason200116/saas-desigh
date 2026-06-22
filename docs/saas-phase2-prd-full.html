@@ -89,6 +89,7 @@
        style="border:1px solid #475569;padding:3px 12px;border-radius:6px;">↗ 新窗口打开</a>
   </div>
   <iframe id="embedFrame" title="嵌入页"></iframe>
+  <iframe id="protoFrame" title="产品原型" style="display:none"></iframe>
 </div>
 <div class="layout" id="prdView">
   <nav>
@@ -299,6 +300,7 @@
     const prd=document.getElementById('prdView');
     const embed=document.getElementById('embedView');
     const frame=document.getElementById('embedFrame');
+    const protoFrame=document.getElementById('protoFrame');  // 产品原型专用常驻 iframe（不重载，保持上次操作页面）
     const crumb=document.getElementById('crumb');
     const embedTitle=document.getElementById('embedTitle');
     const embedUrl=document.getElementById('embedUrl');
@@ -307,9 +309,18 @@
       tabs.forEach(x=>x.classList.remove('active')); b.classList.add('active');
       if(b.dataset.view==='prd'){ embed.style.display='none'; prd.style.display='flex'; crumb.textContent=''; return; }
       const src=b.dataset.src;
-      if(frame.getAttribute('src')!==src) frame.setAttribute('src',src);
+      if(b.dataset.proto){
+        // 产品原型是实时 SPA：用独立常驻 iframe，仅首次加载、之后切回/再点都不重载 → 保持上次操作页面，避免刷新跳回首页（快捷工作台）
+        if(!protoFrame.getAttribute('src')) protoFrame.setAttribute('src', src);
+        protoFrame.style.display=''; frame.style.display='none';
+      }else{
+        // 静态文档 Tab：每次点击都强制刷新看最新（含再点当前 Tab），加时间戳绕过缓存
+        const loadSrc = src+(src.includes('?')?'&':'?')+'_t='+Date.now();
+        frame.setAttribute('src', loadSrc);
+        frame.style.display=''; protoFrame.style.display='none';
+      }
       crumb.textContent='› '+b.textContent;                 // 文档名作为 PRD 子标题（面包屑）
-      // 子标题下方栏：文档名 + 新窗口打开按钮（含产品原型）
+      // 子标题下方栏：文档名 + 新窗口打开按钮（含产品原型）—— 显示/打开用干净 src（不带时间戳）
       embedTitle.textContent=b.textContent.trim();
       embedUrl.textContent=src;
       embedOpen2.href=src;
