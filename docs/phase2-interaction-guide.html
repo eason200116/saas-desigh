@@ -5,14 +5,18 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>二阶段 · 交互介绍（控件级）</title>
+<script>if(window.self!==window.top)document.documentElement.classList.add('embedded')</script>
 <style>
   :root{--accent:#2563eb;--ink:#1f2328;--sub:#64748b;--line:#e5e7eb;--bg:#f5f6f8}
+  /* 被 PRD 等以 iframe 内嵌时：隐藏自身大标题（标题由 PRD 面包屑承载），内容覆盖全页 */
+  html.embedded header{display:none}
+  html.embedded nav.toc{top:0;height:100vh}
   *{box-sizing:border-box}
   body{margin:0;font:14px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
   header{position:sticky;top:0;z-index:9;background:linear-gradient(90deg,#1e293b,#312e81);color:#fff;padding:14px 28px}
   header h1{margin:0;font-size:18px}
   header .ver{font-size:12px;opacity:.75;margin-top:3px}
-  .wrap{max-width:1180px;margin:0 auto;padding:24px 22px 80px}
+  .wrap{max-width:none;margin:0;padding:24px 32px 80px}
   h2{font-size:19px;border-left:5px solid var(--accent);padding-left:12px;margin:32px 0 10px}
   .lead{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:13px 18px;font-size:13.5px;line-height:1.85;margin:12px 0}
   .pcard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:12px 0;box-shadow:0 1px 3px rgba(0,0,0,.03);display:flex;gap:18px}
@@ -41,6 +45,48 @@
   .ctab td:first-child{white-space:nowrap}
   .sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:7px;border:1px solid rgba(0,0,0,.12)}
   .hex{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#0f172a}
+  /* 左侧导航 */
+  .layout{display:flex;align-items:flex-start;max-width:none;margin:0}
+  nav.toc{position:sticky;top:62px;align-self:flex-start;width:236px;flex:none;height:calc(100vh - 62px);overflow:auto;padding:14px 8px 40px;font-size:12.5px;border-right:1px solid var(--line);background:#fafbfc}
+  nav.toc a{display:block;padding:3px 10px;color:#374151;text-decoration:none;border-radius:5px;line-height:1.5}
+  nav.toc a:hover{background:#eef2ff;color:var(--accent)}
+  nav.toc a.grp{font-weight:700;color:#111827;margin-top:8px}
+  nav.toc a.sub{padding-left:22px;color:var(--sub);font-size:12px}
+  nav.toc a.act{background:#eef2ff;color:var(--accent);font-weight:700}
+  .layout .wrap{flex:1;min-width:0;max-width:none;margin:0}
+  @media(max-width:980px){nav.toc{display:none}}
+  /* 活介绍：内嵌可点击原型 */
+  .pcard .trybtn{margin-left:auto;background:#16a34a;color:#fff;border:0;padding:4px 12px;border-radius:6px;font-size:11.5px;cursor:pointer;font-weight:600;white-space:nowrap}
+  .pcard .trybtn:hover{background:#15803d}
+  .pcard .trybtn.on{background:#dc2626}
+  .pcard .shot{display:none}            /* 去掉静态截图，把空间留给可点击原型 */
+  /* 内联可点击原型：在原页面展开，原型在上、文案介绍在下 */
+  .pcard .live{display:none;margin:10px 0 6px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .pcard.live-open .live{display:block}
+  .pcard .live-bar{display:flex;align-items:center;gap:8px;background:#1e293b;color:#cbd5e1;font-size:11.5px;padding:5px 12px}
+  .pcard .live-bar .u{font-family:ui-monospace,Menlo,monospace;color:#93c5fd}
+  .pcard .live-bar a{margin-left:auto;color:#93c5fd;text-decoration:none}
+  .pcard .live-bar a:hover{text-decoration:underline}
+  .pcard .live iframe{width:100%;height:640px;border:0;display:block;background:#fff}
+  /* 试用原型 —— 弹窗呈现 */
+  .pmodal{display:none;position:fixed;inset:0;z-index:200;background:rgba(15,23,42,.6);align-items:center;justify-content:center}
+  .pmodal.open{display:flex}
+  .pmodal-box{width:94vw;height:92vh;background:#fff;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+  .pmodal-bar{flex:none;display:flex;align-items:center;gap:8px;background:#1e293b;color:#cbd5e1;font-size:12px;padding:7px 14px;flex-wrap:wrap}
+  .pmodal-bar .u{font-family:ui-monospace,Menlo,monospace;color:#93c5fd}
+  .pmodal-bar .zoom{margin-left:auto;display:flex;align-items:center;gap:4px}
+  .pmodal-bar .zoom button{background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:5px;padding:2px 9px;font-size:11px;cursor:pointer}
+  .pmodal-bar .zoom button:hover{background:rgba(255,255,255,.28)}
+  .pmodal-bar .zoom button.on{background:#16a34a}
+  .pmodal-bar a{margin-left:10px;color:#93c5fd;text-decoration:none}
+  .pmodal-bar a:hover{text-decoration:underline}
+  .pmodal-bar .x{margin-left:10px;background:#dc2626;color:#fff;border:0;border-radius:6px;padding:3px 12px;cursor:pointer;font-size:12px}
+  .pmodal-wrap{flex:1;overflow:auto;background:#fff}
+  .pmodal-wrap iframe{border:0;display:block;background:#fff}
+  /* 点击「试用原型」后：该页介绍文案放在原型下方 */
+  .pmodal-info{flex:none;max-height:32%;overflow:auto;padding:12px 18px 16px;border-top:1px solid var(--line);background:#fafbfc}
+  .pmodal-info .pmi-h{font-size:13px;font-weight:700;color:#1e293b;margin-bottom:6px}
+  .pmodal-info ul.ctrl{margin:0}
 </style>
 </head>
 <body>
@@ -48,9 +94,12 @@
   <h1>🟣 二阶段 · 交互介绍（控件级）</h1>
   <div class="ver">每页逐控件：筛选 / 列 / 工具栏 / 行操作 / 表单 / 特殊行为 · 截图可点击放大 · 以 3100 原型源码为准</div>
 </header>
-<div class="wrap">
+<div class="layout">
+  <nav class="toc" id="toc"></nav>
+  <div class="wrap" id="content">
 
   <div class="lead">
+    <b>读法</b>：每页右上「▶ 试用原型」可在卡内打开<b>可点击实时原型</b>（本地看本地 3100 / 线上看线上）；截图作封面、可点击放大。<br>
     <b>读法</b>：每页按 <span class="lbl flt">筛选</span><span class="lbl col">列</span><span class="lbl tb">工具栏</span><span class="lbl act">行操作</span><span class="lbl frm">表单</span><span class="lbl sp">特殊</span> 六类逐控件说明；<span class="lbl tab">页签</span> 标多页签。<span class="badge built">已增强</span>=本期原型已补全。字段含义见《新增字段介绍》。
   </div>
 
@@ -64,9 +113,52 @@
     </ul>
   </div>
 
-  <h2>控件交互色彩规范 <span class="badge new">新</span></h2>
+  <h2>页面布局规范 <span class="badge new">新</span></h2>
+  <div class="pcard nopic">
+    <ul class="ctrl">
+      <li><span class="lbl tab">整体框架</span>顶部 8 大主导航(mega menu) → 多标签页签条(可拖拽 / 横滑 / 排序 / 关闭，至少留一) → 内容区。</li>
+      <li><span class="lbl col">列表页</span>自上而下：① 筛选区(标签在上控件在下、<b>商户下拉恒首位</b>) → ② 工具栏(新增 / 导出 / 批量 / ⚙自定义列) → ③ 表格 → ④ 分页 + 页底说明框。</li>
+      <li><span class="lbl col">配置页</span>顶部「商户切换条」+ 左侧二级分类锚点(联动高亮) + 右侧分组卡(白底圆角 + 标题左竖条) + 吸底「保存 / 发布」栏。</li>
+      <li><span class="lbl col">详情页</span>抽屉 / 大弹窗：顶部多会员历史标签(≤10) + 日期 + Tab；首 Tab 单页滚动多面板，头部冻结、下方滚动。</li>
+      <li><span class="lbl sp">栅格 / 间距</span>分组卡间距 12–14px；内容平铺用自适应换行(限制 / 赠送 / 可注册手机号)；超宽内容可左右拖动滚动条。</li>
+      <li><span class="lbl sp">冻结 / 响应</span>表格操作列恒最后一列、右侧冻结(横 / 竖版都是)；窄屏左侧导航与截图自动收起。</li>
+    </ul>
+  </div>
+
+  <h2>控件规范 <span class="badge new">新</span></h2>
+  <div class="lead">全站控件取自 3100 原型主题(主色 <span class="hex">#009688</span>)，同类控件交互一致；颜色含义见「字体规范」色板。</div>
+  <div class="pcard nopic">
+    <table class="ctab">
+      <tr><th>控件</th><th>用法 / 规范</th></tr>
+      <tr><td>按钮</td><td>主按钮(青绿：搜索 / 保存 / 确定 / 新增) · 次按钮(描边 / 灰) · 危险按钮(红：删除 / 拉黑，需二次确认) · 文字行操作链接(青绿，统一「编辑 / 详情 / 删除」)；禁用降透明并禁点。</td></tr>
+      <tr><td>输入框</td><td>带 placeholder、可清除；校验失败红框 + 顶部错误面板定位错误字段。</td></tr>
+      <tr><td>下拉选择</td><td>单选 / 多选，可搜索(filterable)；选项为空显空态。</td></tr>
+      <tr><td>商户下拉</td><td>列表筛选 = <b>多选 + 顶部「全部」</b>(与具体互斥、空=全部、不必填、总控扁平)；配置页 = 顶部<b>单选</b>切换条(切谁配谁)。</td></tr>
+      <tr><td>日期</td><td>「开始 → 结束」区间 + 快捷胶囊(今天 / 昨天 / 本周 / 上周 / 本月 / 上月 / 所有)，按商户时区。</td></tr>
+      <tr><td>开关</td><td>行内开关切换弹<b>二次确认</b>后生效 + Toast；失败回滚。</td></tr>
+      <tr><td>状态 Tag</td><td>语义色：绿=启用 / 正常、灰=禁用 / 只读、橙=待办、红=危险 / 失败；不用裸数字。</td></tr>
+      <tr><td>数字输入</td><td>带单位后缀(个 / 元 / 倍 / 位 / 秒 / 次)、min / max 限制、数值 ≥0。</td></tr>
+      <tr><td>上传</td><td>image-card：点击上传 + 缩略图预览 + 删除；缩略图悬停 / 点击放大。</td></tr>
+      <tr><td>表格</td><td>列内容居中、金额右对齐 + ↕排序、ID 蓝字可复制可下钻；列 &gt;10 出「自定义列」(勾选<b>保存才生效</b>)；合计「页面总计 / 总计」双行；操作列末位右冻结、不可取消冻结 / 拖拽、仅可显隐。</td></tr>
+      <tr><td>分页</td><td>共 N 条 / 页码 / 每页 10·20·50·100(各页独立记忆) / 跳至 _ 页 + 页底说明框。</td></tr>
+    </table>
+  </div>
+
+  <h2>字体规范（布局 · 颜色 · 排版）<span class="badge new">新</span></h2>
+  <div class="lead">字体、字号、颜色、间距统一口径，下含「排版表」+「颜色色板」。</div>
+  <div class="pcard nopic">
+    <table class="ctab">
+      <tr><th>维度</th><th>规范</th></tr>
+      <tr><td>字体族</td><td>-apple-system / PingFang SC / Microsoft YaHei 系统字体；ID / IP / 代码等用等宽 ui-monospace / Menlo。</td></tr>
+      <tr><td>字号层级</td><td>页标题 18–21 / 区块标题 15–17 / 正文 13–14 / 辅助说明 12 / 角标 10–11；行高 1.6–1.8。</td></tr>
+      <tr><td>字重 / 颜色</td><td>标题 700、正文常规；主文本 <span class="hex">#1f2328</span>、次要 <span class="hex">#64748b</span>、链接 / 可点用主色、<b>红字</b>=归因新增字段 / 校验错误。</td></tr>
+      <tr><td>排版对齐</td><td>列内容默认居中、金额右对齐；筛选「标签在上控件在下」；分组卡标题带左竖条；<b>需要换行的多行文案一律居左对齐</b>（不居中，保证长文可读）。</td></tr>
+      <tr><td>数值 / 格式</td><td>金额千分位；时间按商户时区；空值统一「-」；手机号 / IP 等脱敏打码。</td></tr>
+      <tr><td>间距</td><td>卡片内边距 14–18px；区块间距 12–32px；分组卡之间 12–14px。</td></tr>
+    </table>
+  </div>
   <div class="lead">
-    全站控件颜色取自 3100 原型主题 token（主色默认 <span class="hex">#009688</span>）。<b>一种颜色 = 一种含义，不得混用</b>：青绿 = 可点 / 主操作，绿 = 成功 / 启用，橙 = 警告 / 待办，红 = 危险 / 失败 / 校验错误，灰 = 只读 / 禁用。下表是各页彩色按钮、链接、状态 Tag、红字字段背后的统一口径。
+    <b>颜色色板</b>（取自 3100 原型主题 token，主色默认 <span class="hex">#009688</span>）。<b>一种颜色 = 一种含义，不得混用</b>：青绿 = 可点 / 主操作，绿 = 成功 / 启用，橙 = 警告 / 待办，红 = 危险 / 失败 / 校验错误，灰 = 只读 / 禁用。下表是各页彩色按钮、链接、状态 Tag、红字字段背后的统一口径。
   </div>
   <div class="pcard nopic">
     <table class="ctab">
@@ -140,6 +232,48 @@
       <li><span class="lbl tb">操作反馈</span>导出 / 搜索 / 排序 / 保存 / 删除 / 状态切换等<b>每个真实操作都配 Toast</b>，非占位。</li>
     </ul>
   </div>
+
+  <h2>弹窗规范（控件级 · 全站统一） <span class="badge new">新</span></h2>
+  <div class="lead">
+    全站弹窗（新增/编辑、详情、二次确认、侧滑抽屉）<b>排版与行为已统一</b>，各功能页未单独说明处一律按此执行，下文逐页不再重复。
+  </div>
+
+  <div class="pcard nopic">
+    <ul class="ctrl">
+      <li><span class="lbl frm">表单弹窗</span>新增 / 编辑用；自带「取消 / 确定」，<b>就地校验</b>（失败红框定位到出错字段，不关弹窗）；编辑形态按各页约定为<b>弹窗编辑</b>或<b>页内编辑</b>，不混用。</li>
+      <li><span class="lbl col">详情弹窗</span>只读展示，用描述列表（n-descriptions）逐字段铺陈；底部仅一个「关闭」。</li>
+      <li><span class="lbl sp">二次确认</span><b>删除 / 拉黑 / 禁用 / 行内开关切换 / 发布</b>等危险或不可逆操作，先弹确认框，确认后才执行并 Toast；危险操作主按钮用红。</li>
+      <li><span class="lbl tab">侧滑抽屉</span>权限树勾选、长详情等纵向内容用右侧抽屉（n-drawer），不挤进居中弹窗。</li>
+    </ul>
+  </div>
+
+  <div class="pcard nopic">
+    <div class="nm" style="margin-bottom:8px">排版统一标准（4 条）</div>
+    <ul class="ctrl">
+      <li><span class="lbl frm">字段标题</span>左对齐表单标题<b>按最长项自适应宽度、一行展示不换行（不拐弯）</b>；顶部标签（label 在上）布局不受宽度影响。</li>
+      <li><span class="lbl col">弹窗宽度</span>统一收敛为<b>三档</b>，按内容选档，避免忽宽忽窄。</li>
+      <li><span class="lbl act">底部按钮</span><b>右对齐</b>、按钮间距一致、与表单留 16px；顺序固定<b>左[取消/关闭]、右[确定/保存（主色）]</b>。</li>
+      <li><span class="lbl sp">间距/分组</span>同一弹窗表单统一紧凑尺寸；多分区用小标题分隔、段间距一致。</li>
+    </ul>
+    <table class="ctab" style="margin-top:10px">
+      <tr><th>宽度档</th><th>适用</th></tr>
+      <tr><td><code>440px</code> 窄</td><td>单列简单表单（无表格、字段≤7、无并排两列）</td></tr>
+      <tr><td><code>600px</code> 中</td><td>中等表单：并排两列 / 字段较多 / 含上传宫格</td></tr>
+      <tr><td><code>860px</code> 宽</td><td>含表格、费率矩阵、左右分栏预览、对比类</td></tr>
+    </table>
+    <div class="muted" style="margin-top:6px">超大明细表格弹窗保留响应式宽度（如 <code>min(1400px,95vw)</code>），不强压三档以免挤坏表格。</div>
+  </div>
+
+  <div class="pcard nopic">
+    <ul class="ctrl">
+      <li><span class="lbl act">关闭方式</span>点「取消」、右上角 ×、或点遮罩均可关闭；未保存的表单改动不入库。</li>
+      <li><span class="lbl frm">两段式提交</span>配置类页（注册管理 / 系统参数 / 配置开关 / 前台配置）弹窗外的「保存 / 发布」同行：<b>保存=存草稿（先弹保存预览）、发布=上线（再二次确认）</b>，两步分明。</li>
+      <li><span class="lbl col">「新」标记</span>本期新增字段 / 控件在弹窗内同样带可一键移除的「新」角标，便于评审区分新旧。</li>
+    </ul>
+  </div>
+
+  <h2>需求介绍（逐页交互）<span class="badge new">新</span></h2>
+  <div class="lead">下面按 6 大模块逐页给出<b>控件级交互</b>（筛选 / 列 / 工具栏 / 行操作 / 表单 / 特殊）；每页可点右上「▶ 试用原型」打开实时页面对照。</div>
 
   <h2>① 会员管理</h2>
 
@@ -253,12 +387,11 @@
     <div class="shot"><img src="img/spec-banner-mgmt.png" alt="轮播图管理"></div>
     <div class="info">
       <div class="nm">轮播图管理 <span class="badge new">新</span> <span class="route">/operations/banner</span></div>
-      <div class="use">App 首页轮播大图。</div>
+      <div class="use">App 首页轮播大图（<b>已去掉单一「系统轮播」子 Tab，直接呈现列表「新」</b>）。</div>
       <ul class="ctrl">
-        <li><span class="lbl tab">页签</span>系统轮播 · 商城轮播。</li>
-        <li><span class="lbl col">系统轮播</span>列：ID/图片(hover放大)/跳转方式(链接·子游戏·客服 Tag)/跳转链接/排序/状态。</li>
+        <li><span class="lbl flt">筛选</span>商户 · 显示状态 · <b>跳转方式（跳转链接 / 跳转子游戏 / 在线客服）「新」</b>。</li>
+        <li><span class="lbl col">列</span>ID/图片(点击放大预览)/跳转方式(链接·子游戏·客服 Tag)/跳转链接/排序/状态。</li>
         <li><span class="lbl frm">表单(跳转方式三选一联动)</span>图片(必填) · 跳转方式：①跳转链接→填 URL；②<b>跳转子游戏→游戏大类(电子/真人/体育/棋牌)→厂商→子游戏 三级联动</b>(上级切换清空下级)；③在线客服→无附加 · 排序 · 状态。</li>
-        <li><span class="lbl col">商城轮播</span>列：ID/图片/跳转链接/状态；表单：图片 · 跳转链接 · 状态。</li>
         <li><span class="lbl act">行操作</span>编辑 · 删除(二确)。</li>
       </ul>
     </div>
@@ -424,6 +557,18 @@
     </div>
   </div>
 
+  <div class="pcard nopic">
+    <div class="nm">返佣报表 <span class="badge new">新</span> <span class="route">/report/rebateReport</span></div>
+    <div class="use">返佣多维报表，三 Tab：流水返佣 / 返佣报表 / 层级返佣报表（截图待补，原型可点击）。</div>
+    <ul class="ctrl">
+      <li><span class="lbl tab">Tab</span>流水返佣（会员ID/手机号脱敏 + 五游戏 + 可得佣金）/ 返佣报表（按日 + 五游戏）/ 层级返佣报表（相对层级 + 充值人数/金额 + 五游戏）。</li>
+      <li><span class="lbl flt">筛选</span>商户（<b>多选 + 全部</b>）· 日期区间 / 相对层级（按 Tab）· 会员ID / 手机号。</li>
+      <li><span class="lbl col">列</span>五游戏＝彩票 / 电子 / 视讯 / 体育 / 棋牌；均含「页面总计 / 总计」双行合计。</li>
+      <li><span class="lbl tb">工具栏</span>导出（真实下载 CSV）· 自定义列。</li>
+      <li><span class="lbl sp">特殊</span>手机号脱敏；页脚合计随筛选刷新；tenant 端。</li>
+    </ul>
+  </div>
+
   <h2>④ 风控管理 <span class="muted" style="font-weight:400">（↑提升为一级）</span></h2>
 
   <div class="pcard">
@@ -488,35 +633,113 @@
     </div>
   </div>
 
+  <div class="pcard nopic">
+    <div class="nm">注册管理 <span class="badge new">新</span> <span class="route">/config-center/registerManage</span></div>
+    <div class="use">注册相关配置（单页平铺、不分 Tab）；顶部商户切换条，按商户配置 + 保存/发布。</div>
+    <ul class="ctrl">
+      <li><span class="lbl tab">商户</span>顶部 MerchantSwitchBar 切商户 → 加载该商户配置；右侧「保存 / 发布」。</li>
+      <li><span class="lbl col">板块</span>注册开关（开启注册 + 短信/手机/邮箱/图形验证码/邀请码必填/隐私默认勾选/游客登录 + 关闭注册提示文案）· 注册限制（同IP/同指纹/同设备数）· 注册赠送（金额 + 打码倍数）· 可注册手机号（区号+长度卡片平铺、页内增删）· 图形验证码（启用/类型〔数字·字母·算术·滑块〕/位数/有效期/错误上限/适用场景 + 实时预览）。</li>
+      <li><span class="lbl frm">校验</span>可注册手机号区号格式红框；图形验证码启用时 位数·有效期 必填红框。</li>
+      <li><span class="lbl sp">特殊</span>关闭「开启注册」→ 展开前台关闭提示文案；全页单一保存统一校验。</li>
+    </ul>
+  </div>
+
+  <div class="pcard nopic">
+    <div class="nm">前台配置（语言配置）<span class="badge new">新</span> <span class="route">/config-center/languageConfig</span></div>
+    <div class="use">前台 C 端展示配置（源站 H5Setting 全集）；顶部商户切换，按商户配置。</div>
+    <ul class="ctrl">
+      <li><span class="lbl col">分组</span>品牌素材（站点名 + Logo/Logo2/浏览器·APP icon，图片上传占位）· 语言（支持语言 15 种多选 + 默认语言限已选）· 展示（当前国家区号 + 货币符号 + 提现人姓名大小写）。</li>
+      <li><span class="lbl frm">校验</span>站点名必填红框；默认语言须 ∈ 支持语言（否则红框）。</li>
+    </ul>
+  </div>
+
+  <div class="pcard nopic">
+    <div class="nm">系统参数配置 <span class="badge new">新</span> <span class="route">/config-center/sysParam</span></div>
+    <div class="use">商户级系统参数（数值/开关型）；顶部商户切换，按商户配置。</div>
+    <ul class="ctrl">
+      <li><span class="lbl tab">二级导航</span>左侧锚点联动，分 6 组：注册与登录安全 · 资金与绑定 · 汇率 · 营销与奖励 · 代理 · 预警监控（每组含子组）。</li>
+      <li><span class="lbl frm">校验</span>数值参数范围校验，失败红框 + 错误提示。</li>
+    </ul>
+  </div>
+
+  <div class="pcard nopic">
+    <div class="nm">配置开关 <span class="badge new">新</span> <span class="route">/config-center/configSwitch</span></div>
+    <div class="use">商户级功能开关总览（双列开关网格）；顶部商户切换，按商户配置。</div>
+    <ul class="ctrl">
+      <li><span class="lbl tab">二级导航</span>左侧锚点 10 组：登录与安全 · 充值与支付 · 提现 · 活动奖励 · 财务积分 · 积分商城 · 彩票游戏 · 代理风控 · 推广链接 · 数据追踪。</li>
+      <li><span class="lbl col">开关</span>每项 = 开关 + 名称 + 说明；与注册管理的注册流程开关不重复（登录/安全类开关在此）。</li>
+    </ul>
+  </div>
+
   <h2>⑥ 系统管理</h2>
 
   <div class="pcard">
     <div class="shot"><img src="img/spec-ip-blacklist-batch.png" alt="IP黑名单·批量导入"></div>
     <div class="info">
       <div class="nm">IP黑名单 <span class="badge new">新</span> <span class="badge built">已增强</span> <span class="route">/system/ipBlacklist</span></div>
-      <div class="use">把恶意 IP 拉进黑名单（列表 + 两个互斥页内面板）。</div>
+      <div class="use">把恶意 IP 拉进黑名单（列表 + 两个弹窗：新增/编辑、批量导入）。</div>
       <ul class="ctrl">
         <li><span class="lbl flt">筛选</span>IP地址 · 关键字 · 封禁类型(禁止登录/禁止注册) · 状态(生效中/已解除)。</li>
         <li><span class="lbl col">列</span>ID · IP · 封禁类型(注册warning/登录error Tag) · <b>状态(ConfirmSwitch 开关·二确·失败回滚)</b> · 封禁原因 · 命中次数(&gt;1000标红) · 备注 · 创建人/时间 · 最后修改人/时间。</li>
-        <li><span class="lbl tb">工具栏</span>新增 IP(开表单面板) · 批量导入(开批量面板)。</li>
-        <li><span class="lbl act">行操作</span>编辑(IP 不可改) · 删除。</li>
-        <li><span class="lbl frm">新增/编辑面板</span>IP地址(textarea·新增可多行) · 封禁类型 · 封禁原因(≤50) · 备注(≤100)；提交前 IPv4 逐项校验。</li>
-        <li><span class="lbl frm">批量导入面板</span><span class="badge built">已增强</span>IP列表 textarea + 选择文件(.csv/.txt) + 下载模板 + <b>实时「已识别 N 个(去重后，忽略 M 个无效)」</b> + 封禁类型 + 封禁原因(默认「批量导入」) + 确认导入(N)。</li>
+        <li><span class="lbl tb">工具栏</span><b>新增IP黑名单（弹窗，原「新增黑名单IP」已改名 + 由页内展开改弹窗「新」）</b> · 批量导入(弹窗)。</li>
+        <li><span class="lbl act">行操作</span>编辑(IP 不可改，弹窗) · 删除。</li>
+        <li><span class="lbl frm">新增/编辑弹窗</span>IP地址(textarea·新增可多行) · 封禁类型 · 封禁原因(≤50) · 备注(≤100)；提交前 IPv4 逐项校验。</li>
+        <li><span class="lbl frm">批量导入弹窗</span><span class="badge built">已增强</span>IP列表 textarea + 选择文件(.csv/.txt) + 下载模板 + <b>实时「已识别 N 个(去重后，忽略 M 个无效)」</b> + 封禁类型 + 封禁原因(默认「批量导入」) + 确认导入(N)。</li>
         <li><span class="lbl sp">特殊</span>批量解析：按 逗号/空格/换行/分号 拆 → IPv4 校验(每段0~255) → 去重 → <b>单次上限 500</b>；确认后插入列表顶部 + Toast「成功导入 N 条」。</li>
       </ul>
     </div>
   </div>
 
+  </div>
 </div>
 <div id="lb" onclick="this.style.display='none'"><img src="" alt=""></div>
 <script>
-  document.querySelectorAll('.pcard .shot img').forEach((im) => {
-    im.addEventListener('click', () => {
-      const lb = document.getElementById('lb');
-      lb.querySelector('img').src = im.src;
-      lb.style.display = 'flex';
+  (function(){
+    const content=document.getElementById('content'), toc=document.getElementById('toc');
+    // 环境自适应（R40）：本地看本地 3100，线上看线上 hash 原型
+    const ONLINE='https://eason200116.github.io/saas-desigh/prototypes/lotto-v3/#';
+    const isLocal=/^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/.test(location.hostname);
+    const proto=r=>{const p=(r||'').trim().split(/[\s→]/)[0]; return isLocal?'http://localhost:3100'+p:ONLINE+p;};
+    const spy=[]; let h=0,p=0;
+    content.querySelectorAll('h2, .pcard').forEach(el=>{
+      if(el.tagName==='H2'){
+        const id='sec-'+(++h); el.id=id;
+        const a=document.createElement('a'); a.href='#'+id; a.className='grp'; a.dataset.id=id;
+        a.textContent=el.textContent.replace(/\s*新\s*$/,'').replace(/（[^）]*）|\([^)]*\)/g,'').trim();
+        toc.appendChild(a); spy.push({id,el});
+        return;
+      }
+      const nm=el.querySelector('.nm'); if(!nm) return; // 无名卡跳过
+      const route=nm.querySelector('.route'); if(!route) return; // 仅真实页面(带路由)进导航，跳过「排版统一标准」等说明卡
+      const id='pg-'+(++p); el.id=id;
+      const name=nm.textContent.replace(route.textContent,'').replace(/新|已增强/g,'').trim();
+      const a=document.createElement('a'); a.href='#'+id; a.className='sub'; a.dataset.id=id; a.textContent=name;
+      toc.appendChild(a); spy.push({id,el});
+      if(route){
+        const url=proto(route.textContent);
+        const info=el.querySelector('.info');
+        const btn=document.createElement('button'); btn.type='button'; btn.className='trybtn'; btn.textContent='▶ 展开试用';
+        nm.appendChild(btn);
+        // 内联原型：插在标题(.nm)之后、文案之前 —— 原型在上、所有文案介绍在下方
+        const live=document.createElement('div'); live.className='live';
+        live.innerHTML='<div class="live-bar">🟢 实时原型 · <span class="u">'+url+'</span><a href="'+url+'" target="_blank">新窗口 ↗</a></div>';
+        info.insertBefore(live, nm.nextSibling);
+        btn.addEventListener('click',()=>{
+          const open=el.classList.toggle('live-open');
+          if(open){
+            if(!live.querySelector('iframe')){const f=document.createElement('iframe');f.src=url;f.title='实时原型';f.setAttribute('loading','lazy');live.appendChild(f);}
+            btn.textContent='✕ 收起原型'; btn.classList.add('on');
+            setTimeout(()=>live.scrollIntoView({behavior:'smooth',block:'nearest'}),60);
+          }else{ btn.textContent='▶ 展开试用'; btn.classList.remove('on'); }
+        });
+      }
     });
-  });
+    toc.querySelectorAll('a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const t=document.getElementById(a.dataset.id);if(t)t.scrollIntoView({behavior:'smooth',block:'start'});}));
+    const links=[...toc.querySelectorAll('a')];
+    function onScroll(){let cur=spy[0]&&spy[0].id;for(const s of spy){if(s.el.getBoundingClientRect().top<=120)cur=s.id;else break;}links.forEach(l=>l.classList.toggle('act',l.dataset.id===cur));}
+    window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+    document.querySelectorAll('.pcard .shot img').forEach(im=>im.addEventListener('click',()=>{const lb=document.getElementById('lb');lb.querySelector('img').src=im.src;lb.style.display='flex';}));
+  })();
 </script>
 </body>
 </html>

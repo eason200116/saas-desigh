@@ -5,11 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>SaaS 多商户后台 · 二阶段验收用例（V3 原型版）</title>
+<script>if(window.self!==window.top)document.documentElement.classList.add('embedded')</script>
 <style>
   :root{--blue:#009688;--ink:#1f2937;--sub:#64748b;--line:#e5e7eb;--bg:#f7f9fc}
   *{box-sizing:border-box}
+  /* 被 PRD iframe 内嵌时隐藏自身大标题（标题由 PRD 面包屑承载） */
+  html.embedded .hero{display:none}
   body{margin:0;font:14px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
-  .wrap{max-width:1280px;margin:0 auto;padding:28px 22px 80px}
+  .wrap{max-width:none;margin:0;padding:28px 32px 80px}
   .hero{background:linear-gradient(135deg,#00796b,#009688);color:#fff;border-radius:14px;padding:24px 28px;margin-bottom:18px}
   .hero h1{margin:0 0 6px;font-size:23px}
   .hero p{margin:0;opacity:.92;font-size:13.5px}

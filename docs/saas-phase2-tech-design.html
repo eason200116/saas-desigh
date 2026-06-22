@@ -4,8 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>SaaS 多商户后台 · 二阶段技术方案（归因体系）</title>
+<script>if(window.self!==window.top)document.documentElement.classList.add('embedded')</script>
 <style>
   :root{--accent:#2563eb;--accent2:#7c3aed;--bg:#f5f6f8;--card:#fff;--border:#e5e7eb;--muted:#6b7280;--red:#dc2626;--green:#16a34a;--amber:#d97706;}
+  /* 被 PRD iframe 内嵌时隐藏自身大标题，内容覆盖全页 */
+  html.embedded header{display:none}
+  html.embedded nav{top:0;height:100vh}
   *{box-sizing:border-box;}
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:#1f2328;background:var(--bg);line-height:1.65;}
   a{color:var(--accent);}
@@ -20,7 +24,7 @@
   nav a:hover{background:#eef2ff;color:var(--accent);}
   nav a.sub{padding-left:22px;color:var(--muted);font-size:12px;}
   nav .grp{font-weight:700;margin-top:10px;color:#111827;padding:4px 10px;}
-  main{flex:1;min-width:0;padding:24px 40px 120px;max-width:1180px;}
+  main{flex:1;min-width:0;padding:24px 40px 120px;}
   section{margin-bottom:46px;scroll-margin-top:70px;}
   h2.sec{font-size:22px;border-left:5px solid var(--accent);padding-left:12px;margin:0 0 6px;}
   .sec-desc{color:var(--muted);font-size:13.5px;margin:0 0 18px;}
