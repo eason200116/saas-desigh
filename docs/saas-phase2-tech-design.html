@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
 <title>SaaS 多商户后台 · 二阶段技术方案（归因体系）</title>
 <script>if(window.self!==window.top)document.documentElement.classList.add('embedded')</script>
 <style>
@@ -11,26 +12,26 @@
   html.embedded header{display:none}
   html.embedded nav{top:0;height:100vh}
   *{box-sizing:border-box;}
-  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:#1f2328;background:var(--bg);line-height:1.65;}
+  body{margin:0;font:14px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:#1f2328;background:var(--bg);}
   a{color:var(--accent);}
   /* 与「交互介绍」同套排版：深色渐变页眉 + 自动目录(滚动高亮) */
   header{position:sticky;top:0;z-index:30;background:linear-gradient(90deg,#1e293b,#312e81);color:#fff;padding:14px 28px;box-shadow:0 2px 8px rgba(0,0,0,.15);}
   header h1{margin:0;font-size:18px;}
   header .ver{font-size:12px;opacity:.75;margin-top:3px;}
   .layout{display:flex;align-items:flex-start;width:100%;}
-  nav.toc{width:236px;flex:none;position:sticky;top:56px;align-self:flex-start;height:calc(100vh - 56px);overflow:auto;padding:14px 8px 40px;font-size:12.5px;border-right:1px solid var(--border);background:#fafbfc;}
+  nav.toc{width:236px;flex:none;position:sticky;top:62px;align-self:flex-start;height:calc(100vh - 62px);overflow:auto;padding:14px 8px 40px;font-size:12.5px;border-right:1px solid var(--border);background:#fafbfc;}
   nav.toc a{display:block;padding:3px 10px;color:#374151;text-decoration:none;border-radius:5px;line-height:1.5;}
   nav.toc a:hover{background:#eef2ff;color:var(--accent);}
   nav.toc a.sub{padding-left:22px;color:var(--muted);font-size:12px;}
   nav.toc a.grp{font-weight:700;margin-top:8px;color:#111827;}
   nav.toc a.act{background:#eef2ff;color:var(--accent);font-weight:700;}
-  main{flex:1;min-width:0;padding:24px 40px 120px;}
+  main{flex:1;min-width:0;padding:24px 32px 80px;}
   section{margin-bottom:46px;scroll-margin-top:70px;}
-  h2.sec{font-size:19px;border-left:5px solid var(--accent);padding-left:12px;margin:32px 0 8px;}
+  h2.sec{font-size:19px;border-left:5px solid var(--accent);padding-left:12px;margin:32px 0 10px;}
   .sec-desc{color:var(--muted);font-size:13.5px;margin:0 0 18px;}
   h3{font-size:17px;margin:26px 0 10px;scroll-margin-top:70px;}
   h4{font-size:14.5px;margin:18px 0 8px;color:#334155;}
-  .lead{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:16px 20px;font-size:14px;line-height:1.85;}
+  .lead{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:13px 18px;font-size:13.5px;line-height:1.85;margin:12px 0;}
   .note{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#92400e;margin:12px 0;}
   .ok{background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#065f46;margin:12px 0;}
   pre.fig{background:#0d1117;color:#e6edf3;padding:16px;border-radius:10px;overflow:auto;font-size:12.5px;line-height:1.55;}
@@ -327,6 +328,65 @@
       <li><b>操作反馈</b>：导出/搜索/排序/保存/删除/状态切换等<b>每个真实操作都配 Toast</b>，非占位。</li>
     </ul>
     <div class="note">控件级逐页明细（筛选/列/工具栏/行操作/表单/特殊 + 弹窗）见《交互介绍（控件级）》——本节只做研发落地口径汇总，二者配合阅读。</div>
+  </section>
+
+  <!-- 五、配置中心 · VIP / 返佣配置逻辑与边界 -->
+  <section id="cfg-logic">
+    <h2 class="sec">五、VIP / 返佣配置 · 逻辑与边界</h2>
+    <p class="sec-desc">配置中心两张「模板化配置」页（VIP 配置 / 返佣配置）的研发口径：共用的配置工作区状态机、各自的业务规则与校验、以及需要覆盖的边界情况。控件级「怎么点」见《交互介绍》，本节讲「怎么算、怎么存、什么时候报错」。</p>
+    <div class="ok">📌 <b>基本规则</b>：无论<b>模版复用、复制商户</b>还是<b>自定义配置</b>，某商户的生效配置一律<b>以「最新一次保存 / 发布」为准</b>——三种来源只是<b>初始化来路（写一次 source 标记）</b>，落库后即成为该商户自己的独立数据；之后对该商户的任何改动覆盖旧值，<b>不回溯、不联动原模板 / 原商户</b>（反之改模板 / 改源商户也不影响已套用 / 已复制的商户）。</div>
+
+    <h3 id="cfg-ws">5.1 配置工作区状态机（VIP / 返佣共用 <code>useConfigWorkspace</code>）</h3>
+    <p>两页共用一个<b>模块级 reactive 单例</b>状态（跨页面 / 跨导航保持，等价参考站挂 window 的全局态）。每个商户记两个维度：</p>
+    <table>
+      <tr><th width="120">维度</th><th>取值</th><th>含义</th></tr>
+      <tr><td><b>status</b> 状态</td><td><code>0</code> / <code>1</code> / <code>2</code></td><td>未配置（灰）/ 待发布（橙）/ 已发布（绿），顶部状态徽标据此渲染</td></tr>
+      <tr><td><b>source</b> 来源</td><td><code>null</code> / <code>__tpl:模板名</code> / <code>商户下标</code></td><td>独立配置 / 套用某模板 / 复制自某商户</td></tr>
+    </table>
+    <p>三种<b>配置模式</b>（分段单选按钮，非下拉；右侧灰字显示当前模式说明）：</p>
+    <table>
+      <tr><th width="150">模式</th><th>载体与行为</th></tr>
+      <tr><td>① 使用自定义模版 <code>apply</code></td><td>模板画廊（VIP 6 套 / 返佣 2 套）：新建模板草稿（进入即配置表清零）、套用模板到多商户（<b>直接发布</b>）、以商户复制。</td></tr>
+      <tr><td>② 使用商户模版 <code>merchant</code></td><td>「正在配置」栏：商户下拉 + 来源 + 状态徽标 + 「以当前商户复制到其他商户」。</td></tr>
+      <tr><td>③ 单商户配置 <code>custom</code></td><td><b>当前暂隐藏</b>（保留逻辑分支、不显示按钮）。</td></tr>
+    </table>
+    <p>三种<b>展示态</b>（决定下方表格读哪份数据）：商户态 → 编辑模板态 <code>editingTemplate</code>（点模板名进入，载入模板自身配置，改动经 deep watch <b>自动回存模板</b>）→ 新建草稿态 <code>creatingTemplate</code>（本地草稿，保存模板才提交）。</p>
+    <div class="note"><b>保存 = 两段式 + 强制预览</b>：点「保存配置」先弹<b>内容预览只读 mini 表 + 黄色提示 + 确认</b>，确认后才落库；草稿态 / 编辑模板态<b>不写商户库</b>。</div>
+
+    <h3 id="cfg-vip">5.2 VIP 配置逻辑</h3>
+    <ul>
+      <li><b>子页签</b>：VIP 等级配置 / 经验值配置。</li>
+      <li><b>等级表</b>：固定 <b>11 级 VIP0–VIP10</b>，名称只读、<b>不可增删</b>；结算日只读；其余 <b>15 个数值列行内常驻可编辑</b>（<code>InlineNumberCell</code>）。</li>
+      <li><b>步长分档</b>：经验 / 赠送上限 / 提现次数等 <code>step=1</code>；充值奖励、五游戏洗码率 <code>step=0.01</code>；保险箱日利率 <code>step=0.001</code>。</li>
+      <li><b>经验值页签</b>：币种 + 「金额 → 1 EXP」比例 <code>amountPerExp</code>（默认 1）行内编辑。</li>
+      <li><b>复制到其他商户</b>：源配置预览 + 目标商户多选 + 覆盖计数 → 确认后目标 <code>source=复制自该商户</code>、<code>status=已发布</code>，<b>跳过源自身</b>。</li>
+    </ul>
+
+    <h3 id="cfg-rebate">5.3 返佣配置逻辑</h3>
+    <ul>
+      <li><b>子页签</b>：返佣等级管理 / 返佣费率配置。</li>
+      <li><b>等级管理</b>：行内新增（<code>lv = 现有最大 + 1</code>，新行置顶）/ 编辑 / 删除（二次确认）；<b>L0 基础等级不可编辑 / 删除</b>（操作列灰字「基础」）。团队条件（充值人数 / 充值金额 / 游戏金额）与直属条件各带只读<b>「满足人数」占位列</b>（配置态恒为 0，运行时统计）。</li>
+      <li><b>费率配置</b>：按等级卡片排列，每卡 = <b>行 6 层级（tier1–tier6）× 列 5 游戏大类</b>（彩票 / 电子 / 真人 / 体育 / 棋牌），逐格 6 位小数（<code>step=0.000001</code>），卡内编辑 / 确认 / 取消。</li>
+      <li><b>核心校验（≤5%）</b>：每个游戏大类「<b>跨 1–6 级纵向求和 ≤ 5%</b>」（对齐源站 <code>RebateLvRateConfig</code>；判定用 <code>&gt; 5.000001</code> 留浮点容差）。越限 → 该游戏<b>整列标红 + 单元格 errorTip + 顶部 message 指名「游戏（合计 x%）」</b>，<b>拦截不保存</b>；通过后费率四舍五入到 6 位小数落库。</li>
+    </ul>
+
+    <h3 id="cfg-edge">5.4 边界情况（需覆盖）</h3>
+    <table>
+      <tr><th width="92">归属</th><th width="220">边界场景</th><th>表现 / 处理</th></tr>
+      <tr><td rowspan="3">VIP</td><td>等级增删</td><td>不支持，固定 11 级 VIP0–VIP10；名称只读、不可改。</td></tr>
+      <tr><td>数值精度 / 步长</td><td>按列约束：日利率 0.001、洗码率 / 充值奖励 0.01、其余 1；不同列步长不同。</td></tr>
+      <tr><td>未配置商户（如 #49）</td><td><code>status=0</code> 显「未配置」，配置表为空白模板（区别于已配置商户）。</td></tr>
+      <tr><td rowspan="4">返佣</td><td>L0 基础等级</td><td>不可编辑 / 删除，操作列灰字「基础」占位。</td></tr>
+      <tr><td>费率恰好 = 5%</td><td><b>通过</b>（判定为 <code>&gt;5.000001</code> 才拦截，浮点不误杀临界值）。</td></tr>
+      <tr><td>多个游戏同时越限</td><td>所有越限列<b>一起标红</b>，message 逐一指名每个游戏及其合计百分比，而非只报第一个。</td></tr>
+      <tr><td>删除等级 / 行编辑互斥</td><td>删除走二次确认并<b>同时移除该级费率矩阵</b>；某行编辑中（<code>editingLv≠null</code>）时「新增等级」按钮禁用。</td></tr>
+      <tr><td rowspan="6">共通<br>（工作区）</td><td>切出「自定义模版」模式</td><td><code>apply → 其他</code> 时退出新建草稿态（<code>creatingTemplate=false</code>），避免草稿残留。</td></tr>
+      <tr><td>删除模板</td><td>模板移除，但<b>使用它的商户配置数据保留</b>、来源自动转「独立配置（自定义）」，返回受影响商户数。</td></tr>
+      <tr><td>模板改名</td><td>同步所有指向它的商户 <code>source</code>；<b>空名 / 重名拒绝</b>。</td></tr>
+      <tr><td>复制到自身</td><td>目标含源商户时跳过（<code>i===from</code>），不自我覆盖。</td></tr>
+      <tr><td>未过预览确认</td><td>只要没点「确认保存」，一律<b>不落库</b>（草稿态 / 编辑模板态同样不写商户库）。</td></tr>
+      <tr><td>跨页 / 切导航</td><td>工作区为<b>单例</b>，<code>current / status / source / 模板</code> 不丢失；编辑模板态的改动 deep watch 自动回存。</td></tr>
+    </table>
   </section>
 
   <!-- 关联文档（已隐藏） -->
