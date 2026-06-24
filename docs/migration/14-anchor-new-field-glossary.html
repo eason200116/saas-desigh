@@ -385,8 +385,8 @@ const PAGES=[
  ['old','payoutTime','派发时间','返佣时间','返佣结算时间','什么时候结的','fix'],
 ]},
 
-// ===================== 基础配置 =====================
-{m:'基础配置',p:'VIP配置（等级/经验值 2Tab）',route:'/config-center/vipConfig',img:'spec-vip-level-config.png',fields:[
+// ===================== 配置中心 =====================
+{m:'配置中心',p:'VIP配置（等级/经验值 2Tab）',route:'/config-center/vipConfig',img:'spec-vip-level-config.png',fields:[
  ['old','name','名称','VIP等级名称','VIP0~VIP10（只读）','每一级的名字','fix'],
  ['old','upgradeExp/keepExp/deductExp','升级条件(EXP)·保级条件(EXP)·扣除经验(EXP)','升级/保级/扣除经验','升级、保级所需与未达保级扣除积分','升上去要多少经验、保住要多少、没达标扣多少','fix'],
  ['old','upgradeReward/monthReward','升级奖励·月奖励','升级/月度奖励积分','升级与每月固定发放积分','升级送的、每月固定送的积分','fix'],
@@ -399,13 +399,13 @@ const PAGES=[
  ['old','currency','币种','币种（经验值Tab）','经验值换算基准货币','按哪种币算经验','ok'],
  ['old','amountPerExp','金额等于1 EXP','金额换算（经验值Tab）','1单位金额对应的经验值','花/投多少钱算1点经验','fix'],
 ]},
-{m:'基础配置',p:'返佣配置（等级/费率 2Tab）',route:'/config-center/rebateConfig',img:'spec-rebate-level.png',fields:[
+{m:'配置中心',p:'返佣配置（等级/费率 2Tab）',route:'/config-center/rebateConfig',img:'spec-rebate-level.png',fields:[
  ['old','rebateLevel','返佣等级','返佣等级','0~8（0级不可删）','返佣分几档','ok'],
  ['old','tp/ta/tg','团队当日充值人数·金额·游戏金额','团队充值人数/金额/游戏额','该等级所需团队当日条件','升到这档团队当天要够多少充值人数/金额/流水','fix'],
  ['old','dp/da/dg','直属当日充值人数·金额·游戏金额','直属充值人数/金额/游戏额','该等级所需直属当日条件','升到这档直接下级当天要够的条件','fix'],
  ['old','gameLottery[6]/...','RebateLvRateConfig（费率矩阵·沿用）','返佣费率矩阵','5游戏×6等级返佣比例（单层总和≤5%）','每类游戏、每个等级各返几个点','ok'],
 ]},
-{m:'基础配置',p:'系统参数配置（73参数归8类）',route:'/config-center/sysParam',img:null,fields:[
+{m:'配置中心',p:'系统参数配置（73参数归8类）',route:'/config-center/sysParam',img:null,fields:[
  ['grp','注册登录安全'],
  ['old','registerCount/sameDeviceRegistCount','同IP注册数·同浏览器指纹注册数','同IP/同指纹注册数','单IP/指纹最多注册账号数','同网络/同浏览器最多注册几个号','ok'],
  ['chg','loginErrorCount','登录允许密码错误次数（源站「接口配置」）','登录密码错误上限','输错N次锁定账号','连续输错几次登录密码就锁定账号（防暴力破解）；原在接口配置页本期搬来','fix'],
@@ -434,7 +434,7 @@ const PAGES=[
  ['old','dsp...','DSP流量平台（主机地址/应用Id/平台访问密钥）','DSP对接','DSP流量平台对接','DSP＝程序化广告投放平台，对接它的参数','ok'],
  ['new','siteName/adminLogo/loginBgImage/darkMode','无（V3新增·源站无）','系统名称/Logo/登录背景/暗色模式','后台品牌外观配置','给后台换名字/Logo/登录背景/暗色模式'],
 ]},
-{m:'基础配置',p:'开关配置（62开关归9组）',route:'/config-center/configSwitch',img:null,
+{m:'配置中心',p:'开关配置（62开关归9组）',route:'/config-center/configSwitch',img:null,
  pageNote:'源站 ConfigSwitch 由接口动态加载（表头：Id/名称/SettingKey/描述/开关）；源站「登录与注册」分组里 8 个登录安全开关本期分流转入本页（属页面级重组，开关沿用）。',fields:[
  ['chg','登录与安全组','源站「登录与注册」分组(SettingName)','登录与安全组（8项）','登录验证码/谷歌验证/多点登录等','要不要图形码、谷歌验证器、允不允许多设备登等','fix'],
  ['old','充值与支付组','源站同名分组','充值与支付组（14项）','自动入款/绑卡/三方刷新/USDT绑定等','自动到账、先绑卡、三方对账、能否绑USDT等','ok'],
@@ -446,7 +446,7 @@ const PAGES=[
  ['old','推广与链接组','源站同名分组','推广与链接组（2项）','短链/马甲包转化','短链接、马甲包转化','ok'],
  ['old','数据追踪与推送组','源站同名分组','数据追踪与推送组（1项）','充值通道纸飞机推送','充值通道往Telegram推数据','ok'],
 ]},
-{m:'基础配置',p:'注册管理（注册配置/图形验证码 2Tab）',route:'/config-center/registerManage',img:null,
+{m:'配置中心',p:'注册管理（注册配置/图形验证码 2Tab）',route:'/config-center/registerManage',img:null,
  pageNote:'⚠ 源站无独立「注册管理」页，注册项分散在 H5Setting（手机号/区号）、ParameterConfig（注册数量）、ApiSetting（区号）等；V3 整合为单页 2Tab。原中文按源站对应项标注。',fields:[
  ['old','registerState/registerCloseTip','源站分散（注册开关）','注册总开关/关闭提示','是否允许注册与关闭提示','关不关注册、关了提示什么','na'],
  ['old','registerMobile/registerEmail/registerSms','源站分散（MobileFlag/EmailFlag）','手机/邮箱/短信注册','允许的注册方式','允许用手机/邮箱/短信注册','na'],
@@ -457,7 +457,7 @@ const PAGES=[
  ['old','areaCode/phoneLength','源站 H5Setting 可注册手机号表','可注册手机号表（区号/长度）','各国区号与手机号位数','支持哪些国家、各国手机号几位','fix'],
  ['chg','captchaTab','源站独立页 captchaConfig','图形验证码（Tab）','图形验证码样式与场景','注册时要照着填的图形码（数字/字母/算术/滑块），防机器批量注册；原独立页本期并入注册管理第2Tab','fix'],
 ]},
-{m:'基础配置',p:'前台配置（原语言配置）',route:'/config-center/languageConfig',img:null,
+{m:'配置中心',p:'前台配置（原语言配置）',route:'/config-center/languageConfig',img:null,
  pageNote:'页名「前台配置」由源站 H5Setting「用户语言配置」改名而来；以下为 H5Setting 真实字段。',fields:[
  ['old','projectName','前端站点名称','项目名称','前台品牌名','C端站点叫什么','fix'],
  ['old','projectLogo/headLogo/webIco','前台Logo·前台浏览器Logo·前台图片地址','Logo/图标','前台各类Logo与图标','各处用的Logo和小图标','fix'],
@@ -478,7 +478,7 @@ const PAGES=[
  ['old','date','日期','日期','统计周期','统计哪段时间','ok'],
 ]},
 {m:'报表管理',p:'返佣报表 · 流水',route:'/report/rebateReport/flow',img:'spec-rebate-report.png',fields:[
- ['old','memberId/phone','会员ID（源站无手机号）','会员ID/手机号','会员标识（手机脱敏）','谁的流水','fix'],
+ ['old','memberId','会员ID','会员ID','会员标识','谁的流水','ok'],
  ['old','lottery/egame/live/sport/chess','游戏金额','各游戏投注额','5类游戏投注金额','每类游戏投了多少','fix'],
  ['old','commission','计算返佣金额·派发返佣金额','可得佣金','会员可得返佣总额','这些流水能返多少佣金','ok'],
 ]},
@@ -487,9 +487,9 @@ const PAGES=[
  ['old','{game}.amount/.lvRate/.baseRate','源站以返佣等级分行（团队/直属当日条件）','各游戏金额/等级利率/基础利率','5类游戏返佣金额与利率','每类游戏返佣额、按等级利率、基础利率','na'],
 ]},
 {m:'报表管理',p:'返佣报表 · 层级',route:'/report/rebateReport/level',img:'spec-rebate-report.png',fields:[
- ['old','level','返佣等级','层级','1~6','代理第几层','fix'],
- ['old','rechargeUsers/rechargeAmount','团队人数·团队充值金额','充值用户数/金额','该层级充值统计','这一层多少人充值、充了多少','ok'],
- ['old','{game}.bet/.rebate','游戏金额·计算返佣金额·派发返佣金额','各游戏投注/返佣','5类游戏投注与返佣','这一层每类游戏投了/返了多少','ok'],
+ ['old','level','返佣等级','相对层级','1~6','相对当前代理的下级第几层（Lv1=直属下级…Lv6=第6层）；是“相对层级”不是“返佣等级”','fix'],
+ ['old','rechargeUsers/rechargeAmount','团队人数·团队充值金额','充值人数/充值金额','该层级充值统计','这一层有多少人充值、合计充了多少钱','ok'],
+ ['old','{game}.bet/.rebate','游戏金额·计算返佣金额·派发返佣金额','各游戏投注/返佣','5类游戏投注与返佣','这一层5类游戏（彩票/电子/视讯/体育/棋牌）各投了多少、返了多少；每格上行投注金额、下行返佣金额（绿字）','ok'],
 ]},
 
 // ===================== 风控管理 =====================
