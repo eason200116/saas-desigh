@@ -1,0 +1,1 @@
+import{t as e}from"./main-COd_2MKO.js";import{t}from"./role-filter-oI-XkBUH.js";var n=t(e,`tenant`);export{n as tenantRoutes};

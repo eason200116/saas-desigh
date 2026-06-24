@@ -373,8 +373,8 @@ const PAGES=[
  ['old','status','源站未见（V3补充）','操作状态','success/failed','成没成','na'],
  ['old','time','时间','操作时间','操作时间','什么时候操作的','fix'],
 ]},
-{m:'运营管理',p:'昨日返佣等级（自报表转移）',route:'/operations/rebateLevelYesterday',img:'spec-rebate-level-yesterday.png',
- pageNote:'整页由报表模块转移至运营（功能点位置迁移）；源站为多层表头（5 游戏各「游戏金额+返佣金额」子列）。',fields:[
+{m:'运营管理',p:'昨日返佣等级（自报表转移）',route:'/operations/rebateLevelYesterday',img:null,
+ pageNote:'整页由报表模块转移至运营（功能点位置迁移）；源站为多层表头（5 游戏各「游戏金额+返佣金额」子列）。⚠ 原配图为 404 误截、已移除，待重截该页正确截图后按原名 spec-rebate-level-yesterday.png 补回。',fields:[
  ['old','date','日期','统计日期','统计日期','统计哪天','fix'],
  ['old','userId','会员ID','会员ID','会员唯一号','谁的','ok'],
  ['old','rebateLevel','返佣等级','返佣等级','1~6（同会员返佣等级体系）','昨天评定的返佣档位','fix'],
@@ -386,85 +386,116 @@ const PAGES=[
 ]},
 
 // ===================== 配置中心 =====================
-{m:'配置中心',p:'VIP配置（等级/经验值 2Tab）',route:'/config-center/vipConfig',img:'spec-vip-level-config.png',fields:[
- ['old','name','名称','VIP等级名称','VIP0~VIP10（只读）','每一级的名字','fix'],
- ['old','upgradeExp/keepExp/deductExp','升级条件(EXP)·保级条件(EXP)·扣除经验(EXP)','升级/保级/扣除经验','升级、保级所需与未达保级扣除积分','升上去要多少经验、保住要多少、没达标扣多少','fix'],
- ['old','upgradeReward/monthReward','升级奖励·月奖励','升级/月度奖励积分','升级与每月固定发放积分','升级送的、每月固定送的积分','fix'],
- ['old','rechargeReward/giftCap','充值奖励(%)·赠送金额上限','充值奖励比例/赠送上限','充值赠送彩金比例与上限','充值额外送百分之几、最多送多少','ok'],
- ['old','safeBoxRate','保险箱日利率(%)','保险箱日利率','保险箱按日计息利率','保险箱＝会员存钱小金库，按天给利息','ok'],
- ['old','washEgame/washLive/washSport/washLottery/washChess','各游戏洗码率(%)（电子/真人/体育/彩票/棋牌）','各游戏洗码率','5类游戏投注返水比例','洗码＝按投注流水返一定%（不管输赢），这是各游戏返水比例','ok'],
- ['old','settleDay','结算日','结算日期','月末结息与奖励派发日','每月几号统一结息发奖励','fix'],
- ['old','withdrawDailyCap','单日提款次数上限','单日提款次数上限','该等级每日最多提现次数','这一级一天最多提几次','ok'],
- ['old','monthRewardTimes','月奖励领取次数','月奖励领取次数','每月奖励可领取次数','每月奖励能领几次','ok'],
- ['old','currency','币种','币种（经验值Tab）','经验值换算基准货币','按哪种币算经验','ok'],
- ['old','amountPerExp','金额等于1 EXP','金额换算（经验值Tab）','1单位金额对应的经验值','花/投多少钱算1点经验','fix'],
+{m:'配置中心',p:'VIP配置（等级/经验值 2Tab）',route:'/config-center/vipConfig',img:'spec-vip-level-config.png',subs:[
+ {title:'等级配置（Tab1）',fields:[
+  ['old','name','名称','VIP等级名称','VIP0~VIP10（只读）','每一级的名字','fix'],
+  ['old','upgradeExp/keepExp/deductExp','升级条件(EXP)·保级条件(EXP)·扣除经验(EXP)','升级/保级/扣除经验','升级、保级所需与未达保级扣除积分','升上去要多少经验、保住要多少、没达标扣多少','fix'],
+  ['old','upgradeReward/monthReward','升级奖励·月奖励','升级/月度奖励积分','升级与每月固定发放积分','升级送的、每月固定送的积分','fix'],
+  ['old','rechargeReward/giftCap','充值奖励(%)·赠送金额上限','充值奖励比例/赠送上限','充值赠送彩金比例与上限','充值额外送百分之几、最多送多少','ok'],
+  ['old','safeBoxRate','保险箱日利率(%)','保险箱日利率','保险箱按日计息利率','保险箱＝会员存钱小金库，按天给利息','ok'],
+  ['old','washEgame/washLive/washSport/washLottery/washChess','各游戏洗码率(%)（电子/真人/体育/彩票/棋牌）','各游戏洗码率','5类游戏投注返水比例','洗码＝按投注流水返一定%（不管输赢），这是各游戏返水比例','ok'],
+  ['old','settleDay','结算日','结算日期','月末结息与奖励派发日','每月几号统一结息发奖励','fix'],
+  ['old','withdrawDailyCap','单日提款次数上限','单日提款次数上限','该等级每日最多提现次数','这一级一天最多提几次','ok'],
+  ['old','monthRewardTimes','月奖励领取次数','月奖励领取次数','每月奖励可领取次数','每月奖励能领几次','ok'],
+ ]},
+ {title:'经验值配置（Tab2）',fields:[
+  ['old','currency','币种','币种','经验值换算基准货币','按哪种币算经验','ok'],
+  ['old','amountPerExp','金额等于1 EXP','金额换算','1单位金额对应的经验值','花/投多少钱算1点经验','fix'],
+ ]},
 ]},
-{m:'配置中心',p:'返佣配置（等级/费率 2Tab）',route:'/config-center/rebateConfig',img:'spec-rebate-level.png',fields:[
- ['old','rebateLevel','返佣等级','返佣等级','0~8（0级不可删）','返佣分几档','ok'],
- ['old','tp/ta/tg','团队当日充值人数·金额·游戏金额','团队充值人数/金额/游戏额','该等级所需团队当日条件','升到这档团队当天要够多少充值人数/金额/流水','fix'],
- ['old','dp/da/dg','直属当日充值人数·金额·游戏金额','直属充值人数/金额/游戏额','该等级所需直属当日条件','升到这档直接下级当天要够的条件','fix'],
- ['old','gameLottery[6]/...','RebateLvRateConfig（费率矩阵·沿用）','返佣费率矩阵','5游戏×6等级返佣比例（单层总和≤5%）','每类游戏、每个等级各返几个点','ok'],
+{m:'配置中心',p:'返佣配置（等级/费率 2Tab）',route:'/config-center/rebateConfig',img:'spec-rebate-level.png',subs:[
+ {title:'等级配置（Tab1）',fields:[
+  ['old','rebateLevel','返佣等级','返佣等级','0~8（0级不可删）','返佣分几档','ok'],
+  ['old','tp/ta/tg','团队当日充值人数·金额·游戏金额','团队充值人数/金额/游戏额','该等级所需团队当日条件','升到这档团队当天要够多少充值人数/金额/流水','fix'],
+  ['old','dp/da/dg','直属当日充值人数·金额·游戏金额','直属充值人数/金额/游戏额','该等级所需直属当日条件','升到这档直接下级当天要够的条件','fix'],
+ ]},
+ {title:'费率配置（Tab2）',fields:[
+  ['old','gameLottery[6]/...','RebateLvRateConfig（费率矩阵·沿用）','返佣费率矩阵','5游戏×6等级返佣比例（单层总和≤5%）','每类游戏、每个等级各返几个点','ok'],
+ ]},
 ]},
-{m:'配置中心',p:'系统参数配置（73参数归8类）',route:'/config-center/sysParam',img:null,fields:[
- ['grp','注册登录安全'],
- ['old','registerCount/sameDeviceRegistCount','同IP注册数·同浏览器指纹注册数','同IP/同指纹注册数','单IP/指纹最多注册账号数','同网络/同浏览器最多注册几个号','ok'],
- ['chg','loginErrorCount','登录允许密码错误次数（源站「接口配置」）','登录密码错误上限','输错N次锁定账号','连续输错几次登录密码就锁定账号（防暴力破解）；原在接口配置页本期搬来','fix'],
- ['old','systemAccountOfflineDisableDays','后台系统账号超时未登录禁用','系统账号超时禁用','后台用户N天未登录自动禁用','后台员工号多少天不登就停用','fix'],
- ['grp','资金与绑定'],
- ['old','withdrawBankCount/...','绑定银行卡数·USDT地址绑定数·电子钱包绑定数量·Upi绑定数量','各类账户绑定数','银行卡/USDT/钱包/UPI最多绑定数','每种收款方式最多绑几个','ok'],
- ['old','officialRechargeAutoCancelTime/thirdRechargeAutoCancelTime','官方充值渠道超时时间(分钟)·三方充值渠道超时时间(分钟)','充值超时（官方/三方）','充值订单超时自动取消','下单多少分钟没付就作废','ok'],
- ['old','memberBindCardContent/memberBindCardTrigger','请选择绑定内容·需要绑定的条件','强制绑卡内容/触发','需绑定的方式与触发场景','什么时候强制要求先绑卡','fix'],
- ['old','closeFrontEndWithdraw','关闭会员前端取款·几天关闭','前端取款关闭天数','N天未充值关闭前端提现','多少天不充值就不让前台提现','ok'],
- ['old','lowestRechargeAmountToGame','最低可参与游戏累计充值金额','最低参游充值','累计充值达此额才能投注','要先充够多少才允许投注','ok'],
- ['grp','汇率'],
- ['old','usdt/trx Mode/Ratio','USDT比例·TRX汇率（充值比率/提现比率）','USDT/TRX充提汇率','虚拟币充提汇率（手动/实时+比率）','虚拟币按什么汇率换算','ok'],
- ['grp','营销奖励'],
- ['old','dailyRedEnvelopesReceived/redpageExpiredDay','单个会员每日领取红包次数·红包有效期(天)','红包次数/有效期','每日领红包次数与有效期','一天领几个红包、多久过期','ok'],
- ['old','rewardValidityTime/bigJackpot...','超级大奖领取超时时间(天)·超级大奖每天系统总发送限制','超级大奖超时/每日上限','大奖领取超时与每日发放上限','大奖多久不领作废、一天最多发几个','ok'],
- ['old','bettingFee','投注费率','投注费率','彩票投注手续费比例','彩票投注抽多少手续费','ok'],
- ['old','homePageShowWinAmount','首页中奖信息金额展示·展示金额大于','首页中奖展示阈值','中奖大于此值才首页滚动','中奖超过多少才在首页跑马灯','ok'],
- ['grp','代理'],
- ['old','agentChargeDays','下级连续0充天数·连续天数','下级连续0充天数','下级连续N天未首充进代理审核','下级连续多少天没充就触发审核','ok'],
- ['grp','预警监控'],
- ['old','successRate/makeOrderFail/merchantBalance/...','充值通道成功率/拉单失败/商户余额/代付/上分/出款/大额下注 预警','各类预警阈值','成功率/拉单/余额/代付/上分/出款/大额下注预警','各类异常超阈值就报警','ok'],
- ['grp','下发限制'],
- ['old','sendAccountCount/...','当日短信下发数·同IP当天短信下发上限·当日邮件下发数','短信/邮件下发上限','同账号/IP每日下发上限','防刷：一天最多发几条短信邮件','ok'],
- ['grp','第三方与外观'],
- ['old','tgBot...','充值通道数据推送机器人（推送间隔/Token/群组Id）','TG机器人','TG推送配置','往Telegram群推消息的机器人参数','ok'],
- ['old','dsp...','DSP流量平台（主机地址/应用Id/平台访问密钥）','DSP对接','DSP流量平台对接','DSP＝程序化广告投放平台，对接它的参数','ok'],
- ['new','siteName/adminLogo/loginBgImage/darkMode','无（V3新增·源站无）','系统名称/Logo/登录背景/暗色模式','后台品牌外观配置','给后台换名字/Logo/登录背景/暗色模式'],
+{m:"配置中心",p:"系统参数配置（57参数·8类）",route:"/config-center/sysParam",img:null,pageNote:"源站 ParameterConfig 73 项·30 组，V3 归并为 8 大类共 57 项；下按 V3 实际配置项逐条列出，子组用分隔行标注。",subs:[
+ {title:"注册与登录安全（4项）",fields:[["grp","注册数量限制"],["old","registerCount","同 IP 注册数量","同 IP 注册数量","一个 IP 最多可注册账号数（单位个·最小0）","一个 IP 最多可注册账号数"],["old","sameDeviceRegistCount","同浏览器指纹注册数量","同浏览器指纹注册数量","一个浏览器指纹最多可注册数（单位个·最小0）","一个浏览器指纹最多可注册数"],["grp","登录安全"],["old","loginErrorCount","登录密码错误次数上限","登录密码错误次数上限","超过则锁定（转移自原接口配置）（单位次·最小1）","超过则锁定（转移自原接口配置）"],["old","systemAccountOfflineDisableDays","系统账号超时未登录禁用","系统账号超时未登录禁用","0=不生效（单位天·最小0）","0=不生效"]]},
+ {title:"资金与绑定（14项）",fields:[["grp","绑定数量上限"],["old","withdrawBankCount","银行卡绑定数","银行卡绑定数","银行卡绑定数（单位张·最小1）","银行卡绑定数"],["old","usdtAddressBindingCount","USDT 地址绑定数","USDT 地址绑定数","USDT 地址绑定数（单位个·最小1）","USDT 地址绑定数"],["old","eWalletBindingCount","电子钱包绑定数","电子钱包绑定数","电子钱包绑定数（单位个·最小1）","电子钱包绑定数"],["old","newUpiBindingCount","New Upi 绑定数","New Upi 绑定数","New Upi 绑定数（单位个·最小1）","New Upi 绑定数"],["old","upiBindingCount","Upi 绑定数","Upi 绑定数","Upi 绑定数（单位个·最小1）","Upi 绑定数"],["old","fastUpiBindingCount","Fast Upi 绑定数","Fast Upi 绑定数","Fast Upi 绑定数（单位个·最小1）","Fast Upi 绑定数"],["old","phoneNoBindCount","单手机号绑卡数","单手机号绑卡数","0=不限制（单位张·最小0）","0=不限制"],["grp","充值超时"],["old","officialRechargeAutoCancelTime","官方渠道超时","官方渠道超时","超时自动取消订单（单位分·最小1）","超时自动取消订单"],["old","thirdRechargeAutoCancelTime","三方渠道超时","三方渠道超时","超时自动取消订单（单位分·最小1）","超时自动取消订单"],["grp","会员绑定"],["old","memberBindCardContent","绑定内容","绑定内容","需绑定的支付方式（选项:银行卡/USDT/电子钱包/PIX）","需绑定的支付方式"],["old","memberBindCardTrigger","绑定触发条件","绑定触发条件","触发绑定的场景（可多选）（选项:充值/红包/签到/邀请/每周/首存）","触发绑定的场景（可多选）"],["grp","其它资金参数"],["old","closeFrontEndWithdraw","关闭会员前端取款","关闭会员前端取款","N 天未充值则关闭前端取款（单位天·最小0）","N 天未充值则关闭前端取款"],["old","lowestRechargeAmountToGame","最低可参与游戏累计充值","最低可参与游戏累计充值","累计达此额才能玩（单位元·最小0）","累计达此额才能玩"],["old","manualRechargeSameAmountLimit","人工充值同额重复时间限制","人工充值同额重复时间限制","同 ID / 同类型 / 同额，限制 N 小时内不可重复充值，0=不限制（单位小时·最小0）","同 ID / 同类型 / 同额，限制 N 小时内不可重复充值，0=不限制"]]},
+ {title:"汇率（8项）",fields:[["grp","USDT 比例"],["old","usdtRechargeMode","充值比率·模式","充值比率·模式","充值比率·模式（选项:手动输入/交易所同步）","充值比率·模式"],["old","usdtRechargeRatio","充值比率·值","充值比率·值","USDT 充值汇率（最小0）","USDT 充值汇率"],["old","usdtWithdrawMode","提现比率·模式","提现比率·模式","提现比率·模式（选项:手动输入/交易所同步）","提现比率·模式"],["old","usdtWithdrawRatio","提现比率·值","提现比率·值","USDT 提现汇率（最小0）","USDT 提现汇率"],["grp","TRX 汇率"],["old","trxRechargeMode","充值比率·模式","充值比率·模式","充值比率·模式（选项:手动输入/交易所同步）","充值比率·模式"],["old","trxRechargeRatio","充值比率·值","充值比率·值","TRX 充值汇率（最小0）","TRX 充值汇率"],["old","trxWithdrawMode","提现比率·模式","提现比率·模式","提现比率·模式（选项:手动输入/交易所同步）","提现比率·模式"],["old","trxWithdrawRatio","提现比率·值","提现比率·值","TRX 提现汇率（最小0）","TRX 提现汇率"]]},
+ {title:"营销与奖励（7项）",fields:[["grp","红包"],["old","dailyRedEnvelopesReceived","单会员每日领红包次数","单会员每日领红包次数","单会员每日领红包次数（单位次·最小0）","单会员每日领红包次数"],["old","redpageExpiredDay","红包有效期","红包有效期","0=不过期（单位天·最小0）","0=不过期"],["grp","超级大奖"],["old","rewardValidityTime","领取超时","领取超时","超级大奖领取超时（单位天·最小1）","超级大奖领取超时"],["old","bigJackpotEveryDayRewardLimitNum","每天系统总发送限制","每天系统总发送限制","0=不限制（单位个·最小0）","0=不限制"],["grp","其它营销参数"],["old","bettingFree","投注费率","投注费率","彩票投注按比例扣手续费（单位%·最小0）","彩票投注按比例扣手续费"],["old","homePageShowWinAmount","首页中奖金额展示阈值","首页中奖金额展示阈值","大于此额才在首页展示（单位元·最小0）","大于此额才在首页展示"],["old","keepAmountConfig","留存计算投注金额","留存计算投注金额","当日投注≥此额计入留存（单位元·最小1）","当日投注≥此额计入留存"]]},
+ {title:"代理（1项）",fields:[["old","agentChargeDays","下级连续 0 充天数","下级连续 0 充天数","下级连续 N 天 0 首充进代理审核（单位天·最小1）","下级连续 N 天 0 首充进代理审核"]]},
+ {title:"预警监控（10项）",fields:[["grp","渠道预警"],["old","successRateOrderCount","充值成功率预警·充值笔数大于","充值成功率预警·充值笔数大于","充值成功率预警·充值笔数大于（单位笔·最小0）","充值成功率预警·充值笔数大于"],["old","successRatePercent","充值成功率预警·成功率小于","充值成功率预警·成功率小于","低于则预警（单位%·最小0·最大100）","低于则预警"],["old","makeOrderFailCount","拉单失败预警·拉单数量大于","拉单失败预警·拉单数量大于","拉单失败预警·拉单数量大于（单位笔·最小0）","拉单失败预警·拉单数量大于"],["old","makeOrderFailPercent","拉单失败预警·失败率不低于","拉单失败预警·失败率不低于","高于则预警（单位%·最小0·最大100）","高于则预警"],["grp","金额预警"],["old","merchantBalanceWarning","商户余额预警阈值","商户余额预警阈值","低于则预警，可为负","低于则预警，可为负"],["old","paymentOrderDataPush","代付订单数据推送阈值","代付订单数据推送阈值","达预警值推送，可为负","达预警值推送，可为负"],["old","highScoreWarning","上分预警阈值","上分预警阈值","人工/彩金/批量/红包上分，可为负","人工/彩金/批量/红包上分，可为负"],["old","warningAmountForLargeBets","彩票大额下注预警金额","彩票大额下注预警金额","≥该值推送，0=不预警（单位元·最小0）","≥该值推送，0=不预警"],["grp","出款预警"],["old","withdrawSubmitSeconds","会员提交时间","会员提交时间","提交超过 N 秒预警（单位秒）","提交超过 N 秒预警"],["old","withdrawLockSeconds","后台锁定时间","后台锁定时间","锁定后未处理超过 N 秒预警（单位秒·最大100）","锁定后未处理超过 N 秒预警"]]},
+ {title:"下发限制（3项）",fields:[["grp","短信下发"],["old","sendAccountCount","同账号当日短信下发数","同账号当日短信下发数","同账号当日短信下发数（单位条·最小0）","同账号当日短信下发数"],["old","thatDayIPSendSmsCount","同 IP 当天短信上限","同 IP 当天短信上限","同 IP 当天短信上限（单位条·最小0）","同 IP 当天短信上限"],["grp","邮件下发"],["old","sendEmailIPCount","同账号当日邮件下发数","同账号当日邮件下发数","同账号当日邮件下发数（单位封·最小0）","同账号当日邮件下发数"]]},
+ {title:"第三方与外观（10项）",fields:[["grp","充值通道 TG 机器人"],["old","tgBotInterval","推送间隔","推送间隔","推送间隔（单位分·最小5·最大1440）","推送间隔"],["old","tgBotToken","机器人 Token","机器人 Token","机器人 Token","机器人 Token"],["old","tgBotChannelId","群组 Id","群组 Id","支持负数·单群组","支持负数·单群组"],["grp","DSP 流量平台"],["old","dspHostName","DSP 主机地址","DSP 主机地址","协议 + 域名","协议 + 域名"],["old","dspAppId","DSP 应用 Id","DSP 应用 Id","DSP 应用 Id","DSP 应用 Id"],["old","dspToken","DSP 访问密钥","DSP 访问密钥","限 32 位","限 32 位"],["grp","后台外观"],["new","siteName","无（V3新增）","系统名称","后台登录页与浏览器标题显示的名称","后台登录页与浏览器标题显示的名称"],["new","adminLogo","无（V3新增）","后台 Logo","Logo 图片地址（URL）","Logo 图片地址（URL）"],["new","loginBgImage","无（V3新增）","登录页背景图","登录页背景图地址（URL）","登录页背景图地址（URL）"],["new","darkMode","无（V3新增）","暗色模式","开启后台暗色主题","开启后台暗色主题"]]}
 ]},
-{m:'配置中心',p:'开关配置（62开关归9组）',route:'/config-center/configSwitch',img:null,
- pageNote:'源站 ConfigSwitch 由接口动态加载（表头：Id/名称/SettingKey/描述/开关）；源站「登录与注册」分组里 8 个登录安全开关本期分流转入本页（属页面级重组，开关沿用）。',fields:[
- ['chg','登录与安全组','源站「登录与注册」分组(SettingName)','登录与安全组（8项）','登录验证码/谷歌验证/多点登录等','要不要图形码、谷歌验证器、允不允许多设备登等','fix'],
- ['old','充值与支付组','源站同名分组','充值与支付组（14项）','自动入款/绑卡/三方刷新/USDT绑定等','自动到账、先绑卡、三方对账、能否绑USDT等','ok'],
- ['old','提现组','源站同名分组','提现组（3项）','提现打码量要求/下级出款锁定等','提现要不要满足打码量、下级出款锁定等','ok'],
- ['old','活动与奖励组','源站同名分组','活动与奖励组（17项）','首充/大奖/合伙人/转盘/新人礼包等','各类活动玩法总开关','ok'],
- ['old','财务与积分组','源站同名分组','财务与积分组（5项）','保险箱/洗码量结算等','保险箱、洗码自动结算等','ok'],
- ['old','彩票与游戏组','源站同名分组','彩票与游戏组（4项）','长龙/热门中奖率/新版面等','彩票长龙、热门中奖率、新版界面等','ok'],
- ['old','代理与风控组','源站同名分组','代理与风控组（4项）','代理审核/手机号查看/充值才计返佣等','开不开代理审核、能否看手机号等','ok'],
- ['old','推广与链接组','源站同名分组','推广与链接组（2项）','短链/马甲包转化','短链接、马甲包转化','ok'],
- ['old','数据追踪与推送组','源站同名分组','数据追踪与推送组（1项）','充值通道纸飞机推送','充值通道往Telegram推数据','ok'],
+{m:"配置中心",p:"开关配置（58开关·9组）",route:"/config-center/configSwitch",img:null,pageNote:"源站 ConfigSwitch 由接口动态加载（表头：Id/名称/SettingKey/描述/开关）；源站「登录与注册」分组里 8 个登录安全开关本期分流转入本页（属页面级重组，开关沿用）。每个开关组一个子面板。（源站口径62项·V3实配58项·9组；key=SettingKey）",subs:[
+ {title:"登录与安全组（8项）",fields:[["old","IsOpenCaptcha","登录验证码","登录验证码","登录需图形验证码","登录需图形验证码"],["old","IsOpenRegisterPhoneFirstZeroSwitch","手机号首位限制0","手机号首位限制0","手机号首位限制0","控制是否开启「手机号首位限制0」"],["old","IsAdminRegisterVerifyMobileLen","后台注册手机号长度校验","后台注册手机号长度校验","后台注册手机号长度校验","控制是否开启「后台注册手机号长度校验」"],["old","IsGoogle","前台谷歌验证","前台谷歌验证","绑定时","绑定时"],["old","IsOpenGoogleVerifySms","谷歌短信验证","谷歌短信验证","谷歌短信验证","控制是否开启「谷歌短信验证」"],["old","IsOpenGoogleVerifyEmail","谷歌邮箱验证","谷歌邮箱验证","谷歌邮箱验证","控制是否开启「谷歌邮箱验证」"],["old","IsOpenLoginChangeLanguage","语言变更按钮","语言变更按钮","前台语言切换按钮","前台语言切换按钮"],["old","IsAllowSysUserMultipleLoginSwitch","多点登录","多点登录","后台用户多点登录·关闭清 Redis","后台用户多点登录·关闭清 Redis"]]},
+ {title:"充值与支付组（14项）",fields:[["old","OnlineBanking","自动入款","自动入款","短信内容自动入款","短信内容自动入款"],["old","IsOpenOfficialRechargeInputDialog","官方充值弹框","官方充值弹框","官方充值弹框","控制是否开启「官方充值弹框」"],["old","IsRechargeBeforeBindPCF","银行卡充值前绑卡","银行卡充值前绑卡","银行卡充值前绑卡","控制是否开启「银行卡充值前绑卡」"],["old","IsShowRechargeBankList","本地银行卡列表展示","本地银行卡列表展示","本地银行卡列表展示","控制是否开启「本地银行卡列表展示」"],["old","IsOpenRechWithRemoveDecimalPoint","出入款去小数点","出入款去小数点","出入款去小数点","控制是否开启「出入款去小数点」"],["old","IsOpenThirdPartRefresh","三方支付刷新确认","三方支付刷新确认","三方支付刷新确认","控制是否开启「三方支付刷新确认」"],["old","isH5RechargeWithdrawalLimitEnabled","H5 充提限制","H5 充提限制","H5 充提限制","控制是否开启「H5 充提限制」"],["old","ArUpiInputUtrSwitch","AR UPI 隐藏 UTR","AR UPI 隐藏 UTR","需三方通知","需三方通知"],["old","IsOpenARPayAutoWithdrawSwitch","APYAY 自动出款","APYAY 自动出款","APYAY 自动出款","控制是否开启「APYAY 自动出款」"],["old","IsLimitNonChannelDomainCallApi","非渠道域名 API 限制","非渠道域名 API 限制","非渠道域名 API 限制","控制是否开启「非渠道域名 API 限制」"],["old","USDTRechargeISJoinActivitySwitch","USDT 充值参与活动","USDT 充值参与活动","关闭仅对新订单生效","关闭仅对新订单生效"],["old","IsAllowUserAddUSDT","USDT 地址绑定","USDT 地址绑定","前端可添加 USDT","前端可添加 USDT"],["old","IsAllowMultiUserBindSameUsdtAddress","多人绑同 USDT 地址","多人绑同 USDT 地址","多人绑同 USDT 地址","控制是否开启「多人绑同 USDT 地址」"],["old","AddBankCardOpenEmail","加银行卡输入邮箱","加银行卡输入邮箱","加银行卡输入邮箱","控制是否开启「加银行卡输入邮箱」"]]},
+ {title:"提现组（3项）",fields:[["old","AmountSwitch","提现打码量要求","提现打码量要求","提现是否需打码量","提现是否需打码量"],["old","IsDisableSubmitInvitedWheelWithdrawWhenAuditing","未提现不可再次提现","未提现不可再次提现","邀请转盘","邀请转盘"],["old","IsOpenSubUserWithdrawOrderLock","直属下级出款锁定","直属下级出款锁定","直属下级出款锁定","控制是否开启「直属下级出款锁定」"]]},
+ {title:"活动与奖励组（17项）",fields:[["old","IsOpenActivityAward","活动任务奖励","活动任务奖励","仅 admin 可编辑","仅 admin 可编辑"],["old","IsFristRechargeReward","首充奖励","首充奖励","首充奖励","控制是否开启「首充奖励」"],["old","JackpotRewardSwitch","大奖奖励","大奖奖励","大奖奖励","控制是否开启「大奖奖励」"],["old","IsPartnerReward","合伙人奖励","合伙人奖励","合伙人奖励","控制是否开启「合伙人奖励」"],["old","TurntableSwitch","大转盘","大转盘","大转盘","控制是否开启「大转盘」"],["old","IsOpenInvitedWheel","邀请转盘","邀请转盘","邀请转盘","控制是否开启「邀请转盘」"],["old","IsOpenChampion","锦标赛","锦标赛","锦标赛","控制是否开启「锦标赛」"],["old","NewMemberGiftPackageSwitch","新会员礼包","新会员礼包","新会员礼包","控制是否开启「新会员礼包」"],["old","IsShowRewardCenter","首页待领取奖励按钮","首页待领取奖励按钮","悬浮按钮","悬浮按钮"],["old","IsOpenRechargeLevelGiftSwitch","充值等级赠送比例","充值等级赠送比例","充值等级赠送比例","控制是否开启「充值等级赠送比例」"],["old","IsOpenVIPGiftRatioSwitch","VIP 赠送比例","VIP 赠送比例","VIP 赠送比例","控制是否开启「VIP 赠送比例」"],["old","RechargeLevelSwitch","充值等级","充值等级","充值等级","控制是否开启「充值等级」"],["old","arbwithdrawmanager","提现推荐 ARB 弹窗","提现推荐 ARB 弹窗","JSON 配置","JSON 配置"],["old","AllowNoRechargeGame","未充值用户游戏","未充值用户游戏","未充值用户游戏","控制是否开启「未充值用户游戏」"],["old","C2CRechargeReceiptNotifySwitch","C2C 充值到账通知","C2C 充值到账通知","C2C 充值到账通知","控制是否开启「C2C 充值到账通知」"],["old","TaskState","邀请人任务","邀请人任务","邀请人任务","控制是否开启「邀请人任务」"],["old","IsPopupCommissionSwitch","前端首页佣金弹窗","前端首页佣金弹窗","前端首页佣金弹窗","控制是否开启「前端首页佣金弹窗」"]]},
+ {title:"财务与积分组（5项）",fields:[["old","WealthState","保险箱","保险箱","保险箱","控制是否开启「保险箱」"],["old","NewSafeSetting","新版保险箱","新版保险箱","半小时一次性取出","半小时一次性取出"],["old","IsOpenAutoWashCode1AM","自动结算洗码量(1AM)","自动结算洗码量(1AM)","自动结算洗码量(1AM)","控制是否开启「自动结算洗码量(1AM)」"],["old","IsShowAppHandCodeWashingSwitch","手动洗码","手动洗码","前端显示","前端显示"],["old","IsOpenWashCode","洗码量开启","洗码量开启","洗码量开启","控制是否开启「洗码量开启」"]]},
+ {title:"彩票与游戏组（4项）",fields:[["old","LotteryDragonSwitch","彩票长龙显示","彩票长龙显示","彩票长龙显示","控制是否开启「彩票长龙显示」"],["old","IsShowHotGameWinOdds","热门游戏中奖率","热门游戏中奖率","热门游戏中奖率","控制是否开启「热门游戏中奖率」"],["old","IsOpenDamanNewLayout","大曼新版面","大曼新版面","仅 admin 可见","仅 admin 可见"],["old","IsShowWalletTotalCT","钱包总充提金额显示","钱包总充提金额显示","钱包总充提金额显示","控制是否开启「钱包总充提金额显示」"]]},
+ {title:"代理与风控组（4项）",fields:[["old","AgentReviewMechanism","代理审核机制","代理审核机制","代理审核机制","控制是否开启「代理审核机制」"],["old","IsOpenMobileNumberAgentView","代理手机号查看","代理手机号查看","代理手机号查看","控制是否开启「代理手机号查看」"],["old","NeedRechargeRebate","下级充值才计返佣","下级充值才计返佣","下级充值才计返佣","控制是否开启「下级充值才计返佣」"],["old","IsOpenBrowserConsoleDebug","浏览器控制台调试","浏览器控制台调试","浏览器控制台调试","控制是否开启「浏览器控制台调试」"]]},
+ {title:"推广与链接组（2项）",fields:[["old","IsShorturl","推广短链接","推广短链接","推广短链接","控制是否开启「推广短链接」"],["old","isSkinPackageConversionEnabled","马甲包转化","马甲包转化","马甲包转化","控制是否开启「马甲包转化」"]]},
+ {title:"数据追踪与推送组（1项）",fields:[["old","IsOpenOrderVolumeSenderSwitch","充值通道纸飞机推送","充值通道纸飞机推送","TG 推送任务","TG 推送任务"]]}
 ]},
 {m:'配置中心',p:'注册管理（注册配置/图形验证码 2Tab）',route:'/config-center/registerManage',img:null,
- pageNote:'⚠ 源站无独立「注册管理」页，注册项分散在 H5Setting（手机号/区号）、ParameterConfig（注册数量）、ApiSetting（区号）等；V3 整合为单页 2Tab。原中文按源站对应项标注。',fields:[
- ['old','registerState/registerCloseTip','源站分散（注册开关）','注册总开关/关闭提示','是否允许注册与关闭提示','关不关注册、关了提示什么','na'],
- ['old','registerMobile/registerEmail/registerSms','源站分散（MobileFlag/EmailFlag）','手机/邮箱/短信注册','允许的注册方式','允许用手机/邮箱/短信注册','na'],
- ['old','isOpenRegisterCaptcha/isInvitecode','源站分散（IsOpenCaptcha/IsInvitecode）','图形验证码/邀请码必填','注册校验项','注册要不要图形码、邀请码是否必填','na'],
- ['old','registerCount/sameBrowserRegistCount/sameDeviceRegistCount','源站 ParameterConfig 注册数量','同IP/指纹/设备注册数','注册数量限制','同IP/浏览器/设备最多注册几个号','fix'],
- ['old','registerGiftAmount/registerGiftRollover','源站分散（注册赠送）','注册赠送金额/打码倍数','注册赠送与打码要求','注册送多少、投注多少倍才能提','na'],
- ['chg','currentAreaCode','当前国家区号（源站「接口配置」AreaCode）','当前国家区号','默认电话区号','注册时手机号默认带的国家区号（如印度+91）；原在接口配置页本期搬来','fix'],
- ['old','areaCode/phoneLength','源站 H5Setting 可注册手机号表','可注册手机号表（区号/长度）','各国区号与手机号位数','支持哪些国家、各国手机号几位','fix'],
- ['chg','captchaTab','源站独立页 captchaConfig','图形验证码（Tab）','图形验证码样式与场景','注册时要照着填的图形码（数字/字母/算术/滑块），防机器批量注册；原独立页本期并入注册管理第2Tab','fix'],
+ pageNote:'⚠ 源站无独立「注册管理」页，注册项分散在 H5Setting（手机号/区号）、ParameterConfig（注册数量）、ApiSetting（区号）等；V3 整合为单页 2Tab。原中文按源站对应项标注。',subs:[
+ {title:'注册配置（Tab1）',fields:[
+  ['old','registerState/registerCloseTip','源站分散（注册开关）','注册总开关/关闭提示','是否允许注册与关闭提示','关不关注册、关了提示什么','na'],
+  ['old','registerMobile/registerEmail/registerSms','源站分散（MobileFlag/EmailFlag）','手机/邮箱/短信注册','允许的注册方式','允许用手机/邮箱/短信注册','na'],
+  ['old','isOpenRegisterCaptcha/isInvitecode','源站分散（IsOpenCaptcha/IsInvitecode）','图形验证码/邀请码必填','注册校验项','注册要不要图形码、邀请码是否必填','na'],
+  ['old','registerCount/sameBrowserRegistCount/sameDeviceRegistCount','源站 ParameterConfig 注册数量','同IP/指纹/设备注册数','注册数量限制','同IP/浏览器/设备最多注册几个号','fix'],
+  ['old','registerGiftAmount/registerGiftRollover','源站分散（注册赠送）','注册赠送金额/打码倍数','注册赠送与打码要求','注册送多少、投注多少倍才能提','na'],
+  ['chg','currentAreaCode','当前国家区号（源站「接口配置」AreaCode）','当前国家区号','默认电话区号','注册时手机号默认带的国家区号（如印度+91）；原在接口配置页本期搬来','fix'],
+  ['old','areaCode/phoneLength','源站 H5Setting 可注册手机号表','可注册手机号表（区号/长度）','各国区号与手机号位数','支持哪些国家、各国手机号几位','fix'],
+ ]},
+ {title:'图形验证码（Tab2）',fields:[
+  ['chg','captchaTab','源站独立页 captchaConfig','图形验证码','图形验证码样式与场景','注册时要照着填的图形码（数字/字母/算术/滑块），防机器批量注册；原独立页本期并入注册管理第2Tab','fix'],
+ ]},
 ]},
 {m:'配置中心',p:'前台配置（原语言配置）',route:'/config-center/languageConfig',img:null,
- pageNote:'页名「前台配置」由源站 H5Setting「用户语言配置」改名而来；以下为 H5Setting 真实字段。',fields:[
- ['old','projectName','前端站点名称','项目名称','前台品牌名','C端站点叫什么','fix'],
- ['old','projectLogo/headLogo/webIco','前台Logo·前台浏览器Logo·前台图片地址','Logo/图标','前台各类Logo与图标','各处用的Logo和小图标','fix'],
- ['old','supportLanguages','支持语言列表（Languages）','支持语言列表','前台可切换语言（多选15种）','给用户提供哪几种语言可切','ok'],
- ['old','defaultLanguage','前台默认语言配置','默认语言','新用户默认语言','新用户进来默认哪种语言','fix'],
- ['old','currencySymbol','货币符号','货币符号','金额货币符号','金额前面显示什么符号','ok'],
- ['old','withdrawNameCase','源站未见明确标签（H5UpperOrLower）','提现姓名大小写','提现银行卡姓名转换规则','提现姓名统一转大写还是小写','na'],
+ pageNote:'页名「前台配置」由源站 H5Setting「用户语言配置」改名而来；以下为 H5Setting 真实字段。本页为单页表单、无子 Tab。',subs:[
+ {title:'前台配置（单页 · 无子Tab）',fields:[
+  ['old','projectName','前端站点名称','项目名称','前台品牌名','C端站点叫什么','fix'],
+  ['old','projectLogo/headLogo/webIco','前台Logo·前台浏览器Logo·前台图片地址','Logo/图标','前台各类Logo与图标','各处用的Logo和小图标','fix'],
+  ['old','supportLanguages','支持语言列表（Languages）','支持语言列表','前台可切换语言（多选15种）','给用户提供哪几种语言可切','ok'],
+  ['old','defaultLanguage','前台默认语言配置','默认语言','新用户默认语言','新用户进来默认哪种语言','fix'],
+  ['old','currencySymbol','货币符号','货币符号','金额货币符号','金额前面显示什么符号','ok'],
+  ['old','withdrawNameCase','源站未见明确标签（H5UpperOrLower）','提现姓名大小写','提现银行卡姓名转换规则','提现姓名统一转大写还是小写','na'],
+ ]},
+]},
+
+// ----- 运营配置·消息通道 3 页（2026-06-24 迁源站 System 控制器，roles:tenant，本页编辑）-----
+{m:'运营管理',p:'短信配置（验证码/语音/通知 3Tab）',route:'/operations/smsConfig',img:null,pageTag:'迁源站 SmsSettings（删 Extend1/2/3 预留字段）',fields:[
+ ['new','tenantId','无（V3多商户新增）','商户','配置归属商户','这条配置归哪个商户（admin看列/筛选·tenant本商户）'],
+ ['old','smsType','短信类型','短信类型','1验证码/2语音/3通知（分3Tab）','这条短信商发哪类短信','ok'],
+ ['new','verifyType','无（V3新增）','验证类型','注册验证/新增提现验证/忘记密码验证（单选·3Tab都有）','这条短信用于哪种验证场景'],
+ ['old','smsName','短信商名称','短信商名称','短信服务商标识名','这家短信商叫什么','ok'],
+ ['old','postUrl','请求地址','请求地址','短信网关接口URL','调短信商接口的网址','ok'],
+ ['old','account','账户','账户','短信API账号','登短信商API的账号','ok'],
+ ['old','password','密码','密码','短信API密码','发短信用的密码','ok'],
+ ['old','apiKey','ApiKey','ApiKey','短信API密钥（列表脱敏***）','API密钥，列表只显示***','ok'],
+ ['old','zipCode','区号','区号','国家区号','发往哪国（如+86）','ok'],
+ ['old','min','有效期(分钟)','有效期(分钟)','验证码有效期','验证码几分钟内有效','ok'],
+ ['old','smsContent','模板内容','模板内容','短信发送模板文案','发出去的短信长什么样','ok'],
+ ['old','state','状态','状态','启用1/禁用0（列内开关·二次确认）','这家短信商开不开用','ok'],
+]},
+{m:'运营管理',p:'邮件配置',route:'/operations/emailConfig',img:null,pageTag:'迁源站 EmailSetings（含确认密码一致性校验+Logo上传）',fields:[
+ ['new','tenantId','无（V3多商户新增）','商户','配置归属商户','这个发件邮箱归哪个商户（admin看列/筛选·tenant本商户）'],
+ ['old','emailName','邮箱名称','邮箱名称','发件邮箱显示名','这个发件邮箱叫什么','ok'],
+ ['new','verifyType','无（V3新增）','验证类型','注册验证/新增提现验证/忘记密码验证（单选）','这个邮箱用于哪种验证场景'],
+ ['old','account','邮箱账号','发件账号','发件邮箱地址','用哪个邮箱地址发信','ok'],
+ ['old','password','邮箱密码','密码','邮箱密码/授权码','登邮箱的密码或授权码','ok'],
+ ['old','confirmPassword','确认密码','确认密码','二次输入校验一致（不一致红框）','再输一遍密码防打错','ok'],
+ ['old','smtpServer','SMTP服务器','SMTP服务器','发信服务器地址','邮件从哪台服务器发出','ok'],
+ ['old','smtpPort','邮箱端口','端口','SMTP端口（默认25）','发信服务器端口号','ok'],
+ ['old','emailTitle','邮件标题','邮件标题','默认发件标题','发出去邮件的标题','ok'],
+ ['old','emailLogo','邮件Logo','邮件Logo','邮件头图（可上传）','邮件顶部的图标','ok'],
+ ['old','state','状态','状态','启用/禁用（开关）','这个发件邮箱开不开用','ok'],
+ ['old','remark','备注','备注','配置备注','给这条配置写的备注','ok'],
+]},
+{m:'运营管理',p:'消息模板配置（12语言×9场景）',route:'/operations/messageTemplate',img:null,pageTag:'迁源站 Template（原型用明文，不做Base64/真多语言i18n）',fields:[
+ ['new','tenantId','无（V3多商户新增）','商户','模板归属商户','这套模板归哪个商户（admin看列/筛选·tenant本商户）'],
+ ['old','templateID','模板ID','模板场景','9预定义场景：注册/充值/申请提现/提现到账/登录/期号取消/改密/TG活动奖励/活动奖励','这条模板对应哪个业务通知','ok'],
+ ['old','title','模板标题','模板标题','消息标题（按语言各存一套）','发给会员的消息标题','ok'],
+ ['old','message','模板内容','模板内容','消息正文（含变量占位{0}金额时间/{1}期号项目名）','消息正文，变量用{0}{1}占位','ok'],
+ ['new','lang','无（V3多语言维度）','语言','12语言切换（简中默认/繁中/英/越/葡/泰/印尼/马来/孟加拉/印地/乌尔都/缅甸）','这套标题内容是哪国语言的'],
 ]},
 
 // ===================== 报表管理 =====================
@@ -482,11 +513,11 @@ const PAGES=[
  ['old','lottery/egame/live/sport/chess','游戏金额','各游戏投注额','5类游戏投注金额','每类游戏投了多少','fix'],
  ['old','commission','计算返佣金额·派发返佣金额','可得佣金','会员可得返佣总额','这些流水能返多少佣金','ok'],
 ]},
-{m:'报表管理',p:'返佣报表 · 报表',route:'/report/rebateReport/report',img:'spec-rebate-report.png',fields:[
+{m:'报表管理',p:'返佣报表 · 报表',route:'/report/rebateReport/report',img:'spec-rebate-report.png',pageNote:'配图为返佣报表整页（默认显示「流水返佣」Tab）；本子页为同页「返佣报表」Tab，字段见下。',fields:[
  ['old','date','日期','日期','统计日期','哪天','ok'],
  ['old','{game}.amount/.lvRate/.baseRate','源站以返佣等级分行（团队/直属当日条件）','各游戏金额/等级利率/基础利率','5类游戏返佣金额与利率','每类游戏返佣额、按等级利率、基础利率','na'],
 ]},
-{m:'报表管理',p:'返佣报表 · 层级',route:'/report/rebateReport/level',img:'spec-rebate-report.png',fields:[
+{m:'报表管理',p:'返佣报表 · 层级',route:'/report/rebateReport/level',img:'spec-rebate-report.png',pageNote:'配图为返佣报表整页（默认显示「流水返佣」Tab）；本子页为同页「层级返佣报表」Tab，字段见下。',fields:[
  ['old','level','返佣等级','相对层级','1~6','相对当前代理的下级第几层（Lv1=直属下级…Lv6=第6层）；是“相对层级”不是“返佣等级”','fix'],
  ['old','rechargeUsers/rechargeAmount','团队人数·团队充值金额','充值人数/充值金额','该层级充值统计','这一层有多少人充值、合计充了多少钱','ok'],
  ['old','{game}.bet/.rebate','游戏金额·计算返佣金额·派发返佣金额','各游戏投注/返佣','5类游戏投注与返佣','这一层5类游戏（彩票/电子/视讯/体育/棋牌）各投了多少、返了多少；每格上行投注金额、下行返佣金额（绿字）','ok'],
@@ -651,6 +682,8 @@ const MD_SECTIONS=[
   ['new','registerFingerprint','无（V3新增）','注册浏览器指纹','注册浏览器指纹','按浏览器特征算的唯一标识'],
   ['new','registerPackage','无（V3新增）','注册包名','App包名与版本','App的唯一身份证（如com.daman.app）及其安装版本号'],
   ['new','registerDomain','无（V3新增）','注册域名','注册落地域名','从哪个网址注册进来'],
+  ['new','registerChannel','无（V3新增）','注册渠道','注册来源渠道（推广渠道）','从哪个推广渠道注册进来的'],
+  ['new','inviter','无（V3新增）','邀请人','邀请人/上级推荐人','谁把他拉来注册的'],
   ['new','promoThirdType','无（V3新增）','推广三方类型','识别的第三方推广平台','从哪个广告平台导流来'],
   ['old','sameIpRegisterCount','同IP注册用户数','同IP注册用户数','同一IP注册的账号数','这个IP注册了几个号'],
   ['new','sameDeviceRegisterCount','无（V3新增）','同设备注册会员数','同一设备注册的账号数','这台设备注册了几个号'],
@@ -844,7 +877,7 @@ const navGroups=[]; let pgIndex=0;
 for(const pg of PAGES){
   if(pg.m!==lastMod){ const mid='mod'+navGroups.length; html+=`<h2 class="mod" id="${mid}">${pg.m}</h2>`; lastMod=pg.m; navGroups.push({m:pg.m,mid,pages:[]}); }
   let nNew=0,nChg=0,nOld=0;
-  const srcFields = pg.md ? MD_SECTIONS.flatMap(s=>s.fields) : (pg.fields||[]);
+  const srcFields = pg.md ? MD_SECTIONS.flatMap(s=>s.fields) : pg.subs ? pg.subs.flatMap(s=>s.fields) : (pg.fields||[]);
   for(const f of srcFields){ if(f[0]==='new'){nNew++;cNew++;}else if(f[0]==='chg'){nChg++;cChg++;}else if(f[0]==='old'){nOld++;cOld++;} }
   const pid='pg'+(pgIndex++); navGroups[navGroups.length-1].pages.push({p:pg.p,id:pid});
   html+=`<div class="page" data-page id="${pid}"><div class="ph"><span class="cv"></span>
@@ -854,6 +887,7 @@ for(const pg of PAGES){
   html+=shotHtml(pg);
   if(pg.pageNote) html+=`<div class="note${/⚠/.test(pg.pageNote)?'':' info'}"><span class="tag">${/⚠/.test(pg.pageNote)?'源站核对':'说明'}</span>${pg.pageNote.replace('⚠ ','')}</div>`;
   if(pg.md){ html+='<div class="secgrid">'; for(const sec of MD_SECTIONS) html+=mdSectionHtml(sec); html+='</div>'; }
+  else if(pg.subs){ html+='<div class="secgrid">'; for(const sub of pg.subs) html+=mdSectionHtml(sub); html+='</div>'; }
   else if(pg.fields) html+=tableHtml(pg.fields);
   if(!pg.md){ const ops=OPS[pg.route]||OPS[pg.route.replace(/\/[^/]+$/,'')]; if(ops) html+='<div class="secgrid" style="grid-template-columns:1fr">'+opsBlockHtml(ops)+'</div>'; }
   html+=`</div></div>`;

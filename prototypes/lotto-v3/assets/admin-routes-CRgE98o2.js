@@ -1,1 +1,0 @@
-import{t as e}from"./main-DeuKOltK.js";import{t}from"./role-filter-D0_FfrfA.js";var n=t(e,`admin`);export{n as adminRoutes};
