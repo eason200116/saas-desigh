@@ -98,7 +98,7 @@
     <a href="#bg">1 · 背景</a>
     <a href="#purpose">2 · 需求目的</a>
     <a href="#framework">3 · 框架介绍</a>
-    <a href="#feature">4 · 功能及非功能简介</a>
+    <a href="#feature">4 · 功能点简介</a>
     <a href="#milestone">5 · 里程碑</a>
     <a href="#plan">6 · 排期</a>
     <a href="#accept">7 · 验收</a>
@@ -111,7 +111,7 @@
     <table>
       <tr><th width="120">项</th><th>内容</th></tr>
       <tr><td>文档名称</td><td>SaaS 多商户后台 · 二阶段产品需求文档（PRD · 整合版）</td></tr>
-      <tr><td>版本 / 日期</td><td>v1.4 · 2026-06-24（章节重排，更贴合阅读顺序：背景 / 需求目的 / 框架介绍 / 功能及非功能简介 / 里程碑 / 排期 / 验收 / 修改日志；控件级交互与字段、归因明细各自成文）</td></tr>
+      <tr><td>版本 / 日期</td><td>v1.4 · 2026-06-24（章节重排，更贴合阅读顺序：背景 / 需求目的 / 框架介绍 / 功能点简介 / 里程碑 / 排期 / 验收 / 修改日志；控件级交互与字段、归因明细各自成文）</td></tr>
       <tr><td>状态</td><td>评审用稿（交付以 <a href="https://eason200116.github.io/saas-desigh/prototypes/lotto-v3/#/home/welcome" target="_blank">线上原型</a> 可点击原型为准）</td></tr>
       <tr><td>权威来源</td><td>《二阶段功能说明书》v1.15、《二期验收用例》、迁移源盘点（SitINR 旧后台）</td></tr>
       <tr><td>关联四件套</td><td><b>产品原型 / 交互介绍 / 研发说明 / 验收用例</b> 均在<b>顶部 Tab</b> 内嵌直达。本 PRD 只讲「做什么、为什么」；<b>控件级交互看「交互介绍」、字段与归因研发口径看「研发说明」</b>。</td></tr>
@@ -167,7 +167,7 @@
   </section>
 
   <section id="feature">
-    <h2 class="sec">4 · 功能及非功能简介</h2>
+    <h2 class="sec">4 · 功能点简介</h2>
     <p class="sd">只列本期各模块「做什么」。逐条需求编号、专属交互与字段明细见<b>「交互介绍」/「研发说明」</b>。<b>归因体系</b>（注册即按 广告投放 › 邀请来源 › 官方直推 › 自然流量 优先级判定并固化、会员详情红字呈现，共 4 类 18 种穷举）为本期核心新增，判定规则与字段口径详见<b>研发说明</b>。</p>
     <h3>4.1 功能简介（按模块）</h3>
     <table>
@@ -239,8 +239,9 @@
         <td>
           <b>章节重排（产品范围与口径不变，仅调整阅读顺序）：</b><br>
           ① <b>背景前置</b>：「背景」移到「需求目的」之前（先讲为什么，再讲要什么）。<br>
-          ② <b>里程碑与排期相邻</b>：「里程碑」从第 2 段移到「功能及非功能简介」之后、紧挨「排期」（规划/时间线归到一处）。<br>
-          ③ 新顺序：文档信息 / 背景 / 需求目的 / 框架介绍 / 功能及非功能简介 / 里程碑 / 排期 / 验收 / 修改日志；各段内容与编号同步更新。
+          ② <b>里程碑与排期相邻</b>：「里程碑」从第 2 段移到「功能点简介」之后、紧挨「排期」（规划/时间线归到一处）。<br>
+          ③ <b>第 4 段更名</b>：「功能及非功能简介」改为「功能点简介」。<br>
+          ④ 新顺序：文档信息 / 背景 / 需求目的 / 框架介绍 / 功能点简介 / 里程碑 / 排期 / 验收 / 修改日志；各段内容与编号同步更新。
         </td>
       </tr>
       <tr>
@@ -299,9 +300,9 @@
     const PROTO=isLocal?PROTO_LOCAL:PROTO_ONLINE;
     const protoBtn=document.querySelector('.tabbtn[data-proto]');
     if(protoBtn) protoBtn.dataset.src=PROTO;
-    // 字段词典：源文件在 Ar_V3 仓库 docs/migration（本地由 8770 提供）；线上需先把该词典发布到 saas-desigh/docs 后用相对路径
+    // 字段词典：源文件在 Ar_V3 仓库 docs/migration（本地由 8770 提供）；线上已发布到 saas-desigh/docs/migration/（连同 img/ 截图同目录），故相对路径含 migration/ 前缀
     const GLOSSARY_LOCAL='http://localhost:8770/docs/migration/14-anchor-new-field-glossary.html';
-    const GLOSSARY_ONLINE='14-anchor-new-field-glossary.html';
+    const GLOSSARY_ONLINE='migration/14-anchor-new-field-glossary.html';
     const glossaryBtn=document.querySelector('.tabbtn[data-glossary]');
     if(glossaryBtn) glossaryBtn.dataset.src=isLocal?GLOSSARY_LOCAL:GLOSSARY_ONLINE;
     // 本地环境下，把正文里指向线上原型的 <a> 也改为本地 3100，保持「本地文档↔本地原型」
