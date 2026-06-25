@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>二阶段功能验收评审表（白话版）</title>
+<style>
+  :root{--accent:#2563eb;--ink:#1f2328;--sub:#6b7280;--line:#e5e7eb;--bg:#f5f6f8;--card:#fff;--green:#16a34a;--red:#dc2626;--amber:#b45309;}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.75 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
+  header{position:sticky;top:0;z-index:30;background:linear-gradient(90deg,#1e293b,#312e81);color:#fff;padding:14px 28px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+  header h1{margin:0;font-size:18px}
+  header .ver{font-size:12px;opacity:.75;margin-top:3px}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 22px 90px}
+  h2{font-size:20px;border-left:5px solid var(--accent);padding-left:12px;margin:38px 0 8px;scroll-margin-top:70px}
+  h3{font-size:15px;margin:22px 0 8px;color:#111827}
+  .start{background:linear-gradient(120deg,#ecfdf5,#eff6ff);border:1px solid #bbf7d0;border-radius:12px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:2}
+  .start b{color:#15803d}
+  .start .s{display:inline-block;background:#22c55e;color:#fff;border-radius:50%;width:20px;height:20px;text-align:center;line-height:20px;font-size:12px;margin-right:4px}
+  .lead{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:14px 18px;font-size:13.5px;line-height:1.9;margin:14px 0}
+  table{width:100%;border-collapse:collapse;font-size:13px;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:12px 0}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:#f1f5f9;color:#334155;font-weight:700}
+  tr:nth-child(even) td{background:#fafbfc}
+  .meta th{white-space:nowrap;width:96px}
+  .modrow td{background:#eef4ff!important;color:var(--accent);font-weight:700}
+  td.r{color:var(--amber);font-weight:700;text-align:center;white-space:nowrap;font-size:15px}
+  code{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;padding:1px 6px;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#0f172a;white-space:nowrap}
+  .fn b{color:#111827}
+  .fn .d{color:var(--sub);font-size:12px;display:block;margin-top:2px}
+  .ruler{font-weight:700;color:var(--accent);white-space:nowrap}
+  .note{background:#fffbeb;border:1px solid #fde68a;border-left:3px solid #f59e0b;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#92400e;line-height:1.85;margin:12px 0}
+  .warn{background:#fff7ed;border:1px solid #fed7aa;border-left:4px solid #f97316;border-radius:10px;padding:14px 18px;margin:16px 0;font-size:13px;line-height:1.85;color:#7c2d12}
+  .warn .wt{font-weight:700;font-size:14px;color:#c2410c;margin-bottom:6px}
+  .warn table{margin:10px 0 0}
+  .warn td,.warn th{font-size:12.5px}
+  .legend span{display:inline-block;margin-right:14px;font-size:13px}
+  ul.clean{font-size:13.5px;line-height:1.9}
+  .chk{color:var(--sub);font-size:16px;text-align:center}
+</style>
+</head>
+<body>
+<header>
+  <h1>🎯 二阶段功能验收评审表 · 白话版</h1>
+  <div class="ver">对标《二阶段功能说明书 · 验收口径》＋《验收用例 30 条》 · 原型 localhost:3100</div>
+</header>
+<div class="wrap">
+
+  <div class="start">
+    <b>🚀 3 步上手</b><br>
+    <span class="s">1</span><b>打开</b> 浏览器输入 <code>http://localhost:3100/home/welcome</code><br>
+    <span class="s">2</span><b>照表点</b> 从下面第 1 条起，看「怎么测」做动作，再对「对了会怎样」<br>
+    <span class="s">3</span><b>打勾</b> 一样标 ✅、不一样标 ❌ 并写一句哪里不对 —— 测完看最后「总账」
+  </div>
+
+  <div class="lead"><b>这份表是干嘛的？</b> 把二阶段做好的功能，一条条拿到原型里<b>亲手点一遍</b>，看它"是不是真能用、做对没有"。你不用懂技术——照「怎么测」做动作，再看屏幕是不是出现「对了会怎样」里写的样子。看不懂术语？先读下面「5 句话」，全是大白话。</div>
+
+  <div class="warn">
+    <div class="wt">⚠️ 评审前必看：源文档有 3 处口径打架</div>
+    下表的"对了会怎样"是照《验收用例 30 条》写的，但《功能说明书》正文有 3 处说法不一样。<b>点验前先找产品 / eason 拍板，最终一律以 3100 实际原型为准</b>，确认后回填正确口径：
+    <table style="margin-top:10px">
+      <tr><th style="width:32px">#</th><th style="width:150px">哪里</th><th>《30 条用例》说</th><th>《说明书》正文说</th><th>建议</th></tr>
+      <tr><td>甲</td><td>VIP 等级配置·级数</td><td>固定 <b>10</b> 级（VIP0–9）</td><td>固定 <b>11</b> 级（VIP0–VIP10）</td><td>按 3100 实际级数为准</td></tr>
+      <tr><td>乙</td><td>VIP 等级配置·改法</td><td>用<b>弹窗</b>改</td><td><b>行内编辑（无弹窗）</b></td><td>本项目规范要求"行内编辑不弹窗"，倾向行内；按实际确认</td></tr>
+      <tr><td>丙</td><td>VIP 人数·列与导出</td><td>等级/名称/人数 3 列、<b>无导出</b></td><td>等级/人数/<b>占比</b>、<b>有导出</b>+查看会员</td><td>确认有没有"占比"列和导出按钮</td></tr>
+    </table>
+  </div>
+
+  <table class="meta">
+    <tr><th>测什么</th><td>跑起来的原型：先打开 <code>http://localhost:3100/home/welcome</code></td></tr>
+    <tr><th>按什么标准</th><td>《二阶段功能说明书 · 验收口径》＋《验收用例 30 条》</td></tr>
+    <tr><th>覆盖范围</th><td>会员 3 / 运营 12 / 报表 2 / 风控 2 / 配置中心 2 / 系统 1，外加会员列表和会员详情的增强</td></tr>
+    <tr><th>谁来评</th><td>默认 eason</td></tr>
+    <tr><th>怎么标</th><td class="legend"><span>✅ 没问题</span><span>❌ 有问题（写清现象）</span><span>➖ 用不上</span><span>⬜ 还没测</span></td></tr>
+  </table>
+
+  <h2>一、先记住 5 句话——好功能长什么样</h2>
+  <p style="color:var(--sub);font-size:13px;margin:4px 0 0">每个功能都该同时满足下面 5 条。心里有这 5 把尺，后面一条条点就快了。</p>
+  <table>
+    <tr><th style="width:80px">简称</th><th>一句话</th><th>怎么算"没做到"（❌ 的样子）</th></tr>
+    <tr><td class="ruler">真能用</td><td>是真能干活，不是摆样子</td><td>点搜索列表不变 / 点导出没下载到文件 / 保存了列表还是老样子</td></tr>
+    <tr><td class="ruler">有回应</td><td>每点一下都有反应；删除、批量这种"危险动作"会先问你"确定吗"</td><td>点完没任何提示 / 删除批量不问就直接干了</td></tr>
+    <tr><td class="ruler">找得到</td><td>每个功能都能从顶部菜单点进去，菜单上还带"新/原"小标</td><td>菜单里没有这一项 / 点不进去 / 没有新旧标</td></tr>
+    <tr><td class="ruler">有出处</td><td>这些功能不是凭空造的，旧后台里基本都有对应来源</td><td>找不到旧后台的对应功能</td></tr>
+    <tr><td class="ruler">一个样</td><td>全站按钮名字、长相一致（都叫"启用/停用、编辑、详情"）</td><td>同一个意思这里叫"开启"那里叫"激活"</td></tr>
+  </table>
+
+  <h2>二、一条一条测（30 条 · 已对到 3100 原型）</h2>
+  <p style="color:var(--sub);font-size:13px;margin:4px 0 0">看法：<b>功能</b>列括号里是"它是干嘛的"；<b>怎么测</b>是你要做的动作；<b>对了会怎样</b>是做对后该看到的样子。「在哪看」直接在地址栏 <code>localhost:3100</code> 后接上即可。</p>
+  <table>
+    <tr><th style="width:40px">#</th><th style="width:160px">功能（它是干嘛的）</th><th style="width:130px">在哪看</th><th>怎么测</th><th>对了会怎样（看到就算过）</th><th style="width:48px">结论</th><th style="width:120px">备注/哪里不对</th></tr>
+
+    <tr class="modrow"><td colspan="7">A. 通用部分（所有列表页都长这样，先测这块打底）</td></tr>
+    <tr><td>1</td><td class="fn"><b>筛选搜索</b><span class="d">按条件找数据</span></td><td><code>/member/user</code></td><td>上面填几个条件，点「搜索」</td><td>列表立刻只剩符合条件的，顶上弹"查询完成，共 N 条"</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>2</td><td class="fn"><b>重置</b><span class="d">一键清空条件</span></td><td><code>/member/user</code></td><td>点「重置」</td><td>条件全清空，列表回到最初样子</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>3</td><td class="fn"><b>收起筛选</b><span class="d">条件多时收纳</span></td><td><code>/member/user</code></td><td>条件超过 5 个时点「收起」</td><td>整块筛选区收起/再点展开；不到 5 个时根本没有"收起"</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>4</td><td class="fn"><b>自定义列</b><span class="d">自己挑看哪些列</span></td><td><code>/member/user</code></td><td>列很多（超 10 列）的页看右上角</td><td>有「自定义列」按钮；不到 10 列就不该有</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>5</td><td class="fn"><b>列要"保存才生效"</b></td><td><code>/member/user</code></td><td>打开自定义列，勾几个，点「保存」</td><td>点保存列才真的增减；没保存只是临时看看</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>6</td><td class="fn"><b>导出</b><span class="d">表格下载成文件</span></td><td><code>/member/user</code></td><td>找到导出按钮点一下</td><td>按钮在「自定义列」旁；点了真下载一个 CSV，并提示"已导出 N 条"</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>7</td><td class="fn"><b>翻页/每页条数</b></td><td><code>/member/user</code></td><td>改"每页显示多少条"的下拉</td><td>能选 10/20/50/100，按你选的条数重排，每页各自记住</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>8</td><td class="fn"><b>切商户数据跟着变</b></td><td><code>/member/user</code></td><td>顶部切换成另一个商户</td><td>列表自动换成那商户数据；商户视角下不再显示"商户"列</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>9</td><td class="fn"><b>危险动作要二次确认</b></td><td><code>/risk-control/abnormalMember</code></td><td>做一次删除/批量/有风险操作</td><td>先弹"确定要这么做吗"，点确定才执行，完了有提示</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>10</td><td class="fn"><b>图片放大预览</b></td><td><code>/member/user</code></td><td>鼠标停在任意小图上</td><td>浮出放大图，移开或滚动就收起</td><td class="r">⬜</td><td></td></tr>
+
+    <tr class="modrow"><td colspan="7">B. 会员管理</td></tr>
+    <tr><td>11</td><td class="fn"><b>分组管理</b><span class="d">把会员分类管理</span></td><td><code>/member/groupManage</code></td><td>点「新增分组」，填名字和自动归组门槛，保存</td><td>列表多出这条分组，提示"保存成功"</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>12</td><td class="fn"><b>"状态"只是展示</b></td><td><code>/member/groupManage</code></td><td>看「状态」这一列</td><td>只是个彩色小标（开=绿、关=灰），点不动</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>13</td><td class="fn"><b>登录日志</b><span class="d">查谁、用什么设备登过</span></td><td><code>/member/loginLog</code></td><td>按会员ID查（多个ID用空格隔开）</td><td>按这些ID筛出来；设备和浏览器指纹合并显示在一列</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>14</td><td class="fn"><b>短信验证码查询</b></td><td><code>/member/smsCode</code></td><td>按手机号查</td><td>列出验证码、什么业务、发送时间、状态；这页没有导出按钮</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>15</td><td class="fn"><b>操作按钮直接露出来</b></td><td><code>/member/user</code></td><td>看每行最后的操作列</td><td>操作直接摆出来，不藏在"更多"里</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>16</td><td class="fn"><b>两个返佣开关</b></td><td><code>/member/user</code></td><td>切「领取返佣/对上级返佣」开关（控制这人能不能领返佣、要不要给上级算返佣）</td><td>弹"确定吗"，确定后开关翻过去并提示</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>17</td><td class="fn"><b>会员详情·这人从哪来</b></td><td><code>/member/user</code> →详情</td><td>点会员ID进详情，看「归因来源」那块</td><td>红字来源字段都齐；代理数据里有"10级上下级关系图"</td><td class="r">⬜</td><td></td></tr>
+
+    <tr class="modrow"><td colspan="7">C. 运营管理</td></tr>
+    <tr><td>18</td><td class="fn"><b>站内消息</b><span class="d">给会员发站内信</span></td><td><code>/operations/inboxMessage</code></td><td>新增推送：正文用富文本、传张图、再用表格导入一批指定用户</td><td>正文能编辑、图能预览、导入用户ID会去重并报个数，保存有提示</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>19</td><td class="fn"><b>公告消息</b><span class="d">多语言公告</span></td><td><code>/operations/announcement</code></td><td>在"弹窗/滚动"两页签间切，改某语言内容</td><td>7 种语言各存各的、来回切不丢；列表里有"渠道""商户"列</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>20</td><td class="fn"><b>轮播图</b><span class="d">首页大图位</span></td><td><code>/operations/banner</code></td><td>新增时跳转方式选"跳转厂商或子游戏"</td><td>冒出"游戏大类→厂商→子游戏"三级联动；图能上传预览</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>21</td><td class="fn"><b>渠道管理</b><span class="d">推广渠道</span></td><td><code>/operations/channelConfig</code></td><td>点「新增渠道」，填渠道名、编码留空，保存</td><td>编码自动生成，列表多出这条官方渠道</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>22</td><td class="fn"><b>VIP 人数</b><span class="d">各等级有多少人</span></td><td><code>/operations/vipLevelCount</code></td><td>打开就看</td><td>就 3 列（等级/名称/人数）共 10 行，人数蓝色；没有导出、筛选、商户列</td><td class="r">⬜</td><td>⚠️ 打架点丙：列/导出待确认</td></tr>
+
+    <tr class="modrow"><td colspan="7">D. 风控管理</td></tr>
+    <tr><td>23</td><td class="fn"><b>异常会员处理</b><span class="d">处置可疑会员</span></td><td><code>/risk-control/abnormalMember</code></td><td>勾几个会员，点「批量驳回提现」</td><td>弹"确定吗"，确定后执行并提示；金额那列底部有合计</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>24</td><td class="fn"><b>同IP/同设备检测</b><span class="d">揪出关联账号</span></td><td><code>/risk-control/sameIp</code></td><td>在 4 个子页签间切，点某行"人数"蓝链</td><td>跳会员列表并自动按这IP/设备查好，提示命中多少</td><td class="r">⬜</td><td></td></tr>
+
+    <tr class="modrow"><td colspan="7">E. 配置中心</td></tr>
+    <tr><td>25</td><td class="fn"><b>VIP 等级配置</b></td><td><code>/config-center/vipConfig</code></td><td>在"VIP等级/经验值配置"两页签切，改某等级</td><td>等级固定 10 级（VIP0–9）不能加删；改时弹窗里ID藏起来、名称不让改</td><td class="r">⬜</td><td>⚠️ 打架点甲/乙：级数、改法待确认</td></tr>
+    <tr><td>26</td><td class="fn"><b>返佣等级配置</b></td><td><code>/config-center/rebateConfig</code></td><td>在"返佣费率配置"页签改某等级费率</td><td>同一级五类费率加起来超过 4% 时，被拦下不让存</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>27</td><td class="fn"><b>代理审核机制</b></td><td><code>/operations/agentAudit</code></td><td>点某行「修改返佣」</td><td>弹"5个游戏基础费率+备注"的窗；返佣状态用彩色小标显示</td><td class="r">⬜</td><td></td></tr>
+
+    <tr class="modrow"><td colspan="7">F. 报表管理</td></tr>
+    <tr><td>28</td><td class="fn"><b>代理报表</b></td><td><code>/report/agentReport</code></td><td>换统计周期（日/日区间/月/所有）再翻页</td><td>表格按周期刷新；点"下级列表"真拉出一个下钻抽屉</td><td class="r">⬜</td><td></td></tr>
+    <tr><td>29</td><td class="fn"><b>昨日返佣等级</b></td><td><code>/report/rebateLevelYesterday</code></td><td>看五个游戏的列</td><td>每游戏是"投注金额/返佣金额"两列并一组的表头；工具栏只有导出</td><td class="r">⬜</td><td></td></tr>
+
+    <tr class="modrow"><td colspan="7">G. 系统管理</td></tr>
+    <tr><td>30</td><td class="fn"><b>IP 黑名单</b></td><td><code>/system/ipBlacklist</code></td><td>点「批量导入」，粘一堆IP或传个CSV</td><td>实时识别并去重报个数，能选封禁类型/原因，确认后插到列表最上面并提示</td><td class="r">⬜</td><td></td></tr>
+  </table>
+
+  <h2>三、横向再扫一遍：每个功能页 × 5 把尺</h2>
+  <p style="color:var(--sub);font-size:13px;margin:4px 0 0">上面 30 条不一定把每页 5 把尺都覆盖到。把每页对照这 5 句话挨个打勾，谁漏了一眼就看出来。本矩阵已补齐本期全部 <b>22 个新功能页 + 会员列表/详情增强</b>；标 <b style="color:#c2410c">⚠无脚本用例</b> 的 6 页在 30 条里没有专门用例，请对照《功能说明书》对应章节逐项点验。</p>
+  <table>
+    <tr><th>功能页</th><th>在哪看</th><th class="ruler">真能用</th><th class="ruler">有回应</th><th class="ruler">找得到</th><th class="ruler">有出处</th><th class="ruler">一个样</th></tr>
+    <tr><td>会员列表</td><td><code>/member/user</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>会员详情·归因</td><td><code>/member/user</code>→详情</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>分组管理</td><td><code>/member/groupManage</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>登录日志</td><td><code>/member/loginLog</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>短信验证码查询</td><td><code>/member/smsCode</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>站内消息</td><td><code>/operations/inboxMessage</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>公告消息</td><td><code>/operations/announcement</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>轮播图管理</td><td><code>/operations/banner</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>渠道管理</td><td><code>/operations/channelConfig</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>域名管理 <small style="color:#c2410c">⚠无脚本用例</small></td><td><code>/operations/domainMgmt</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>防封救援 <small style="color:#c2410c">⚠无脚本用例</small></td><td><code>/operations/domainRescue</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>解析检测记录 <small style="color:#c2410c">⚠无脚本用例</small></td><td><code>/operations/domainResolveLog</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>会员返佣等级 <small style="color:#c2410c">⚠无脚本用例</small></td><td><code>/operations/memberRebateLevel</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>VIP 人数</td><td><code>/operations/vipLevelCount</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>VIP 升级奖励记录 <small style="color:#c2410c">⚠无脚本用例</small></td><td><code>/operations/vipRewardLog</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>VIP 操作日志 <small style="color:#c2410c">⚠无脚本用例</small></td><td><code>/operations/vipOpLog</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>代理审核机制</td><td><code>/operations/agentAudit</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>异常会员处理</td><td><code>/risk-control/abnormalMember</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>同IP/设备检测</td><td><code>/risk-control/sameIp</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>VIP 等级配置</td><td><code>/config-center/vipConfig</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>返佣等级配置</td><td><code>/config-center/rebateConfig</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>代理报表</td><td><code>/report/agentReport</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>昨日返佣等级</td><td><code>/report/rebateLevelYesterday</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+    <tr><td>IP 黑名单</td><td><code>/system/ipBlacklist</code></td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td><td class="chk">⬜</td></tr>
+  </table>
+
+  <h2>四、测完算个总账</h2>
+  <table style="max-width:420px">
+    <tr><th>统计</th><th>数</th></tr>
+    <tr><td>一共多少条</td><td>30</td></tr>
+    <tr><td>✅ 没问题</td><td>—</td></tr>
+    <tr><td>❌ 有问题</td><td>—</td></tr>
+    <tr><td>➖ 用不上</td><td>—</td></tr>
+    <tr><td>⬜ 还没测</td><td>30</td></tr>
+    <tr><td>通过率</td><td>—</td></tr>
+  </table>
+  <p><b>最后给个结论</b>（测完勾一个）：</p>
+  <ul class="clean">
+    <li>☐ 都没问题，可以进下一步</li>
+    <li>☐ 大体可以，下面这些小问题限期改完</li>
+    <li>☐ 问题较多，要返工</li>
+  </ul>
+
+  <h2>五、把发现的问题记下来</h2>
+  <table>
+    <tr><th style="width:48px">序号</th><th style="width:80px">对应哪条</th><th>看到什么现象</th><th style="width:80px">有多严重</th><th style="width:80px">谁来改</th><th style="width:110px">啥时候改完</th></tr>
+    <tr><td>1</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>2</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>3</td><td></td><td></td><td></td><td></td><td></td></tr>
+  </table>
+
+  <h2>六、几点说明（给认真核对的人）</h2>
+  <div class="note">
+    · 「在哪看」的地址以原型当前菜单为准；要是菜单里压根没挂出这个入口，「找得到」直接判 ❌，并在备注写"菜单缺这项"。<br>
+    · 这 30 条是"能动手点的"核心清单；第三部分横向矩阵已补齐本期 <b>22 个新页 + 会员列表/详情增强</b>（页数口径以《工作计划书》为权威）；其中 6 页没有脚本用例（已标 ⚠），只能靠矩阵 + 说明书点验。<br>
+    · 原说明书的原型地址是 8200，本表已统一换成 3100；要是两边点起来不一样，<b>以 3100 实际原型 + 功能说明书为准</b>，并把差异记下来。
+  </div>
+
+</div>
+</body>
+</html>

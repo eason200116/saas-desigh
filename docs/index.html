@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SaaS 多商户后台 · 文档中心</title>
+<style>
+:root{--blue:#1d4ed8;--ink:#1f2937;--sub:#64748b;--line:#e5e7eb;--bg:#f7f9fc;--white:#fff;--green:#15803d;--amber:#b45309;--purple:#6d28d9;--red:#b91c1c}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:14px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg);min-height:100vh}
+a{text-decoration:none;color:inherit}
+
+/* ── 顶部 hero ── */
+.hero{background:linear-gradient(135deg,#1d4ed8 0%,#2563eb 60%,#3b82f6 100%);color:#fff;padding:36px 40px 32px}
+.hero h1{font-size:26px;font-weight:700;margin-bottom:6px;letter-spacing:-.3px}
+.hero p{opacity:.88;font-size:13.5px}
+.hero-meta{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+.pill{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);border-radius:20px;padding:3px 13px;font-size:12px}
+.pill a{color:#fff;opacity:.9}
+.pill a:hover{opacity:1}
+
+/* ── 主体布局 ── */
+.body{max-width:1140px;margin:0 auto;padding:28px 28px 80px}
+
+/* ── 分组 ── */
+.section{margin-bottom:32px}
+.sec-hd{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.sec-hd h2{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--sub)}
+.sec-hd::after{content:'';flex:1;height:1px;background:var(--line)}
+
+/* ── 卡片网格 ── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
+
+/* ── 单张链接卡 ── */
+.card{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;transition:box-shadow .15s,border-color .15s}
+.card:hover{border-color:#93c5fd;box-shadow:0 2px 10px rgba(37,99,235,.08)}
+.card-ic{flex-shrink:0;width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.card-body{min-width:0;flex:1}
+.card-name{font-size:13.5px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.card-desc{font-size:12px;color:var(--sub);line-height:1.5}
+.card-url{font-size:11px;font-family:ui-monospace,Menlo,monospace;color:#94a3b8;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tag{font-size:10px;font-weight:600;padding:1px 6px;border-radius:4px;white-space:nowrap}
+.t-core{background:#dbeafe;color:#1e40af}
+.t-acc{background:#dcfce7;color:#166534}
+.t-ref{background:#fef3c7;color:#92400e}
+.t-new{background:#fce7f3;color:#9d174d}
+.t-gray{background:#f1f5f9;color:#475569}
+
+/* ── 原型快捷入口 ── */
+.proto-box{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.proto-title{font-size:13px;font-weight:600;margin-bottom:10px;color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;font-family:ui-monospace,Menlo,monospace;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:3px 10px;color:var(--sub);white-space:nowrap;transition:border-color .12s,color .12s}
+.chip:hover{border-color:#93c5fd;color:var(--blue)}
+
+/* ── 底部 ── */
+.footer{text-align:center;padding:20px 0 40px;font-size:12px;color:#94a3b8}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>SaaS 多商户后台 · 文档中心</h1>
+  <p>二阶段功能说明书 / 验收用例 / 归因矩阵 / 迁移对比 · 所有文档在此汇总</p>
+  <div class="hero-meta">
+    <span class="pill">功能说明书 v1.15</span>
+    <span class="pill">原型 <a href="http://localhost:8200/" target="_blank">localhost:8200 ↗</a></span>
+    <span class="pill">SIT 后台 <a href="http://arcloud.top" target="_blank">arcloud.top ↗</a></span>
+  </div>
+</div>
+
+<div class="body">
+
+  <!-- ① 核心文档 -->
+  <div class="section">
+    <div class="sec-hd"><h2>核心文档</h2></div>
+    <div class="grid">
+      <a class="card" href="saas-phase2-feature-spec.html" target="_blank">
+        <div class="card-ic" style="background:#dbeafe">📋</div>
+        <div class="card-body">
+          <div class="card-name">二阶段功能说明书 <span class="tag t-core">主文档</span></div>
+          <div class="card-desc">全模块功能描述 + 原型截图 + 归因矩阵，v1.15 最新</div>
+          <div class="card-url">saas-phase2-feature-spec.html</div>
+        </div>
+      </a>
+      <a class="card" href="saas-phase2-acceptance-cases.html" target="_blank">
+        <div class="card-ic" style="background:#dcfce7">✅</div>
+        <div class="card-body">
+          <div class="card-name">二阶段验收用例 <span class="tag t-acc">验收</span></div>
+          <div class="card-desc">逐功能可执行用例，对照原型一条条点验，验收人默认 eason</div>
+          <div class="card-url">saas-phase2-acceptance-cases.html</div>
+        </div>
+      </a>
+      <a class="card" href="saas-prd-phase2.html" target="_blank">
+        <div class="card-ic" style="background:#ede9fe">📝</div>
+        <div class="card-body">
+          <div class="card-name">二阶段 PRD</div>
+          <div class="card-desc">产品需求文档正式版，含业务目标与验收口径</div>
+          <div class="card-url">saas-prd-phase2.html</div>
+        </div>
+      </a>
+      <a class="card" href="saas-phase2-product-intro.html" target="_blank">
+        <div class="card-ic" style="background:#ede9fe">🎯</div>
+        <div class="card-body">
+          <div class="card-name">二阶段产品介绍</div>
+          <div class="card-desc">对外汇报 / 白话版，普通人也能看懂的功能介绍</div>
+          <div class="card-url">saas-phase2-product-intro.html</div>
+        </div>
+      </a>
+      <a class="card" href="saas-workplan.html" target="_blank">
+        <div class="card-ic" style="background:#fef3c7">📅</div>
+        <div class="card-body">
+          <div class="card-name">工作计划书 <span class="tag t-ref">计划</span></div>
+          <div class="card-desc">任务进度、里程碑、负责人、优先级一览</div>
+          <div class="card-url">saas-workplan.html</div>
+        </div>
+      </a>
+      <a class="card" href="05-phase2-acceptance-review.html" target="_blank">
+        <div class="card-ic" style="background:#dcfce7">📊</div>
+        <div class="card-body">
+          <div class="card-name">验收评审表（白话版）<span class="tag t-acc">验收</span></div>
+          <div class="card-desc">功能逐条打分的评审表，适合非技术干系人</div>
+          <div class="card-url">05-phase2-acceptance-review.html</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ② 归因 · 推广专题 -->
+  <div class="section">
+    <div class="sec-hd"><h2>归因 · 推广专题</h2></div>
+    <div class="grid">
+      <a class="card" href="member-detail-field-glossary-full.html" target="_blank">
+        <div class="card-ic" style="background:#dbeafe">📖</div>
+        <div class="card-body">
+          <div class="card-name">会员详情 · 全字段说明</div>
+          <div class="card-desc">归因穷举矩阵 + 渠道命名规则 + 所有字段名词解释</div>
+          <div class="card-url">member-detail-field-glossary-full.html</div>
+        </div>
+      </a>
+      <a class="card" href="glossary.html" target="_blank">
+        <div class="card-ic" style="background:#dbeafe">🔤</div>
+        <div class="card-body">
+          <div class="card-name">新增字段说明（名词解释）</div>
+          <div class="card-desc">本期新增归因字段的应用场景与异常情况说明</div>
+          <div class="card-url">glossary.html</div>
+        </div>
+      </a>
+      <a class="card" href="attribution-flow.html" target="_blank">
+        <div class="card-ic" style="background:#fef3c7">🔀</div>
+        <div class="card-body">
+          <div class="card-name">归因判定流程图</div>
+          <div class="card-desc">5大归因类型优先级流程可视化（广告投放优先）</div>
+          <div class="card-url">attribution-flow.html</div>
+        </div>
+      </a>
+      <a class="card" href="attribution-matrix-4.6.html" target="_blank">
+        <div class="card-ic" style="background:#fef3c7">📊</div>
+        <div class="card-body">
+          <div class="card-name">归因穷举矩阵 §4.6</div>
+          <div class="card-desc">5类型 × 18场景完整判定标识表，含触发条件与页面呈现</div>
+          <div class="card-url">attribution-matrix-4.6.html</div>
+        </div>
+      </a>
+      <a class="card" href="promo-attribution-workflow.html" target="_blank">
+        <div class="card-ic" style="background:#dcfce7">🔗</div>
+        <div class="card-body">
+          <div class="card-name">推广→归因端到端工作流</div>
+          <div class="card-desc">从渠道创建到归因固化的完整操作链路</div>
+          <div class="card-url">promo-attribution-workflow.html</div>
+        </div>
+      </a>
+      <a class="card" href="promo-distribution-config.html" target="_blank">
+        <div class="card-ic" style="background:#dcfce7">⚙️</div>
+        <div class="card-body">
+          <div class="card-name">推广分发配置说明</div>
+          <div class="card-desc">渠道 / 域名 / 防封救援 / 解析检测专项配置说明</div>
+          <div class="card-url">promo-distribution-config.html</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ③ 迁移 · 对比 -->
+  <div class="section">
+    <div class="sec-hd"><h2>迁移 · 对比 · 审计</h2></div>
+    <div class="grid">
+      <a class="card" href="sit-tenant-admin-map.html" target="_blank">
+        <div class="card-ic" style="background:#fee2e2">🗺️</div>
+        <div class="card-body">
+          <div class="card-name">SIT 租户后台图谱</div>
+          <div class="card-desc">迁移源系统完整菜单树 + 七大页面原型与交互规律</div>
+          <div class="card-url">sit-tenant-admin-map.html</div>
+        </div>
+      </a>
+      <a class="card" href="migration-progress.html" target="_blank">
+        <div class="card-ic" style="background:#fee2e2">🔄</div>
+        <div class="card-body">
+          <div class="card-name">SitINR ↔ SaaS 迁移对比</div>
+          <div class="card-desc">逐页迁移进度与功能差异标注</div>
+          <div class="card-url">migration-progress.html</div>
+        </div>
+      </a>
+      <a class="card" href="saas-8200-vs-sit-acceptance.html" target="_blank">
+        <div class="card-ic" style="background:#fee2e2">⚖️</div>
+        <div class="card-body">
+          <div class="card-name">8200 vs SIT 验收清单</div>
+          <div class="card-desc">目标后台对照 SIT 的逐功能差异清单</div>
+          <div class="card-url">saas-8200-vs-sit-acceptance.html</div>
+        </div>
+      </a>
+      <a class="card" href="sitinr-feature-map.html" target="_blank">
+        <div class="card-ic" style="background:#f1f5f9">📋</div>
+        <div class="card-body">
+          <div class="card-name">SitINR 功能特性清单</div>
+          <div class="card-desc">源系统全功能点分类索引</div>
+          <div class="card-url">sitinr-feature-map.html</div>
+        </div>
+      </a>
+      <a class="card" href="saas-merchant-scope-audit.html" target="_blank">
+        <div class="card-ic" style="background:#f1f5f9">🔍</div>
+        <div class="card-body">
+          <div class="card-name">商户作用域审计</div>
+          <div class="card-desc">配置弹窗商户维度一致性核查报告</div>
+          <div class="card-url">saas-merchant-scope-audit.html</div>
+        </div>
+      </a>
+      <a class="card" href="feature-inventory.html" target="_blank">
+        <div class="card-ic" style="background:#f1f5f9">📑</div>
+        <div class="card-body">
+          <div class="card-name">V1 全功能点清单</div>
+          <div class="card-desc">按模块分类的完整功能点索引</div>
+          <div class="card-url">feature-inventory.html</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ④ 设计参考 -->
+  <div class="section">
+    <div class="sec-hd"><h2>设计参考 · 辅助文档</h2></div>
+    <div class="grid">
+      <a class="card" href="group-to-member-hierarchy.html" target="_blank">
+        <div class="card-ic" style="background:#ede9fe">🏗️</div>
+        <div class="card-body">
+          <div class="card-name">核心层级体系介绍</div>
+          <div class="card-desc">集团→市场→商户→域名→渠道→会员层级图解</div>
+          <div class="card-url">group-to-member-hierarchy.html</div>
+        </div>
+      </a>
+      <a class="card" href="v2-core-flows.html" target="_blank">
+        <div class="card-ic" style="background:#ede9fe">🌊</div>
+        <div class="card-body">
+          <div class="card-name">V2 核心体系设计</div>
+          <div class="card-desc">主线流程设计主线版</div>
+          <div class="card-url">v2-core-flows.html</div>
+        </div>
+      </a>
+      <a class="card" href="saas-design-workflow.html" target="_blank">
+        <div class="card-ic" style="background:#dcfce7">🛤️</div>
+        <div class="card-body">
+          <div class="card-name">设计标准工作流</div>
+          <div class="card-desc">从需求到交付的标准化流程文档</div>
+          <div class="card-url">saas-design-workflow.html</div>
+        </div>
+      </a>
+      <a class="card" href="ai-prompt-template.html" target="_blank">
+        <div class="card-ic" style="background:#dcfce7">🤖</div>
+        <div class="card-body">
+          <div class="card-name">AI 提需求模板</div>
+          <div class="card-desc">产品向 AI 提需求的标准提示词范本</div>
+          <div class="card-url">ai-prompt-template.html</div>
+        </div>
+      </a>
+      <a class="card" href="%E4%BA%A7%E5%93%81%E5%B7%A5%E4%BD%9C%E6%B5%81.html" target="_blank">
+        <div class="card-ic" style="background:#dcfce7">▶️</div>
+        <div class="card-body">
+          <div class="card-name">产品工作流</div>
+          <div class="card-desc">从需求大纲到最终呈现的完整流程</div>
+          <div class="card-url">产品工作流.html</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ⑤ 原型快捷入口 -->
+  <div class="section">
+    <div class="sec-hd"><h2>原型快捷入口 · localhost:8200</h2></div>
+    <div class="proto-box">
+      <div class="chips" id="chips"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">SaaS 多商户后台 · 二阶段 · 文档中心 &nbsp;|&nbsp; 功能说明书 v1.15 &nbsp;|&nbsp; 本地预览 localhost:8753</div>
+
+<script>
+var ROUTES=[
+  ['会员列表','member-list'],['会员分组','user-group'],['登录日志','login-log'],['短信验证码','sms-code'],
+  ['渠道管理','channel-config'],['域名管理','domain-mgmt'],['防封救援','domain-rescue'],['解析检测记录','domain-resolve-log'],
+  ['站内消息','inbox-message'],['公告消息','announcement-msg'],['轮播图管理','banner-mgmt'],
+  ['VIP升级记录','vip-reward-log'],['VIP人数','vip-level-count'],['VIP操作日志','vip-op-log'],
+  ['会员返佣等级','member-rebate-level'],['代理审核机制','agent-audit'],
+  ['代理报表','agent-report'],['昨日返佣等级','rebate-level-yesterday'],
+  ['异常会员','abnormal-member'],['同IP/设备','same-ip'],
+  ['VIP配置','vip-level-config'],['返佣配置','rebate-level'],
+  ['IP黑名单','ip-blacklist'],['系统用户','sys-users'],
+  ['会员详情','member-list?armd=member-detail']
+];
+var box=document.getElementById('chips');
+ROUTES.forEach(function(r){
+  var a=document.createElement('a');
+  a.className='chip'; a.textContent=r[0];
+  a.href='http://localhost:8200/?open='+r[1]; a.target='_blank';
+  box.appendChild(a);
+});
+</script>
+<style>
+.proto-box{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.chip{font-size:12px;font-family:ui-monospace,Menlo,monospace;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:3px 10px;color:var(--sub);white-space:nowrap;text-decoration:none;display:inline-block;transition:border-color .12s,color .12s}
+.chip:hover{border-color:#93c5fd;color:var(--blue)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+</style>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><title>二阶段 · 验收口径</title></head>
+<body>
+<div class="wrap-accept">
+
+  <h2>汇总 · 验收 5 维度</h2>
+  <p class="muted">每个功能页都应同时满足以下 5 条；逐条点验见下方「验收用例清单」。</p>
+  <table>
+    <tr><th style="width:120px">维度</th><th>口径要求</th><th>不通过典型</th></tr>
+    <tr><td class="f">真实交互</td><td>导出真实下载 / 搜索真实过滤 / 排序真实重排 / 保存真实回写 / 删除真实移除 / 翻日真实切数据</td><td>点了无反应、假数据不变、导出无文件</td></tr>
+    <tr><td class="f">反馈完整</td><td>每个操作必有 Toast 或弹窗；危险与批量操作必有二次确认</td><td>操作后无提示、删除批量不问就执行</td></tr>
+    <tr><td class="f">入口完整</td><td>每个已开放页可从顶部菜单进入，菜单带 新/原/移 角标</td><td>菜单缺项、进不去、缺角标</td></tr>
+    <tr><td class="f">来源可溯</td><td>已建页可在 SitINR 源站找到同名/同义源页；推广分发链为 SaaS 全新强化</td><td>找不到迁移源、归属错位</td></tr>
+    <tr><td class="f">控件统一</td><td>遵循通用骨架，名词与控件全局一致；字段/行内编辑页内完成不弹窗</td><td>同义按钮命名不一、骨架不一致</td></tr>
+  </table>
+
+  <h2>验收用例清单（30 条 · 路由对到 3100）</h2>
+  <p class="muted">逐条按「验收要点」在原型操作核对；结论标 ✅通过 / ❌不通过 / ➖不适用（默认 ⬜待测）。<span class="acc-built">蓝标</span>＝本期原型已增强项。</p>
+  <table>
+    <tr><th style="width:48px">编号</th><th style="width:150px">功能</th><th style="width:230px">路由</th><th>验收要点（操作 → 预期）</th><th style="width:54px">结论</th></tr>
+    <tr class="mod"><td colspan="5">A · 通用（所有列表页）</td></tr>
+    <tr><td>1</td><td>筛选搜索</td><td><code>/member/user</code></td><td>填条件点搜索 → 即时过滤 + Toast「查询完成，共 N 条」</td><td>⬜</td></tr>
+    <tr><td>2</td><td>重置</td><td><code>/member/user</code></td><td>点重置 → 清空条件并还原列表</td><td>⬜</td></tr>
+    <tr><td>3</td><td>收起筛选</td><td><code>/member/user</code></td><td>条件 &gt;5 点收起 → 整块折叠；≤5 无「收起」</td><td>⬜</td></tr>
+    <tr><td>4</td><td>自定义列</td><td><code>/member/user</code></td><td>列 &gt;10 出现「自定义列」；≤10 不出现</td><td>⬜</td></tr>
+    <tr><td>5</td><td>列保存才生效</td><td><code>/member/user</code></td><td>勾选 → 点保存后列才增减（未保存为临时态）</td><td>⬜</td></tr>
+    <tr><td>6</td><td>导出</td><td><code>/member/user</code></td><td>导出在「自定义列」旁，点击真实下载 CSV + Toast「已导出 N 条」</td><td>⬜</td></tr>
+    <tr><td>7</td><td>翻页</td><td><code>/member/user</code></td><td>可选 10/20/50/100，按选定条数重排、各页独立记忆</td><td>⬜</td></tr>
+    <tr><td>8</td><td>切商户</td><td><code>/member/user</code></td><td>顶栏切商户 → 列表自动换该商户数据；商户视角隐藏「商户」列</td><td>⬜</td></tr>
+    <tr><td>9</td><td>危险二次确认</td><td><code>/risk-control/abnormalMember</code></td><td>删除/批量/危险操作 → 先弹二次确认 → 确定后执行 + Toast</td><td>⬜</td></tr>
+    <tr><td>10</td><td>图片放大</td><td><code>/member/user</code></td><td>悬停小图 → 浮层放大，移开/滚动收起</td><td>⬜</td></tr>
+    <tr class="mod"><td colspan="5">B · 会员管理</td></tr>
+    <tr><td>11</td><td>分组管理</td><td><code>/member/groupManage</code></td><td>新增分组填名称+自动归组阈值 → 列表新增 + 保存成功</td><td>⬜</td></tr>
+    <tr><td>12</td><td>分组状态</td><td><code>/member/groupManage</code></td><td>状态列为行内开关（点击切换 + Toast）</td><td>⬜</td></tr>
+    <tr><td>13</td><td>登录日志</td><td><code>/member/loginLog</code></td><td>多 ID 空格查 → 过滤；设备与浏览器指纹融合一列</td><td>⬜</td></tr>
+    <tr><td>14</td><td>短信验证码查询</td><td><code>/member/smsCode</code></td><td>按手机号查；列出验证码/业务类型/时间/状态；无导出</td><td>⬜</td></tr>
+    <tr><td>15</td><td>会员列表操作列</td><td><code>/member/user</code></td><td>操作并排直接显示「修改密码/三方信息」（无「更多»」）</td><td>⬜</td></tr>
+    <tr><td>16</td><td>返佣开关</td><td><code>/member/user</code></td><td>切「领取/对上级返佣」→ 二次确认 → 翻转 + Toast</td><td>⬜</td></tr>
+    <tr><td>17</td><td>会员详情归因</td><td><code>/member/user → 详情</code></td><td>下钻详情 → 红字归因字段齐；代理数据含 10 级关系图；用户积分编辑真实回写</td><td>⬜</td></tr>
+    <tr class="mod"><td colspan="5">C · 运营管理</td></tr>
+    <tr><td>18</td><td>站内消息</td><td><code>/operations/inboxMessage</code></td><td>三页签（弹窗/滚动/推送）；新增推送消息</td><td>⬜</td></tr>
+    <tr><td>19</td><td>公告消息</td><td><code>/operations/announcement</code></td><td>单列表 + 单表单（标题/图片/发布时间/角色描述/状态/内容）</td><td>⬜</td></tr>
+    <tr><td>20</td><td>轮播图管理</td><td><code>/operations/banner</code></td><td>跳转方式选「跳转子游戏」→ 大类→厂商→子游戏 三级联动；图可预览</td><td>⬜</td></tr>
+    <tr><td>21</td><td>渠道管理</td><td><code>/operations/channelConfig</code></td><td>新增渠道（编码手填）→ 列表新增；工具栏含批量设置赠送/调整推广接入</td><td>⬜</td></tr>
+    <tr><td>22</td><td>VIP人数</td><td><code>/operations/vipLevelCount</code></td><td>4 列（等级ID/名称/人数/<b>人数占比进度条</b>）；人数蓝链下钻</td><td>⬜</td></tr>
+    <tr class="mod"><td colspan="5">D · 风控管理</td></tr>
+    <tr><td>23</td><td>异常会员处理</td><td><code>/risk-control/abnormalMember</code></td><td>勾选会员「批量驳回提现」→ 二次确认 → 执行 + Toast</td><td>⬜</td></tr>
+    <tr><td>24</td><td>同IP/设备检测</td><td><code>/risk-control/sameIp</code></td><td>4 子页签切换；点「人数」蓝链 → 带标识下钻会员列表并自动查询</td><td>⬜</td></tr>
+    <tr class="mod"><td colspan="5">E · 配置中心</td></tr>
+    <tr><td>25</td><td>VIP配置</td><td><code>/config-center/vipConfig</code></td><td>双页签；等级固定 VIP0–VIP10 共 11 级不可增删；改用行内编辑（无弹窗）</td><td>⬜</td></tr>
+    <tr><td>26</td><td>返佣配置</td><td><code>/config-center/rebateConfig</code></td><td>返佣费率配置：同级五类费率之和 &gt;5% 时校验拦截</td><td>⬜</td></tr>
+    <tr><td>27</td><td>代理审核机制</td><td><code>/operations/agentAudit</code></td><td>「修改返佣」弹 5 游戏基础费率+备注；返佣状态以 badge 展示</td><td>⬜</td></tr>
+    <tr class="mod"><td colspan="5">F · 报表管理</td></tr>
+    <tr><td>28</td><td>代理报表 <span class="acc-built">增强</span></td><td><code>/report/agentReport</code></td><td>切统计周期（日/日区间/月/所有）表格<b>真实刷新</b>；点「下级列表」打开<b>下钻抽屉</b></td><td>⬜</td></tr>
+    <tr><td>29</td><td>昨日返佣等级</td><td><code>/operations/rebateLevelYesterday</code></td><td>纯查询页：列含返佣等级/团队人数/团队充值/计算·派发返佣；无工具栏/导出/行操作</td><td>⬜</td></tr>
+    <tr class="mod"><td colspan="5">G · 系统管理</td></tr>
+    <tr><td>30</td><td>IP黑名单 <span class="acc-built">增强</span></td><td><code>/system/ipBlacklist</code></td><td>「批量导入」粘贴/上传 .csv → <b>实时识别合法 IPv4 + 去重(≤500) + 忽略无效计数</b> → 确认 → 插入列表顶部 + Toast「成功导入 N 条」</td><td>⬜</td></tr>
+  </table>
+  <p class="muted">说明：原说明书原型口径为 8200，本表已统一对到你这边的 3100；若两侧点起来不一致，以 3100 实际原型 + 功能说明书为准。</p>
+
+</div>
+</body></html>

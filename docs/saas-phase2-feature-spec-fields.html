@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>归因红字字段 · 完整词条（§4.3–4.5）</title>
+<style>
+  :root{--blue:#1d4ed8;--ink:#1f2937;--sub:#64748b;--line:#e5e7eb;--bg:#f7f9fc}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
+  .wrap{max-width:none;margin:0;padding:24px 32px 80px}
+  .hero{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;border-radius:14px;padding:26px 28px;margin-bottom:22px}
+  .hero h1{margin:0 0 6px;font-size:24px}
+  .hero p{margin:0;opacity:.92;font-size:13.5px}
+  .meta{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+  .pill{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:3px 12px;font-size:12px}
+  .layout{display:flex;gap:26px;align-items:flex-start}
+  .toc{position:sticky;top:16px;width:216px;flex:none;max-height:calc(100vh - 32px);overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 10px}
+  .toc b{color:var(--blue);font-size:13px;display:block;padding:2px 10px 8px}
+  .toc a{display:block;margin:0 0 2px;padding:5px 10px;border-radius:7px;color:#334155;text-decoration:none;font-size:12.5px;line-height:1.5}
+  .toc a:hover{background:#eff6ff;color:var(--blue)}
+  .main{flex:1;min-width:0}
+  .main h2:first-child{margin-top:0}
+  @media(max-width:900px){.layout{display:block}.toc{position:static;width:auto;margin-bottom:18px}}
+  .mk-y{color:#16a34a;font-weight:700}.mk-n{color:#dc2626;font-weight:700}.mk-i{color:#94a3b8;font-weight:700}
+  .grp-cell{background:#f0f4f8;font-weight:700;color:var(--blue);vertical-align:middle!important}
+  .rule-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;background:#f6f8fb;border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+  .mx-scroll{overflow:auto;max-height:72vh}
+  .mx-scroll table{border-collapse:separate;border-spacing:0;table-layout:fixed;width:1110px;margin:0}
+  .mx-scroll th,.mx-scroll td{padding:6px 7px}
+  .mx-scroll thead th{position:sticky;top:0;z-index:5;background:#f1f5f9;white-space:normal;word-break:break-word}
+  .mx-scroll td{word-break:break-word}
+  .mx-scroll td.mxfz{position:sticky;z-index:4;background:#fff}
+  .mx-scroll th.mxfz{position:sticky;z-index:8}
+  .mx-scroll td.mxfz.grp-cell{background:#f0f4f8}
+  .mx-scroll .mxfz-last{box-shadow:2px 0 6px rgba(15,23,42,.10)}
+  h2{font-size:18px;color:var(--blue);margin:30px 0 6px;padding-bottom:8px;border-bottom:2px solid #eef2f7}
+  h3{font-size:15px;color:var(--ink);margin:20px 0 8px}
+  h4{font-size:13.5px;color:#334155;margin:14px 0 6px}
+  .sub{color:var(--sub);font-size:13px;margin:2px 0 12px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+  th,td{border:1px solid var(--line);padding:7px 11px;text-align:left;vertical-align:top}
+  th{background:#f1f5f9;color:#334155;font-weight:700;white-space:nowrap}
+  td.k{width:96px;color:var(--sub);white-space:nowrap;background:#fafbfc}
+  .tag{display:inline-block;font-size:11px;border-radius:6px;padding:1px 8px;font-weight:600;vertical-align:middle}
+  .t-new{background:#fef3c7;color:#b45309}
+  .t-core{background:#ede9fe;color:#6d28d9}
+  .t-form{background:#dbeafe;color:#1d4ed8}
+  ul.feat{margin:6px 0;padding-left:20px}
+  ul.feat li{margin:5px 0}
+  ol.flow{margin:6px 0;padding-left:22px}
+  ol.flow li{margin:4px 0}
+  .note{background:#f8fafc;border:1px solid #eef2f7;border-left:3px solid var(--blue);border-radius:8px;padding:10px 14px;font-size:12.5px;color:var(--sub);line-height:1.85;margin:10px 0}
+  .op{display:inline-block;background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:6px;padding:0 8px;font-size:12px;margin:1px 3px 1px 0;white-space:nowrap}
+  .op.warn{background:#fef2f2;border-color:#fecaca;color:#b91c1c}
+  .op.gray{background:#f1f5f9;border-color:#e2e8f0;color:#475569}
+  img.shot{display:block;width:100%;max-width:1400px;border:1px solid var(--line);border-radius:10px;margin:10px 0 4px;box-shadow:0 2px 10px rgba(15,23,42,.07)}
+  .shot-cap{font-size:12px;color:var(--sub);margin:0 0 14px}
+  a.golink{display:inline-block;margin-left:8px;font-size:12px;font-weight:600;color:#2563eb;text-decoration:none;border:1px solid #bfdbfe;border-radius:6px;padding:0 9px;background:#eff6ff;vertical-align:middle;white-space:nowrap}
+  a.golink:hover{background:#dbeafe}
+  a.lk{color:#2563eb;text-decoration:none}
+  a.lk:hover{text-decoration:underline}
+  .dlinks{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .dlink{display:flex;align-items:center;gap:11px;padding:11px 14px;border:1px solid var(--line);border-radius:10px;text-decoration:none;background:#fff;transition:.12s}
+  .dlink:hover{border-color:#bfdbfe;background:#f7faff;transform:translateY(-1px)}
+  .dlink .di{width:32px;height:32px;border-radius:8px;background:#eff6ff;display:flex;align-items:center;justify-content:center;font-size:15px;flex:none}
+  .dlink .dx{display:flex;flex-direction:column;min-width:0}
+  .dlink .dx b{font-size:13px;color:#1f2937;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dlink .dx i{font-style:normal;font-size:12px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dlink.hi{background:linear-gradient(120deg,#2563eb,#3b82f6);border-color:transparent}
+  .dlink.hi .dx b,.dlink.hi .dx i{color:#fff}
+  .dlink.hi .dx i{opacity:.85}
+  @media(max-width:760px){.dlinks{grid-template-columns:1fr}}
+  .toc-grp{display:block;margin:10px 2px 4px;padding:6px 10px 2px;font-size:11px;font-weight:700;color:#94a3b8;letter-spacing:1px;border-top:1px dashed #eef2f7}
+  .toc .toc-grp:first-of-type{border-top:none;margin-top:0;padding-top:0}
+  .toc a em{font-style:normal;float:right;font-size:11px;color:#94a3b8}
+  .plain{background:#fffbeb;border:1px solid #fde68a;border-radius:9px;padding:9px 13px;font-size:12.8px;color:#92400e;line-height:1.85;margin:8px 0 12px}
+  .plain::before{content:"💡 白话版：";font-weight:700;color:#b45309}
+  .shotgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 4px}
+  .shotgrid figure{margin:0}
+  .shotgrid img{width:100%;border:1px solid var(--line);border-radius:8px;box-shadow:0 2px 8px rgba(15,42,74,.06)}
+  .shotgrid figcaption{font-size:12px;color:var(--sub);margin-top:3px;text-align:center}
+  @media(max-width:760px){.shotgrid{grid-template-columns:1fr}}
+
+    .attr-prev{color:var(--blue);font-weight:700;cursor:pointer;background:#eff6ff;border:1px solid #bfdbfe;border-radius:5px;padding:1px 6px;white-space:nowrap;display:inline-block}.attr-prev:hover{background:#dbeafe}.attr-prev .pv-i{font-style:normal;font-size:10px;color:#60a5fa;margin-left:4px}
+    .am-mask{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:9999;display:none;align-items:center;justify-content:center}
+    .am-mask.show{display:flex}
+    .am-box{background:#fff;border-radius:14px;width:min(1180px,94vw);max-height:88vh;overflow:auto;padding:20px 22px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+    .am-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .am-h h3{margin:0;font-size:16px;color:#1f2937}
+    .am-x{cursor:pointer;color:#94a3b8;font-size:20px;border:0;background:none;line-height:1}
+    .am-case{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+    .am-lb{font-size:11px;font-weight:700;color:#b45309;background:#fef3c7;border-radius:5px;padding:3px 9px}
+    .am-code{font-size:11px;font-weight:700;color:#7c3aed;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:5px;padding:3px 8px}
+    .am-node{background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:4px 10px;color:#b45309;font-weight:600;font-size:12.5px}
+    .am-ar{color:#cbd5e1;font-weight:700}
+    .am-flow{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap}
+    .am-step{flex:1 1 0;min-width:175px;border:1px solid #e5e7eb;border-radius:10px;background:#fafbfc;padding:11px 13px}
+    .am-step.hot{border-color:#f59e0b;background:#fffbeb}
+    .am-sn{display:inline-flex;width:20px;height:20px;border-radius:50%;background:#eef2f7;color:#475569;font-size:11px;font-weight:700;align-items:center;justify-content:center;margin-right:6px}
+    .am-step.hot .am-sn{background:#f59e0b;color:#fff}
+    .am-sh{font-size:12.5px;font-weight:700;color:#1f2937;margin-bottom:6px}
+    .am-sf span{display:block;font-size:11.5px;color:#64748b;margin-top:4px;line-height:1.5}
+    .am-sf b{color:#d4380d;font-weight:600}
+    .am-step.gr .am-sn{background:#16a34a;color:#fff}
+    .am-aar{display:flex;align-items:center;color:#cbd5e1;font-weight:700;font-size:15px}
+  .mini-prev{cursor:pointer;border:1px solid #bfdbfe;border-radius:8px;background:#f8fafc;padding:7px 6px;text-align:center;transition:.12s}.mini-prev:hover{background:#eff6ff;border-color:#2563eb}.mini-prev .mp-dots{display:flex;gap:4px;justify-content:center;align-items:center}.mini-prev .mp-dots i{width:9px;height:9px;border-radius:2px;display:inline-block;background:#93c5fd}.mini-prev .mp-dots i:nth-child(1){background:#2563eb}.mini-prev .mp-dots i:nth-child(3){background:#f59e0b}.mini-prev .mp-dots i:nth-child(5){background:#16a34a}.mini-prev .mp-label{font-size:10.5px;color:#2563eb;font-weight:700;margin-top:5px;white-space:nowrap}
+  </style>
+<style>body{padding:8px 18px 40px}</style>
+</head>
+<body>
+<h2>归因红字字段 · 完整词条（§4.3–4.5）</h2><h3>4.3 归因、来源 + 注册设备字段（14）</h3>
+    <table>
+      <tr><th style="width:150px">字段</th><th>定义</th><th style="width:190px">主要用途</th></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">邀请人</b><br><code style="font-size:11px;color:#7c3aed">inviterId</code></td><td>邀请码发起人 ID（通常＝直接上级代理），点击可下钻该会员详情。</td><td>裂变追踪、代理树构建、佣金归属判定</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">访问端</b><br><code style="font-size:11px;color:#7c3aed">accessClient</code></td><td>最近一次访问的客户端类型：pc / h5 / 安卓 / ios / 安卓壳包 / ios壳包。</td><td>设备分布分析、端侧问题定位、风控识别</td></tr>
+      <tr id="f-main"><td style="white-space:nowrap"><b style="color:#d4380d">主归因</b><br><code style="font-size:11px;color:#7c3aed">mainAttribution</code></td><td>注册来源唯一归类：广告投放 / 邀请来源 / 官方直推 / 自然流量（解析失败并入自然流量）；优先级唯一、命中即停。</td><td>获客成本核算、渠道质量评估、ROI 口径</td></tr>
+      <tr id="f-platform"><td style="white-space:nowrap"><b style="color:#d4380d">推广三方类型</b><br><code style="font-size:11px;color:#7c3aed">promoPlatform</code></td><td>识别出的外部推广平台：带平台点击ID精确识别（Google-gclid / Meta-fbclid / TikTok-ttclid 等）。</td><td>平台维度投放效果与对账</td></tr>
+      <tr id="f-regch"><td style="white-space:nowrap"><b style="color:#d4380d">注册渠道</b><br><code style="font-size:11px;color:#7c3aed">regChannelId</code></td><td>注册时命中的后台定义渠道（如 apk-fb-me001-01＝Facebook-鳗鱼01；邀请/自然流量记实际入口的官方渠道）。</td><td>渠道维度注册转化统计与结算</td></tr>
+      <tr id="f-loginch"><td style="white-space:nowrap"><b style="color:#d4380d">登录渠道</b><br><code style="font-size:11px;color:#7c3aed">loginChannelId</code></td><td>最近一次登录命中的渠道 ID，可与注册渠道不同。</td><td>活跃来源分析、再营销渠道评估</td></tr>
+      <tr id="f-se"><td style="white-space:nowrap"><b style="color:#d4380d">搜索引擎</b><br><code style="font-size:11px;color:#7c3aed">searchEngine</code></td><td>由 referrer 来源域名识别（Google / Bing / Yahoo / DuckDuckGo 等，未识别记「其他」，无 referrer 记「直接访问」）。</td><td>SEO 效果评估、自然流量质量</td></tr>
+      <tr id="f-invcode"><td style="white-space:nowrap"><b style="color:#d4380d">邀请码</b><br><code style="font-size:11px;color:#7c3aed">inviteCode</code></td><td>注册实际使用的邀请码，关联邀请人 / 代理ID。</td><td>代理树绑定、裂变奖励触发</td></tr>
+      <tr id="f-invtype"><td style="white-space:nowrap"><b style="color:#d4380d">邀请类型</b><br><code style="font-size:11px;color:#7c3aed">invite_type</code></td><td>邀请来源细分：正常邀请（个人码/链接）/ 转盘活动邀请 / 任务活动邀请。</td><td>区分个人邀请与活动裂变并触发对应奖励</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">注册端</b><br><code style="font-size:11px;color:#7c3aed">regClient</code></td><td>注册时使用的客户端：pc / h5 / ios / 安卓 / ios壳包 / 安卓壳包。</td><td>注册端转化分析、APP 渗透率</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">注册设备号 / 指纹</b><br><code style="font-size:11px;color:#7c3aed">regDeviceId + regFingerprint</code></td><td>设备号（原生包稳定 ID，壳包/H5 阶段可能为空）＋ 浏览器指纹（前端采集，如 fp_a8…）合并展示。</td><td>多开/养号识别、设备维度风控</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">是否模拟器</b><br><code style="font-size:11px;color:#7c3aed">isEmulator</code></td><td>注册设备是否为模拟器 / 虚拟环境。</td><td>批量注册与作弊识别</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">注册域名</b><br><code style="font-size:11px;color:#7c3aed">regDomain</code></td><td>注册时进入的域名（属本商户）；域名定上下文、渠道定来源。</td><td>推广域名效果归集</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">同设备注册会员数</b><br><code style="font-size:11px;color:#7c3aed">sameDeviceRegCount</code></td><td>与本会员同一注册设备（设备号/指纹）注册的账号总数。</td><td>工作室/养号识别、设备聚合风控</td></tr>
+      <tr style="display:none"><td style="white-space:nowrap"><b style="color:#d4380d">集团</b><br><code style="font-size:11px;color:#7c3aed">groupId</code></td><td>最高归属与控制方，统管旗下多市场与商户，层级主线顶层。</td><td>多商户汇总报表、全局口径</td></tr>
+      <tr style="display:none"><td style="white-space:nowrap"><b style="color:#d4380d">市场</b><br><code style="font-size:11px;color:#7c3aed">marketId</code></td><td>按国家/地区划分的经营单位，承载币种、语言与本地化口径。</td><td>本地化配置、风控阈值边界</td></tr>
+      <tr style="display:none"><td style="white-space:nowrap"><b style="color:#d4380d">商户</b><br><code style="font-size:11px;color:#7c3aed">merchantId</code></td><td>实际运营主体与计费/团队归属边界，会员数据隔离的经营单元。</td><td>数据隔离、权限边界</td></tr>
+    </table>
+    <h3>4.4 代理体系字段（7）</h3>
+    <table>
+      <tr><th style="width:150px">字段</th><th>定义</th><th style="width:190px">主要用途</th></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">一级代理</b><br><code style="font-size:11px;color:#7c3aed">rootAgentId</code></td><td>该会员所在代理树的顶级（根）代理。</td><td>总代业绩归集、大代理线监控</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">直接上级代理</b><br><code style="font-size:11px;color:#7c3aed">parentAgentId</code></td><td>代理树中该会员的直接父节点（＝邀请人）。</td><td>一级返佣计算、直属关系展示</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">代理层级</b><br><code style="font-size:11px;color:#7c3aed">agentLevel</code></td><td>当前深度 / 最大允许层级（如 3 / 10）。</td><td>多级返佣分成、防无限级嵌套</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">代理路径</b><br><code style="font-size:11px;color:#7c3aed">agentPath</code></td><td>根→本会员的完整代理 ID 链；超过 3 层折叠为「一级 → … → 直接上级 → 本人」，点击查看 10 级关系图（节点可复制代理ID）。</td><td>上下级核查、多级返佣溯源</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">佣金模式</b><br><code style="font-size:11px;color:#7c3aed">commissionMode</code></td><td>代理收益方式：返佣＝投注流水返佣 / 返利＝亏损分成返利。</td><td>代理结算口径、差异化激励</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">返佣等级</b><br><code style="font-size:11px;color:#7c3aed">rebateLevel</code></td><td>会员自身返佣档位，决定投注流水返佣比例（如 Lv3＝0.5%）。</td><td>返佣计算、等级化激励</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">领取返佣 / 对上级返佣</b><br><code style="font-size:11px;color:#7c3aed">rebateToUpline</code></td><td>两个可配置开关（列表行内 toggle，切换二次确认）：是否领取返佣 / 产生的流水是否为上级计提返佣。</td><td>内部号/测试号关闭不计佣</td></tr>
+      
+    </table>
+    <img class="shot" src="img/spec3-agent.png?v=0613e" alt="原型截图 · 会员详情「代理数据」（代理明细已展开）：返佣开关 + 10 级代理关系链（节点可复制代理ID）+ 代理关系 / 业绩与返佣明细；「点击查看逐级详情」打开代理线全链路表">
+    <div class="shot-cap">原型截图 · 会员详情「代理数据」（代理明细已展开）：返佣开关 + 10 级代理关系链（节点可复制代理ID）+ 代理关系 / 业绩与返佣明细；「点击查看逐级详情」打开代理线全链路表</div>
+    <h3>4.5 登录设备字段（5）</h3>
+    <table>
+      <tr><th style="width:150px">字段</th><th>定义</th><th style="width:190px">主要用途</th></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">登录端</b><br><code style="font-size:11px;color:#7c3aed">loginClient</code></td><td>最近一次登录的客户端（枚举同注册端）。</td><td>活跃端分析、端一致性风控</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">登录设备号 / 指纹</b><br><code style="font-size:11px;color:#7c3aed">loginDeviceId + loginFingerprint</code></td><td>最近一次登录设备的稳定 ID 与浏览器指纹，合并展示。</td><td>常用设备识别、异常登录监控</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">同设备登录数</b><br><code style="font-size:11px;color:#7c3aed">sameDeviceLoginCount</code></td><td>与本会员同一设备登录过的账号总数。</td><td>共享设备/工作室识别</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">同指纹登录数</b><br><code style="font-size:11px;color:#7c3aed">sameFingerprintLoginCount</code></td><td>与本会员同浏览器指纹登录过的账号总数。</td><td>关联账号识别、登录聚合风控</td></tr>
+      <tr><td style="white-space:nowrap"><b style="color:#d4380d">登录域名</b><br><code style="font-size:11px;color:#7c3aed">loginDomain</code></td><td>最近一次登录进入的域名，可与注册域名不同。</td><td>回流入口分析、域名切换监控</td></tr>
+    </table>
+    <img class="shot" src="img/spec3-reglogin.png?v=0613e" alt="原型截图 · 会员详情「注册信息 / 登录信息」：注册端 · 设备号/指纹 · 是否模拟器 · 注册域名 · 同设备/同指纹聚合数 等红字风控字段">
+    <div class="shot-cap">原型截图 · 会员详情「注册信息 / 登录信息」：注册端 · 设备号/指纹 · 是否模拟器 · 注册域名 · 同设备/同指纹聚合数 等红字风控字段</div>
+
+<script>
+/* 子页：上报内容高度，供父级撑开 iframe（整体平铺）*/
+(function(){function ph(){try{if(window.parent!==window)parent.postMessage({__frameH:Math.max(document.body.scrollHeight,document.documentElement.scrollHeight)},'*');}catch(e){}}
+window.addEventListener('load',ph);window.addEventListener('resize',ph);[300,900,1600].forEach(function(t){setTimeout(ph,t);});})();
+</script>
+</body>
+</html>

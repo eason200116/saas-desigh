@@ -48,9 +48,9 @@
 ### ⑤ VIP 管理
 | SitINR 叫法 | 目标后台叫法 | 源视图 | 状态 |
 |---|---|---|---|
-| VIP等级 | VIP等级 | `VipLevel` | 🆕→配置中心 |
+| VIP等级 | VIP配置（含等级参数）| `VipLevel` | 🆕→配置中心 |
 | VIP人数 | VIP人数 | `VipLevelQuantity` | 🆕→运营数据 |
-| 经验值配置 | VIP等级配置（含经验值配置）| `VipCurrencyExp` | 🆕→配置中心 |
+| 经验值配置 | VIP配置（含经验值配置）| `VipCurrencyExp` | 🆕→配置中心 |
 | VIP操作日志 | VIP操作日志 | `VipRecord` | 🆕→运营数据 |
 | VIP奖励记录 | VIP奖励记录 | `VipRewards` | 🆕→运营数据 |
 | VIP等级调整 | VIP等级调整（操作）| `UpdateVipLevel` | 原 |
@@ -62,7 +62,7 @@
 | 返佣报表 | 返佣报表 | `UserRebateReport` | 🆕→运营数据 |
 | 返佣等级报表 | 返佣等级报表 | `UserRebateLvReport` | ⏳ |
 | 会员返佣等级 / 昨日返佣等级 | 返佣等级 / 昨日返佣等级 | `User_RebateLv`/`_Last` | 🆕上架 |
-| 返佣等级配置 / 比例配置 | 返佣等级 | `RebateLevel`/`RebateLvRateConfig` | 🆕→配置中心 |
+| 返佣等级配置 / 比例配置 | 返佩配置 | `RebateLevel`/`RebateLvRateConfig` | 🆕→配置中心 |
 | 手动返佣 | 手动返佣（操作）| `RebateManual` | 原 |
 | 代理审核机制 | 代理审核机制 | `AgentAudit` | ⏳→配置中心 |
 

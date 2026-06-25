@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>二阶段 PRD · 需求目的与框架</title>
+<style>
+  :root{--accent:#2563eb;--ink:#1f2328;--sub:#64748b;--line:#e5e7eb;--bg:#f5f6f8}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.8 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
+  header{position:sticky;top:0;z-index:9;background:linear-gradient(90deg,#1e293b,#312e81);color:#fff;padding:14px 28px}
+  header h1{margin:0;font-size:18px}
+  header .ver{font-size:12px;opacity:.75;margin-top:3px}
+  .wrap{max-width:980px;margin:0 auto;padding:24px 22px 80px}
+  h2{font-size:19px;border-left:5px solid var(--accent);padding-left:12px;margin:34px 0 10px}
+  h3{font-size:15px;margin:20px 0 6px}
+  .lead{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:14px 18px;font-size:14px;line-height:1.9;margin:14px 0}
+  table{width:100%;border-collapse:collapse;font-size:13px;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:12px 0}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+  th{background:#f1f5f9;color:#334155;font-weight:700;white-space:nowrap}
+  ul{margin:8px 0;padding-left:20px}
+  li{margin:4px 0}
+  .pill{display:inline-block;font-size:12px;padding:1px 9px;border-radius:20px;background:#eef2ff;color:#3730a3;margin:2px 4px 2px 0}
+  .note{background:#fffbeb;border:1px solid #fde68a;border-left:3px solid #f59e0b;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#92400e;margin:12px 0}
+  .muted{color:var(--sub);font-size:13px}
+  b.red{color:#dc2626}
+</style>
+</head>
+<body>
+<header>
+  <h1>📘 二阶段产品需求文档（PRD）· 需求目的与框架</h1>
+  <div class="ver">范围：会员相关功能迁移 + 升级 · 配套文档：交互介绍 / 新增字段介绍 / 验收口径</div>
+</header>
+<div class="wrap">
+
+  <div class="lead">
+    <b>一句话</b>：把旧后台（SitINR）里<b>会员相关</b>的功能搬进新 SaaS 后台并顺手升级——共 <b>22 个功能页</b>、一套新导航框架、一套「会员从哪儿来」的归因体系、一条广告投放配置链。交付以 <b>3100 可点击原型</b>为准（真实交互、非占位）。
+    <div class="muted" style="margin-top:6px">本文只讲「为什么做、做什么框架」；逐页交互见《交互介绍》、字段见《新增字段介绍》。</div>
+  </div>
+
+  <h2>一、需求目的</h2>
+  <table>
+    <tr><th style="width:120px">维度</th><th>说明</th></tr>
+    <tr><td>背景</td><td>旧超管（SitINR · .NET）会员相关能力分散、归类混乱；新 SaaS 多商户后台需承接这批能力并按多商户/多市场重构。</td></tr>
+    <tr><td>核心目的</td><td>① <b>补全</b>会员相关功能（对照源站逐页迁移）；② <b>重新归类</b>（风控/配置中心从会员子项提升为一级模块）；③ <b>升级</b>（会员从哪来的「归因体系」+ 会员列表/详情增强）；④ <b>打通</b>推广分发获客链路前半段。</td></tr>
+    <tr><td>价值</td><td>运营可在一个后台完成会员查询/分组/风控/返佣/推广配置；归因体系让"拉新成本与渠道效果"可溯可算。</td></tr>
+    <tr><td>不在本期</td><td>活动营销整块（转盘/邀请/签到/积分商城）、代理关系树导入、游戏管理全线、财务大部分、多维报表、KW/CPF/实名认证、底层系统配置。</td></tr>
+  </table>
+
+  <h2>二、本期交付框架（5 大块）</h2>
+  <table>
+    <tr><th style="width:30px">#</th><th style="width:150px">交付项</th><th>框架说明</th></tr>
+    <tr><td>①</td><td>会员管理深度迁移</td><td>按源站对照补全会员相关功能并按分类重新归属，共 <b>22 个已建功能页</b>（分布见第三节）。</td></tr>
+    <tr><td>②</td><td>顶部导航分类优化</td><td>8 大主 Tab 多列分组下拉（mega menu）；「风控管理」「配置中心」从会员子项<b>提升为一级模块</b>；菜单项带 <b>新 / 原 / 移</b> 角标。</td></tr>
+    <tr><td>③</td><td>多标签页签栏</td><td>功能页以页签多开并存、切换、关闭。</td></tr>
+    <tr><td>④</td><td>会员详情归因 + 会员列表增强</td><td>会员详情按指定位置注入红字归因字段（归因来源/代理数据/注册·登录设备）；会员列表同步红色新列 +「领取返佣 / 对上级返佣」行内开关。</td></tr>
+    <tr><td>⑤</td><td>推广分发配置</td><td>开放 渠道管理 / 域名管理 / 防封救援 / 解析检测记录，覆盖「域名 → 渠道 → 推广 → 获客归因」闭环前半段。</td></tr>
+  </table>
+
+  <h2>三、模块框架与页面分布</h2>
+  <p class="muted">6 大模块 · 22 个新功能页（页数口径以工作计划书为权威；逐页交互见《交互介绍》）。</p>
+  <table>
+    <tr><th style="width:120px">模块</th><th style="width:60px">页数</th><th>功能页</th></tr>
+    <tr><td>① 会员管理</td><td>3</td><td>分组管理 · 登录日志 · 短信验证码查询</td></tr>
+    <tr><td>② 运营管理</td><td>12</td><td>站内消息 · 公告消息 · 轮播图管理 · 渠道管理 · 域名管理 · 防封救援 · 解析检测记录 · 会员返佣等级 · 代理审核机制 · VIP升级奖励记录 · VIP人数 · VIP操作日志</td></tr>
+    <tr><td>③ 报表管理</td><td>2</td><td>代理报表 · 昨日返佣等级</td></tr>
+    <tr><td>④ 风控管理 <span class="pill">↑提升为一级</span></td><td>2</td><td>异常会员处理 · 同IP/设备检测</td></tr>
+    <tr><td>⑤ 配置中心 <span class="pill">↑提升为一级</span></td><td>2</td><td>VIP配置（VIP等级/经验值）· 返佣配置（等级管理/费率配置）</td></tr>
+    <tr><td>⑥ 系统管理</td><td>1</td><td>IP黑名单</td></tr>
+    <tr><td colspan="3" class="muted">另含对既有「会员列表 / 会员详情」的二阶段<b>增强</b>（红色新列 + 行内开关 + 归因字段注入），不计入 22 新页。</td></tr>
+  </table>
+
+  <h3>页面类型定义</h3>
+  <p class="muted">22 个功能页按交互形态归为 5 类；同类页共用同一套骨架与规范（详见《交互介绍》通用骨架）。</p>
+  <table>
+    <tr><th style="width:120px">类型</th><th>定义 / 特征</th><th style="width:200px">代表页面</th></tr>
+    <tr><td><b>查询列表页</b></td><td>筛选区 + 表格 + 分页 + 行操作（增删改查 / 批量 / 状态开关）；最常见。</td><td>分组管理 · 登录日志 · 短信验证码 · 站内消息 · 公告 · 渠道管理 · 域名管理 · 防封救援 · 解析检测 · 会员返佣等级 · 代理审核 · VIP操作日志 · 异常会员 · IP黑名单</td></tr>
+    <tr><td><b>配置页</b></td><td>选商户 / 市场 → <b>行内编辑（不弹窗）</b> → 保存 → 发布（未配置 / 有未发布修改 / 已发布 三态）+ 复制到其他商户；保存校验不通过标红 + 错误面板。</td><td>VIP配置 · 返佣配置</td></tr>
+    <tr><td><b>报表 / 数据页</b></td><td>只读统计；纯查询页无行操作，报表页可导出 / 切统计周期（真实刷新）。</td><td>代理报表 · 昨日返佣等级 · VIP升级奖励记录 · VIP人数</td></tr>
+    <tr><td><b>聚合下钻页</b></td><td>多子页签聚合 + 数值蓝链<b>下钻</b>（跳转目标页带参 / 打开抽屉）。</td><td>同IP/设备检测（4 页签）· 代理报表（下级列表抽屉）</td></tr>
+    <tr><td><b>详情页</b></td><td>单页滚动多面板；字段按位置注入、行内编辑、数值可下钻风控。</td><td>会员详情（基本信息 / 注册归因 / 数据统计 / 代理 / 登录 等面板）</td></tr>
+  </table>
+
+  <h2>四、归因体系框架（本期升级核心）</h2>
+  <div class="lead" style="background:#f0fdf4;border-color:#bbf7d0">
+    解决「这个会员从哪儿来」：注册时<b>按优先级判定首个命中的来源并固化不再变更</b>，详情页以红字字段呈现完整链路。
+  </div>
+  <table>
+    <tr><th style="width:120px">环节</th><th>说明</th></tr>
+    <tr><td>判定优先级</td><td>① 广告投放 › ② 邀请来源 › ③ 官方直推 › ④ 自然流量</td></tr>
+    <tr><td>五步固化</td><td>进入 → 采集（埋点）→ 判定（按优先级）→ 固化（写档案）→ 展示（详情红字）</td></tr>
+    <tr><td>覆盖</td><td>5 大归因类型 × 多种进入路径的枚举矩阵</td></tr>
+    <tr><td>联动</td><td>会员详情所有「同IP / 同设备 / 同指纹」数值可点击，下钻「风控 · 同IP/设备检测」对应维度页签并带入该会员。</td></tr>
+  </table>
+
+  <h2>五、通用规范框架</h2>
+  <ul>
+    <li><b>真实交互非占位</b>：导出真实下载 CSV、搜索真实过滤、排序真实重排、表单保存真实回写、删除真实移除、翻日真实切数据，每步配 Toast。</li>
+    <li><b>反馈完整</b>：每个操作必有 Toast 或弹窗反馈；危险与批量操作必有二次确认。</li>
+    <li><b>入口完整</b>：每个已开放功能页可从顶部菜单进入，菜单带 新/原/移 角标。</li>
+    <li><b>控件统一</b>：全部列表页遵循同一套骨架（筛选 / 表格 / 工具栏 / 弹窗）；这类字段/行内编辑<b>页内完成、不弹窗</b>。</li>
+    <li><b>多商户/多市场</b>：顶栏切商户即按该商户数据重渲染；配置类按商户独立、可复制模板。</li>
+  </ul>
+
+  <div class="note">本文为「目的 + 框架」概览，<b>不含逐页详细规格</b>。功能怎么用、点了会发生什么 → 见《二阶段 · 交互介绍》；新增/调整了哪些字段 → 见《二阶段 · 新增字段介绍》。</div>
+
+</div>
+</body>
+</html>

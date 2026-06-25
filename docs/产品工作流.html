@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>产品工作流 · 从需求大纲到最终呈现</title>
+<style>
+  :root{
+    --accent:#0960bd; --link:#2f74e6; --success:#13a884; --success-l:#e8f7f2;
+    --warn:#d97706; --warn-l:#fff3e0; --danger:#e0524d; --info-l:#e3f2fd;
+    --text:#2c3344; --muted:#8b93a3; --border:#e8ebf1; --card:#fff; --bg:#f0f2f5; --dark:#1e293b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+       background:var(--bg);color:var(--text);font-size:14px;line-height:1.7;padding-bottom:48px}
+  .header{background:linear-gradient(135deg,#0b3a6b,var(--accent));color:#fff;padding:30px 36px}
+  .header h1{font-size:24px;margin-bottom:6px}
+  .header p{opacity:.85;font-size:13px}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 28px}
+  h2.sec{font-size:17px;margin:30px 0 14px;padding-left:10px;border-left:4px solid var(--accent)}
+
+  /* 分流 */
+  .branch{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--card);
+          border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+  .b0{background:var(--accent);color:#fff;border-radius:8px;padding:12px 16px;font-weight:700;min-width:96px;text-align:center}
+  .tracks{display:flex;flex-direction:column;gap:10px;flex:1;min-width:240px}
+  .track{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;border:1px solid var(--border)}
+  .track.req{background:#f6f9ff}.track.mig{background:var(--success-l)}
+  .tag{font-size:12px;font-weight:700;padding:3px 9px;border-radius:6px;white-space:nowrap}
+  .tag.req{background:var(--info-l);color:var(--accent)}.tag.mig{background:#d7f0e8;color:var(--success)}
+  .arrowdown{font-size:20px;color:var(--muted)}
+
+  /* 管线 */
+  .pipe{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin-top:8px}
+  .step{flex:1;min-width:120px;background:var(--card);border:1px solid var(--border);
+        border-top:3px solid var(--accent);border-radius:8px;padding:14px 12px;text-align:center;position:relative}
+  .step .no{display:inline-flex;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;
+            align-items:center;justify-content:center;font-weight:700;font-size:13px;margin-bottom:8px}
+  .step b{display:block;font-size:14px}
+  .step small{color:var(--muted);font-size:11.5px}
+  .arrow{display:flex;align-items:center;color:var(--accent);font-size:22px;font-weight:700;padding:0 4px}
+
+  /* 阶段卡 */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px}
+  .card h3{font-size:15px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .card h3 .n{width:24px;height:24px;border-radius:6px;background:var(--accent);color:#fff;
+              display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+  .row{display:flex;gap:8px;margin:6px 0;font-size:13px}
+  .row .k{flex:none;width:42px;color:var(--muted);font-weight:600}
+  .row .v{flex:1}
+  .gate{margin-top:8px;background:var(--warn-l);color:#92500a;border-radius:6px;padding:6px 10px;font-size:12.5px}
+  code{background:#eef1f5;border-radius:4px;padding:1px 5px;font-size:12px;color:#334}
+
+  /* 状态条 */
+  .status{display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:var(--card);
+          border:1px solid var(--border);border-radius:10px;padding:16px 18px}
+  .st{background:#eef3fb;color:var(--accent);border-radius:20px;padding:6px 14px;font-weight:700;font-size:12.5px}
+  .st.end{background:var(--success-l);color:var(--success)}
+  .sgap{color:var(--muted);font-weight:700}
+  .extra{margin-left:auto;font-size:12px;color:var(--muted)}
+
+  /* 表格 */
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid #f0f2f5;font-size:13px;vertical-align:top}
+  thead th{background:#f6f8fb;font-weight:700}
+  tbody tr:last-child td{border-bottom:none}
+  .col-req{color:var(--accent);font-weight:600}.col-mig{color:var(--success);font-weight:600}
+
+  /* 纪律 */
+  .disc{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--danger);
+        border-radius:10px;padding:16px 20px}
+  .disc ol{margin-left:18px}.disc li{margin:5px 0}
+  .foot{text-align:center;color:var(--muted);font-size:12px;margin-top:28px}
+</style>
+</head>
+<body>
+  <div class="header">
+    <h1>📌 产品工作流 · 从需求大纲到最终呈现</h1>
+    <p>所有新增 / 迁移工作的唯一主线 —— 从阶段 0 进入，不跳阶段、不绕门控 · 更新 2026-06-15</p>
+  </div>
+
+  <div class="wrap">
+
+    <!-- 分流 -->
+    <h2 class="sec">① 阶段 0 分流</h2>
+    <div class="branch">
+      <div class="b0">0<br/>需求大纲</div>
+      <div class="arrow">→</div>
+      <div class="tracks">
+        <div class="track req"><span class="tag req">重型 REQ 轨</span> 真新增功能（diff-list B 类 24）· 从零定义规则/流程/权限</div>
+        <div class="track mig"><span class="tag mig">轻量 MIG 轨</span> 迁移已有页（diff-list A 72 + C 59）· 源页→目标页对照，规则已知不重写</div>
+      </div>
+    </div>
+    <p style="text-align:center;color:var(--muted);margin:10px 0 2px">两轨共用下方主线，仅阶段 1 产出物轻重不同，阶段 2 起完全一致 ↓</p>
+
+    <!-- 管线 -->
+    <h2 class="sec">② 主线 7 阶段</h2>
+    <div class="pipe">
+      <div class="step"><span class="no">1</span><b>需求归档</b><small>Draft → Reviewing</small></div>
+      <div class="arrow">›</div>
+      <div class="step"><span class="no">2</span><b>原型</b><small>Approved&nbsp;Prototype</small></div>
+      <div class="arrow">›</div>
+      <div class="step"><span class="no">3</span><b>评审</b><small>Approved&nbsp;Dev.</small></div>
+      <div class="arrow">›</div>
+      <div class="step"><span class="no">4</span><b>开发实现</b><small>V3 代码</small></div>
+      <div class="arrow">›</div>
+      <div class="step"><span class="no">5</span><b>验收</b><small>AC + build</small></div>
+      <div class="arrow">›</div>
+      <div class="step"><span class="no">6</span><b>最终呈现</b><small>发布 / 演示</small></div>
+    </div>
+
+    <!-- 阶段卡 -->
+    <h2 class="sec">③ 阶段详解</h2>
+    <div class="grid">
+      <div class="card">
+        <h3><span class="n">0</span>需求大纲</h3>
+        <div class="row"><span class="k">输入</span><span class="v">业务想法 / <code>docs/migration-diff-list.md</code> 待迁移项 / 源盘点（<code>docs/migration/</code>〔规划中〕，源站 = Ar_V1_Admin .NET 旧后台）</span></div>
+        <div class="row"><span class="k">动作</span><span class="v">一句话能力定义 + 范围（In/Out）+ 分流判断</span></div>
+        <div class="gate">门控：能力定义 + 范围清晰 → 进阶段 1</div>
+      </div>
+      <div class="card">
+        <h3><span class="n">1</span>需求归档<small style="color:var(--muted);font-weight:400">（先归档再做原型）</small></h3>
+        <div class="row"><span class="k">REQ</span><span class="v">建 <code>docs/requirements/REQ-xxx-name/</code> 多文件包（00-brief→…→99-change-log，按规范 §4）</span></div>
+        <div class="row"><span class="k">MIG</span><span class="v">填 <code>docs/templates/migration-page-template.md</code> 单页对照，通用交互引用 <code>saas-phase2-feature-spec §二</code></span></div>
+        <div class="row"><span class="k">纪律</span><span class="v">已拍板规则 / OPEN-xxx 未决 / 临时假设 三类分清，不藏规则于原型</span></div>
+        <div class="gate">门控：达 Approved for Prototype 最低要求</div>
+      </div>
+      <div class="card">
+        <h3><span class="n">2</span>原型</h3>
+        <div class="row"><span class="k">动作</span><span class="v">建 <code>prototypes/REQ-xxx-name.html</code>，遵循 <code>prototype-design-spec.md</code>（token/控件/交互/层级）</span></div>
+        <div class="row"><span class="k">MIG</span><span class="v">多复用现有页与通用交互规范，<b>可不单独建原型</b></span></div>
+        <div class="gate">门控：原型可表达核心交互</div>
+      </div>
+      <div class="card">
+        <h3><span class="n">3</span>评审</h3>
+        <div class="row"><span class="k">动作</span><span class="v">按规范 §8 评审 6 问（目标→范围→规则冲突→数据权限→交互服务规则→验收可测）+ Ready 检查</span></div>
+        <div class="gate">门控：所有 Blocks-Development 的 OPEN 关闭，无"开发时再定" → Approved for Development</div>
+      </div>
+      <div class="card">
+        <h3><span class="n">4</span>开发实现 <small style="color:var(--muted);font-weight:400">· Ar_V3_LottoPlatformDesign</small></h3>
+        <div class="row"><span class="k">新功能</span><span class="v">superpowers 链路：brainstorming → planning → TDD → code-review</span></div>
+        <div class="row"><span class="k">迁移页</span><span class="v">list-page skill + 字段对齐 §5.3 + <code>newMark.ts</code> 标「新」</span></div>
+        <div class="row"><span class="k">红线</span><span class="v">本地 mock · 无真实 HTTP · <code>pnpm build</code> 必过</span></div>
+        <div class="row"><span class="k">产出</span><span class="v">代码 + 誊写 <code>docs/migration-changes.md</code></span></div>
+      </div>
+      <div class="card">
+        <h3><span class="n">5</span>验收</h3>
+        <div class="row"><span class="k">动作</span><span class="v">逐条点验 06-acceptance / MIG 的 AC；跑 typecheck + lint + lint:i18n + build</span></div>
+        <div class="gate">门控：验收全过 + build 绿 → Accepted</div>
+      </div>
+      <div class="card">
+        <h3><span class="n">6</span>最终呈现</h3>
+        <div class="row"><span class="k">原型</span><span class="v">发布 GitHub Pages（eason200116/saas-desigh）</span></div>
+        <div class="row"><span class="k">V3</span><span class="v">演示页面 / 截图交付</span></div>
+        <div class="row"><span class="k">收尾</span><span class="v">99-change-log / migration-changes 记录变更与决策人</span></div>
+      </div>
+    </div>
+
+    <!-- 状态 -->
+    <h2 class="sec">④ 状态流转（贯穿全程）</h2>
+    <div class="status">
+      <span class="st">Draft</span><span class="sgap">›</span>
+      <span class="st">Reviewing</span><span class="sgap">›</span>
+      <span class="st">Approved for Prototype</span><span class="sgap">›</span>
+      <span class="st">Approved for Development</span><span class="sgap">›</span>
+      <span class="st end">Accepted</span><span class="sgap">›</span>
+      <span class="st end">Published</span>
+      <span class="extra">异常 Blocked · 废弃 Deprecated</span>
+    </div>
+
+    <!-- 两轨对照 -->
+    <h2 class="sec">⑤ 两轨对照速查</h2>
+    <table>
+      <thead><tr><th style="width:140px"></th><th class="col-req">重型 REQ 轨</th><th class="col-mig">轻量 MIG 轨</th></tr></thead>
+      <tbody>
+        <tr><td>用于</td><td>真新增功能（B 类 24）</td><td>迁移已有页（A 72 + C 59）</td></tr>
+        <tr><td>阶段 1 产出</td><td>多文件 REQ 包（按标准）</td><td>单文件 MIG 对照（v0.1，过程中迭代）</td></tr>
+        <tr><td>业务规则 / 流程</td><td>从零定义</td><td>已知，不重写</td></tr>
+        <tr><td>原型</td><td>必做</td><td>多数复用，可省</td></tr>
+        <tr><td>开发</td><td>superpowers 链路</td><td>list-page skill</td></tr>
+      </tbody>
+    </table>
+
+    <!-- 纪律 -->
+    <h2 class="sec">⑥ 置顶纪律</h2>
+    <div class="disc">
+      <ol>
+        <li>任何功能从 <b>阶段 0</b> 进入，不跳阶段。</li>
+        <li>每个 <b>门控</b> 不达标，不进下一阶段。</li>
+        <li>同一概念只在一处定义，其他地方引用（规范 §9）。</li>
+        <li>未拍板的写 <code>OPEN-xxx</code>，不写成确定语气。</li>
+      </ol>
+    </div>
+
+    <p class="foot">配套主线文档：<code>saas-desigh/产品工作流.md</code> · 视觉遵循 <code>docs/standards/prototype-design-spec.md</code></p>
+  </div>
+</body>
+</html>

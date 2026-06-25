@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>归因 · 注册信息 · 判定流程原型</title>
+<style>
+  :root{--bd:#e5e7eb;--mut:#94a3b8;--ink:#1f2937;--blue:#2563eb;--red:#d4380d;--orange:#d97706;}
+  *{box-sizing:border-box}
+  body{margin:0;background:#f1f5f9;color:var(--ink);font:14px/1.6 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+  .wrap{max-width:1200px;margin:0 auto;padding:24px 18px 64px}
+  .hd h1{font-size:21px;margin:0 0 6px;letter-spacing:.3px}
+  .hd p{margin:0 0 18px;color:var(--mut);font-size:13px}
+  .card{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:18px 20px;margin-bottom:16px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  .sec-t{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;margin:0 0 16px}
+  .sec-t .bar{width:3px;height:15px;background:var(--blue);border-radius:2px}
+  .sec-t .badge{font-weight:400;font-size:11.5px;color:var(--mut)}
+
+  /* ===== 细化流程图 ===== */
+  .step-row{display:flex;align-items:stretch;gap:10px;margin-bottom:14px}
+  .sig-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%}
+  .sig{border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;background:#f8fafc}
+  .sig .st{font-size:12.5px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:6px;margin-bottom:5px}
+  .sig .sl{font-size:11.5px;color:#64748b;line-height:1.55}
+  .sig.on{border-color:var(--blue);background:#eff6ff;box-shadow:0 0 0 2px rgba(37,99,235,.08)}
+  .vsep{display:flex;justify-content:center;margin:2px 0 10px}
+  .vsep span{font-size:11px;color:var(--mut);background:#fffbeb;border:1px dashed #f59e0b;color:#b45309;border-radius:20px;padding:3px 14px;font-weight:600}
+  /* 字段 chip（融入流程图：信号产出 / 固化快照） */
+  .sig-out{margin-top:7px;padding-top:7px;border-top:1px dashed #e2e8f0;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+  .sig-out .ol{font-size:10.5px;color:#94a3b8;margin-right:2px}
+  .fchip{font-size:10.5px;border:1px solid #e2e8f0;border-radius:5px;padding:1px 6px;color:#64748b;background:#fff;white-space:nowrap}
+  .fchip.act{border-color:#f59e0b;background:#fffbeb;color:#b45309;font-weight:600}
+  .fix-fields{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px}
+  .fix-fields .fchip{font-size:11px;padding:3px 9px}
+
+  /* 决策树 */
+  .tree{display:flex;flex-direction:column;gap:0}
+  .qrow{display:flex;align-items:stretch;gap:0}
+  .qbox{flex:0 0 360px;display:flex;align-items:center;gap:10px;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 14px;background:#fff;position:relative}
+  .qbox.on{border-color:#f59e0b;background:#fffbeb}
+  .qno{flex:none;width:22px;height:22px;border-radius:50%;background:#eef2f7;color:#475569;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .qbox.on .qno{background:#f59e0b;color:#fff}
+  .qtxt{font-size:12.5px;color:var(--ink);font-weight:600}
+  .qtxt small{display:block;color:var(--mut);font-weight:400;font-size:11px}
+  .yes{flex:none;align-self:center;display:flex;align-items:center;color:#16a34a;font-size:12px;font-weight:700;padding:0 12px;white-space:nowrap}
+  .yes::before{content:'是 →';}
+  .res{flex:1;border-radius:10px;overflow:hidden;border:1px solid var(--bd);opacity:.5;transition:.18s}
+  .res.on{opacity:1;box-shadow:0 4px 14px rgba(0,0,0,.1)}
+  .res-h{padding:8px 13px;color:#fff;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:600}
+  .res.p1 .res-h{background:linear-gradient(135deg,#7c3aed,#a855f7)}
+  .res.p2 .res-h{background:linear-gradient(135deg,#2563eb,#3b82f6)}
+  .res.p3 .res-h{background:linear-gradient(135deg,#0891b2,#06b6d4)}
+  .res.p4 .res-h{background:linear-gradient(135deg,#64748b,#94a3b8)}
+  .res-pri{font-size:11px;background:rgba(255,255,255,.25);border-radius:5px;padding:1px 7px}
+  .res-ids{padding:8px 13px;display:flex;flex-wrap:wrap;gap:5px}
+  .res-id{font-size:11px;border:1px solid #e2e8f0;border-radius:6px;padding:2px 8px;cursor:pointer;color:#475569;transition:.12s}
+  .res-id:hover{border-color:var(--blue);color:var(--blue)}
+  .res-id.cur{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600}
+  .qgap{height:8px;border-left:2px dashed #cbd5e1;margin-left:178px;position:relative}
+  .qgap::after{content:'否 ↓';position:absolute;left:8px;top:-2px;font-size:10px;color:var(--mut)}
+
+  /* ===== 18 种选择器 ===== */
+  .pick-grp{margin-bottom:11px}.pick-grp:last-child{margin-bottom:0}
+  .pick-h{font-size:12px;font-weight:600;color:#475569;margin:0 0 7px;display:flex;align-items:center;gap:7px}
+  .pick-h .dot{width:9px;height:9px;border-radius:3px}
+  .pick-row{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{border:1px solid var(--bd);border-radius:8px;padding:6px 11px;cursor:pointer;font-size:12.5px;background:#fff;transition:.14s;display:flex;align-items:center;gap:6px}
+  .chip:hover{border-color:#bfdbfe;background:#f8fafc}
+  .chip.cur{border-color:var(--blue);background:#eff6ff;color:var(--blue);font-weight:600;box-shadow:0 0 0 2px rgba(37,99,235,.08)}
+  .chip .cid{font-weight:700;font-family:ui-monospace,monospace}
+  .chip .csub{color:var(--mut);font-size:11.5px}.chip.cur .csub{color:#60a5fa}
+
+  /* ===== 链路图 ===== */
+  .res-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:2px}
+  .res-tag{font-size:12px;font-weight:700;border-radius:6px;padding:3px 10px;color:#fff}
+  .res-cat{font-size:15px;font-weight:700}.res-sub{color:var(--mut);font-size:13px}
+  .attr-chain{display:flex;align-items:stretch;flex-wrap:nowrap;margin:16px 0 8px;overflow-x:auto;padding-bottom:6px}
+  .attr-chain .cn{flex:1 1 0;min-width:108px;background:#fff;border:1.5px solid #f3c9bd;border-radius:11px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transition:.18s}
+  .attr-chain .cn .lv{font-size:11px;color:#9aa4b2;white-space:nowrap}
+  .attr-chain .cn .vl{font-size:12.5px;font-weight:700;color:var(--red);margin-top:3px;white-space:nowrap}
+  .attr-chain .cn.dim{border-color:#e5e7eb;background:#f8fafc;opacity:.7}.attr-chain .cn.dim .vl{color:#cbd5e1}
+  .attr-chain .ar{flex:none;display:flex;align-items:center;color:#e0917c;font-weight:700;font-size:16px;padding:0 6px}
+  .attr-chain .cn.mem{border-color:#2563eb;background:#eff5ff}.attr-chain .cn.mem .vl{color:#1d4ed8}.attr-chain .cn.mem .lv{color:#3b82f6}
+  .attr-chain .cn.grp{border-color:#16a34a;background:#f0fdf4}.attr-chain .cn.grp .vl{color:#15803d}.attr-chain .cn.grp .lv{color:#22c55e}
+  .attr-chain .cn.hot{border-color:#f59e0b;background:#fffbeb;box-shadow:0 0 0 3px rgba(245,158,11,.13)}.attr-chain .cn.hot .vl{color:#b45309}
+
+  /* ===== 归因·注册信息双板块 ===== */
+  .panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:6px}
+  @media(max-width:900px){.panels{grid-template-columns:1fr}.sig-grid{grid-template-columns:1fr 1fr}.qbox{flex-basis:280px}}
+  .panel{border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+  .panel-h{padding:9px 14px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px}
+  .panel.attr .panel-h{background:#fff7ed;color:var(--orange);border-bottom:1px solid #fed7aa}
+  .panel.reg .panel-h{background:#eff6ff;color:var(--blue);border-bottom:1px solid #bfdbfe}
+  .fld-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#eef2f7}
+  .fld{background:#fff;padding:9px 13px}
+  .fld.full{grid-column:1/3}
+  .fld .k{font-size:11px;color:var(--mut)}
+  .fld .v{font-size:13px;font-weight:600;color:var(--ink);margin-top:1px;word-break:break-all}
+  .fld .v.hl{color:var(--red)}.fld .v.na{color:#cbd5e1;font-weight:400}.fld .v.warn{color:#dc2626}
+  .why{background:#f8fafc;border:1px solid #eef2f7;border-radius:12px;padding:13px 15px;font-size:12.5px;color:#475569;line-height:1.7;margin-top:16px}
+  .why .wt{font-weight:700;color:var(--ink);display:block;margin-bottom:5px}
+  .why b{color:var(--ink)}
+  .pchip{display:inline-block;font-size:11px;font-weight:700;color:#fff;border-radius:5px;padding:1px 7px;vertical-align:middle}
+  .note{font-size:11.5px;color:var(--mut);margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hd">
+    <h1>归因 · 注册信息 · 判定流程原型</h1>
+    <p>会员注册时采集来源信号 → 按优先级<b>决策树</b>判定主归因 → 一次性固化为「归因来源 + 注册信息」。下方穷举 18 种判定结果，点击任一种在本页查看其判定路径、归因链路、归因来源与注册信息全字段；默认以「代理邀请推荐 A6」为基础原型。</p>
+  </div>
+
+  <!-- 细化归因判定流程 -->
+  <div class="card">
+    <div class="sec-t"><span class="bar"></span>归因判定流程（细化决策树） <span class="badge">优先级 高 → 低，命中即停</span></div>
+    <!-- ② 采集信号 4 类 -->
+    <div class="step-row"><div class="sig-grid" id="sigGrid"></div></div>
+    <div class="vsep"><span>③ 按优先级决策（命中即归因，停止后续判定）</span></div>
+    <!-- 决策树 -->
+    <div class="tree" id="tree"></div>
+    <div class="vsep" style="margin-top:14px"><span>④ 归因固化：注册成功一次性写入以下字段，渠道关闭 / 代理冻结 / 划拨后永不改写（仅登录渠道每次更新）</span></div>
+    <div class="fix-fields" id="fixFields"></div>
+  </div>
+
+  <!-- 18 种选择器 -->
+  <div class="card">
+    <div class="sec-t"><span class="bar"></span>18 种归因结果穷举 <span class="badge">5 大类 · 点击切换</span></div>
+    <div id="picker"></div>
+  </div>
+
+  <!-- 选中结果 -->
+  <div class="card">
+    <div class="sec-t"><span class="bar"></span>归因链路 · 归因来源 · 注册信息 — <span id="resId" style="color:var(--blue)">A6</span></div>
+    <div class="res-head">
+      <span class="res-tag" id="resTag"></span>
+      <span class="res-cat" id="resCat"></span>
+      <span class="res-sub" id="resSub"></span>
+    </div>
+    <div class="attr-chain" id="chain"></div>
+    <div class="panels">
+      <div class="panel attr">
+        <div class="panel-h">🎯 归因来源</div>
+        <div class="fld-grid" id="attrFields"></div>
+      </div>
+      <div class="panel reg">
+        <div class="panel-h">📝 注册信息</div>
+        <div class="fld-grid" id="regFields"></div>
+      </div>
+    </div>
+    <div class="why" id="why"></div>
+    <div class="note">链路下游「域名 → 商户 → 集团」为固定归属，对所有结果一致；橙色高亮＝本次归因主命中环节。归因来源 9 字段注册时固化不可改；注册信息为设备 / IP / 域名维度，用于风控与多开识别。</div>
+  </div>
+</div>
+
+<script>
+var FIX={dom:'m.sit-inr.com',mch:'(2001) sit-inr',grp:'1001（亚太集团）'};
+var CAT={
+  '广告投放':{pri:'P2',color:'#2563eb',br:'p2'},
+  '邀请来源':{pri:'P1',color:'#7c3aed',br:'p1'},
+  '官方直推':{pri:'P3',color:'#0891b2',br:'p3'},
+  '自然流量':{pri:'P4',color:'#64748b',br:'p4'}
+};
+// 信号采集 4 类：l=说明，out=本信号产出的归因字段，cats=相关主归因
+var SIGS=[
+  {k:'url',t:'🔗 URL 参数',l:'渠道码 ch= · 邀请码 inv= · UTM source/medium/campaign · 代理专属链接',out:['注册渠道','邀请码','邀请类型','直接上级代理'],cats:['广告投放','邀请来源','官方直推']},
+  {k:'ad',t:'📣 广告标识',l:'点击ID：fbclid / gclid / ttclid / msclkid · 广告 Pixel',out:['推广三方类型'],cats:['广告投放']},
+  {k:'ref',t:'🌐 Referrer 来路',l:'来源域名识别搜索引擎 / 站外 · 无则记「直接访问」',out:['搜索引擎'],cats:['自然流量']},
+  {k:'dev',t:'🖥 客户端 / 设备',l:'注册端 · 包名 · 版本号 · 设备号 · 浏览器指纹 · IP · 模拟器检测',out:['注册端','包名','版本号','登录渠道'],cats:['广告投放','邀请来源','官方直推','自然流量']}
+];
+// 包名 / 版本号：APP（壳包 / 原生 / iOS）端有值，H5 / PC 端无
+function pkgOf(client){return /壳包|原生|iOS|ios/i.test(client)?{pkg:'com.daman.app',ver:'v2.3.1'}:{pkg:'',ver:''};}
+// 主归因决策最终写入「主归因 + 邀请类型」两字段
+var DECIDED=['主归因','邀请类型'];
+// 归因来源固化快照（注册时一次性写入，全字段）
+var FIXED_FIELDS=['主归因','推广三方类型','注册渠道','登录渠道','搜索引擎','邀请码','邀请类型','包名','版本号'];
+// 决策树 4 级
+var TREE=[
+  {q:'命中广告点击ID 或 UTM 平台？',s:'fbclid/gclid/ttclid 或 utm_source∈清单',cat:'广告投放',br:'p2',name:'📣 付费广告投放',pri:'P2'},
+  {q:'携带有效邀请码 / 代理专属链接？',s:'inv= 校验通过 或 代理链接 ch=agXXX',cat:'邀请来源',br:'p1',name:'🤝 代理邀请推荐',pri:'P1'},
+  {q:'仅命中官方推广链接标识？',s:'官方链接标记，无码无广告',cat:'官方直推',br:'p3',name:'🏷 官方直推',pri:'P3'},
+  {q:'以上均不命中（兜底）',s:'Referrer 搜索 / 非搜索 / 直接访问 / 解析失败',cat:'自然流量',br:'p4',name:'🌐 自然流量 / 搜索',pri:'P4'}
+];
+// 18 种：归因来源 + 注册信息
+var ATTR=[
+  {id:'A1',cat:'广告投放',sub:'广告点击ID · Facebook',ch:'Facebook-鳗鱼01',chcode:'apk-fb-me001-01',up:'',root:'',plat:'Facebook',inv:'',it:'',se:'',hot:'ch',
+   reg:{client:'安卓壳包',dev:'AND-8f2a91 / fp_a1',emu:'否',dom:'m.sit-inr.com',sdev:3,ip:'103.48.12.66',sip:5,sfp:2},
+   why:'URL 带广告点击ID <b>fbclid</b>，命中 Facebook 广告 Pixel → 主归因＝<b>广告投放</b>，平台精确识别 Facebook，注册渠道落到对应广告系列；无代理关系。'},
+  {id:'A2',cat:'广告投放',sub:'UTM 清单内 · Instagram',ch:'Instagram-奥运01',chcode:'h5-ig-ay002-01',up:'',root:'',plat:'Instagram',inv:'',it:'',se:'',hot:'ch',
+   reg:{client:'H5',dev:'WEB / fp_b7',emu:'否',dom:'m.sit-inr.com',sdev:1,ip:'45.120.8.21',sip:2,sfp:1},
+   why:'无点击ID，但 <b>utm_source=instagram</b> 在平台清单内 → 主归因＝<b>广告投放</b>，平台＝Instagram。'},
+  {id:'A3',cat:'广告投放',sub:'UTM 清单外 · 其他',ch:'其他投放-鳗鱼01',chcode:'h5-ads-me001-01',up:'',root:'',plat:'其他',inv:'',it:'',se:'',hot:'ch',
+   reg:{client:'H5',dev:'WEB / fp_c3',emu:'否',dom:'m.sit-inr.com',sdev:1,ip:'45.120.8.34',sip:1,sfp:1},
+   why:'有 <b>utm_source</b> 但不在平台清单内 → 仍判<b>广告投放</b>，平台归「其他」，保留原始 utm 备查。'},
+  {id:'A4',cat:'广告投放',sub:'广告 + 有效邀请码（裂变获客）',ch:'Facebook-鳗鱼01',chcode:'apk-fb-me001-01',up:'2250100（李四）',root:'2250001（总代·Raj）',plat:'Facebook',inv:'AGENT100',it:'正常邀请（裂变辅证）',se:'',hot:'ch',
+   reg:{client:'iOS 壳包',dev:'IOS-7c1d22 / fp_d9',emu:'否',dom:'m.sit-inr.com',sdev:2,ip:'103.48.12.90',sip:4,sfp:1},
+   why:'广告点击ID 与有效邀请码<b>并存</b> → 就高判<b>广告投放</b>；邀请码留辅证标「<b>裂变获客</b>」，<b>仍挂代理树计返佣</b>（上级 2250100）。'},
+  {id:'A5',cat:'广告投放',sub:'广告 + 无效邀请码',ch:'Facebook-鳗鱼01',chcode:'apk-fb-me001-01',up:'',root:'',plat:'Facebook',inv:'AGENT100（无效）',it:'',se:'',hot:'ch',
+   reg:{client:'安卓壳包',dev:'AND-3b8e10 / fp_e2',emu:'是 ⚠',dom:'m.sit-inr.com',sdev:6,ip:'103.48.12.11',sip:8,sfp:4},
+   why:'广告点击ID + 邀请码，但邀请码<b>校验失败</b> → 判<b>广告投放</b>，邀请码仅记录不绑定代理树。设备为模拟器，已标风控关注。'},
+  {id:'B2',cat:'广告投放',sub:'官方链接 + 广告标识',ch:'官方渠道',chcode:'h5-01',up:'',root:'',plat:'Facebook',inv:'',it:'',se:'',hot:'ch',
+   reg:{client:'H5',dev:'WEB / fp_f5',emu:'否',dom:'m.sit-inr.com',sdev:1,ip:'45.120.8.77',sip:3,sfp:1},
+   why:'官方链接被平台自动附加广告标识 → 广告标识优先，判<b>广告投放</b>/Facebook，渠道落「官方渠道」。'},
+  {id:'A6',cat:'邀请来源',sub:'个人邀请码 · 正常邀请（基础原型）',ch:'ag010',chcode:'代理 2250100 专属链接',up:'2250100（李四）',root:'2250001（总代·Raj）',plat:'',inv:'AGENT100',it:'正常邀请（个人）',se:'',hot:'up',
+   reg:{client:'安卓壳包',dev:'AND-8f2a91 / fp_a91c',emu:'否',dom:'m.sit-inr.com',sdev:2,ip:'103.48.12.66',sip:3,sfp:2},
+   why:'无广告标识，URL 携带代理专属链接 <b>ag010</b> 与有效个人邀请码 <b>AGENT100</b> → 主归因＝<b>邀请来源</b>，邀请人＝直接上级代理 2250100，挂入代理树（一级代理 2250001）按返佣模式计提佣金。客户端为安卓壳包，采集到包名 com.daman.app / 版本 v2.3.1。'},
+  {id:'B3',cat:'邀请来源',sub:'个人码 · 官方渠道进入',ch:'官方渠道',chcode:'h5-01',up:'2250100（李四）',root:'2250001（总代·Raj）',plat:'',inv:'AGENT100',it:'正常邀请（个人）',se:'',hot:'up',
+   reg:{client:'H5',dev:'WEB / fp_g6',emu:'否',dom:'m.sit-inr.com',sdev:1,ip:'103.48.12.40',sip:2,sfp:1},
+   why:'从官方渠道进入但手填有效个人邀请码 → 判<b>邀请来源</b>，渠道记「官方渠道」，仍按邀请码绑定代理 2250100。'},
+  {id:'B4',cat:'邀请来源',sub:'转盘活动邀请码',ch:'官方渠道',chcode:'h5-01',up:'2250100（李四）',root:'2250001（总代·Raj）',plat:'',inv:'WHEEL8001',it:'转盘邀请',se:'',hot:'up',
+   reg:{client:'安卓壳包',dev:'AND-9a2f / fp_h1',emu:'否',dom:'m.sit-inr.com',sdev:2,ip:'103.48.13.5',sip:3,sfp:2},
+   why:'邀请码命中<b>转盘活动码</b>（带 invite_activity_id）→ 邀请类型＝<b>转盘邀请</b>，进代理树计返佣并触发转盘活动奖励。'},
+  {id:'B5',cat:'邀请来源',sub:'任务活动邀请码',ch:'官方渠道',chcode:'h5-01',up:'2250100（李四）',root:'2250001（总代·Raj）',plat:'',inv:'TASK8002',it:'任务邀请',se:'',hot:'up',
+   reg:{client:'H5',dev:'WEB / fp_i8',emu:'否',dom:'m.sit-inr.com',sdev:1,ip:'103.48.13.20',sip:2,sfp:1},
+   why:'邀请码命中<b>任务活动码</b> → 邀请类型＝<b>任务邀请</b>，进代理树计返佣并触发邀请任务奖励。'},
+  {id:'B6',cat:'邀请来源',sub:'活动码过期（降级正常邀请）',ch:'官方渠道',chcode:'h5-01',up:'2250100（李四）',root:'2250001（总代·Raj）',plat:'',inv:'WHEEL8001',it:'正常邀请（活动已过期）',se:'',hot:'up',
+   reg:{client:'H5',dev:'WEB / fp_j3',emu:'否',dom:'m.sit-inr.com',sdev:1,ip:'103.48.13.31',sip:1,sfp:1},
+   why:'活动邀请码<b>已过期</b>但邀请链接本身有效 → <b>降级</b>正常邀请，仍绑定代理 2250100 计返佣，不再发活动奖励。'},
+  {id:'B1',cat:'官方直推',sub:'官方推广链接 · 无码无广告',ch:'官方渠道',chcode:'h5-01',up:'',root:'',plat:'',inv:'',it:'',se:'',hot:'ch',
+   reg:{client:'H5',dev:'WEB / fp_k7',emu:'否',dom:'m.sit-inr.com',sdev:1,ip:'45.120.9.12',sip:2,sfp:1},
+   why:'仅命中<b>官方推广链接标识</b>，无邀请码、无广告标识 → 主归因＝<b>官方直推</b>，渠道记「官方渠道」，不挂代理树。'},
+  {id:'A7',cat:'自然流量',sub:'Referrer 非搜索来源',ch:'Facebook-鳗鱼01',chcode:'apk-fb-me001-01',up:'',root:'',plat:'',inv:'',it:'',se:'其他',hot:'mem',
+   reg:{client:'H5',dev:'WEB / fp_l2',emu:'否',dom:'m.sit-inr.com',sdev:1,ip:'58.22.10.4',sip:1,sfp:1},
+   why:'有 Referrer 但非搜索引擎、无广告/邀请标识 → 判<b>自然流量</b>，搜索引擎记「其他」。'},
+  {id:'B7',cat:'自然流量',sub:'搜索引擎来源 · Google',ch:'官方渠道',chcode:'h5-01',up:'',root:'',plat:'',inv:'',it:'',se:'Google',hot:'mem',
+   reg:{client:'PC',dev:'WEB / fp_m9',emu:'否',dom:'m.sit-inr.com',sdev:1,ip:'58.22.10.18',sip:1,sfp:1},
+   why:'Referrer 命中清单内搜索引擎 <b>Google</b> → 判<b>自然流量</b>（SEO），搜索引擎＝Google，用于 SEO 效果评估。'},
+  {id:'B8',cat:'自然流量',sub:'清单外 / 非搜索 Referrer',ch:'官方渠道',chcode:'h5-01',up:'',root:'',plat:'',inv:'',it:'',se:'其他',hot:'mem',
+   reg:{client:'H5',dev:'WEB / fp_n4',emu:'否',dom:'m.sit-inr.com',sdev:1,ip:'58.22.10.25',sip:2,sfp:1},
+   why:'有 Referrer 但非清单内搜索引擎 → 判<b>自然流量</b>，搜索引擎归「其他」。'},
+  {id:'B9',cat:'自然流量',sub:'无任何参数 · 直接访问',ch:'官方渠道',chcode:'h5-01',up:'',root:'',plat:'',inv:'',it:'',se:'直接访问',hot:'mem',
+   reg:{client:'H5',dev:'WEB / fp_o1',emu:'否',dom:'m.sit-inr.com',sdev:1,ip:'58.22.10.36',sip:1,sfp:1},
+   why:'无渠道码、无邀请码、无广告标识、无 Referrer → 判<b>自然流量</b>，搜索引擎记「直接访问」。'},
+  {id:'B10',cat:'自然流量',sub:'参数全部解析失败',ch:'官方渠道',chcode:'h5-01',up:'',root:'',plat:'',inv:'',it:'',se:'直接访问',hot:'mem',
+   reg:{client:'安卓壳包',dev:'AND-x / fp_p8',emu:'是 ⚠',dom:'m.sit-inr.com',sdev:7,ip:'103.48.99.1',sip:9,sfp:5},
+   why:'URL 带参数但<b>全部解析失败</b>（损坏/伪造/过期）→ 兜底判<b>自然流量</b>/直接访问，失败原因写入日志；设备模拟器+多开，风控重点关注。'},
+  {id:'B11',cat:'自然流量',sub:'仅无效邀请码',ch:'官方渠道',chcode:'h5-01',up:'',root:'',plat:'',inv:'AGENT100（无效）',it:'',se:'直接访问',hot:'mem',
+   reg:{client:'H5',dev:'WEB / fp_q5',emu:'否',dom:'m.sit-inr.com',sdev:1,ip:'58.22.10.42',sip:1,sfp:1},
+   why:'仅有邀请码但<b>校验无效</b>，且无其他任何标识 → 判<b>自然流量</b>/直接访问，邀请码仅记录不绑定代理。'}
+];
+var GROUPS=[
+  {cat:'广告投放',color:'#2563eb',ids:['A1','A2','A3','A4','A5','B2']},
+  {cat:'邀请来源',color:'#7c3aed',ids:['A6','B3','B4','B5','B6']},
+  {cat:'官方直推',color:'#0891b2',ids:['B1']},
+  {cat:'自然流量',color:'#64748b',ids:['A7','B7','B8','B9','B10','B11']}
+];
+var BY={};ATTR.forEach(function(a){BY[a.id]=a;});
+var cur='A6';
+
+function renderSig(){
+  var a=BY[cur],c=a.cat;
+  document.getElementById('sigGrid').innerHTML=SIGS.map(function(s){
+    var on=s.cats.indexOf(c)>=0;
+    // 本结果实际产出了该字段（有值）才点亮 chip
+    var chips=s.out.map(function(f){return '<span class="fchip'+(on&&fieldHasVal(a,f)?' act':'')+'">'+f+'</span>';}).join('');
+    return '<div class="sig'+(on?' on':'')+'"><div class="st">'+s.t+'</div><div class="sl">'+s.l+'</div>'
+      +'<div class="sig-out"><span class="ol">产出 →</span>'+chips+'</div></div>';
+  }).join('');
+}
+// 判断某归因字段在本结果是否有值（用于点亮 chip）
+function fieldHasVal(a,f){
+  var m={'注册渠道':a.ch,'邀请码':a.inv,'邀请类型':a.it,'直接上级代理':a.up,'推广三方类型':a.plat,'搜索引擎':a.se,'主归因':a.cat,
+    '注册端':a.reg.client,'包名':pkgOf(a.reg.client).pkg,'版本号':pkgOf(a.reg.client).ver,'登录渠道':a.ch};
+  return !!m[f];
+}
+function renderTree(){
+  var curCat=BY[cur].cat;var html='';
+  TREE.forEach(function(d,i){
+    var ids=GROUPS.filter(function(g){return g.cat===d.cat;})[0].ids;
+    var on=d.cat===curCat;
+    html+='<div class="qrow"><div class="qbox'+(on?' on':'')+'"><span class="qno">'+(i+1)+'</span><span class="qtxt">'+d.q+'<small>'+d.s+'</small></span></div>'
+      +'<div class="yes"></div>'
+      +'<div class="res '+d.br+(on?' on':'')+'"><div class="res-h"><span>'+d.name+'</span><span class="res-pri">'+d.pri+'</span></div>'
+      +'<div class="res-ids">'+ids.map(function(id){return '<span class="res-id'+(id===cur?' cur':'')+'" data-id="'+id+'">'+id+'</span>';}).join('')+'</div></div></div>';
+    if(i<TREE.length-1)html+='<div class="qgap"></div>';
+  });
+  document.getElementById('tree').innerHTML=html;
+}
+function renderPicker(){
+  document.getElementById('picker').innerHTML=GROUPS.map(function(g){
+    return '<div class="pick-grp"><div class="pick-h"><span class="dot" style="background:'+g.color+'"></span>'+g.cat+'（'+g.ids.length+'）</div>'
+      +'<div class="pick-row">'+g.ids.map(function(id){var a=BY[id];
+        return '<span class="chip'+(id===cur?' cur':'')+'" data-id="'+id+'"><span class="cid">'+id+'</span><span class="csub">'+a.sub+'</span></span>';}).join('')+'</div></div>';
+  }).join('');
+}
+function cn(lv,val,cls){return '<div class="cn'+(cls?' '+cls:'')+'"><span class="lv">'+lv+'</span><span class="vl">'+(val||'—')+'</span></div>';}
+function fld(k,v,cls,full){return '<div class="fld'+(full?' full':'')+'"><div class="k">'+k+'</div><div class="v '+(cls||'')+'">'+(v||'—')+'</div></div>';}
+
+function render(){
+  var a=BY[cur],c=CAT[a.cat];
+  document.getElementById('resId').textContent=a.id;
+  var tag=document.getElementById('resTag');tag.textContent=c.pri+' · '+a.cat;tag.style.background=c.color;
+  document.getElementById('resCat').innerHTML=a.id+' &nbsp;<span style="font-weight:600;color:'+c.color+'">'+a.cat+'</span>';
+  document.getElementById('resSub').textContent=a.sub;
+
+  var hasAgent=!!a.up;
+  document.getElementById('chain').innerHTML=[
+    cn('会员','本会员','mem'+(a.hot==='mem'?' hot':'')),'<div class="ar">→</div>',
+    cn('渠道',a.ch,a.hot==='ch'?'hot':''),'<div class="ar">→</div>',
+    cn('直接上级代理',hasAgent?a.up:'— 无',hasAgent?(a.hot==='up'?'hot':''):'dim'),'<div class="ar">→</div>',
+    cn('一级代理',a.root||'— 无',a.root?'':'dim'),'<div class="ar">→</div>',
+    cn('域名',FIX.dom,''),'<div class="ar">→</div>',
+    cn('商户',FIX.mch,''),'<div class="ar">→</div>',
+    cn('集团',FIX.grp,'grp')
+  ].join('');
+
+  var pv=pkgOf(a.reg.client);
+  document.getElementById('attrFields').innerHTML=[
+    fld('主归因',a.cat,'hl'),
+    fld('推广三方类型',a.plat,a.plat?'':'na'),
+    fld('注册渠道',a.ch+(a.chcode?' ('+a.chcode+')':''),'',true),
+    fld('登录渠道',a.ch+(a.chcode?' ('+a.chcode+')':''),'',true),
+    fld('搜索引擎',a.se,a.se?'':'na'),
+    fld('邀请码',a.inv,a.inv?'':'na'),
+    fld('邀请类型',a.it,a.it?'':'na'),
+    fld('包名',pv.pkg,pv.pkg?'':'na'),
+    fld('版本号',pv.ver,pv.ver?'':'na'),
+    fld('直接上级代理',a.up,a.up?'':'na'),
+    fld('一级代理',a.root,a.root?'':'na')
+  ].join('');
+
+  var r=a.reg;
+  document.getElementById('regFields').innerHTML=[
+    fld('注册端',r.client),
+    fld('是否模拟器',r.emu,r.emu.indexOf('是')>=0?'warn':''),
+    fld('注册设备号 / 指纹',r.dev,'',true),
+    fld('注册域名',r.dom),
+    fld('注册 IP',r.ip),
+    fld('同设备注册数',r.sdev+' 个',r.sdev>=5?'warn':''),
+    fld('同 IP 注册数',r.sip+' 个',r.sip>=5?'warn':''),
+    fld('同指纹注册数',r.sfp+' 个',r.sfp>=4?'warn':'')
+  ].join('');
+
+  document.getElementById('why').innerHTML='<span class="wt"><span class="pchip" style="background:'+c.color+'">'+c.pri+'</span> 判定理由</span>'+a.why;
+
+  // ④ 固化字段快照：本结果有值的高亮
+  document.getElementById('fixFields').innerHTML=FIXED_FIELDS.map(function(f){
+    return '<span class="fchip'+(fieldHasVal(a,f)?' act':'')+'">'+f+'</span>';
+  }).join('');
+
+  renderSig();renderTree();renderPicker();
+}
+document.addEventListener('click',function(e){
+  var t=e.target.closest('[data-id]');
+  if(t){cur=t.getAttribute('data-id');render();var el=document.getElementById('chain');if(el)el.scrollLeft=0;}
+});
+render();
+</script>
+</body>
+</html>

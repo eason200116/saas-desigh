@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>控件 / 名词 / 排版规范 · SaaS 后台（基于 V3 目标站）</title>
+<style>
+  :root{--accent:#2563eb;--accent2:#7c3aed;--bg:#f5f6f8;--card:#fff;--border:#e5e7eb;--muted:#6b7280;--red:#dc2626;--green:#16a34a;--amber:#d97706;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:#1f2328;background:var(--bg);}
+  a{color:var(--accent);}
+  header{position:sticky;top:0;z-index:30;background:linear-gradient(90deg,#0f172a,#155e54);color:#fff;padding:12px 24px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+  header .logo{font-size:16px;font-weight:700;}
+  header .ver{font-size:12px;opacity:.75;}
+  header .grow{flex:1;}
+  header .lnk{background:rgba(255,255,255,.14);color:#fff;padding:6px 13px;border-radius:7px;text-decoration:none;font-size:12.5px;}
+  header .lnk:hover{background:rgba(255,255,255,.26);}
+  .layout{display:flex;width:100%;}
+  nav{width:248px;flex:none;position:sticky;top:57px;align-self:flex-start;height:calc(100vh - 57px);overflow:auto;padding:16px 8px;font-size:12.5px;border-right:1px solid var(--border);background:#fafbfc;}
+  nav a{display:block;padding:4px 10px;color:#374151;text-decoration:none;border-radius:5px;line-height:1.5;}
+  nav a:hover{background:#eef2ff;color:var(--accent);}
+  nav a.sub{padding-left:22px;color:var(--muted);font-size:12px;}
+  nav .grp{font-weight:700;margin-top:10px;color:#111827;padding:4px 10px;}
+  main{flex:1;min-width:0;padding:26px 40px 100px;max-width:1180px;}
+  section{margin-bottom:42px;scroll-margin-top:70px;}
+  h2.sec{font-size:21px;border-left:5px solid var(--green);padding-left:12px;margin:0 0 6px;}
+  .sd{color:var(--muted);font-size:13.5px;margin:0 0 16px;}
+  h3{font-size:16.5px;margin:24px 0 8px;scroll-margin-top:70px;}
+  h4{font-size:14px;margin:16px 0 6px;color:#111827;}
+  p,li{font-size:14px;line-height:1.75;}
+  table{border-collapse:collapse;width:100%;font-size:13px;margin:12px 0;}
+  th,td{border:1px solid var(--border);padding:7px 10px;text-align:left;vertical-align:top;}
+  th{background:#f3f4f6;}
+  tr:nth-child(even) td{background:#fafbfc;}
+  .lead{background:#ecfdf5;border:1px solid #a7f3d0;border-radius:10px;padding:14px 18px;font-size:14px;line-height:1.8;}
+  .pill{display:inline-block;font-size:11px;padding:1px 8px;border-radius:20px;margin:1px 2px 1px 0;background:#dbeafe;color:#1d4ed8;}
+  .note{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#92400e;margin:10px 0;}
+  .rl{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#b91c1c;margin:10px 0;}
+  .rl b{color:#b91c1c;}
+  pre{background:#0f172a;color:#e2e8f0;border-radius:9px;padding:13px 16px;overflow:auto;font-size:12.5px;line-height:1.7;margin:12px 0;}
+  pre code{background:none;color:inherit;padding:0;}
+  code{background:#f3f4f6;padding:1px 5px;border-radius:4px;font-size:12.5px;font-family:ui-monospace,Menlo,Consolas,monospace;}
+  .skeleton{background:#0f172a;color:#cbd5e1;border-radius:9px;padding:14px 16px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;line-height:1.7;white-space:pre;overflow:auto;margin:12px 0;}
+</style>
+</head>
+<body>
+<header>
+  <span class="logo">📐 控件 / 名词 / 排版规范 · SaaS 后台</span>
+  <span class="ver">基于 V3 目标站 · v1.0 · 2026-06-22</span>
+  <span class="grow"></span>
+  <a class="lnk" href="../../index.html" target="_blank">返回门户 ↗</a>
+  <a class="lnk" href="../saas-phase2-prd-full.html" target="_blank">二阶段 PRD ↗</a>
+  <a class="lnk" href="http://localhost:3100" target="_blank">实现后台 ↗</a>
+</header>
+<div class="layout">
+  <nav>
+    <a href="#info">定位与关系</a>
+    <a href="#overview">0 · 一句话总览</a>
+    <div class="grp">一 · 控件规范</div>
+    <a class="sub" href="#c-layer">1.1 控件分层</a>
+    <a class="sub" href="#c-pro">1.2 ProComponents 清单</a>
+    <a class="sub" href="#c-valuetype">1.3 valueType 全表（34）</a>
+    <a class="sub" href="#c-render">1.4 表格渲染器（12）</a>
+    <a class="sub" href="#c-action">1.5 操作列工厂</a>
+    <a class="sub" href="#c-biz">1.6 共享业务控件</a>
+    <div class="grp">二 · 名词术语表</div>
+    <a class="sub" href="#t-role">2.1 角色</a>
+    <a class="sub" href="#t-tenant">2.2 商户 / 集团</a>
+    <a class="sub" href="#t-device">2.3 设备 / 端</a>
+    <a class="sub" href="#t-dict">2.4 状态字典目录</a>
+    <a class="sub" href="#t-noun">2.5 领域名词</a>
+    <a class="sub" href="#t-money">2.6 货币与时间</a>
+    <div class="grp">三 · 排版规范</div>
+    <a class="sub" href="#l-skeleton">3.1 列表页骨架</a>
+    <a class="sub" href="#l-action">3.2 操作列</a>
+    <a class="sub" href="#l-align">3.3 列对齐</a>
+    <a class="sub" href="#l-col">3.4 自定义列</a>
+    <a class="sub" href="#l-export">3.5 导出按钮</a>
+    <a class="sub" href="#l-page">3.6 分页 / keepAlive</a>
+    <a class="sub" href="#l-valid">3.7 校验红框</a>
+    <a class="sub" href="#l-filter">3.8 筛选区</a>
+    <a href="#sync">四 · 维护与同步 + 文件索引</a>
+  </nav>
+  <main>
+
+  <section id="info">
+    <h2 class="sec">定位与关系</h2>
+    <div class="lead">
+      <b>适用</b>：<code>saas-desigh/prototypes/</code> 原型 + V3 目标站（<code>Ar_V3_LottoPlatformDesign</code>，端口 3100）页面开发、迁移、评审。<br/>
+      <b>依据</b>：V3 实测代码（<code>ProComponents</code> / <code>TableRenders</code> / <code>useTenantOptions</code> / <code>api/index.ts</code> 字典）+ 个人规则 R16/R20/R21 + 项目 <code>CLAUDE.md</code>。维护时间 2026-06-22。<br/>
+      <b>与 <a href="prototype-design-spec.md" target="_blank">prototype-design-spec.md</a> 的关系</b>：后者定<b>颜色 / 字体 / 圆角 / 视觉 token / 布局骨架</b>（见其 §4）；<b>本文不重复</b>，只定<b>控件清单 / 名词术语表 / 排版细则</b>。冲突项以本文（代码实测）为准。
+    </div>
+  </section>
+
+  <section id="overview">
+    <h2 class="sec">0 · 一句话总览</h2>
+    <ul>
+      <li><b>控件</b>：优先自研 <code>ProComponents</code>（高级）→ 共享业务组件 → 最后才裸用 Naive UI；表单字段统一走 <code>ProField</code> 的 <code>valueType</code>，表格列统一走 <code>TableRenders</code> 渲染器。</li>
+      <li><b>名词</b>：同一概念全站一个叫法；商户显示 <code>(商户号)商户名</code>、「端」一律叫「设备」、状态文案以 <code>api/index.ts</code> 字典为唯一来源。</li>
+      <li><b>排版</b>：列表页骨架固定（筛选区→工具栏→表格→分页）；操作列永远最后一列且右侧冻结；列内容默认居中；导出按钮按条件出现。</li>
+    </ul>
+  </section>
+
+  <!-- ============ 一、控件 ============ -->
+  <section id="c-layer">
+    <h2 class="sec">一 · 控件规范</h2>
+    <h3>1.1 控件分层（红线：自上而下优先）</h3>
+    <table>
+      <tr><th width="120">层级</th><th>范围</th><th>取用原则</th></tr>
+      <tr><td>① 高级控件</td><td><code>src/components/ProComponents/</code>（ProCrudTable 等）</td><td><b>列表 / 表单页主力，首选</b></td></tr>
+      <tr><td>② 共享业务组件</td><td><code>src/components/</code>（DictSelect、TableRenders 等）</td><td>业务语义封装，次选</td></tr>
+      <tr><td>③ Naive UI 底层</td><td><code>naive-ui</code>（NInput / NTag / NModal…）</td><td>仅在前两层无对应时使用，<b>不裸用做表单字段</b></td></tr>
+    </table>
+    <div class="rl">🚩 控件与名词不一致时<b>先问、不擅自新造</b>（呼应 prototype-design-spec.md §2.2）。</div>
+  </section>
+
+  <section id="c-pro">
+    <h3>1.2 ProComponents 高级控件清单</h3>
+    <table>
+      <tr><th width="180">控件</th><th>用途</th><th>何时用</th></tr>
+      <tr><td><code>ProCrudTable</code></td><td>搜索 + 表格 + 分页 + 操作列一体</td><td><b>列表页主力</b>，标杆 <code>views/finance/rechargeOrder/thirdPartyPending/</code></td></tr>
+      <tr><td><code>ProDataTable</code></td><td>纯数据表格（无内置搜索）</td><td>详情子表 / 汇总表</td></tr>
+      <tr><td><code>ProSearchForm</code></td><td>搜索表单（可收起 / 高级筛选）</td><td>通常由 ProCrudTable 内置</td></tr>
+      <tr><td><code>ProForm</code></td><td>通用表单</td><td>新增 / 编辑弹窗</td></tr>
+      <tr><td><code>ProField</code></td><td>表单字段统一封装（见 1.3）</td><td>一切表单 / 搜索字段</td></tr>
+      <tr><td><code>ProDateRangePicker</code></td><td>日期范围（带快捷项）</td><td>时间筛选</td></tr>
+      <tr><td><code>ProEditDataTable</code></td><td>行内可编辑表格</td><td>批量配置 / 数组项增删改</td></tr>
+      <tr><td><code>ProTabs</code></td><td>多 Tab 容器</td><td>散页聚合（财务 / 会员 / 游戏）</td></tr>
+      <tr><td><code>ProFullscreenModal</code></td><td>全屏 / 详情弹窗（<code>useProDetailModal</code>）</td><td>复杂详情查看</td></tr>
+    </table>
+    <p class="sd">详细 props 见 <code>src/components/ProComponents/types/</code>，对比说明见 <code>ProComponents/COMPARISON.md</code>。</p>
+  </section>
+
+  <section id="c-valuetype">
+    <h3>1.3 ProField <code>valueType</code> 全表（共 34 种）</h3>
+    <p>表单 / 搜索字段<b>统一用 <code>valueType</code> 声明</b>，由 <code>ProField</code> 自动选底层组件，不手写 Naive 组件。来源 <code>types/common.ts:31-65</code>、<code>types/field.ts</code>（<code>VALUE_TYPE_COMPONENT_MAP</code>）。</p>
+    <table>
+      <tr><th width="150">分组</th><th>valueType</th><th>底层组件</th></tr>
+      <tr><td>文本 / 数值（4）</td><td><code>text</code> <code>password</code> <code>textarea</code></td><td>NInput（文本 / 密码 / 多行）</td></tr>
+      <tr><td></td><td><code>number</code></td><td>NInputNumber</td></tr>
+      <tr><td>选择（7）</td><td><code>select</code> <code>multiSelect</code></td><td>NSelect（单 / 多选）</td></tr>
+      <tr><td></td><td><code>tenantSelect</code></td><td>ProTenantSelect（商户选择）</td></tr>
+      <tr><td></td><td><code>dictSelect</code></td><td>DictSelect（字典选择）</td></tr>
+      <tr><td></td><td><code>cascader</code> <code>cascadeSelect</code> <code>treeSelect</code></td><td>NCascader / ProCascadeSelect / NTreeSelect</td></tr>
+      <tr><td>日期时间（10）</td><td><code>date</code> <code>dateRange</code> <code>datetime</code> <code>datetimeRange</code> <code>week</code> <code>month</code> <code>year</code> <code>quarter</code></td><td>NDatePicker</td></tr>
+      <tr><td></td><td><code>time</code> <code>timeRange</code></td><td>NTimePicker</td></tr>
+      <tr><td>勾选 / 开关（5）</td><td><code>checkbox</code> <code>checkboxGroup</code> <code>radio</code> <code>radioGroup</code></td><td>NCheckbox(Group) / NRadio(Group)</td></tr>
+      <tr><td></td><td><code>switch</code></td><td>NSwitch</td></tr>
+      <tr><td>其它 / 增强（8）</td><td><code>upload</code> <code>slider</code> <code>rate</code> <code>color</code> <code>custom</code></td><td>NUpload / NSlider / NRate / NColorPicker / 自定义</td></tr>
+      <tr><td></td><td><code>proDateRange</code> <code>proSelectDateRange</code></td><td>ProDateRangeInput（含快捷项）/ ProSelectDateRange</td></tr>
+      <tr><td></td><td><code>numberRange</code></td><td>ProNumberRange（数值区间）</td></tr>
+    </table>
+    <div class="note">⚠ options 必须用<b>函数形式</b> <code>componentProps: () =&gt; ({ options: xxx.value })</code>，避免响应式失效（见 CLAUDE.md §9.1）。</div>
+  </section>
+
+  <section id="c-render">
+    <h3>1.4 表格列渲染器（<code>TableRenders</code>，共 12 个）</h3>
+    <p>表格列统一用以下渲染器，不手写 <code>h('a', {...})</code> / 手填颜色。来源 <code>src/components/TableRenders/index.ts</code>。</p>
+    <table>
+      <tr><th width="280">渲染器</th><th>用途</th></tr>
+      <tr><td><code>renderStatusTag(value, options)</code></td><td>枚举值→<b>五色封闭</b>状态标签（不手写颜色）</td></tr>
+      <tr><td><code>renderTenantTag(idOrName, name?)</code></td><td>商户 / 集团标签，输出 <code>(商户号)商户名</code></td></tr>
+      <tr><td><code>renderOrgTag(orgId)</code></td><td>集团名称标签</td></tr>
+      <tr><td><code>renderMemberIdLink(id, tenantId, onClick)</code></td><td>会员 ID 蓝色可点击链接（开详情）</td></tr>
+      <tr><td><code>renderTag</code> / <code>renderTagList</code></td><td>单个 / 多个文本标签（<code>auto</code> 轮换色）</td></tr>
+      <tr><td><code>renderBoolTag(value)</code></td><td>布尔→是 / 否标签</td></tr>
+      <tr><td><code>renderSummaryAmount</code> / <code>renderSignedAmount</code></td><td>汇总行金额（加粗 / 正负号配色）</td></tr>
+      <tr><td><code>renderRichText(value)</code></td><td>富文本 / HTML 编码文本（消毒 + 多行省略）</td></tr>
+      <tr><td><code>renderDateTime(value)</code></td><td>日期时间格式化</td></tr>
+      <tr><td><code>renderIPLink(ip)</code></td><td>IP 可点击链接</td></tr>
+    </table>
+    <div class="rl">🚩 状态用 <code>renderStatusTag</code>、商户用 <code>renderTenantTag</code>、会员 ID 用 <code>renderMemberIdLink</code>、集团用 <code>renderOrgTag</code>。</div>
+  </section>
+
+  <section id="c-action">
+    <h3>1.5 操作列工厂 <code>createActionColumn</code></h3>
+    <p>来源 <code>src/components/Table/src/createActionColumn.ts</code>。主操作直显为蓝色文字链接，多操作收进 <code>dropdownActions</code>。</p>
+    <pre><code>const actionColumn = createActionColumn&lt;Row&gt;(() =&gt; ({
+  width: 150,
+  actions: [
+    { label: '编辑', type: 'primary', onClick: handleEdit, auth: ['User:Update'] },
+    { label: '删除', type: 'delete', onClick: handleDelete,   // delete 自动二次确认
+      show: (row) =&gt; row.status !== 'archived' },
+  ],
+  dropdownActions: [{ label: '重置密码', onClick: handleReset }],
+}));</code></pre>
+    <p class="sd">字段：<code>label</code> / <code>onClick</code> / <code>auth</code>(权限码) / <code>type</code>(<code>delete</code> 含确认) / <code>show</code>(按行显隐) / <code>color</code> / <code>disabled</code>(按行禁用)。</p>
+  </section>
+
+  <section id="c-biz">
+    <h3>1.6 共享业务控件</h3>
+    <table>
+      <tr><th width="200">控件</th><th>用途</th></tr>
+      <tr><td><code>DictSelect</code></td><td>字典下拉（<code>source: common / group</code>）</td></tr>
+      <tr><td><code>MerchantFilterSelect</code></td><td>商户多选筛选（顶部固定「全部」、与具体商户互斥）</td></tr>
+      <tr><td><code>ProTenantSelect</code></td><td>单商户选择器（表单 / 搜索 <code>tenantSelect</code>）</td></tr>
+      <tr><td><code>ConfirmSwitch</code></td><td><b>危险开关二次确认</b>（启/禁用、拉黑等）</td></tr>
+      <tr><td><code>CopyText</code></td><td>可复制文本（订单号 / token）</td></tr>
+      <tr><td><code>RoleSwitcher</code></td><td>右下角总控 / 商户角色切换浮窗</td></tr>
+      <tr><td><code>CountTo</code> / <code>DateTime</code></td><td>数字滚动 / 日期时间展示</td></tr>
+    </table>
+    <div class="rl">🚩 危险操作（删除 / 冻结 / 批量资金处置 / 发布）必须二次确认（<code>ConfirmSwitch</code> / <code>Popconfirm</code>），呼应 prototype-design-spec.md §2/§6。</div>
+  </section>
+
+  <!-- ============ 二、名词 ============ -->
+  <section id="t-role">
+    <h2 class="sec">二 · 名词术语表</h2>
+    <h3>2.1 角色</h3>
+    <table>
+      <tr><th width="120">代码值</th><th>中文称谓</th><th>说明</th></tr>
+      <tr><td><code>admin</code></td><td><b>总控端</b></td><td>平台超管，<code>isSuperAuthUser</code></td></tr>
+      <tr><td><code>tenant</code></td><td><b>商户端</b></td><td>商户视角，默认角色</td></tr>
+    </table>
+    <p class="sd">来源 <code>src/config/runtime.ts</code>、<code>src/store/modules/role.ts</code>。</p>
+  </section>
+
+  <section id="t-tenant">
+    <h3>2.2 商户 / 集团展示</h3>
+    <p><b>统一格式：<code>(商户号)商户名</code></b>，例 <code>(1050)daman</code>（<b>ID 在前、括号内</b>）。由 <code>formatTenantLabel</code>（<code>src/hooks/useTenantOptions.ts:409-428</code>）/ <code>renderTenantTag</code> 统一输出：</p>
+    <pre><code>同时有 id 和名称 → (id)name      只有名称 → name
+只有 id          → id            都没有   → fallback('-')</code></pre>
+    <ul>
+      <li><b>集团 = org</b>（<code>orgId</code> / <code>orgName</code>）；商户 = tenant（<code>tenantId</code> / <code>tenantName</code>）。</li>
+      <li>商户主数据<b>三处必须同步</b>，否则名称解析不全显示「裸商户号」：
+        <ol>
+          <li><code>src/store/modules/user.ts</code> 的 <code>orgList</code> / <code>tenantList</code></li>
+          <li><code>src/components/DictSelect/data.ts</code> 的 <code>TENANT_LIST</code></li>
+          <li><code>src/api/index.ts</code> 的 <code>TENANT_ORG_SELECT_LIST</code>（总控 <code>organizationGetSelectList</code>）</li>
+        </ol>
+      </li>
+    </ul>
+  </section>
+
+  <section id="t-device">
+    <h3>2.3 设备 / 端（R20）</h3>
+    <p><b>「端」一律称「设备」</b>。标准 <b>7 种设备</b>（业务术语，权威）：</p>
+    <p><code>H5</code> / <code>PC</code> / <code>安卓原生</code> / <code>iOS原生</code> / <code>安卓壳包</code> / <code>iOS壳包</code> / <code>PWA</code></p>
+    <p>代码现有两套表示（<b>与 7 种标准存在差异，需注意</b>）：</p>
+    <table>
+      <tr><th width="240">来源</th><th>取值</th><th>覆盖</th></tr>
+      <tr><td><code>src/hooks/useClientType.ts</code></td><td><code>web</code> / <code>h5</code> / <code>ios</code> / <code>android</code> / <code>app</code> / <code>public</code>（6 项）</td><td><code>app</code> 把安卓壳包 + iOS壳包合并，未拆分</td></tr>
+      <tr><td><code>api/index.ts</code> <code>phoneTypeList</code></td><td><code>Android</code> / <code>iOS</code> / <code>PC</code>（3 项）</td><td>「注册设备」搜索用，粒度更粗</td></tr>
+    </table>
+    <div class="note">落地建议：文案展示按 7 种标准；新功能若需区分壳包，应在 <code>useClientType</code> 拆出 <code>androidApp</code> / <code>iosApp</code>。</div>
+  </section>
+
+  <section id="t-dict">
+    <h3>2.4 状态字典目录（文案唯一来源）</h3>
+    <p>状态 / 类型文案集中维护，<b>不在页面里手写</b>。来源：<code>src/api/index.ts</code>（<code>V1_DICTIONARY</code> 行 23-103 / <code>COMMON_DICTIONARY</code> 行 106-263）+ <code>src/components/DictSelect/data.ts</code>（<code>FULL_DICT</code>，动态字典）。常用抽样：</p>
+    <table>
+      <tr><th width="260">字典 key</th><th>id→label</th></tr>
+      <tr><td><code>rechargeStateList</code> 充值状态</td><td>0 待支付 / 1 已支付 / 2 已取消 / 3 已退款</td></tr>
+      <tr><td><code>withdrawStateList</code> 提现状态</td><td>0 待审核 / 1 已通过 / 2 已拒绝 / 3 已提交 / 4 出款中 / 5 出款成功 / 6 出款失败</td></tr>
+      <tr><td><code>gameOrderStateList</code> 彩票订单</td><td>0 待开奖 / 1 已中奖 / 2 未中奖 / 3 已撤单</td></tr>
+      <tr><td><code>orderStatusList</code> 游戏订单</td><td>0 未结算 / 1 已结算 / 2 已取消</td></tr>
+      <tr><td><code>financialTypeList</code> 账变类型</td><td>1 充值 / 2 提现 / 3 游戏投注 / 4 游戏派彩 / 5 人工调整</td></tr>
+      <tr><td><code>agentTypeList</code> 代理模式</td><td>0 非代理 / 1 流水返佣 / 2 盈亏返利</td></tr>
+      <tr><td><code>blockStateList</code> 黑名单</td><td>0 正常 / 1 已拉黑</td></tr>
+      <tr><td><code>userStateList</code> / <code>enableStateList</code> 启停</td><td>0 禁用 / 1 启用</td></tr>
+      <tr><td><code>tenantStateList</code> 商户状态</td><td>0 禁用 / 1 正常 / 2 维护中</td></tr>
+      <tr><td><code>siteBuildStatusList</code> 建站</td><td>0 配置中 / 1 已上线</td></tr>
+    </table>
+    <div class="note"><b>缺项症状</b>：状态列显示原始数字 / 下拉为空 / 列显示 <code>--</code>。<b>修复</b>：在对应字典常量加 key（见 CLAUDE.md §七），不在页面 data.ts 硬编码。</div>
+  </section>
+
+  <section id="t-noun">
+    <h3>2.5 领域名词（统一中文称谓，避免同义混用）</h3>
+    <table>
+      <tr><th>字段</th><th>标准称谓</th><th>字段</th><th>标准称谓</th></tr>
+      <tr><td><code>amount</code></td><td>金额</td><td><code>account</code></td><td>会员账号</td></tr>
+      <tr><td><code>balance</code></td><td>余额</td><td><code>memberId</code> / <code>userId</code></td><td>会员ID</td></tr>
+      <tr><td><code>orderNo</code></td><td>订单号</td><td><code>betAmount</code></td><td>投注金额</td></tr>
+      <tr><td><code>orgId</code> / <code>orgName</code></td><td>集团</td><td><code>validBet</code> / 打码</td><td>打码量</td></tr>
+      <tr><td><code>tenantId</code> / <code>tenantName</code></td><td>商户</td><td><code>rebate</code></td><td>返佣</td></tr>
+      <tr><td><code>createTime</code></td><td>创建时间</td><td><code>updateTime</code></td><td>更新时间</td></tr>
+    </table>
+  </section>
+
+  <section id="t-money">
+    <h3>2.6 货币与时间</h3>
+    <ul>
+      <li><b>货币</b> <code>currencyList</code>（<code>api/index.ts:232-251</code>）：INR <code>₹</code> / BRL <code>R$</code> / VND <code>₫</code> / THB <code>฿</code> / MYR <code>RM</code> / PKR <code>₨</code> / USD <code>$</code> / USDT <code>$</code>。数据层存数值，货币符号在渲染层加。</li>
+      <li><b>时间</b>：统一 <code>YYYY-MM-DD HH:mm:ss</code>；按商户时区显示（<code>useTenantOptions().formatTenantDateTime</code>）。</li>
+    </ul>
+    <div class="rl">🚩 命名一致性：同一概念全站<b>只能一个叫法</b>（如内部 = 盈亏返利、外部 = 流水返佣，全站统一）。新名词先查本表与字典，无对应再问、不擅造。</div>
+  </section>
+
+  <!-- ============ 三、排版 ============ -->
+  <section id="l-skeleton">
+    <h2 class="sec">三 · 排版规范</h2>
+    <h3>3.1 标准列表页骨架</h3>
+    <div class="skeleton">┌─ 筛选区（白卡·网格·商户必填红星·右侧 搜索/重置/收起/自定义列）─┐
+├─ 工具栏（新增 / 批量操作条 / 导出[按条件]）────────────────────┤
+├─ 表格（蓝灰表头·内容居中·操作列蓝链接固定右侧）─────────────────┤
+└─ 底部分页（默认 20 条/页）+ 页面合计 / 总计 行 ─────────────────┘</div>
+    <p class="sd">页面两件套：<code>src/views/&lt;模块&gt;/&lt;页&gt;/index.vue</code> + <code>data.ts</code>。详见 <code>list-page</code> skill、标杆页 <code>views/finance/rechargeOrder/thirdPartyPending/</code>。</p>
+  </section>
+
+  <section id="l-action">
+    <h3>3.2 操作列（反复改错过，固化为硬规则）</h3>
+    <p><b>永远最后一列 + 右侧冻结</b>，横版 / 竖版都冻结。实证 <code>src/views/member/user/useUserPage.ts:948-965</code>：</p>
+    <pre><code>{
+  key: 'operations',
+  title: t('components.proCrudTable.action'),
+  titleAlign: 'center',
+  fixed: 'right',        // 横向滚动始终可见
+  lockFixed: true,       // 自定义列里不可取消冻结/拖拽，仅可显隐
+  order: 9999,           // 兜底排到最后
+  export: false,         // 不进导出
+  width: vertical ? 130 : 230,
+}</code></pre>
+  </section>
+
+  <section id="l-align">
+    <h3>3.3 列内容对齐（R16）</h3>
+    <p>数据列默认 <code>align: 'center'</code>，例外须注明。操作列按钮左排（<code>align:'left'</code>）但标题居中（<code>titleAlign:'center'</code>）。</p>
+  </section>
+
+  <section id="l-col">
+    <h3>3.4 自定义列</h3>
+    <p>所有列表页统一支持列显隐。<code>useColumnSetting</code> 按 <code>tableId</code> 重建；标 <code>lockFixed: true</code> 的列<b>只可显隐、不可拖拽 / 不可取消冻结</b>。布局（横 / 竖版）切换后列设置会重建，确认操作列仍在末位且冻结。</p>
+  </section>
+
+  <section id="l-export">
+    <h3>3.5 导出按钮（R21）</h3>
+    <div class="rl">🚩 <b>仅「报表类页面 或 列数 &gt; 20」才放导出</b>，其余一律不放。</div>
+  </section>
+
+  <section id="l-page">
+    <h3>3.6 分页 / keepAlive</h3>
+    <ul>
+      <li>默认 <code>pageSize: 20</code>；payload 形如 <code>{ list, total, totalCount, pageNo, pageSize }</code>。</li>
+      <li><b>列表页</b> <code>meta.keepAlive: true</code>（保留滚动 / 筛选）；<b>详情 / 表单页不加</b>（避免脏数据）。</li>
+    </ul>
+  </section>
+
+  <section id="l-valid">
+    <h3>3.7 校验红框</h3>
+    <p>保存 / 发布校验失败<b>必须红框标出错误字段，并指名「哪个配错」</b>。行内表格用 <code>InlineNumberCell</code> 的 <code>invalid</code> / <code>errorTip</code>；表单用 Naive <code>NForm.validate()</code> + 必填红星 <code>showRequireMark</code>。</p>
+  </section>
+
+  <section id="l-filter">
+    <h3>3.8 筛选区</h3>
+    <p>白底卡片 + 网格布局；<b>商户为必填带红星</b>；右侧依次「搜索（蓝）」「重置（白）」「收起」「自定义列」。快捷时间固定 7 项：今天 / 昨天 / 本周 / 上周 / 本月 / 上月 / 所有（呼应 prototype-design-spec.md §3/§5）。</p>
+  </section>
+
+  <!-- ============ 四、维护 ============ -->
+  <section id="sync">
+    <h2 class="sec">四 · 维护与同步</h2>
+    <ul>
+      <li><b>R34 双向同步（硬门禁）</b>：V3 控件 / 名词 / 排版行为变更 → 回填本文；本文规则调整 → 反向核对 V3 原型。<b>本 HTML 与同目录 <code>ui-controls-terminology-layout-spec.md</code> 同源，改一处须同步另一处。</b></li>
+      <li><b>颜色 / 视觉 token</b> 一律见 <a href="prototype-design-spec.md" target="_blank">prototype-design-spec.md</a> §4，本文不复写。</li>
+    </ul>
+    <h3>关键代码文件索引（溯源）</h3>
+    <table>
+      <tr><th width="180">主题</th><th>文件</th></tr>
+      <tr><td>高级控件类型</td><td><code>src/components/ProComponents/types/{common,field,dataTable,searchForm,form}.ts</code></td></tr>
+      <tr><td>控件对比说明</td><td><code>src/components/ProComponents/COMPARISON.md</code></td></tr>
+      <tr><td>表格渲染器</td><td><code>src/components/TableRenders/index.ts</code>（12 个 render）</td></tr>
+      <tr><td>操作列工厂</td><td><code>src/components/Table/src/createActionColumn.ts</code></td></tr>
+      <tr><td>商户格式化</td><td><code>src/hooks/useTenantOptions.ts</code>（<code>formatTenantLabel</code>）</td></tr>
+      <tr><td>设备 / 端</td><td><code>src/hooks/useClientType.ts</code></td></tr>
+      <tr><td>状态字典</td><td><code>src/api/index.ts</code>、<code>src/components/DictSelect/data.ts</code>（<code>FULL_DICT</code>）</td></tr>
+      <tr><td>列表页规范</td><td><code>list-page</code> skill、标杆页 <code>views/finance/rechargeOrder/thirdPartyPending/</code></td></tr>
+      <tr><td>视觉 token</td><td><a href="prototype-design-spec.md" target="_blank">prototype-design-spec.md</a> §4</td></tr>
+    </table>
+  </section>
+
+  </main>
+</div>
+</body>
+</html>

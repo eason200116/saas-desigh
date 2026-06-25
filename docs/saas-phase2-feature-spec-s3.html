@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>归因字段增强 · §四（判定/流程/矩阵）</title>
+<style>
+  :root{--blue:#1d4ed8;--ink:#1f2937;--sub:#64748b;--line:#e5e7eb;--bg:#f7f9fc}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
+  .wrap{max-width:none;margin:0;padding:24px 32px 80px}
+  .hero{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;border-radius:14px;padding:26px 28px;margin-bottom:22px}
+  .hero h1{margin:0 0 6px;font-size:24px}
+  .hero p{margin:0;opacity:.92;font-size:13.5px}
+  .meta{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+  .pill{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:3px 12px;font-size:12px}
+  .layout{display:flex;gap:26px;align-items:flex-start}
+  .toc{position:sticky;top:16px;width:216px;flex:none;max-height:calc(100vh - 32px);overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 10px}
+  .toc b{color:var(--blue);font-size:13px;display:block;padding:2px 10px 8px}
+  .toc a{display:block;margin:0 0 2px;padding:5px 10px;border-radius:7px;color:#334155;text-decoration:none;font-size:12.5px;line-height:1.5}
+  .toc a:hover{background:#eff6ff;color:var(--blue)}
+  .main{flex:1;min-width:0}
+  .main h2:first-child{margin-top:0}
+  @media(max-width:900px){.layout{display:block}.toc{position:static;width:auto;margin-bottom:18px}}
+  .mk-y{color:#16a34a;font-weight:700}.mk-n{color:#dc2626;font-weight:700}.mk-i{color:#94a3b8;font-weight:700}
+  .grp-cell{background:#f0f4f8;font-weight:700;color:var(--blue);vertical-align:middle!important}
+  .rule-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;background:#f6f8fb;border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+  .mx-scroll{overflow:auto;max-height:72vh}
+  .mx-scroll table{border-collapse:separate;border-spacing:0;table-layout:fixed;width:1110px;margin:0}
+  .mx-scroll th,.mx-scroll td{padding:6px 7px}
+  .mx-scroll thead th{position:sticky;top:0;z-index:5;background:#f1f5f9;white-space:normal;word-break:break-word}
+  .mx-scroll td{word-break:break-word}
+  .mx-scroll td.mxfz{position:sticky;z-index:4;background:#fff}
+  .mx-scroll th.mxfz{position:sticky;z-index:8}
+  .mx-scroll td.mxfz.grp-cell{background:#f0f4f8}
+  .mx-scroll .mxfz-last{box-shadow:2px 0 6px rgba(15,23,42,.10)}
+  h2{font-size:18px;color:var(--blue);margin:30px 0 6px;padding-bottom:8px;border-bottom:2px solid #eef2f7}
+  h3{font-size:15px;color:var(--ink);margin:20px 0 8px}
+  h4{font-size:13.5px;color:#334155;margin:14px 0 6px}
+  .sub{color:var(--sub);font-size:13px;margin:2px 0 12px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+  th,td{border:1px solid var(--line);padding:7px 11px;text-align:left;vertical-align:top}
+  th{background:#f1f5f9;color:#334155;font-weight:700;white-space:nowrap}
+  td.k{width:96px;color:var(--sub);white-space:nowrap;background:#fafbfc}
+  .tag{display:inline-block;font-size:11px;border-radius:6px;padding:1px 8px;font-weight:600;vertical-align:middle}
+  .t-new{background:#fef3c7;color:#b45309}
+  .t-core{background:#ede9fe;color:#6d28d9}
+  .t-form{background:#dbeafe;color:#1d4ed8}
+  ul.feat{margin:6px 0;padding-left:20px}
+  ul.feat li{margin:5px 0}
+  ol.flow{margin:6px 0;padding-left:22px}
+  ol.flow li{margin:4px 0}
+  .note{background:#f8fafc;border:1px solid #eef2f7;border-left:3px solid var(--blue);border-radius:8px;padding:10px 14px;font-size:12.5px;color:var(--sub);line-height:1.85;margin:10px 0}
+  .op{display:inline-block;background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:6px;padding:0 8px;font-size:12px;margin:1px 3px 1px 0;white-space:nowrap}
+  .op.warn{background:#fef2f2;border-color:#fecaca;color:#b91c1c}
+  .op.gray{background:#f1f5f9;border-color:#e2e8f0;color:#475569}
+  img.shot{display:block;width:100%;max-width:1400px;border:1px solid var(--line);border-radius:10px;margin:10px 0 4px;box-shadow:0 2px 10px rgba(15,23,42,.07)}
+  .shot-cap{font-size:12px;color:var(--sub);margin:0 0 14px}
+  a.golink{display:inline-block;margin-left:8px;font-size:12px;font-weight:600;color:#2563eb;text-decoration:none;border:1px solid #bfdbfe;border-radius:6px;padding:0 9px;background:#eff6ff;vertical-align:middle;white-space:nowrap}
+  a.golink:hover{background:#dbeafe}
+  a.lk{color:#2563eb;text-decoration:none}
+  a.lk:hover{text-decoration:underline}
+  .dlinks{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .dlink{display:flex;align-items:center;gap:11px;padding:11px 14px;border:1px solid var(--line);border-radius:10px;text-decoration:none;background:#fff;transition:.12s}
+  .dlink:hover{border-color:#bfdbfe;background:#f7faff;transform:translateY(-1px)}
+  .dlink .di{width:32px;height:32px;border-radius:8px;background:#eff6ff;display:flex;align-items:center;justify-content:center;font-size:15px;flex:none}
+  .dlink .dx{display:flex;flex-direction:column;min-width:0}
+  .dlink .dx b{font-size:13px;color:#1f2937;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dlink .dx i{font-style:normal;font-size:12px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dlink.hi{background:linear-gradient(120deg,#2563eb,#3b82f6);border-color:transparent}
+  .dlink.hi .dx b,.dlink.hi .dx i{color:#fff}
+  .dlink.hi .dx i{opacity:.85}
+  @media(max-width:760px){.dlinks{grid-template-columns:1fr}}
+  .toc-grp{display:block;margin:10px 2px 4px;padding:6px 10px 2px;font-size:11px;font-weight:700;color:#94a3b8;letter-spacing:1px;border-top:1px dashed #eef2f7}
+  .toc .toc-grp:first-of-type{border-top:none;margin-top:0;padding-top:0}
+  .toc a em{font-style:normal;float:right;font-size:11px;color:#94a3b8}
+  .plain{background:#fffbeb;border:1px solid #fde68a;border-radius:9px;padding:9px 13px;font-size:12.8px;color:#92400e;line-height:1.85;margin:8px 0 12px}
+  .plain::before{content:"💡 白话版：";font-weight:700;color:#b45309}
+  .shotgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 4px}
+  .shotgrid figure{margin:0}
+  .shotgrid img{width:100%;border:1px solid var(--line);border-radius:8px;box-shadow:0 2px 8px rgba(15,42,74,.06)}
+  .shotgrid figcaption{font-size:12px;color:var(--sub);margin-top:3px;text-align:center}
+  @media(max-width:760px){.shotgrid{grid-template-columns:1fr}}
+
+    .attr-prev{color:var(--blue);font-weight:700;cursor:pointer;background:#eff6ff;border:1px solid #bfdbfe;border-radius:5px;padding:1px 6px;white-space:nowrap;display:inline-block}.attr-prev:hover{background:#dbeafe}.attr-prev .pv-i{font-style:normal;font-size:10px;color:#60a5fa;margin-left:4px}
+    .am-mask{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:9999;display:none;align-items:center;justify-content:center}
+    .am-mask.show{display:flex}
+    .am-box{background:#fff;border-radius:14px;width:min(1180px,94vw);max-height:88vh;overflow:auto;padding:20px 22px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+    .am-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .am-h h3{margin:0;font-size:16px;color:#1f2937}
+    .am-x{cursor:pointer;color:#94a3b8;font-size:20px;border:0;background:none;line-height:1}
+    .am-case{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+    .am-lb{font-size:11px;font-weight:700;color:#b45309;background:#fef3c7;border-radius:5px;padding:3px 9px}
+    .am-code{font-size:11px;font-weight:700;color:#7c3aed;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:5px;padding:3px 8px}
+    .am-node{background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:4px 10px;color:#b45309;font-weight:600;font-size:12.5px}
+    .am-ar{color:#cbd5e1;font-weight:700}
+    .am-flow{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap}
+    .am-step{flex:1 1 0;min-width:175px;border:1px solid #e5e7eb;border-radius:10px;background:#fafbfc;padding:11px 13px}
+    .am-step.hot{border-color:#f59e0b;background:#fffbeb}
+    .am-sn{display:inline-flex;width:20px;height:20px;border-radius:50%;background:#eef2f7;color:#475569;font-size:11px;font-weight:700;align-items:center;justify-content:center;margin-right:6px}
+    .am-step.hot .am-sn{background:#f59e0b;color:#fff}
+    .am-sh{font-size:12.5px;font-weight:700;color:#1f2937;margin-bottom:6px}
+    .am-sf span{display:block;font-size:11.5px;color:#64748b;margin-top:4px;line-height:1.5}
+    .am-sf b{color:#d4380d;font-weight:600}
+    .am-step.gr .am-sn{background:#16a34a;color:#fff}
+    .am-aar{display:flex;align-items:center;color:#cbd5e1;font-weight:700;font-size:15px}
+  .mini-prev{cursor:pointer;border:1px solid #bfdbfe;border-radius:8px;background:#f8fafc;padding:7px 6px;text-align:center;transition:.12s}.mini-prev:hover{background:#eff6ff;border-color:#2563eb}.mini-prev .mp-dots{display:flex;gap:4px;justify-content:center;align-items:center}.mini-prev .mp-dots i{width:9px;height:9px;border-radius:2px;display:inline-block;background:#93c5fd}.mini-prev .mp-dots i:nth-child(1){background:#2563eb}.mini-prev .mp-dots i:nth-child(3){background:#f59e0b}.mini-prev .mp-dots i:nth-child(5){background:#16a34a}.mini-prev .mp-label{font-size:10.5px;color:#2563eb;font-weight:700;margin-top:5px;white-space:nowrap}
+  </style>
+<style>body{padding:8px 18px 40px}</style>
+</head>
+<body>
+<h2 id="s3">四、会员详情 · 新增归因字段＋会员列表增强</h2>
+  <div class="sub">二阶段在「会员详情」真实抽屉按指定位置注入的<b style="color:#d4380d">红字新增字段</b>（原布局不变），共 27 个，分 归因来源 / 代理体系 / 注册登录设备 三组；会员列表同步红色新列（可在「自定义列」显隐）。完整词条另见 全字段说明，判定逻辑见 归因流程图。</div>
+    <div class="plain">给每个新注册会员盖一个「从哪儿来」的章：是广告带来的、朋友邀请的、官方推广来的，还是自己搜来的。这个章注册时盖下、永不再改——之后算广告费值不值、佣金分给谁，全凭这个章。</div>
+  
+    <span style="width:28px;height:28px;border-radius:7px;background:#fde8e2;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none">📖</span>
+    <span><b>会员详情 · 新增字段说明</b><span style="color:#64748b;font-size:12.5px;margin-left:10px">27 个红字字段完整词条 ＋ 归因矩阵</span></span>
+    <span style="margin-left:auto;color:#2563eb;font-weight:600;font-size:13px;flex:none">打开 ↗</span>
+  
+  <div class="card">
+    <h3>4.1 归因来源与判定规则 查看 ↗</h3>
+    <ul class="feat">
+      <li>详情抽屉「归因来源」红字字段展示<b>主归因</b>结果，旁带 <b>?</b> 图标，点击弹出四种类型简介；下方「归因明细」可折叠展开判定流程图。</li>
+      <li><b>判定优先级（命中即停）</b>：广告投放 ＞ 邀请来源 ＞ 官方直推 ＞ 自然流量；全部解析失败并入自然流量。</li>
+      <li>归因明细呈现 9 个字段：主归因 / 推广三方类型 / 注册渠道 / 登录渠道 / 搜索引擎 / 邀请码 / 邀请类型 / 包名 / 版本号（字段词条见《新增字段介绍》）。</li>
+    </ul>
+    <img class="shot" src="img/spec3-basic.png?v=0613e" alt="原型截图 · 会员详情「基本信息」：红字新增字段 邀请人（可点击下钻）与 访问端">
+    <div class="shot-cap">原型截图 · 会员详情「基本信息」：红字新增字段 邀请人（可点击下钻）与 访问端</div>
+    <img class="shot" src="img/spec3-attr.png?v=0613e" alt="原型截图 · 会员详情「归因来源」：会员→渠道→直接上级代理→一级代理→域名→商户→市场→集团 链路（角标 ? 点击看说明），下方「归因明细」展开后逐项展示红字归因字段">
+    <div class="shot-cap">原型截图 · 会员详情「归因来源」：会员→渠道→直接上级代理→一级代理→域名→商户→市场→集团 链路（角标 ? 点击看说明），下方「归因明细」展开后逐项展示红字归因字段</div>
+    <h3>4.2 归因判定流程（注册 → 固化 五步）</h3>
+    <ol class="flow">
+      <li><b>① 进入</b>：用户点击 推广链接 / 广告 / 邀请链接 / 搜索结果 → 进入注册页。</li>
+      <li><b>② 采集来源信号</b>：URL 参数（渠道码 <code>ch=</code> / 邀请码 <code>inv=</code> / UTM）· 广告点击ID（fbclid / gclid / ttclid）· 官方链接标识 · Referrer 来路 · 设备指纹 / IP。</li>
+      <li><b>③ 归因判定</b>（优先级唯一 · 命中即停 · 就高不就低）：广告 UTM / clickid → <b>广告投放</b>；有效邀请链接 / 邀请码 → <b>邀请来源</b>（同时挂入代理树）；官方推广链接 → <b>官方直推</b>；自然访问（无来源参数）或全部解析失败 → <b>自然流量</b>（失败原因记日志）。</li>
+      <li><b>④ 归因固化</b>：注册成功时一次性写入会员归因字段，<b>注册后不可改写</b>（划拨 / 撤代 / 关渠道均不影响）；「登录渠道」每次登录另行记录，用于对比拉新来源与活跃来源。</li>
+      <li><b>⑤ 展示</b>：会员详情「归因来源」板块（红字）＋ 会员列表红色归因列（自定义列可开）。</li>
+    </ol>
+    <div class="note"><b>并存与细分规则</b>：邀请链接与广告 UTM 并存 → 判<b>广告投放</b>，邀请码留作辅证、仍挂代理树计返佣并标「裂变获客」。邀请来源再分三类 <code>invite_type</code>：正常邀请 normal（个人码/链接）/ 转盘活动邀请 wheel / 邀请任务 task——三类都进代理树、都归上级代理；活动邀请额外触发对应活动奖励并记 <code>invite_activity_id</code>。18 种边界情况逐条见 4.6 归因穷举矩阵。</div>
+    <h3>4.6 归因穷举矩阵（5 大类型 × 18 种情况，点击表头跳转字段说明）</h3>
+    <div class="sub">左列与表头冻结，右侧「页面呈现 · 归因明细」可横向滑动；点击 主归因 ～ 邀请类型 表头跳至上方字段定义。 <b style="color:var(--blue)">矩阵已隐藏「页面呈现·归因明细」7 列，<b style="color:#2563eb">按主类型分组、每条归因一张卡，整宽展开完整 5 步脉络图（来源→入口→注册→采集→留存）</b>。</b></div>
+    <iframe src="attribution-matrix-4.6.html" style="width:100%;height:1040px;border:1px solid #e5e7eb;border-radius:10px;background:#fff" title="归因穷举矩阵（隐藏归因明细7列·卡片流脉络图）"></iframe>
+    <h3 id="reg-attr-flow">4.6.1 注册归因记录流程（从最初接触 → 注册完成成为用户）</h3>
+    <div class="sub">以会员「最初接触 → 注册完成」为主线，串联 4.6 矩阵的<b>触发标识</b>与<b>归因结果</b>：通过哪个标识进入、是否填了邀请码，最终归因到哪个大类并固化记录。</div>
+    <div style="display:flex;align-items:stretch;gap:8px;flex-wrap:wrap;margin:14px 0 16px">
+      <div style="flex:1 1 0;min-width:148px;border:1px solid var(--border);border-radius:10px;padding:11px 13px;background:#fafbfc"><span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:#eef2f7;color:#475569;font-size:11px;font-weight:700;align-items:center;justify-content:center;margin-right:6px">①</span><b style="font-size:13px;color:#1f2937">最初接触</b><small style="display:block;color:var(--muted);font-size:11px;margin-top:5px;line-height:1.5">点击 推广 / 广告 / 邀请 链接 · 搜索结果 · 直接输入域名</small></div>
+      <div style="display:flex;align-items:center;color:#cbd5e1;font-weight:700;font-size:16px">→</div>
+      <div style="flex:1 1 0;min-width:148px;border:1px solid var(--border);border-radius:10px;padding:11px 13px;background:#fafbfc"><span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:#eef2f7;color:#475569;font-size:11px;font-weight:700;align-items:center;justify-content:center;margin-right:6px">②</span><b style="font-size:13px;color:#1f2937">进入注册页</b><small style="display:block;color:var(--muted);font-size:11px;margin-top:5px;line-height:1.5">URL 带参：clickid / UTM · ch=渠道码 · inv=邀请码；并记录 Referrer / 设备 / IP</small></div>
+      <div style="display:flex;align-items:center;color:#cbd5e1;font-weight:700;font-size:16px">→</div>
+      <div style="flex:1 1 0;min-width:148px;border:1px solid var(--border);border-radius:10px;padding:11px 13px;background:#fafbfc"><span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:#eef2f7;color:#475569;font-size:11px;font-weight:700;align-items:center;justify-content:center;margin-right:6px">③</span><b style="font-size:13px;color:#1f2937">采集触发标识</b><small style="display:block;color:var(--muted);font-size:11px;margin-top:5px;line-height:1.5">推广标识(clickid/UTM) · 邀请码 · 官方链接标识 · 搜索 referrer</small></div>
+      <div style="display:flex;align-items:center;color:#cbd5e1;font-weight:700;font-size:16px">→</div>
+      <div style="flex:1 1 0;min-width:148px;border:1px solid #fde68a;border-radius:10px;padding:11px 13px;background:#fffbeb"><span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:#f59e0b;color:#fff;font-size:11px;font-weight:700;align-items:center;justify-content:center;margin-right:6px">④</span><b style="font-size:13px;color:#1f2937">判定归因大类</b><small style="display:block;color:#92400e;font-size:11px;margin-top:5px;line-height:1.5">广告投放 &gt; 邀请来源 &gt; 官方直推 &gt; 自然流量 · 命中即停</small></div>
+      <div style="display:flex;align-items:center;color:#cbd5e1;font-weight:700;font-size:16px">→</div>
+      <div style="flex:1 1 0;min-width:148px;border:1px solid #86efac;border-radius:10px;padding:11px 13px;background:#f0fdf4"><span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:#16a34a;color:#fff;font-size:11px;font-weight:700;align-items:center;justify-content:center;margin-right:6px">⑤</span><b style="font-size:13px;color:#1f2937">注册完成 · 固化记录</b><small style="display:block;color:#15803d;font-size:11px;margin-top:5px;line-height:1.5">写入 主归因/平台/渠道/邀请码/邀请类型 等，注册后<b>永不改写</b></small></div>
+    </div>
+    <table>
+      <tr><th style="width:120px">场景（对应 4.6 编号）</th><th style="width:200px">通过哪个标识进入</th><th style="width:90px">是否填邀请码</th><th style="width:96px">归因大类</th><th>注册完成时固化的关键归因记录</th></tr>
+      <tr><td><b>A1</b> · 广告点击</td><td>广告点击ID <span class="rule-code">fbclid</span>（Facebook Pixel）</td><td><span class="mk-n">✗</span> 否</td><td style="color:var(--blue);font-weight:700">广告投放</td><td>主归因＝广告投放 · 推广平台＝Facebook · 注册渠道＝<span class="rule-code">apk-fb-me001-01</span> · 邀请码＝—</td></tr>
+      <tr><td><b>A4</b> · 广告+裂变</td><td>广告点击ID <span class="rule-code">fbclid</span> + 有效个人邀请码</td><td><span class="mk-y">✓</span> 有效码</td><td style="color:var(--blue);font-weight:700">广告投放</td><td>主归因＝广告投放（<b>裂变获客</b>） · 平台＝Facebook · 邀请码＝AGENT100（<b>辅证·仍挂代理树计返佣</b>） · 邀请类型＝正常邀请</td></tr>
+      <tr><td><b>A6</b> · 代理邀请</td><td>代理专属链接 <span class="rule-code">ch=ag010</span> + 个人邀请码</td><td><span class="mk-y">✓</span> 有效码</td><td style="color:#7c3aed;font-weight:700">邀请来源</td><td>主归因＝邀请来源 · 注册渠道＝ag010（代理 2250100 专属） · 邀请码＝AGENT100 · 邀请类型＝正常邀请（个人）</td></tr>
+      <tr><td><b>B1</b> · 官方直推</td><td>官方推广链接标识（无码、无广告）</td><td><span class="mk-n">✗</span> 否</td><td style="color:#0891b2;font-weight:700">官方直推</td><td>主归因＝官方直推 · 注册渠道＝官方渠道 <span class="rule-code">h5-01</span> · 推广平台＝— · 邀请码＝—</td></tr>
+      <tr><td><b>B9</b> · 自然流量</td><td>直接输入域名（无任何来源标识）</td><td><span class="mk-n">✗</span> 否</td><td style="color:var(--muted);font-weight:700">自然流量</td><td>主归因＝自然流量 · 搜索引擎＝直接访问 · 注册渠道＝官方渠道 <span class="rule-code">h5-01</span> · 邀请码＝—</td></tr>
+    </table>
+    <div class="sub" style="margin-top:6px">读法：一条会员注册记录＝「通过哪个<b>触发标识</b>进入（①②③）→ 按优先级判出<b>归因大类</b>（④）→ 固化为不可改的<b>归因记录</b>（⑤）」。是否填邀请码不直接决定大类——广告标识优先级更高时（A4），邀请码降为辅证但仍绑定代理树。</div>
+    <h3>4.7 推广 → 归因（现阶段：仅渠道管理）</h3>
+    <ul class="feat">
+      <li><b>建渠道</b>（运营管理 / 推广配置 / 渠道管理）：创建渠道（官方渠道仅 H5 端 / 投放渠道多端）→ 绑定跳转域名 → 生成带<b>渠道码</b>的渠道链接投放。</li>
+      <li><b>获客归因</b>：会员经渠道链接注册后，按 5.2 流程判定主归因并固化字段——渠道码落到「注册渠道」，写入「归因来源」。</li>
+    </ul>
+    <div class="note">现阶段推广配置仅开放<b>渠道管理</b>；域名 / 打包 / 埋点 / PWA、回传归集与 ROI 闭环等端到端环节，待对应模块开放后再补充说明。渠道管理页面交互详见本说明书「六、推广分发配置」。</div>
+  </div>
+
+  <div class="card">
+    <h3>4.8 会员列表 / 会员详情（二阶段增强） <span class="tag t-new">既有页增强</span> 查看 ↗</h3>
+    <div class="plain">老页面加新料：统一加了商户筛选与商户列；操作列收窄成「修改密码 + 更多」；返佣开关做成可显隐的红色列；会员详情新增可编辑昵称，并按原布局插入红字新字段——红字＝本期新增，一眼分清新旧。</div><img class="shot" src="img/spec-member-list.png?v=0613e" alt="原型截图 · 会员列表：商户筛选 + 批量操作 + 红色归因列（自定义列可开）" loading="lazy"><div class="shot-cap">原型截图 · 会员列表：商户筛选 + 批量操作 + 红色归因列（自定义列可开）</div>
+    <ul class="feat">
+      <li><b>商户筛选 + 商户列</b> <span class="tag t-new">本期</span>：筛选区首位「商户」下拉（选项 = 所有商户 + 各商户），<b>默认＝顶栏当前商户</b>，切换即过滤下方数据；列表首列展示「商户」蓝 pill。此为<b>全局规范</b>，所有查询页一致（见 §2.1 / §2.3）。</li>
+      <li><b>操作列精简 + 折叠展开</b> <span class="tag t-new">本期</span>：操作列默认只显示「<span class="op">修改密码</span>」，末尾「<span class="op">更多 »</span>」展开「<span class="op">三方信息</span>」、「<span class="op">« 收起</span>」收起（原「修改用户名 / 删除」已去除）；操作列冻结贴右、按内容收窄不留白。</li>
+      <li><b>返佣配置开关（红色列）</b> <span class="tag t-new">本期调整</span>：「领取返佣」「对上级返佣」为<b>行内 toggle 红色列</b>（默认随其它红列显示，可在「自定义列」显隐），<b>不并入操作列</b>；点击弹「确认要开启/关闭该会员的「××」吗？」，确定后翻转并 Toast。</li>
+      <li><b>表头分组归类（数据列重排）</b>：会员列表所有数据列<b>按类目重新排列并归组</b>，列名行之上新增一行<b>分组标签</b>——<b>商户 / 会员 / 账户资金 / 等级分组 / 状态 / 渠道归因 / 代理数据 / 注册设备 / 登录设备 / 其它</b>；分组随列一起冻结，横向滚动时分组标签与所属列始终对齐。<b>「自定义列」弹窗同样按组分块</b>展示（每组小标题带计数 + 组内两列复选框），与表头归类一致。</li>
+      <li><b>列精简</b> <span class="tag t-new">本期</span>：移除「三方余额」「积分」列（与「余额」重复 / 低频，详情可查）；其余列可经「自定义列」自由显隐。</li>
+      <li><b>状态列语义化</b> <span class="tag t-new">本期</span>：「黑名单状态」显示 正常（中性灰）/ 拉黑（红）；「会员状态」显示 启用（绿）/ 停用（灰）——按各自语义着色，不再统一「正常 / 异常」。</li>
+      <li><b>会员详情 · 新增昵称（只读）</b> <span class="tag t-new">本期</span>：基本信息区「账号」后新增「昵称」字段，<b>仅展示、不可修改</b>（无「修改」按钮）；会员状态 / 会员备注仍为同款可编辑交互。</li>
+      <li><b>归因红字字段</b>：会员详情抽屉按指定位置注入红色字段（原布局不变）——<b>归因来源</b>（带 ? 图标点击看类型简介 + 归因明细折叠流程图）、<b>代理数据</b>（含 10 级代理关系图，点击节点复制代理ID）、<b>注册 / 登录信息</b>（注册端 / 设备号 / 指纹 / 域名 / 同设备注册数等）。</li>
+      <li>红字字段在列表中同步为<b>红色新列</b>（可在「自定义列」勾选显隐）；邀请人、代理路径可点击下钻。</li>
+      <li><b>字段调整（2026-06-13 本轮 · 最新口径）</b> <span class="tag t-new">本期</span>：<b>会员列表</b>——删 邀请人 / 上级代理ID / 代理层级 / 返佣等级 / 是否模拟器 / 注册端 / 访问端 / 登录域名；佣金模式取值改 <b>盈亏返利 / 流水返佣</b>；「注册设备号/指纹」拆为 <b>注册设备号 + 注册浏览器指纹</b>、「登录设备号/指纹」拆为 <b>上次登录设备号 + 上次登录浏览器指纹</b>（<b>按端展示</b>：App 端给设备号、网页端给浏览器指纹，另一项显「-」）；登录端→<b>登录设备</b>。<br><b>会员详情</b>——删 邀请人 / 是否模拟器 / 市场（归因链路去「市场」节点）/ 代理层级；访问端移入「登录信息」；<b>「归因明细」并入「归因·注册信息」</b>（取消折叠，平铺展示）；新增 <b>注册设备号 / 注册包名</b>；注册端→<b>注册设备</b>；推广平台名称→<b>推广三方类型</b>（Facebook / Adjust / TikTok）；下级数量拆 <b>直属下级数量 + 团队下级数量</b>；返佣模式→<b>佣金模式</b>（盈亏返利 / 流水返佣）；返佣等级→<b>昨日返佣等级</b>（保底 / 固定 / 动态，示例「昨日 L4（保底 L3）」）；登录端→<b>上次登录端</b>、登录设备号/指纹→<b>上次登录设备号 + 上次登录浏览器指纹</b>、登录域名→<b>上次登录域名</b>，新增 <b>上次登录包名</b>（与版本号合并）/ <b>同IP登录数</b>。会员详情「登录信息」与「最后3次登录」<b>合并为一张卡</b>；<b>同IP登录数</b>移入「最后3次登录」标题行，<b>仅显示数量</b>（＝该会员各历史登录IP「同IP登录人数」之累加合计），<b>点击跳转「风控管理 · 同IP/设备检测」的「同登录IP」页签并带入该会员ID</b>（不在详情内罗列会员）。会员详情归因区<b>卡片更名「注册信息（归因）」</b>、注册信息置顶，<b>「归因脉络·本会员」移至卡片底部、默认收起、点击展开（按钮名「归因介绍」）</b>。会员详情<b>所有「同IP/同设备/同指纹（注册 & 登录）」数值均可点击</b>，分别跳转「风控管理 · 同IP/设备检测」对应维度页签（同注册IP / 同注册设备 / 同登录IP / 同登录设备）并带入该会员、展示其专属命中记录。两条详情路径（注入弹窗 + 真实抽屉）均已落地。</li>
+    </ul>
+  </div>
+
+<script>
+/* 中间层：收到矩阵 iframe 高度→撑开它，并把自身新高度向上报 */
+(function(){
+  function up(){try{if(window.parent!==window)parent.postMessage({__frameH:Math.max(document.body.scrollHeight,document.documentElement.scrollHeight)},'*');}catch(e){}}
+  window.addEventListener('message',function(ev){var d=ev.data;if(!d||typeof d.__frameH!=='number')return;
+    var ifr=document.querySelectorAll('iframe');for(var i=0;i<ifr.length;i++){if(ifr[i].contentWindow===ev.source){ifr[i].style.height=(d.__frameH+24)+'px';ifr[i].scrolling='no';break;}}
+    setTimeout(up,30);});
+})();
+</script>
+<script>
+/* 子页：上报内容高度，供父级撑开 iframe（整体平铺）*/
+(function(){function ph(){try{if(window.parent!==window)parent.postMessage({__frameH:Math.max(document.body.scrollHeight,document.documentElement.scrollHeight)},'*');}catch(e){}}
+window.addEventListener('load',ph);window.addEventListener('resize',ph);[300,900,1600].forEach(function(t){setTimeout(ph,t);});})();
+</script>
+</body>
+</html>

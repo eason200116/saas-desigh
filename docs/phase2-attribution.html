@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><title>二阶段 · 归因说明</title></head>
+<body>
+<div class="wrap-attr">
+
+  <div class="lead" style="background:#f0fdf4;border-color:#bbf7d0">
+    给每个新注册会员盖一个「从哪儿来」的章——广告带来的、朋友邀请的、官方推广来的、还是自己搜来的。注册时盖下、<b>永不再改</b>；之后算广告费值不值、佣金分给谁，全凭这个章。
+  </div>
+  <table>
+    <tr><th style="width:110px">环节</th><th>说明</th></tr>
+    <tr><td class="f">判定优先级</td><td><b>广告投放 ＞ 邀请来源 ＞ 官方直推 ＞ 自然流量</b>（命中即停、就高不就低；全部解析失败并入自然流量）</td></tr>
+    <tr><td class="f">五步固化</td><td>① 进入（点推广/广告/邀请/搜索链接）→ ② 采集来源信号（渠道码 / 邀请码 / UTM / clickid / referrer / 指纹·IP）→ ③ 判定（优先级唯一）→ ④ 固化（注册成功一次性写入，<b>注册后不可改写</b>）→ ⑤ 展示（详情红字 + 列表红色列）</td></tr>
+    <tr><td class="f">27 红字分组</td><td>归因来源 / 代理体系 / 注册·登录设备 三组；详情红字按位置注入、布局不变；会员列表同步红色新列（自定义列可显隐）。<b>逐字段定义见《新增字段介绍》。</b></td></tr>
+    <tr><td class="f">并存规则</td><td>邀请链接 + 广告 UTM 并存 → 判<b>广告投放</b>，邀请码留作辅证、仍挂代理树计返佣并标「裂变获客」；邀请类型再分 正常 / 转盘活动 / 邀请任务</td></tr>
+    <tr><td class="f">登录另记</td><td>「登录渠道」每次登录另行记录，用于对比拉新来源与活跃来源（与注册渠道可不同）</td></tr>
+  </table>
+
+  <h3>归因穷举矩阵（5 大类型 × 18 种情况）</h3>
+  <p class="muted">按归因类型分组，每条归因一张卡：头部为<b>触发条件</b>，下方整宽展开该归因的完整 5 步脉络图（来源 → 入口 → 注册 → 采集 → 留存）。</p>
+  <iframe src="attribution-matrix-4.6.html" style="width:100%;height:1200px;border:1px solid var(--line);border-radius:10px;background:#fff" title="归因穷举矩阵 · 卡片流脉络图"></iframe>
+
+</div>
+</body></html>

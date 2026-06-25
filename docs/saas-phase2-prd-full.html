@@ -21,7 +21,7 @@
   nav a:hover{background:#eef2ff;color:var(--accent);}
   nav a.sub{padding-left:22px;color:var(--muted);font-size:12px;}
   nav .grp{font-weight:700;margin-top:10px;color:#111827;padding:4px 10px;}
-  main{flex:1;min-width:0;padding:26px 40px 100px;max-width:1180px;}
+  main{flex:1;min-width:0;padding:26px 40px 100px;max-width:none;}
   section{margin-bottom:42px;scroll-margin-top:70px;}
   h2.sec{font-size:21px;border-left:5px solid var(--accent);padding-left:12px;margin:0 0 6px;}
   .sd{color:var(--muted);font-size:13.5px;margin:0 0 16px;}
@@ -32,6 +32,13 @@
   th,td{border:1px solid var(--border);padding:7px 10px;text-align:left;vertical-align:top;}
   th{background:#f3f4f6;}
   tr:nth-child(even) td{background:#fafbfc;}
+  /* 修改日志：默认收起，点击 summary 展开 */
+  details.changelog>summary{cursor:pointer;user-select:none;list-style:none;display:inline-flex;align-items:center;gap:8px;background:#eef2ff;border:1px solid #c7d2fe;border-radius:8px;padding:9px 14px;font-size:13.5px;font-weight:600;color:var(--accent);margin:2px 0 0;}
+  details.changelog>summary::-webkit-details-marker{display:none;}
+  details.changelog>summary::before{content:"▸";font-size:12px;transition:transform .15s;}
+  details.changelog[open]>summary::before{transform:rotate(90deg);}
+  details.changelog>summary:hover{background:#e0e7ff;}
+  details.changelog[open]>summary{margin-bottom:8px;}
   .lead{background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:14px 18px;font-size:14px;line-height:1.8;}
   .pill{display:inline-block;font-size:11px;padding:1px 8px;border-radius:20px;margin:1px 2px 1px 0;}
   .p-in{background:#dcfce7;color:#15803d;} .p-out{background:#fee2e2;color:#b91c1c;} .p-late{background:#fef3c7;color:#92400e;} .p-done{background:#dbeafe;color:#1d4ed8;}
@@ -48,40 +55,68 @@
   .flow .step{background:#fff;border:1px solid var(--border);border-radius:8px;padding:7px 13px;font-size:13px;}
   .flow .arr{color:var(--accent);font-weight:700;}
   code{background:#f3f4f6;padding:1px 5px;border-radius:4px;font-size:12.5px;}
+  /* 顶部 Tab（融合产品原型 / 交互介绍 / 研发说明 / 验收用例，页内切换不跳出） */
+  header{align-items:stretch;}
+  header .logo,header .ver{align-self:center;}
+  header .tabs{display:flex;gap:4px;align-items:flex-end;margin-bottom:-12px;}
+  header .tabbtn{background:rgba(255,255,255,.10);color:rgba(255,255,255,.82);border:0;padding:9px 18px;border-radius:10px 10px 0 0;font-size:13px;cursor:pointer;line-height:1.2;transition:background .15s,color .15s;white-space:nowrap;}
+  header .tabbtn:hover{background:rgba(255,255,255,.22);color:#fff;}
+  header .tabbtn.active{background:var(--bg);color:#1e293b;font-weight:700;box-shadow:inset 0 3px 0 var(--accent);}
+  header .crumb{align-self:center;font-size:14px;font-weight:600;color:#c7d2fe}
+  header .crumb:empty{display:none}
+  header .hopen{align-self:center;color:#93c5fd;text-decoration:none;font-size:12px;margin-right:6px}
+  header .hopen:hover{text-decoration:underline}
+  .embed-view{height:calc(100vh - 53px);display:flex;flex-direction:column;}
+  .embed-bar{flex:none;display:flex;align-items:center;gap:10px;padding:5px 16px;background:#1e293b;color:#cbd5e1;font-size:12px;}
+  .embed-bar .u{font-family:ui-monospace,Menlo,monospace;color:#93c5fd;}
+  .embed-bar a{margin-left:auto;color:#93c5fd;text-decoration:none;}
+  .embed-bar a:hover{text-decoration:underline;}
+  .embed-view iframe{flex:1;width:100%;border:0;background:#fff;}
+  .ztbar{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px;}
+  .ztbar button{border:1px solid var(--border);background:#fff;color:#374151;border-radius:7px;padding:5px 13px;font-size:12.5px;cursor:pointer;}
+  .ztbar button.on{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700;}
+  table.zt td,table.zt th{font-size:12.5px;}
+  table.zt tr.modrow td{background:#0f172a;color:#fff;font-weight:700;}
+  table.zt .rb{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11.5px;font-weight:600;}
+  table.zt .desc{color:#4b5563;font-size:12px;line-height:1.6;}
 </style>
 </head>
 <body>
 <header>
   <span class="logo">📘 SaaS 多商户后台 · 二阶段 PRD</span>
-  <span class="ver">整合版 v1.0 · 2026-06-17</span>
+  <span class="crumb" id="crumb"></span>
+  <span class="ver">整合版 v1.5 · 2026-06-25</span>
   <span class="grow"></span>
-  <a class="lnk" href="http://localhost:3100/member/user" target="_blank">产品原型 ↗</a>
-  <a class="lnk" href="phase2-interaction-guide.html" target="_blank">交互介绍 ↗</a>
-  <a class="lnk" href="saas-phase2-tech-design.html" target="_blank">研发说明 ↗</a>
-  <a class="lnk" href="saas-phase2-acceptance-cases-v3.html" target="_blank">验收用例 ↗</a>
+  <div class="tabs">
+    <button class="tabbtn active" data-view="prd">📘 PRD 文档</button>
+    <button class="tabbtn" data-proto="1" data-src="https://eason200116.github.io/saas-desigh/prototypes/lotto-v3/#/home/welcome">产品原型</button>
+    <button class="tabbtn" data-src="phase2-interaction-guide.html">交互介绍</button>
+    <button class="tabbtn" data-src="saas-phase2-tech-design.html">研发说明</button>
+    <button class="tabbtn" data-glossary="1" data-src="http://localhost:8770/docs/migration/14-anchor-new-field-glossary.html">📖 字段词典</button>
+    <button class="tabbtn" data-src="saas-phase2-acceptance-cases-v3.html">验收用例</button>
+  </div>
 </header>
-<div class="layout">
+<div class="embed-view" id="embedView" style="display:none">
+  <div class="embed-bar">
+    <span class="ebt" id="embedTitle"></span>
+    <span class="u" id="embedUrl"></span>
+    <a id="embedOpen2" href="#" target="_blank" rel="noopener"
+       style="border:1px solid #475569;padding:3px 12px;border-radius:6px;">↗ 新窗口打开</a>
+  </div>
+  <iframe id="embedFrame" title="嵌入页"></iframe>
+  <iframe id="protoFrame" title="产品原型" style="display:none"></iframe>
+</div>
+<div class="layout" id="prdView">
   <nav>
     <a href="#info">0 · 文档信息</a>
-    <a href="#bg">1 · 背景与目标</a>
-    <a href="#scope">2 · 范围</a>
-    <a href="#role">3 · 角色与多商户模型</a>
-    <a href="#global">4 · 全局框架与通用交互</a>
-    <a href="#attr">5 · 归因体系（核心）</a>
-    <div class="grp">6 · 功能需求</div>
-    <a class="sub" href="#r-member">6.1 会员管理</a>
-    <a class="sub" href="#r-ops">6.2 运营管理</a>
-    <a class="sub" href="#r-risk">6.3 风控管理</a>
-    <a class="sub" href="#r-config">6.4 配置中心</a>
-    <a class="sub" href="#r-report">6.5 报表管理</a>
-    <a class="sub" href="#r-system">6.6 系统管理</a>
-    <a href="#data">7 · 数据与字段</a>
-    <a href="#nfr">8 · 非功能需求</a>
-    <a href="#accept">9 · 验收标准</a>
-    <a href="#milestone">10 · 里程碑与交付</a>
-    <a href="#risk">11 · 风险与待确认</a>
-    <a href="#ref">12 · 关联文档</a>
-    <a href="#changelog">13 · 修改日志</a>
+    <a href="#bg">1 · 背景</a>
+    <a href="#purpose">2 · 需求目的</a>
+    <a href="#framework">3 · 框架介绍</a>
+    <a href="#feature">4 · 功能点简介</a>
+    <a href="#milestone">5 · 里程碑</a>
+    <a href="#zentao">6 · 禅道任务</a>
+    <a href="#accept">7 · 验收</a>
+    <a href="#changelog">8 · 修改日志</a>
   </nav>
   <main>
 
@@ -90,379 +125,185 @@
     <table>
       <tr><th width="120">项</th><th>内容</th></tr>
       <tr><td>文档名称</td><td>SaaS 多商户后台 · 二阶段产品需求文档（PRD · 整合版）</td></tr>
-      <tr><td>版本 / 日期</td><td>v1.1 · 2026-06-22（同步：商户筛选多选+全部+互斥、多商户能力地图、站内信状态筛选 / 公告状态列只读 / 弹窗商户多选）</td></tr>
-      <tr><td>状态</td><td>评审用稿（交付以 <a href="http://localhost:3100" target="_blank">localhost:3100</a> 可点击原型为准）</td></tr>
+      <tr><td>版本 / 日期</td><td>v1.5 · 2026-06-25（消息/多语言专项：站内消息(推送逐语言横版卡牌+通知内容合并列)/轮播 文案配图「逐语言维护」、消息模板配置迁入配置中心并增强、短信/邮件更名「商配置」、公告消息整页下线；交互介绍 + 字段词典补充完整，研发说明补多语言口径，截图同步重拍）</td></tr>
+      <tr><td>状态</td><td>评审用稿（交付以 <a href="https://eason200116.github.io/saas-desigh/prototypes/lotto-v3/#/home/welcome" target="_blank">线上原型</a> 可点击原型为准）</td></tr>
       <tr><td>权威来源</td><td>《二阶段功能说明书》v1.15、《二期验收用例》、迁移源盘点（SitINR 旧后台）</td></tr>
-      <tr><td>适用范围</td><td>将旧后台 SitINR 的会员相关能力深度迁移至 V3 SaaS 多商户后台，并同步完成导航重组、归因体系建设与推广分发配置三项配套升级。</td></tr>
+      <tr><td>关联四件套</td><td><b>产品原型 / 交互介绍 / 研发说明 / 验收用例</b> 均在<b>顶部 Tab</b> 内嵌直达。本 PRD 只讲「做什么、为什么」；<b>控件级交互看「交互介绍」、字段与归因研发口径看「研发说明」</b>。</td></tr>
     </table>
   </section>
 
   <section id="bg">
-    <h2 class="sec">1 · 背景与目标</h2>
-    <h3>1.1 背景</h3>
+    <h2 class="sec">1 · 背景</h2>
     <p>旧后台 SitINR（.NET 单体）沉淀了完整的会员运营能力，但功能高度集中在「巨型」控制器中、缺乏多商户隔离，难以直接支撑平台的 SaaS 化运营。本期在将这些能力按新分类体系深度迁移至 V3 多商户后台的同时，统一交互骨架、补齐商户级数据隔离，并新增两项关键能力：一是回答「会员从哪儿来」的归因体系，二是打通广告投放获客的推广分发配置。</p>
-    <h3>1.2 目标</h3>
+  </section>
+
+  <section id="purpose">
+    <h2 class="sec">2 · 需求目的</h2>
+    <p>把旧后台 SitINR 沉淀的会员运营能力，<b>按多商户 SaaS 的方式深度迁移</b>到 V3 后台，并补齐三件事：商户级数据隔离、回答「会员从哪儿来」的归因体系、打通广告获客的推广分发配置。一句话——<b>让平台能以「多商户」的姿势，统一、可溯、可复制地运营会员</b>。</p>
+    <h3>2.1 目标</h3>
     <ul>
       <li><b>迁移补全</b>：对照 SitINR 补齐会员相关功能并按新分类重新归属，本期落地 22 个功能页。</li>
-      <li><b>导航重组</b>：8 大主 Tab 改为多列分组下拉（mega menu），并将「风控管理」「配置中心」由会员子项<b>提升为一级模块</b>。</li>
-      <li><b>归因可溯</b>：注册即按优先级判定来源并一次性固化，会员详情以红字字段完整呈现获客链路。</li>
-      <li><b>获客闭环</b>：通过推广分发配置打通「域名 → 渠道 → 推广 → 获客归因」闭环的前半段。</li>
-      <li><b>体验一致</b>：全部列表页复用同一套筛选 / 表格 / 工具栏 / 弹窗骨架，并贯彻多商户隔离。</li>
+      <li><b>导航重组</b>：8 大主 Tab 改为多列分组下拉（mega menu），「风控管理」「配置中心」由会员子项<b>提升为一级模块</b>。</li>
+      <li><b>归因可溯</b>：注册即按优先级判定来源并一次性固化，会员详情完整呈现获客链路。</li>
+      <li><b>获客闭环</b>：推广分发配置打通「域名 → 渠道 → 推广 → 获客归因」闭环的前半段。</li>
+      <li><b>体验一致</b>：全部列表页复用同一套筛选 / 表格 / 工具栏 / 弹窗骨架，贯彻多商户隔离。</li>
+      <li><b>C 端本地化</b>：面向会员的消息文案与配图统一升级为<b>「逐语言维护」</b>（每种语言各存一套、默认语言必填、缺译回退默认），消息模板配置迁入配置中心套模板化范式，支撑多商户多语言运营。</li>
     </ul>
-    <h3>1.3 五大交付物</h3>
+    <h3>2.2 五大交付物</h3>
     <div class="lead">
       ① 会员管理深度迁移（22 页）&nbsp;·&nbsp; ② 顶部导航分类优化（mega menu）&nbsp;·&nbsp; ③ 多标签页签栏&nbsp;·&nbsp; ④ 会员详情归因字段 + 会员列表增强&nbsp;·&nbsp; ⑤ 推广分发配置（渠道/域名/防封救援/解析检测）
     </div>
   </section>
 
-  <section id="scope">
-    <h2 class="sec">2 · 范围</h2>
-    <p class="sd">状态：<span class="pill p-done">已实现</span> <span class="pill p-in">本期纳入</span> <span class="pill p-late">延后</span> <span class="pill p-out">本期不做/下线</span></p>
-    <h3>2.1 本期纳入</h3>
+  <section id="framework">
+    <h2 class="sec">3 · 框架介绍</h2>
+    <p class="sd">本节只交代全站骨架——组织维度、导航、页签；逐页控件级交互（筛选 / 表格 / 弹窗 / 反馈规范）见<b>「交互介绍」</b>，不在此展开。</p>
+    <h3>3.1 多商户模型</h3>
+    <p>数据以<b>「商户」为唯一组织维度</b>（现阶段不设集团 / 市场上级层级），所有功能在商户维度上严格隔离；<b>现阶段仅一个「商户」角色</b>（不细分子角色），但后台支持跨商户的查询与配置。同一功能围绕「看哪些商户 + 一套参数怎么省力铺给一堆商户」分三种形态：</p>
     <table>
-      <tr><th width="150">模块</th><th>本期范围</th></tr>
-      <tr><td>会员管理</td><td>会员列表增强、会员详情归因增强、分组管理（融合）、登录日志（增强）、短信验证码查询</td></tr>
-      <tr><td>运营管理</td><td>站内消息、公告消息、轮播图管理；<b>推广配置</b>（渠道/域名/防封救援/解析检测）；运营数据（VIP 升级奖励/人数/操作日志）；返佣·等级（会员返佣等级/代理审核机制）</td></tr>
-      <tr><td>风控管理</td><td>异常会员处理、同 IP/设备检测</td></tr>
-      <tr><td>配置中心</td><td>VIP 配置（等级 + 经验值）、返佣配置（等级 + 费率）</td></tr>
-      <tr><td>报表管理</td><td>代理报表、昨日返佣等级</td></tr>
-      <tr><td>系统管理</td><td>IP 黑名单</td></tr>
+      <tr><th width="130">形态</th><th>做法</th><th width="190">用于</th></tr>
+      <tr><td>① 分数据查询</td><td>筛选区「商户」下拉：<b>多选 + 顶部「全部」（与具体商户互斥）</b>、空值=全部、不再必填、总控端扁平多选</td><td>会员 / 运营 / 报表 / 风控 列表</td></tr>
+      <tr><td>② 模板化配置</td><td>多套模板 +「选商户 → 保存 → 发布」+ 复制模板到其他商户</td><td>VIP 配置 / 返佣配置</td></tr>
+      <tr><td>③ 单站点配置</td><td>顶部商户切换条，切谁配谁，一次只配一个商户</td><td>注册管理 / 语言 / 系统参数 / 配置开关</td></tr>
     </table>
-  </section>
-
-  <section id="role">
-    <h2 class="sec">3 · 角色与多商户模型</h2>
-    <p class="sd">数据以<b>「商户」为唯一组织维度</b>（现阶段不设集团 / 市场等上级层级），所有功能在商户维度上严格隔离。<b>现阶段仅设一个「商户」角色</b>（不细分子角色 / 权限分级），但后台<b>支持跨商户的查询与配置</b>——通过顶栏商户切换、筛选区商户下拉与按商户独立配置实现。本节定义这套统一规则，作为后续各功能页的共同前提。</p>
-    <div class="note"><b>现阶段角色口径：</b>仅一个商户角色，登录后即以该角色操作；不区分运营 / 风控 / 配置等子角色。多商户能力体现在<b>数据与配置维度</b>（可查多商户、按商户配置），而非角色维度。</div>
-    <ul>
-      <li><b>多商户结构</b>：以「商户」为唯一组织维度（现阶段不设集团 / 市场上级层级）。顶栏切换商户后，所有列表页按该商户数据自动隔离重渲染。</li>
-      <li><b>多商户能力地图（一查询 + 两配置）</b>：同一功能要回答两个问题——「看哪些商户」（数据维度）与「一套参数怎么省力铺给一堆商户」（配置维度），分三种形态：
-        <ul>
-          <li><b>① 分数据查询</b>：筛选区「商户」下拉，<b>多选 + 顶部「全部」选项</b>，「全部」与具体商户<b>互斥</b>（点「全部」仅留全部、点具体自动去全部）；空值＝全部、<b>不再必填</b>；总控端统一<b>扁平多选</b>。用于 会员 / 运营 / 报表 / 风控 列表。</li>
-          <li><b>② 模板化配置</b>：一套配置铺给一批商户、互相复制——多套模板 +「选商户 → 保存 → 发布」+ 复制模板到其他商户 + 按商户分库。用于 VIP 配置 / 返佣配置。</li>
-          <li><b>③ 单站点配置</b>：一次只配一个商户自己那套（顶部商户切换条，切谁配谁）。用于 注册管理 / 语言 / 系统参数 / 配置开关。</li>
-        </ul>
-      </li>
-      <li><b>商户列</b>：列表首列展示「商户」蓝色 pill；单一商户视角下自动隐藏该列。</li>
-    </ul>
-  </section>
-
-  <section id="global">
-    <h2 class="sec">4 · 全局框架与通用交互</h2>
-    <p class="sd">本节约定贯穿全站的导航框架与列表页交互骨架。各功能页只描述其专属交互，未提及之处一律按本节执行，以保证全站体验一致。</p>
-    <h3>4.1 顶部导航（8 大主 Tab）</h3>
+    <h3>3.2 顶部导航（8 大主 Tab）</h3>
     <table>
-      <tr><th width="120">主 Tab</th><th>定位</th><th>主要子分类</th></tr>
+      <tr><th width="130">主 Tab</th><th>定位</th><th>主要子分类</th></tr>
       <tr><td>① 会员管理</td><td>会员行为与数据查询</td><td>账号查询、分组管理、登录·验证</td></tr>
       <tr><td>② 运营管理</td><td>拉新促活的运营工具</td><td>运营配置、推广配置、返佣·等级、运营数据</td></tr>
       <tr><td>③ 风控管理 <span class="pill p-done">↑一级</span></td><td>会员行为风控</td><td>异常·检测</td></tr>
-      <tr><td>④ 配置中心 <span class="pill p-done">↑一级</span></td><td>低频规则配置</td><td>VIP 配置、返佣配置</td></tr>
+      <tr><td>④ 配置中心 <span class="pill p-done">↑一级</span></td><td>低频规则配置</td><td>基础配置（VIP / 返佣）、系统配置（注册管理 / 前台配置 / 系统参数 / 配置开关）</td></tr>
       <tr><td>⑤ 财务管理</td><td>资金变动配置与数据</td><td>（一期已建，本期不动）</td></tr>
       <tr><td>⑥ 游戏管理</td><td>游戏配置与数据</td><td>（后续迭代）</td></tr>
       <tr><td>⑦ 报表管理</td><td>经营数据报表与预警</td><td>代理报表</td></tr>
       <tr><td>⑧ 系统管理</td><td>账号权限访问控制 · 日志</td><td>IP 黑名单（新增）</td></tr>
     </table>
     <p><b>多标签页签栏</b>：功能页以页签多开并存、切换、✕关闭，至少保留一个。</p>
+  </section>
 
-    <h3>4.2 通用交互规范（所有列表页共用骨架）</h3>
+  <section id="feature">
+    <h2 class="sec">4 · 功能点简介</h2>
+    <p class="sd">只列本期各模块「做什么」。逐条需求编号、专属交互与字段明细见<b>「交互介绍」/「研发说明」</b>。<b>归因体系</b>（注册即按 广告投放 › 邀请来源 › 官方直推 › 自然流量 优先级判定并固化、会员详情红字呈现，共 4 类 18 种穷举）为本期核心新增，判定规则与字段口径详见<b>研发说明</b>。</p>
+    <h3>4.1 功能简介（按模块）</h3>
     <table>
-      <tr><th width="110">区域</th><th>规范要点</th></tr>
-      <tr><td>筛选区</td><td>「商户」下拉恒首位，<b>多选 + 顶部「全部」选项（与具体商户互斥）、不再必填</b>，总控端扁平多选；时间合并「开始→结束」+ 快捷胶囊（今天/昨天/本周/上周/本月/上月/所有）；筛选 &gt;6 个第 7 起折叠；会员 ID 支持多 ID 空格分隔。</td></tr>
-      <tr><td>工具栏</td><td>新增（蓝主按钮）/ 导出（真实下载 CSV，文件名=页面名.csv）/ 批量（先勾选→二次确认）/ ⚙自定义列（勾选后须保存才生效）。</td></tr>
-      <tr><td>表格</td><td>ID 列蓝字+⧉复制、会员 ID 可下钻；首列商户 pill（商户视角隐藏）；金额列右对齐+↕排序；表尾「页面总计/总计」双行（黑字，红字仅留给新增字段）；图片悬停放大；操作列恒为最后一列、默认右侧冻结，横滚始终可见，且在「⚙自定义列」中不可取消冻结 / 不可拖拽排序、仅可显隐。</td></tr>
-      <tr><td>表格排布</td><td>列多的查询页支持「横版 / 竖版」两种排布（工具栏右侧分段切换，默认横版）：横版＝扁平列一字段一列；竖版＝同类字段并成「标签在上 / 值在下」复合列，列数压缩、行更高、横向更短。</td></tr>
-      <tr><td>行操作</td><td>文字链接（统一「编辑/详情/删除」），全部平铺一行（无「更多」折叠）；行内开关点击弹二次确认。</td></tr>
-      <tr><td>弹窗反馈</td><td>表单弹窗 760–860px；危险操作弹「操作确认」440px 小窗；Toast 顶部居中、3 秒自动消失；弹窗点遮罩不关闭。</td></tr>
-      <tr><td>分页</td><td>共 N 条 / 页码 / 每页条数（10/20/50/100，各页独立记忆）/ 跳至 _ 页 + 页底说明框。</td></tr>
-      <tr><td>列对齐与状态</td><td>列表/表格<b>列内容默认居中</b>（除非指定其他对齐）；金额列右对齐；状态一律用<b>语义化 badge</b>——启用/正常绿、停用/禁用灰、异常/拉黑红，不用裸文字或裸数字。</td></tr>
-      <tr><td>校验反馈</td><td>保存/发布校验失败必须<b>红框标出错误字段 + 顶部错误面板逐条指名「哪个字段配错、错在哪」</b>（不只弹一句 Toast）；行内编辑表用单元格红框 + 错误提示；校验通过才提交。</td></tr>
-      <tr><td>导出按钮</td><td>仅「<b>报表类页面 或 列数 &gt; 20</b>」才放「导出」按钮，其余列表一律不放（避免泛滥）；导出＝真实下载当前筛选结果 CSV，文件名=页面名.csv。</td></tr>
-      <tr><td>设备术语</td><td>凡「端」一律称「<b>设备</b>」，且固定 <b>7 种</b>：H5 / PC / 安卓原生 / iOS原生 / 安卓壳包 / iOS壳包 / PWA；注册端/登录端/访问端取值统一用这 7 种，App 端有设备号、H5 端有指纹（按终端二选一，不堆两行）。</td></tr>
-      <tr><td>编辑形态</td><td>同一功能的编辑<b>「页内编辑」或「弹窗编辑」二选一、不混用</b>（按页面预先约定）；行内开关点击弹二次确认；新增/编辑保存后回写列表 + Toast。</td></tr>
-      <tr><td>空态与加载</td><td>列表无数据显示统一<b>空态占位</b>（图标+一句说明），不留白；数据加载中显骨架/loading，避免内容闪烁；切商户/翻页/筛选触发的重渲染都要有加载态。</td></tr>
-      <tr><td>迁移「新」标</td><td>迁移期新增的列/功能挂低调「新」角标（可一键全局去除），便于评审区分新旧；收尾统一摘除。</td></tr>
+      <tr><th width="120">模块</th><th>本期主要功能</th></tr>
+      <tr><td>会员管理</td><td>会员列表增强（红字列 + 返佣开关 + 横竖版切换）、会员详情归因增强（27 红字字段 + 10 级代理关系图）、分组管理（融合页）、登录日志（增强）、短信验证码查询</td></tr>
+      <tr><td>运营管理</td><td>站内消息（弹窗 / 滚动 / 推送 三页签，<b>面向会员的文案与配图统一升级为「逐语言维护」</b>，推送支持逐语言配图）/ 轮播图（逐语言配图）；消息通道：<b>短信商配置 / 邮件商配置</b>；推广配置（渠道 / 域名 / 防封救援 / 解析检测）；运营数据（VIP 升级奖励 / 人数 / 操作日志）；返佣·等级（会员返佣等级 / 代理审核机制）<br><span style="color:#b91c1c">（原「公告消息」与站内消息重复，已下线整合进站内消息）</span></td></tr>
+      <tr><td>风控管理</td><td>异常会员处理（多会员批量处置）、同 IP/设备检测（4 子页签、人数下钻）</td></tr>
+      <tr><td>配置中心</td><td>基础配置（VIP 配置、返佣配置，模板化套用）；系统配置（注册管理、前台配置、系统参数配置、配置开关，<b>消息模板配置〔由运营迁入·12 语言×12 场景·推送配置〕</b>，单站点配置）</td></tr>
+      <tr><td>报表管理</td><td>代理报表、昨日返佣等级、返佣报表（三页签）</td></tr>
+      <tr><td>系统管理</td><td>IP 黑名单（新增，含批量导入弹窗）</td></tr>
     </table>
-  </section>
-
-  <section id="attr">
-    <h2 class="sec">5 · 归因体系（核心）</h2>
-    <p class="sd">归因体系回答「这个会员从哪儿来」，是本期最核心的新增能力。其结果在注册时一次性判定并固化，贯穿会员详情展示、代理归属与风控下钻。</p>
-    <h3>5.1 判定规则（优先级）</h3>
-    <div class="flow">
-      <span class="step">① 广告投放</span><span class="arr">›</span>
-      <span class="step">② 邀请来源</span><span class="arr">›</span>
-      <span class="step">③ 官方直推</span><span class="arr">›</span>
-      <span class="step">④ 自然流量</span>
-    </div>
-    <p>会员注册时，系统按上述优先级自上而下匹配，<b>命中的第一个来源即为「主归因」</b>，写入会员档案后 <b>固化不再变更</b>。四类来源的判定依据与代理关系如下：</p>
-    <table>
-      <tr><th width="96">归因类型</th><th>判定依据（命中标识）</th><th width="150">是否产生代理关系</th></tr>
-      <tr><td><b>① 广告投放</b></td><td>带广告点击 ID（如 fbclid）或 UTM 参数；含官方链接 + 广告标识、广告 + 邀请码（裂变）等子情况。</td><td>仅「裂变获客」子情况有，余无。</td></tr>
-      <tr><td><b>② 邀请来源</b></td><td>携带有效邀请码：个人邀请码（手填）、转盘活动码、任务活动码，及活动码过期降级为正常邀请。</td><td>有（绑上级 / 一级代理，可后台划转）。</td></tr>
-      <tr><td><b>③ 官方直推</b></td><td>仅带官方推广链接标识、无广告标识、无邀请码。</td><td>无。</td></tr>
-      <tr><td><b>④ 自然流量</b></td><td>无任何投放/邀请标识：搜索引擎进入、站外 Referrer、直接访问、参数解析失败兜底、仅无效邀请码等。</td><td>无。</td></tr>
-    </table>
-    <p>上述四类共细分 <b>18 种穷举情况</b>，每种的「来源 → 入口 → 注册 → 采集 → 留存」完整脉络见 <a href="attribution-matrix-4.6.html" target="_blank">§4.6 归因穷举矩阵 ↗</a>。</p>
-
-    <h3>5.2 判定流程（5 步固化）</h3>
-    <div class="flow">
-      <span class="step">① 进入</span><span class="arr">→</span>
-      <span class="step">② 采集</span><span class="arr">→</span>
-      <span class="step">③ 判定</span><span class="arr">→</span>
-      <span class="step">④ 固化</span><span class="arr">→</span>
-      <span class="step">⑤ 留存</span>
-    </div>
-    <table>
-      <tr><th width="80">步骤</th><th>说明</th></tr>
-      <tr><td>① 进入</td><td>会员通过某域名 + 渠道链接进入站点（广告落地页 / 官方渠道 / 站外链接 / 直接访问）。</td></tr>
-      <tr><td>② 采集</td><td>埋点采集基础事件（激活/注册/登录/首充/付费）与进入参数（点击 ID、UTM、Referrer、邀请码、设备/IP/指纹/包名）。</td></tr>
-      <tr><td>③ 判定</td><td>按 §5.1 优先级匹配首个命中来源，确定主归因、注册渠道、平台/搜索引擎、邀请码与邀请类型。</td></tr>
-      <tr><td>④ 固化</td><td>将判定结果写入会员档案：<b>主归因 / 注册渠道 / 注册时间 / 设备·IP 固定不变</b>；代理关系（上级/一级）可后台划转。</td></tr>
-      <tr><td>⑤ 留存</td><td>会员详情以红字字段呈现完整链路，可点可复制；同 IP/设备/指纹数值可下钻<a href="#r-risk">风控页</a>。</td></tr>
-    </table>
-
-    <h3>5.3 归因字段（27 红字，3 组）</h3>
-    <p class="sd">会员详情按指定位置注入下列新增字段，布局不变、以红字标识、可点可复制。</p>
-    <h4>① 归因来源 + 注册设备（14）</h4>
-    <table>
-      <tr><th width="140">字段</th><th>定义</th></tr>
-      <tr><td>主归因</td><td>注册来源唯一归类：广告投放 / 邀请来源 / 官方直推 / 自然流量。</td></tr>
-      <tr><td>推广三方类型</td><td>识别出的外部推广平台（Facebook / Adjust / TikTok 等）。</td></tr>
-      <tr><td>注册渠道</td><td>注册时命中的后台定义渠道（如 apk-fb-me001-01）。</td></tr>
-      <tr><td>登录渠道</td><td>最近一次登录命中的渠道 ID。</td></tr>
-      <tr><td>搜索引擎</td><td>由 referrer 来源域名识别的搜索引擎（Google / 其他 / 直接访问）。</td></tr>
-      <tr><td>邀请码</td><td>注册实际使用的邀请码，关联邀请人 / 代理。</td></tr>
-      <tr><td>邀请类型</td><td>正常邀请 / 转盘活动邀请 / 邀请任务。</td></tr>
-      <tr><td>邀请人</td><td>邀请码发起人 ID，通常＝直接上级代理，可点击下钻。</td></tr>
-      <tr><td>访问客户端</td><td>最近一次访问的客户端，7 种术语之一：H5 / PC / 安卓原生 / iOS原生 / 安卓壳包 / iOS壳包 / PWA。</td></tr>
-      <tr><td>注册客户端</td><td>注册时使用的客户端类型（同上 7 种术语）。</td></tr>
-      <tr><td>注册设备号 / 指纹</td><td>设备号（App 端稳定）+ 浏览器指纹（网页端采集）合并展示。</td></tr>
-      <tr><td>是否模拟器</td><td>注册设备是否为模拟器 / 虚拟环境，用于作弊识别。</td></tr>
-      <tr><td>注册域名</td><td>注册时进入的域名（属本商户），定来源上下文。</td></tr>
-      <tr><td>同设备注册会员数</td><td>与本会员同一注册设备的账号总数（养号/工作室识别）。</td></tr>
-    </table>
-    <h4>② 代理体系（7）</h4>
-    <table>
-      <tr><th width="140">字段</th><th>定义</th></tr>
-      <tr><td>一级代理</td><td>该会员所在代理树的顶级（根）代理。</td></tr>
-      <tr><td>直接上级代理</td><td>代理树中该会员的直接父节点。</td></tr>
-      <tr><td>代理层级</td><td>该会员在代理树中的深度层级。</td></tr>
-      <tr><td>代理路径</td><td>根 → 本会员的完整代理 ID 链。</td></tr>
-      <tr><td>佣金模式</td><td>代理收益方式：返佣 / 返利（内部=返利、外部=返佣）。</td></tr>
-      <tr><td>返佣等级</td><td>会员自身的返佣等级 / 档位。</td></tr>
-      <tr><td>是否给上级返佣</td><td>该会员有效投注流水是否为其上级代理计提返佣。</td></tr>
-    </table>
-    <h4>③ 登录设备（5）</h4>
-    <table>
-      <tr><th width="140">字段</th><th>定义</th></tr>
-      <tr><td>上一次登录客户端</td><td>最近一次登录的客户端。</td></tr>
-      <tr><td>上一次登录设备号 / 指纹</td><td>最近一次登录的设备号与浏览器指纹合并展示。</td></tr>
-      <tr><td>上一次同设备登录数</td><td>与本会员上一次同一设备登录过的账号总数。</td></tr>
-      <tr><td>上一次同指纹登录数</td><td>与本会员上一次同浏览器指纹登录过的账号总数。</td></tr>
-      <tr><td>上一次登录域名</td><td>最近一次登录进入的域名。</td></tr>
-    </table>
-    <div class="note">所有「同 IP / 同设备 / 同指纹」数值均可点击，下钻 <a href="#r-risk">「风控管理 · 同 IP/设备检测」</a> 对应维度页签并自动带入该会员 ID。</div>
-  </section>
-
-  <section id="r-member">
-    <h2 class="sec">6 · 功能需求</h2>
-    <p class="sd">按 6 个模块拆分，每条需求标注唯一编号（<code>REQ-模块-序号</code>）便于追踪；「来源」标明对应的 SitINR 旧页或「全新」，「验收」给出该条的关键判据。通用交互（筛选/表格/弹窗/反馈）统一遵循 <a href="#global">第 4 节 · 全局框架与通用交互</a>，下文只描述各功能的专属需求。</p>
-    <h3 id="r-member-h">6.1 会员管理</h3>
-    <div class="req"><div class="rh"><span class="rid">REQ-MBR-01</span><span class="rn">会员列表增强</span><span class="src">源 UserManage</span></div>
-      <ul><li>19 项搜索 + 商户筛选（<b>多选 + 全部</b>）；批量操作（拉黑/启用/分组/转渠道等）；自定义列。</li><li>新增红色列 +「领取返佣 / 对上级返佣」行内开关（二次确认）。</li><li><b>横版 / 竖版切换</b>（工具栏右侧分段按钮，默认横版）：横版＝扁平列一字段一列（约 38 列）；竖版＝同类字段并成「标签在上 / 值在下」复合列（约 16 列，行更高、横向更短）。</li><li>会员 ID 下钻会员详情；操作全部平铺一行（无「更多」折叠）；<b>操作列恒为最后一列、默认右侧冻结</b>（横/竖版都是），自定义列中不可取消冻结 / 拖拽、仅可显隐。</li><li>设备字段（注册 / 登录端）统一为 <b>7 种术语</b>：H5 / PC / 安卓原生 / iOS原生 / 安卓壳包 / iOS壳包 / PWA。</li></ul>
-      <div class="ac"><b>验收：</b>切换开关弹二次确认并 Toast；商户切换列表重渲染；自定义列保存后才生效；横/竖版切换后操作列始终冻结在最右且不可取消冻结。</div></div>
-    <div class="req"><div class="rh"><span class="rid">REQ-MBR-02</span><span class="rn">会员详情归因增强</span><span class="src">源 UserDetaile + A_UserRelative</span></div>
-      <ul><li>27 红字归因字段按指定位置注入，布局不变；代理数据含 10 级代理关系图。</li><li>同 IP/设备/指纹数值可下钻<a href="#r-risk">风控页</a>；邀请人可点击下钻。</li></ul>
-      <div class="ac"><b>验收：</b>红字字段齐全、可点可复制；原有面板（统计/活动奖励/VIP/保险箱等）不变。</div></div>
-    <div class="req"><div class="rh"><span class="rid">REQ-MBR-03</span><span class="rn">分组管理（融合页）</span><span class="src">源 用户分组+分组表单+权限</span></div>
-      <ul><li>「会员分组 + 分组表单 + 权限配置」融合为一页；新增填名称与自动归组阈值（充值金额/次数/投注）。</li><li>状态列 badge 纯展示（开绿/关灰）；系统默认分组不可改不可删。</li></ul>
-      <div class="ac"><b>验收：</b>新增分组回写列表并 Toast；表尾「已选合计」实时统计。</div></div>
-    <div class="req"><div class="rh"><span class="rid">REQ-MBR-04</span><span class="rn">登录日志（增强迁移）</span><span class="src">源 LoginLog</span></div>
-      <ul><li>按会员 ID（多 ID 空格分隔）/IP/时间查询；设备与浏览器指纹融合一列（按终端二选一）。</li></ul>
-      <div class="ac"><b>验收：</b>纯查询页无行操作；聚合分析指引至 <a href="#r-risk">风控同 IP/设备检测</a>。</div></div>
-    <div class="req"><div class="rh"><span class="rid">REQ-MBR-05</span><span class="rn">短信验证码查询（新增）</span><span class="src">源 SmsList</span></div>
-      <ul><li>按手机号查询验证码/业务类型/发送时间/状态；手机号脱敏。</li></ul>
-      <div class="ac"><b>验收：</b>纯查询页、无导出按钮。</div></div>
-  </section>
-
-  <section id="r-ops">
-    <h3>6.2 运营管理</h3>
-    <div class="req"><div class="rh"><span class="rid">REQ-OPS-01</span><span class="rn">站内消息</span><span class="src">源 Message</span></div>
-      <ul><li>弹窗/滚动/推送三页签；新增推送弹窗：标题≤100、富文本正文≤500、图片上传、发送时间（可预约）、推送通道（Firebase/极光）、用户（全体/指定）。</li><li>指定用户支持表格导入（≤1000 自动去重）；未发送可编辑、已发送仅详情。</li><li><b>本期调整</b>：弹窗/滚动 Tab 新增「状态」(启用/禁用)筛选（推送 Tab 本就有「发送状态」筛选）；新增/编辑弹窗加<b>商户多选下拉</b>；商户筛选多选 + 全部。</li></ul></div>
-    <div class="req"><div class="rh"><span class="rid">REQ-OPS-02</span><span class="rn">公告消息</span><span class="src">源 公告体系</span></div>
-      <ul><li>弹窗/滚动双页签；7 语种独立保存、切换不丢内容；未配置语种前台回退英语。</li><li>筛选加渠道，列表含商户+渠道列；表单首项加商户（<b>多选下拉</b>）。</li><li><b>本期调整</b>：<b>状态列改为只读展示</b>（启用/禁用，不在列表直接切换），状态改到编辑弹窗内维护；商户筛选多选 + 全部。</li></ul></div>
-    <div class="req"><div class="rh"><span class="rid">REQ-OPS-03</span><span class="rn">轮播图管理</span><span class="src">源 Banners</span></div>
-      <ul><li>图片上传+预览；三选一跳转：URL / 厂商或子游戏（三级联动）/ 在线客服；排序。</li><li>表单首项加商户（<b>多选下拉</b>）；列表加商户列；商户筛选多选 + 全部。</li></ul></div>
-    <div class="req"><div class="rh"><span class="rid">REQ-OPS-04</span><span class="rn">渠道管理</span><span class="src">源 Channel（扩展）</span></div>
-      <ul><li>渠道名/渠道 ID（自动生成、唯一、只读）/域名/编码/类型（官方仅 H5 / 投放多端）/分发端/赠送金额/打码倍数/备注。</li></ul></div>
-    <div class="req"><div class="rh"><span class="rid">REQ-OPS-05</span><span class="rn">域名管理（全新）</span><span class="src">全新</span></div>
-      <ul><li>4 种域名类型：主域名/推广域名/防封谷歌页/防封苹果页；按类型动态字段；列表显示解析状态 badge；含 CDN 服务商列。</li></ul></div>
-    <div class="req"><div class="rh"><span class="rid">REQ-OPS-06</span><span class="rn">防封救援（全新）</span><span class="src">全新</span></div>
-      <ul><li>救援开关/救援域名（多选）/救援方案/救援奖金；触发链路：原域名被封→弹救援窗→随机救援域名→下载 PWA/App 自动带账号登录+领奖。</li></ul></div>
-    <div class="req"><div class="rh"><span class="rid">REQ-OPS-07</span><span class="rn">解析检测记录（全新）</span><span class="src">全新</span></div>
-      <ul><li>周期巡检 + 手动检测；DNS 解析状态 正常绿/异常红；展示检测节点/解析 IP/响应耗时/TTL。</li></ul></div>
-    <div class="req"><div class="rh"><span class="rid">REQ-OPS-08</span><span class="rn">运营数据：VIP 升级奖励 / VIP 人数 / VIP 操作日志</span><span class="src">源 VipRewards/VipLevelQuantity/VipRecord</span></div>
-      <ul><li>升级奖励记录（发放/领取）；VIP 人数（3 列 10 行，人数蓝链下钻）；VIP 操作日志（明细流水，含页面总计）。</li></ul></div>
-    <div class="req"><div class="rh"><span class="rid">REQ-OPS-09</span><span class="rn">返佣·等级：会员返佣等级 / 代理审核机制</span><span class="src">源 User_RebateLv / UserReview+EditUserRebate</span></div>
-      <ul><li>会员返佣等级：按配置值强制提升（含连续使用天数/失效规则）；新增/编辑弹窗加<b>商户多选下拉</b>；商户筛选多选 + 全部。</li><li>代理审核机制：返佣资格审核，返佣状态 badge，修改返佣弹窗（5 游戏基础费率+备注）。</li></ul></div>
-  </section>
-
-  <section id="r-risk">
-    <h3>6.3 风控管理</h3>
-    <div class="req"><div class="rh"><span class="rid">REQ-RSK-01</span><span class="rn">异常会员处理</span><span class="src">源 AbnormalUser + 批量回收</span></div>
-      <ul><li>多会员 ID 查询（≤100）；四项批量处置：回收余额/保险箱转出/驳回提现/余额扣除。</li><li>驳回提现填备注（禁中文）；余额扣除填负金额+备注；金额列页脚合计。</li></ul>
-      <div class="ac"><b>验收：</b>危险操作二次确认后执行并 Toast。</div></div>
-    <div class="req"><div class="rh"><span class="rid">REQ-RSK-02</span><span class="rn">同 IP/设备检测</span><span class="src">源 报表安全族 + 登录信息</span></div>
-      <ul><li>4 子页签：同注册 IP/同注册设备/同登录 IP/同登录设备；设备维度「设备/指纹」合并列。</li><li>人数蓝链下钻会员列表并自动按该 IP/设备查询。</li></ul></div>
-  </section>
-
-  <section id="r-config">
-    <h3>6.4 配置中心</h3>
-    <div class="req"><div class="rh"><span class="rid">REQ-CFG-01</span><span class="rn">VIP 配置</span><span class="src">源 VipLevel + VipCurrencyExp</span></div>
-      <ul><li>双页签：VIP 等级（VIP0–VIP10 固定 11 级，行内编辑无弹窗、去 ID 列、名称只读）+ 经验值配置（按币种换算）。</li><li>顶部商户工作区（选商户→保存→发布）+ 复制模板到其他商户；保存校验标红+错误面板；ⓘ 配置介绍。</li><li><b>配置模式</b>用分段单选按钮（非下拉），右侧灰字显示当前模式说明；当前两种：使用自定义模版 / 使用商户模版（「单商户配置」暂隐藏）。</li></ul>
-      <div class="ac"><b>验收：</b>等级固定不可增删；等级/经验逐级递增、数值≥0；配置模式为分段单选、仅两种可选。</div></div>
-    <div class="req"><div class="rh"><span class="rid">REQ-CFG-02</span><span class="rn">返佣配置</span><span class="src">源 RebateLevel + RebateLvRateConfig</span></div>
-      <ul><li>双页签：返佣等级管理（晋升条件表，0 级基础不可删）+ 返佣费率配置（一~六级 × 五游戏）。</li><li><b>配置模式</b>与 VIP 配置一致：分段单选按钮 + 右侧灰字说明；当前两种：使用自定义模版 / 使用商户模版（「单商户配置」暂隐藏）。</li></ul>
-      <div class="ac"><b>验收：</b>同级五大类费率之和 &gt;4% 校验拦截（标红+错误面板）；配置模式为分段单选、仅两种可选。</div></div>
-  </section>
-
-  <section id="r-report">
-    <h3>6.5 报表管理</h3>
-    <div class="req"><div class="rh"><span class="rid">REQ-RPT-01</span><span class="rn">代理报表</span><span class="src">源 邀请报表 A/C/D/M</span></div>
-      <ul><li>按统计周期切换（日/日区间/月/所有）+ 翻页；内部=返利、外部=返佣；「下级列表」真实下钻抽屉。</li></ul></div>
-    <div class="req"><div class="rh"><span class="rid">REQ-RPT-02</span><span class="rn">昨日返佣等级</span><span class="src">源 User_RebateLv_Last</span></div>
-      <ul><li>五游戏列：每游戏「投注金额/返佣金额」双列分组表头；工具栏仅导出。</li></ul></div>
-    <div class="req"><div class="rh"><span class="rid">REQ-RPT-03</span><span class="rn">返佣报表（新增）</span><span class="src">源 UserRebate</span></div>
-      <ul><li><b>三页签</b>：流水返佣（会员ID/手机号脱敏 + 五游戏 + 可得佣金）/ 返佣报表（按日 + 五游戏）/ 层级返佣报表（相对层级 + 充值人数/金额 + 五游戏）。</li><li>五游戏＝彩票/电子/视讯/体育/棋牌；三页签均含「页面总计/总计」双行合计、工具栏导出、自定义列；tenant 端。</li></ul>
-      <div class="ac"><b>验收：</b>三页签可切换；手机号脱敏；页脚合计随筛选刷新；导出真实下载 CSV。</div></div>
-  </section>
-
-  <section id="r-system">
-    <h3>6.6 系统管理</h3>
-    <div class="req"><div class="rh"><span class="rid">REQ-SYS-01</span><span class="rn">IP 黑名单（新增）</span><span class="src">源 BlackIp</span></div>
-      <ul><li>列表：IP（v4+v6）/封禁类型（多标签）/原因（字数计）/关联会员/操作人·时间/状态。</li><li>批量导入（<b>弹窗</b>）：点「批量导入」打开弹窗，粘贴或上传 .csv/.xlsx（首列=IP），自动识别合法 IP、实时去重 ≤500 条，选类型+原因后确认。</li></ul></div>
-  </section>
-
-  <section id="data">
-    <h2 class="sec">7 · 数据与字段</h2>
-    <h3>7.1 会员列表新增内容</h3>
+    <p class="sd">合计：会员深度迁移 22 页 + 推广分发 4 页；<b>全新模块</b>＝推广分发（域名 / 防封救援 / 解析检测）、IP 黑名单。<b>本期纳入即上表，未列出的财务 / 游戏等为延后项。</b></p>
+    <div class="note"><b>多语言（逐语言维护）说明</b>：平台面向不同国家 / 地区的 C 端会员，<b>同一条消息要让每种语言的会员都看到自己语言的文案与配图</b>。为此本期把面向会员的<b>文案与配图统一升级为「逐语言维护」</b>——后台对每种语言<b>各存一套标题 / 内容 / 图片</b>，运营按语言分别填写，发送时按会员语言取对应那套。<br>
+    · <b>填写规则</b>：商户启用了哪些语言，就出现哪些语言的输入位；<b>默认语言必填</b>（作兜底），其它语言可空；某语言<b>缺文案 / 缺图时自动回退默认语言</b>，不会漏发或显示空白。<br>
+    · <b>覆盖范围</b>：站内消息（弹窗 / 滚动 / 推送）、轮播图；消息模板配置支持 <b>12 种语言</b>。纯文本用「逐语言文案」录入，图片用「逐语言配图」上传；<b>推送消息</b>因「语言＋标题＋文案＋图片」需成组维护，新增 / 编辑弹窗里做成<b>横版卡牌</b>（一种语言一张卡、默认卡高亮且必填、可左右拖动浏览），列表把标题 / 文案 / 图片<b>合并为「通知内容」一列</b>（先显示默认语言，点「查看其他语言」看全部）。<br>
+    · <b>配套调整</b>：<b>消息模板配置由运营管理迁入「配置中心 · 系统配置」</b>并套配置中心范式（模板套用 / 保存发布 / 复制到其它商户），业务场景 9 → 12、新增「是否推送站内信」+ 跳转动作 / 推送样式（🔒 按场景固定）；短信 / 邮件配置更名为<b>「短信商配置 / 邮件商配置」</b>（短信 3 Tab 融合为单表）；<b>原「公告消息」与站内消息弹窗 / 滚动重复，已整页下线</b>。<br>
+    · 控件级交互与字段口径见<b>「交互介绍」「字段词典」</b>，多语言研发落地口径见<b>「研发说明」§3.6 / §4.5</b>。</div>
+    <h3>4.2 非功能简介</h3>
     <ul>
-      <li><b>领取返佣</b>（行内开关）：控制该会员是否可领取自己的返佣（开=可领/关=不可领）。</li>
-      <li><b>对上级返佣</b>（行内开关）：控制该会员有效投注流水是否为上级代理计提返佣（内部号/测试号常关）。</li>
-      <li><b>新增展示列</b>：邀请人、访问客户端、注册域名、注册设备号/指纹、是否模拟器、注册客户端、上一次登录时间、上一次登录设备号/指纹、上一次登录客户端、上一次登录域名、一级代理、直接上级代理、代理层级、佣金模式、返佣等级。</li>
-      <li><b>9 类目分组表头</b>：商户 / 会员 / 账户资金 / 等级分组 / 状态 / 渠道归因 / 代理数据 / 注册设备 / 登录设备 / 其它。</li>
+      <li><b>数据真实性</b>：数据 / 交互取自源（SitINR 源码 / UAT），无源标「新」并先确认，不臆造。</li>
+      <li><b>商户隔离</b>：筛选区商户首位 + 表首商户列 + 商户视角隐藏该列 + 切换即时重渲染。</li>
+      <li><b>真实交互</b>：导出 / 搜索 / 排序 / 保存 / 删除均真实生效，每步配 Toast。</li>
+      <li><b>埋点合规</b>：基础事件（激活 / 注册 / 登录 / 首充 / 付费）强制上报，作为归因采集依据。</li>
+      <li><b>脱敏</b>：手机 / 邮箱 / 卡号脱敏，按权限展示完整值。</li>
+      <li><b>反馈一致</b>：Toast 3 秒消失；危险操作二次确认；弹窗点遮罩不关闭；校验失败标红 + 错误面板。</li>
     </ul>
-    <h3>7.2 会员详情新增字段（27 红字）</h3>
-    <table>
-      <tr><th width="190">字段组</th><th>本期新增字段</th></tr>
-      <tr><td>① 基本信息组</td><td>昵称、邀请人、访问客户端</td></tr>
-      <tr><td>② 归因来源组（整组新增）</td><td>主归因、推广三方类型、注册渠道、登录渠道、搜索引擎、邀请码、邀请类型</td></tr>
-      <tr><td>⑥ 代理数据组</td><td>一级代理、直接上级代理、代理层级、代理路径、佣金模式、返佣等级、是否给上级返佣、代理状态</td></tr>
-      <tr><td>⑩ 注册信息组</td><td>注册客户端、注册设备号/指纹、是否模拟器、注册域名、同设备注册会员数</td></tr>
-      <tr><td>⑪ 登录信息组（整组新增）</td><td>上一次登录客户端、上一次登录设备号/指纹、上一次同设备登录数、上一次同指纹登录数、上一次登录域名</td></tr>
-    </table>
-    <p class="sd">字段定义详见 <a href="saas-phase2-product-intro.html#dict" target="_blank">产品介绍 · 会员详情新增字段词典</a>。原有字段不在本期改动范围。</p>
-
-    <h3 id="agent-data">7.3 代理数据面板（展开）</h3>
-    <p class="sd">会员详情「代理数据」面板为展开态，由「代理关系图 + 代理明细」两部分组成，完整呈现该会员在代理树中的位置与返佣业绩。</p>
-    <h4>① 代理关系图（最多 10 级）</h4>
-    <ul>
-      <li>以该会员为锚点，向上完整展示 <b>直接上级代理 → 一级代理（根）</b> 的代理链，最多 10 级。</li>
-      <li>每个节点显示代理 ID；<b>点击节点复制该代理 ID</b> 并 Toast「已复制 ×××」。</li>
-      <li>主体会员的上级在链路中高亮标记，便于快速定位归属。</li>
-    </ul>
-    <h4>② 代理明细</h4>
-    <table>
-      <tr><th width="120">分区</th><th>字段</th></tr>
-      <tr><td>代理关系</td><td>邀请人、直接上级代理、一级代理、代理层级、代理路径、佣金模式（返佣/返利）。</td></tr>
-      <tr><td>业绩与返佣</td><td>返佣等级、是否给上级返佣、下级数量、总获得佣金、邀请奖励、合伙人奖励、是否领取返佣。</td></tr>
-    </table>
-    <h4>③ 行内开关与口径</h4>
-    <ul>
-      <li><b>领取返佣 / 对上级返佣</b> 两个开关移至板块表头，与会员列表口径一致；点击弹二次确认，翻转后 Toast。</li>
-      <li>佣金模式口径：<b>内部代理 = 返利、外部代理 = 返佣</b>（与代理报表一致）。</li>
-    </ul>
-    <div class="note">代理体系字段定义见 <a href="#attr">§5.3 ② 代理体系</a>；代理维度的汇总报表见 <a href="#r-report">§6.5 代理报表</a>。</div>
   </section>
 
-  <section id="nfr">
-    <h2 class="sec">8 · 非功能需求</h2>
-    <p class="sd">在功能正确的基础上，本期对数据真实性、商户隔离、交互反馈与合规埋点提出统一约束，作为全站质量底线。</p>
-    <ul>
-      <li><b>数据真实性</b>：所有数据/交互取自源（SitINR 源码/UAT），无源标「新」并先确认，不臆造。</li>
-      <li><b>商户隔离</b>：筛选区商户首位 + 表首商户列 + 商户视角隐藏商户列 + 切换即时重渲染。</li>
-      <li><b>真实交互</b>：导出真实下载 CSV、搜索真实过滤、排序真实重排、表单保存真实回写、删除真实移除，每步配 Toast。</li>
-      <li><b>埋点合规</b>：基础事件（激活/注册/登录/首充/付费）强制上报，作为归因采集依据。</li>
-      <li><b>脱敏</b>：手机/邮箱/卡号脱敏，按权限（viewphone/viewemail）展示完整值。</li>
-      <li><b>反馈一致</b>：Toast 3 秒自动消失；危险操作二次确认；弹窗点遮罩不关闭；校验失败标红+错误面板。</li>
-    </ul>
+  <section id="milestone">
+    <h2 class="sec">5 · 里程碑</h2>
+    <table>
+      <tr><th width="130">阶段</th><th>内容</th><th width="90">状态</th></tr>
+      <tr><td>一阶段</td><td>基础迁移：会员列表/层级/在线人数/财务，数据分析/运营/租户/系统监控</td><td><span class="pill p-done">已完成</span></td></tr>
+      <tr><td>二阶段（本期）</td><td>会员深度迁移 22 页 + 推广分发配置 4 页 + 导航重组 + 归因字段</td><td><span class="pill p-in">进行中</span></td></tr>
+      <tr><td>三阶段</td><td>预留（财务/游戏/多维报表/系统底层配置等延后项）</td><td><span class="pill p-late">规划中</span></td></tr>
+    </table>
+    <p class="sd">交付以线上原型为准（真实交互、非占位）；详细迁移对照（158 项）见工作计划书。</p>
+  </section>
+
+  <section id="zentao">
+    <h2 class="sec">6 · 禅道任务</h2>
+    <p class="sd">本期研发任务清单（禅道批量导入口径，<b>共 58 条</b>：前端 28 / 后端 30，覆盖 7 模块 28 需求）。数据取自 <code>docs/migration/06-zentao-phase2-tasks.csv</code>（禅道导入源文件），下表为只读快照；可按角色筛选，优先级 1=高 / 2=中 / 3=低。</p>
+    <div id="ztBar" class="ztbar"></div>
+    <div id="ztTable"></div>
   </section>
 
   <section id="accept">
-    <h2 class="sec">9 · 验收标准</h2>
-    <p class="sd">验收人默认 eason；逐条在原型点验，结果标记 待测/通过/不通过。</p>
+    <h2 class="sec">7 · 验收</h2>
+    <p class="sd">验收人默认 eason；逐条在原型点验，结果标记 待测 / 通过 / 不通过。逐页操作步骤 → 预期结果见<b>《二期验收用例》</b>（顶部 Tab 直达）。</p>
     <p><a href="saas-phase2-acceptance-cases-v3.html" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#16a34a;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600">📋 打开《二期验收用例（V3 原型版）》全表 ↗</a></p>
     <h3>验收 Checklist（5 维度）</h3>
     <table>
       <tr><th width="150">维度</th><th>检查要点</th></tr>
-      <tr><td>① 真实交互</td><td>导出/搜索/排序/保存/删除/时间切换 均真实生效且有 Toast。</td></tr>
+      <tr><td>① 真实交互</td><td>导出 / 搜索 / 排序 / 保存 / 删除 / 时间切换 均真实生效且有 Toast。</td></tr>
       <tr><td>② 反馈完整</td><td>每操作有反馈；Toast 3 秒消失；危险操作二次确认；遮罩不关闭；错误面板列原因。</td></tr>
-      <tr><td>③ 入口与菜单</td><td>8 大 mega menu 可达；新/原角标正确；页签打开/激活/不重复开/至少留一个。</td></tr>
-      <tr><td>④ 来源溯源</td><td>逻辑/字段取自 SitINR 源或 UAT；全新页标「新」；红字字段与源页对齐。</td></tr>
-      <tr><td>⑤ 控件口径统一</td><td>动词统一；状态 badge 绿/红/灰；列冻结；合计行双行黑字；商户隔离。</td></tr>
-    </table>
-  </section>
-
-  <section id="milestone">
-    <h2 class="sec">10 · 里程碑与交付</h2>
-    <table>
-      <tr><th width="120">阶段</th><th>内容</th><th width="90">状态</th></tr>
-      <tr><td>一阶段</td><td>基础迁移：会员列表/层级/在线人数/财务、数据分析/运营/租户/系统监控</td><td><span class="pill p-done">已完成</span></td></tr>
-      <tr><td>二阶段（本期）</td><td>会员深度迁移 22 页 + 推广分发配置 4 页 + 导航重组 + 归因字段</td><td><span class="pill p-in">进行中</span></td></tr>
-      <tr><td>三阶段</td><td>预留（财务/游戏/多维报表/系统底层配置等延后项）</td><td><span class="pill p-late">规划中</span></td></tr>
-    </table>
-    <p class="sd">交付以 localhost:3100 可点击原型为准（真实交互、非占位）。详细迁移对照表见工作计划书（158 项）。</p>
-  </section>
-
-  <section id="risk">
-    <h2 class="sec">11 · 风险与待确认</h2>
-    <p class="sd">以下为可能影响交付节奏或验收结论的开放问题，需在评审中明确责任方与结论。</p>
-    <ul>
-      <li><b>范围边界</b>：本期「延后/不做」依据《功能说明书》推得，财务/游戏延后项建议与产品再确认。</li>
-      <li><b>归因依赖埋点</b>：归因准确性依赖基础事件强制上报，需前端与采集链路配合到位。</li>
-      <li><b>推广分发为全新模块</b>：域名/防封救援/解析检测无 SitINR 对标源，需独立验收闭环。</li>
-      <li><b>多商户配置发布</b>：VIP/返佣配置「选商户→保存→发布 + 模板复制」的发布态与回滚机制需明确。</li>
-    </ul>
-  </section>
-
-  <section id="ref">
-    <h2 class="sec">12 · 关联文档</h2>
-    <table>
-      <tr><th width="280">文档</th><th>内容</th></tr>
-      <tr><td colspan="2" style="background:#f1f5f9;font-weight:700;color:#0f172a">关联四件套（产品原型 · 交互介绍 · 研发说明 · 验收用例）</td></tr>
-      <tr><td><b>①&nbsp;产品原型</b> · <a href="http://localhost:3100/member/user" target="_blank">可点击原型（localhost:3100）↗</a></td><td>真实交互原型，交付以此为准；默认入口 · 会员列表</td></tr>
-      <tr><td><b>②&nbsp;交互介绍</b> · <a href="phase2-interaction-guide.html" target="_blank">交互介绍（控件级）↗</a></td><td>逐页控件级「怎么用、点了会发生什么」：6 模块通用骨架 + 各页专属交互</td></tr>
-      <tr><td><b>③&nbsp;研发说明</b> · <a href="saas-phase2-tech-design.html" target="_blank">二阶段技术方案 ↗</a></td><td>归因体系研发口径：数据模型 / 采集埋点 / 接口与落库</td></tr>
-      <tr><td><b>④&nbsp;验收用例</b> · <a href="saas-phase2-acceptance-cases-v3.html" target="_blank">二期验收用例（V3 原型版）↗</a></td><td>逐条操作步骤 → 预期结果，对齐 V3 原型逐条点验</td></tr>
+      <tr><td>③ 入口与菜单</td><td>8 大 mega menu 可达；新 / 原角标正确；页签打开 / 激活 / 不重复开 / 至少留一个。</td></tr>
+      <tr><td>④ 来源溯源</td><td>逻辑 / 字段取自 SitINR 源或 UAT；全新页标「新」；红字字段与源页对齐。</td></tr>
+      <tr><td>⑤ 控件口径统一</td><td>动词统一；状态 badge 绿 / 红 / 灰；列冻结；合计行双行黑字；商户隔离。</td></tr>
     </table>
   </section>
 
   <section id="changelog">
-    <h2 class="sec">13 · 修改日志</h2>
+    <h2 class="sec">8 · 修改日志</h2>
+    <details class="changelog">
+      <summary>点击展开版本变更记录（共 6 个版本，最新 v1.5 · 2026-06-25）</summary>
     <p class="sd">本 PRD 自创建起的版本变更记录，最新在上。</p>
     <table>
-      <tr><th width="90">版本</th><th width="110">日期</th><th>变更摘要</th></tr>
+      <tr><th width="80">版本</th><th width="110">日期</th><th>变更摘要</th></tr>
+      <tr>
+        <td>v1.5</td><td>2026-06-25</td>
+        <td>
+          <b>消息 / 多语言专项（运营管理 + 配置中心；产品口径据原型实况补全）：</b><br>
+          ① <b>逐语言维护</b>：站内消息（弹窗/滚动/推送）/ 轮播图 的<b>标题·内容·配图</b>统一升级为按语言各存一套（MultiLangFields / MultiLangImageFields）——默认语言必填、其它可空、缺译/缺图回退默认语言。<br>
+          ② <b>推送消息逐语言横版卡牌</b>：推送新增/编辑弹窗加宽，标题+文案+图片按语言做成<b>横版卡牌</b>（语言名+标题+文案+图片，默认露 2 个多、左右拖动）；列表把标题/文案/图片<b>合并为「通知内容」一列</b>（默认语言展示 +「查看其他语言」看全部语言）；<b>「公告消息」整页下线</b>（与站内消息弹窗/滚动重复）。<br>
+          ③ <b>消息模板配置迁入配置中心</b>：由运营管理迁到「配置中心·系统配置」，套配置中心范式（模板套用 / 保存发布 / 复制商户）；<b>9→12 业务场景</b>（增 活动奖励到账 / 待领取〔可展开活动子配置〕/ KYC 验证中断 / 提现已退回）、<b>12 语言顶部单选 + 行内逐语言编辑</b>；新增<b>是否推送站内信</b> + <b>跳转动作 / 推送样式（🔒 按场景固定）</b>；去掉「状态」「验证类型」。<br>
+          ④ <b>消息通道更名</b>：短信配置→<b>短信商配置</b>（验证码/语音/通知 3 Tab <b>融合为单表</b>、用「短信类型」下拉区分）；邮件配置→<b>邮件商配置</b>（字段对齐源站、新增「邮箱编号」）。<br>
+          ⑤ <b>文档四件套同步</b>：「交互介绍」改 3 卡片 + 新增 3 卡片（短信商 / 邮件商 / 消息模板）；「字段词典」6 页条目补多语言 + 推送配置；「研发说明」新增 §3.6 多语言落地口径、§4.5 消息模板配置；交互截图按真实路由重拍。
+        </td>
+      </tr>
+      <tr>
+        <td>v1.4</td><td>2026-06-24</td>
+        <td>
+          <b>章节重排（产品范围与口径不变，仅调整阅读顺序）：</b><br>
+          ① <b>背景前置</b>：「背景」移到「需求目的」之前（先讲为什么，再讲要什么）。<br>
+          ② <b>里程碑与禅道任务相邻</b>：「里程碑」从第 2 段移到「功能点简介」之后、紧挨「禅道任务」（规划/任务归到一处）。<br>
+          ③ <b>第 4 段更名</b>：「功能及非功能简介」改为「功能点简介」。<br>
+          ④ 新顺序：文档信息 / 背景 / 需求目的 / 框架介绍 / 功能点简介 / 里程碑 / 禅道任务 / 验收 / 修改日志；各段内容与编号同步更新。<br>
+          ⑤ <b>排期段改为禅道任务</b>：移除「排期」3 批次表，替换为「禅道任务」清单（89 条研发任务 · 前端 29 / 后端 31 / 测试 29，按角色筛选；数据源 <code>06-zentao-phase2-tasks.csv</code>）。
+        </td>
+      </tr>
+      <tr>
+        <td>v1.3</td><td>2026-06-22</td>
+        <td>
+          <b>PRD 精简重构（产品范围与口径不变，仅文档组织）：</b><br>
+          ① <b>八段重组</b>：按 需求目的 / 里程碑 / 背景 / 框架介绍 / 功能及非功能简介 / 排期 / 验收 / 修改日志 重新组织。<br>
+          ② <b>功能收敛</b>：原逐条 REQ 明细收敛为<b>模块级简介</b>；归因体系、数据与字段明细移交<b>「研发说明」</b>，控件级交互移交<b>「交互介绍」</b>。<br>
+          ③ <b>新增「排期」</b>：本期按依赖分 3 批交付（会员主线 / 运营与配置 / 推广分发与风控报表）。<br>
+          ④ <b>并入与精简</b>：范围 / 角色 / 全局交互并入「框架介绍」「功能及非功能简介」；移除独立「数据与字段」「归因体系」「关联文档」「风险」段（字段归研发说明、四件套走顶部 Tab）。
+        </td>
+      </tr>
+      <tr>
+        <td>v1.2</td><td>2026-06-22</td>
+        <td>
+          <b>对外分享基建（不改产品内容，仅文档 / 原型的发布与互链）：</b><br>
+          ① <b>顶部 Tab 融合嵌入</b>：PRD 文档 / 产品原型 / 交互介绍 / 研发说明 / 验收用例，页内 iframe 切换不跳出。<br>
+          ② <b>在线发布</b>：原型站与本文档套件发布到 GitHub Pages，生成对外可分享链接。<br>
+          ③ <b>链接环境自适应</b>（R40）：本地看文档走本地（localhost:3100 / 8090）、线上看文档走公网，互不残留。<br>
+          ④ <b>原型内文档直达</b>：右下角浮窗与顶栏「产品与服务」新增文档入口（按 R40 语境自适应）。
+        </td>
+      </tr>
       <tr>
         <td>v1.1</td><td>2026-06-22</td>
         <td>
-          ① <b>多商户能力地图</b>（§3）：新增「一查询 + 两配置」三态——分数据查询 / 模板化配置 / 单站点配置。<br>
-          ② <b>商户筛选统一升级</b>（§3 / §4.2 / §6 各页）：单选 → <b>多选 + 顶部「全部」（与具体商户互斥）</b>、空值=全部、<b>不再必填</b>、总控端扁平多选。<br>
-          ③ <b>站内消息</b>（§6.2）：弹窗/滚动 Tab 新增「状态」(启用/禁用)筛选；新增/编辑弹窗加商户多选。<br>
-          ④ <b>公告消息</b>（§6.2）：状态列改为只读展示，状态改到编辑弹窗内维护；弹窗商户多选。<br>
-          ⑤ <b>轮播图 / 会员返佣等级</b>（§6.2 / §6.9）：新增/编辑弹窗加商户多选。<br>
-          ⑥ <b>短信验证码</b>（§6.1）：移除商户筛选。<br>
-          ⑦ <b>关联文档</b>（§12）：收敛为「关联四件套」（产品原型 / 交互介绍 / 研发说明 / 验收用例），删除「补充参照」子块。<br>
-          ⑧ <b>通用交互规范补充</b>（§4.2）：新增 列对齐与状态 / 校验反馈 / 导出按钮条件 / 设备术语(7种) / 编辑形态 / 空态与加载 / 迁移「新」标 共 7 条规范。
+          ① <b>多商户能力地图</b>：新增「一查询 + 两配置」三态——分数据查询 / 模板化配置 / 单站点配置。<br>
+          ② <b>商户筛选统一升级</b>：单选 → <b>多选 + 顶部「全部」（与具体商户互斥）</b>、空值=全部、不再必填、总控端扁平多选。<br>
+          ③ <b>站内消息</b>：弹窗 / 滚动 Tab 新增「状态」(启用/禁用)筛选；新增 / 编辑弹窗加商户多选。<br>
+          ④ <b>公告消息</b>：状态列改为只读展示，状态改到编辑弹窗内维护；弹窗商户多选。<br>
+          ⑤ <b>轮播图 / 会员返佣等级</b>：新增 / 编辑弹窗加商户多选。<br>
+          ⑥ <b>短信验证码</b>：移除商户筛选。<br>
+          ⑦ <b>通用交互规范补充</b>：列对齐与状态 / 校验反馈 / 导出按钮条件 / 设备术语(7 种) / 编辑形态 / 空态与加载 / 迁移「新」标。<br>
+          ⑧ <b>配置中心补全</b>：新增「系统配置」组 4 页 —— 注册管理 / 前台配置 / 系统参数配置 / 配置开关。
         </td>
       </tr>
       <tr>
@@ -470,6 +311,7 @@
         <td>创建二阶段 PRD 整合版：背景目标 / 范围 / 角色与多商户模型 / 全局框架 / 归因体系 / 6 模块功能需求 / 数据字段 / 非功能 / 验收 / 里程碑 / 风险 / 关联文档。</td>
       </tr>
     </table>
+    </details>
   </section>
 
   </main>
@@ -479,6 +321,86 @@
     const h=a.getAttribute('href'); if(h.length<2)return;
     const t=document.querySelector(h); if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});history.replaceState(null,'',h);}
   }));
+  // 环境自适应：本地(localhost)看文档 → 产品原型走本地 3100；线上(github.io)看文档 → 走线上原型。
+  // 交互介绍/研发说明/验收用例为相对链接，自动跟随当前站点（本地/线上各自对应），无需处理。
+  (function(){
+    const PROTO_ONLINE='https://eason200116.github.io/saas-desigh/prototypes/lotto-v3/#/home/welcome';
+    const isLocal=/^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/.test(location.hostname);
+    const PROTO_LOCAL='http://localhost:3100/'+(PROTO_ONLINE.split('#/')[1]||'');
+    const PROTO=isLocal?PROTO_LOCAL:PROTO_ONLINE;
+    const protoBtn=document.querySelector('.tabbtn[data-proto]');
+    if(protoBtn) protoBtn.dataset.src=PROTO;
+    // 字段词典：源文件在 Ar_V3 仓库 docs/migration（本地由 8770 提供）；线上已发布到 saas-desigh/docs/migration/（连同 img/ 截图同目录），故相对路径含 migration/ 前缀
+    const GLOSSARY_LOCAL='http://localhost:8770/docs/migration/14-anchor-new-field-glossary.html';
+    const GLOSSARY_ONLINE='migration/14-anchor-new-field-glossary.html';
+    const glossaryBtn=document.querySelector('.tabbtn[data-glossary]');
+    if(glossaryBtn) glossaryBtn.dataset.src=isLocal?GLOSSARY_LOCAL:GLOSSARY_ONLINE;
+    // 本地环境下，把正文里指向线上原型的 <a> 也改为本地 3100，保持「本地文档↔本地原型」
+    if(isLocal){
+      document.querySelectorAll('a[href*="github.io/saas-desigh/prototypes/lotto-v3"]').forEach(a=>{ a.href=PROTO; });
+    }
+  })();
+  // 顶部 Tab：PRD 文档 / 产品原型 / 交互介绍 / 研发说明 / 验收用例，页内切换不跳出（iframe 懒加载）
+  (function(){
+    const tabs=[...document.querySelectorAll('.tabbtn')];
+    const prd=document.getElementById('prdView');
+    const embed=document.getElementById('embedView');
+    const frame=document.getElementById('embedFrame');
+    const protoFrame=document.getElementById('protoFrame');  // 产品原型专用常驻 iframe（不重载，保持上次操作页面）
+    const crumb=document.getElementById('crumb');
+    const embedTitle=document.getElementById('embedTitle');
+    const embedUrl=document.getElementById('embedUrl');
+    const embedOpen2=document.getElementById('embedOpen2');
+    tabs.forEach(b=>b.addEventListener('click',()=>{
+      tabs.forEach(x=>x.classList.remove('active')); b.classList.add('active');
+      if(b.dataset.view==='prd'){ embed.style.display='none'; prd.style.display='flex'; crumb.textContent=''; return; }
+      const src=b.dataset.src;
+      if(b.dataset.proto){
+        // 产品原型是实时 SPA：用独立常驻 iframe，仅首次加载、之后切回/再点都不重载 → 保持上次操作页面，避免刷新跳回首页（快捷工作台）
+        if(!protoFrame.getAttribute('src')) protoFrame.setAttribute('src', src);
+        protoFrame.style.display=''; frame.style.display='none';
+      }else{
+        // 静态文档 Tab：每次点击都强制刷新看最新（含再点当前 Tab），加时间戳绕过缓存
+        const loadSrc = src+(src.includes('?')?'&':'?')+'_t='+Date.now();
+        frame.setAttribute('src', loadSrc);
+        frame.style.display=''; protoFrame.style.display='none';
+      }
+      crumb.textContent='› '+b.textContent;                 // 文档名作为 PRD 子标题（面包屑）
+      // 子标题下方栏：文档名 + 新窗口打开按钮（含产品原型）—— 显示/打开用干净 src（不带时间戳）
+      embedTitle.textContent=b.textContent.trim();
+      embedUrl.textContent=src;
+      embedOpen2.href=src;
+      prd.style.display='none'; embed.style.display='flex';
+    }));
+  })();
+</script>
+<script>
+(function(){
+  const TASKS=[["会员管理","会员详情归因增强","【前端】会员详情归因区块对接真实接口","开发","前端","1","27 项归因红字字段 + 代理关系链图 + 注册/登录设备信息 + 邀请人下钻;把现有 mock(useMemberContext/buildDetailData) 切换为真实详情接口,补脱敏掩码"],["会员管理","会员详情归因增强","【后端·建表】归因来源/链路/落地页/设备指纹表","开发","后端","1","[新建表] 归因明细表(来源渠道/落地页/推广链路/首次访问) + 设备指纹表(注册设备/登录设备/指纹ID);本期归因为全新数据模型,需重写表结构"],["会员管理","会员详情归因增强","【后端】会员详情归因聚合接口","开发","后端","1","[新增接口] getUserDetail 扩展 userInfo/归因/代理关系链/设备信息嵌套结构;邀请人下钻查询接口"],["会员管理","会员详情归因增强","【测试】会员详情归因验收","测试","测试","1","验证 27 归因字段取值、代理关系链图渲染、注册/登录设备信息、邀请人下钻跳转;脱敏掩码生效"],["会员管理","会员列表增强","【前端】会员列表批量9动作+新列对接","开发","前端","1","批量操作(9 动作)、设备/域名/代理新列、领取返佣/对上级返佣开关列;对接真实列表与批量接口,补批量转内外部代理/隐藏/重置Google等缺口动作"],["会员管理","会员列表增强","【后端】会员列表查询与批量动作接口","开发","后端","1","[接口适配] 列表分页/筛选(18 搜索/44 列) + 批量动作接口(批量启停/拉黑/备注/重置等);开关列状态写入"],["会员管理","会员列表增强","【测试】会员列表增强验收","测试","测试","1","验证批量 9 动作、新增列展示、返佣开关切换、设备/域名/代理列与下钻;商户切换后列表隔离重渲染"],["会员管理","分组管理(融合页)","【前端】分组管理三合一页内编辑","开发","前端","2","用户分组 + 分组表单 + 权限管理融合;分组权限配置页内化,系统默认分组(ID 0/-1/1)保护不可改删"],["会员管理","分组管理(融合页)","【后端】分组CRUD与权限配置接口","开发","后端","2","[接口适配] 分组增删改查 + 分组权限点配置 + 重新计算成员;默认分组保护校验"],["会员管理","分组管理(融合页)","【测试】分组管理验收","测试","测试","2","验证分组增删改、权限配置保存、默认分组保护、成员重算"],["会员管理","登录日志(增强迁移)","【前端】登录日志+设备指纹融合页","开发","前端","3","合并会员列表维度 + 设备指纹融合列;真实导出对接(当前 mock)"],["会员管理","登录日志(增强迁移)","【后端】登录日志查询与导出接口","开发","后端","3","[接口适配] 登录日志分页查询 + 设备指纹关联 + 导出任务"],["会员管理","登录日志(增强迁移)","【测试】登录日志验收","测试","测试","3","验证登录日志筛选、设备指纹列、导出文件内容"],["会员管理","短信验证码查询(新增)","【前端】短信验证码查询页","开发","前端","3","纯查询列表(无导出),按 UID/时间筛选;对接真实接口"],["会员管理","短信验证码查询(新增)","【后端】短信验证码查询接口","开发","后端","3","[接口适配] 短信记录分页查询(UID/手机号/时间)"],["会员管理","短信验证码查询(新增)","【测试】短信验证码查询验收","测试","测试","3","验证筛选条件与列表展示"],["运营管理","站内消息(弹窗/滚动/推送·多语言)","【前端】站内消息三页签对接","开发","前端","2","弹窗/滚动/推送三 Tab;标题/内容/配图逐语言(弹窗滚动 MultiLangFields,推送横版卡牌 PushLangCards:语言名+标题+文案+图片);推送列表标题/文案/图片合并「通知内容」列;指定用户导入 + 定时发送;原型占位 URL 切真实上传"],["运营管理","站内消息(弹窗/滚动/推送·多语言)","【后端】站内消息CRUD与推送接口","开发","后端","2","[接口适配] 站内信/滚动消息 CRUD(逐语言 titleByLang/contentByLang);[新增接口] 推送消息(Firebase/极光双通道、全体/指定用户、定时、逐语言 imageByLang);图片 OSS 上传"],["运营管理","站内消息(弹窗/滚动/推送·多语言)","【测试】站内消息验收","测试","测试","2","验证三页签增删改、逐语言标题/文案/图片、推送横版卡牌、通知内容合并列与查看其他语言、指定用户推送、定时发送"],["运营管理","轮播图管理(系统/商城)","【前端】轮播图双页签+级联跳转","开发","前端","2","系统轮播 + 商城轮播双页签;跳转方式(链接/子游戏/客服)联动显隐,游戏大类→厂商→子游戏级联;图片 768x300"],["运营管理","轮播图管理(系统/商城)","【后端】轮播图CRUD与游戏级联接口","开发","后端","2","[接口适配] 轮播图增删改查 + 排序/状态;游戏大类/厂商/子游戏级联下拉数据"],["运营管理","轮播图管理(系统/商城)","【测试】轮播图管理验收","测试","测试","2","验证图片上传、跳转方式联动、游戏级联、排序与状态"],["运营管理","渠道管理","【前端】渠道管理22列统计+批量","开发","前端","2","22 列统计型表格(横向滚动) + 时间快捷筛选;批量设置赠送金额(赠送额+打码倍数)、批量调整推广链接状态;新增/修改表单"],["运营管理","渠道管理","【后端】渠道管理统计与批量接口","开发","后端","2","[接口适配] 渠道增改;[新增接口] 22 列统计聚合(首充/二充/充提日累计);批量赠送(BachSaveChannelOpt)、批量推广状态(SetPromotion)"],["运营管理","渠道管理","【测试】渠道管理验收","测试","测试","2","验证 22 列统计数值、时间快捷、批量赠送/推广状态、金额 f2 格式"],["运营管理","域名管理","【前端】域名管理列表+实时开关","开发","前端","2","域名模糊搜索;列表(域名/备注/状态实时开关);新增/编辑/删除(二次确认);域名 https:// 前缀+唯一校验"],["运营管理","域名管理","【后端】域名管理CRUD与状态接口","开发","后端","2","[接口适配] PwaDomain 增删改查 + 实时状态切换(SetPwaDomainState);https/唯一性校验"],["运营管理","域名管理","【测试】域名管理验收","测试","测试","2","验证域名校验、实时开关、删除二次确认、唯一性"],["运营管理","防封救援","【前端】防封救援配置页(全新)","开发","前端","2","全新设计:主域名+备用域名池+自动救援切换;列(主域名/备用/当前生效/救援状态/最近切换/切换次数/启用开关);表单(主域名/备用多行/自动救援开关/检测间隔)"],["运营管理","防封救援","【后端·建表】防封救援规则与切换记录表","开发","后端","2","[新建表] 旧后台无源,全新数据模型:救援规则表(主域名/备用域名池/自动开关/检测间隔) + 切换记录表(切换时间/原因/生效域名)"],["运营管理","防封救援","【后端】防封救援配置与自动切换接口","开发","后端","2","[新增接口] 规则 CRUD + 自动救援切换逻辑 + 手动切换;导出(当前 mock)"],["运营管理","防封救援","【测试】防封救援验收","测试","测试","2","验证规则配置、自动/手动切换、切换记录、启用开关"],["运营管理","解析检测记录","【前端】解析检测记录日志页(全新)","开发","前端","3","全新设计·只读日志列表;搜索(域名/检测结果/日期范围);列(域名/解析IP/检测节点/结果/响应时间ms/执行时间)"],["运营管理","解析检测记录","【后端·建表】解析检测日志表","开发","后端","3","[新建表] 旧后台无源,全新:DNS 解析检测日志表(域名/解析IP/节点/结果/响应时间/执行时间)"],["运营管理","解析检测记录","【后端】解析检测查询与定时检测接口","开发","后端","3","[新增接口] 检测记录分页查询 + DNS 解析周期检测/手动触发;导出(当前 mock)"],["运营管理","解析检测记录","【测试】解析检测记录验收","测试","测试","3","验证检测记录筛选、手动检测触发、列表展示"],["运营管理","VIP升级奖励记录","【前端】VIP升级奖励记录只读页","开发","前端","3","会员ID(UID 必填)筛选;列(会员ID可弹详情/VIP等级/发放时间/领取时间);只读"],["运营管理","VIP升级奖励记录","【后端】VIP升级奖励查询接口","开发","后端","3","[接口适配] VipRewards 按 UID 查询;导出(当前 mock)"],["运营管理","VIP升级奖励记录","【测试】VIP升级奖励记录验收","测试","测试","3","验证 UID 必填校验、列表展示、会员详情下钻"],["运营管理","VIP人数","【前端】VIP等级人数统计页","开发","前端","3","列(等级ID/等级名称/人数);人数蓝链下钻会员列表(?vipLevel=ID);进度条展示"],["运营管理","VIP人数","【后端】VIP等级人数统计接口","开发","后端","3","[接口适配] VipLevelQuantity 各等级人数聚合"],["运营管理","VIP人数","【测试】VIP人数验收","测试","测试","3","验证各等级人数、点击下钻预填会员列表筛选"],["运营管理","VIP操作日志","【前端】VIP操作日志只读页","开发","前端","3","搜索(UID/订单号/状态字典/创建日期必填);列(订单号/时间/会员ID/日志类型/领取/经验值/总经验/明细);只读"],["运营管理","VIP操作日志","【后端】VIP操作日志查询接口","开发","后端","3","[接口适配] VipRecord 分页查询(含 VipRecordType 字典);导出(当前 mock)"],["运营管理","VIP操作日志","【测试】VIP操作日志验收","测试","测试","3","验证创建日期必填、状态字典、列表展示"],["运营管理","会员返佣等级","【前端】会员返佣等级管理页","开发","前端","2","按配置值强制提升;增删改 + 批量删除 + 费率表弹窗"],["运营管理","会员返佣等级","【后端】会员返佣等级CRUD接口","开发","后端","2","[接口适配] User_RebateLv 增删改查 + 批量删除 + 费率表配置"],["运营管理","会员返佣等级","【测试】会员返佣等级验收","测试","测试","2","验证等级增删改、批量删除、费率表保存、强制提升规则"],["运营管理","代理审核机制","【前端】代理审核机制列表+修改返佣","开发","前端","2","搜索(代理ID/0首充天数区间/代理类型/返佣状态);列(代理ID/上级/直属下级/类型/佣金/投注/操作人时间);修改返佣弹窗(彩票/电子/视讯/体育/棋牌 基础费率+备注)、启用/关闭"],["运营管理","代理审核机制","【后端】代理审核与返佣配置接口","开发","后端","2","[接口适配] UserReview 分页 + UpdateUserReview 状态 + EditUserRebate 五游戏基础费率"],["运营管理","代理审核机制","【测试】代理审核机制验收","测试","测试","2","验证筛选、修改返佣弹窗五游戏费率保存、返佣状态启用/关闭"],["风控管理","异常会员处理","【前端】异常会员四项批量处置弹窗","开发","前端","1","回收余额/保险箱转出/驳回提现/余额扣除;驳回提现备注必填(非中文)、余额扣除金额须为负+备注必填;单行+批量+二次确认;清理列语义漂移死字段"],["风控管理","异常会员处理","【后端】异常会员处置接口","开发","后端","1","[接口适配] 异常会员列表 + 四项处置(BatchBalanceSafeBack/BatchWithdrawBalanceBack/BatchUserBonusBack);金额/备注校验,处置后余额真实变更"],["风控管理","异常会员处理","【测试】异常会员处置验收","测试","测试","1","验证四项处置弹窗校验(负金额/备注必填非中文)、单行+批量、处置后余额变化、二次确认"],["风控管理","同IP/设备检测","【前端】同IP/设备4子页签+人数下钻","开发","前端","1","4 子页签(同注册IP/注册设备/登录IP/登录设备);人数蓝链下钻预填会员列表筛选(loginIp/loginDevice 参数透传);多行≤100逗号分隔批量ID查询"],["风控管理","同IP/设备检测","【后端】同IP/设备聚合与下钻接口","开发","后端","1","[接口适配] 四维度同IP/设备聚合统计 + 下钻明细(_Report_Ip_Same 等);批量ID查询"],["风控管理","同IP/设备检测","【测试】同IP/设备检测验收","测试","测试","1","验证 4 子页签数据、人数下钻预填筛选、IP/设备两类回填、批量ID查询"],["配置中心","VIP配置","【前端】VIP等级+经验值行内编辑+工作区","开发","前端","2","VIP0-VIP10 共 11 级行内编辑(15数值+1文本);经验值多币种换算;商户工作区(选/保存/发布)+模板复制到其他商户;升级/月奖励积分+余额拆分"],["配置中心","VIP配置","【后端】VIP配置与多币种/工作区接口","开发","后端","2","[接口适配] VipLevel/UpdateVipLevel 17 字段;[新增接口] VipCurrencyExp 多币种经验换算、商户工作区保存/发布、模板复制"],["配置中心","VIP配置","【测试】VIP配置验收","测试","测试","2","验证 11 级行内编辑、多币种经验、升级/月奖励拆分、工作区发布与模板套用"],["配置中心","返佣配置","【前端】返佣等级+费率配置(同级≤5%)","开发","前端","2","返佣等级管理(团队/直属6条件,0级不可删) + 返佣费率配置(一~六级×五游戏矩阵,同级之和≤5%校验+合计行);商户工作区+模板"],["配置中心","返佣配置","【后端】返佣等级与费率配置接口","开发","后端","2","[接口适配] RebateLevel 增删改(L0禁删) + RebateLvRateConfig 5×6 矩阵保存(≤5%校验);工作区/模板"],["配置中心","返佣配置","【测试】返佣配置验收","测试","测试","2","验证 0级禁删、6条件晋升、5×6费率矩阵≤5%校验、合计行、工作区发布"],["报表管理","流水返佣报表(新建)","【前端】流水返佣报表页","开发","前端","1","全新报表;按层级 1-6 列各游戏下注额 + 可得佣金;搜索+导出"],["报表管理","流水返佣报表(新建)","【后端】流水返佣报表聚合接口","开发","后端","1","[新增接口] UserRebate 按层级1-6×各游戏下注额/佣金聚合查询 + 导出"],["报表管理","流水返佣报表(新建)","【测试】流水返佣报表验收","测试","测试","1","验证层级×游戏佣金聚合数值、筛选、导出"],["报表管理","返佣报表(新建)","【前端】返佣报表页","开发","前端","2","全新报表;日期×各游戏返佣(等级利率|基础利率);搜索+导出"],["报表管理","返佣报表(新建)","【后端】返佣报表聚合接口","开发","后端","2","[新增接口] UserRebateReport 日期×游戏返佣(等级/基础利率)聚合 + 导出"],["报表管理","返佣报表(新建)","【测试】返佣报表验收","测试","测试","2","验证日期×游戏返佣数值、等级|基础利率、导出"],["报表管理","层级返佣报表(新建)","【前端】层级返佣报表页","开发","前端","2","全新报表;层级1-6×充值人数/金额+各游戏(投注|返佣);搜索+导出"],["报表管理","层级返佣报表(新建)","【后端】层级返佣报表聚合接口","开发","后端","2","[新增接口] UserRebateLvReport 层级1-6×充值人数金额+游戏投注/返佣聚合 + 导出"],["报表管理","层级返佣报表(新建)","【测试】层级返佣报表验收","测试","测试","2","验证层级×充值人数金额、游戏投注|返佣、导出"],["报表管理","代理报表(深化)","【前端】代理报表多维度深化","开发","前端","2","现 1搜索/9列简化版深化为 16 排序+多维度+日/月导航;真实导出"],["报表管理","代理报表(深化)","【后端】代理报表多维聚合接口","开发","后端","2","[接口适配] A/C/D/M_Report_InviteChart 按代理维度多排序聚合 + 日/月导航 + 导出"],["报表管理","代理报表(深化)","【测试】代理报表验收","测试","测试","2","验证多维度排序、日/月导航、下钻、导出"],["报表管理","昨日返佣等级(迁入)","【前端】昨日返佣等级报表深化","开发","前端","2","现 3搜索/9列简化版深化为 12排序+上一日/下一日导航;真实导出"],["报表管理","昨日返佣等级(迁入)","【后端】昨日返佣等级查询接口","开发","后端","2","[接口适配] User_RebateLv_Last 12排序查询 + 上/下日导航 + 派发 + 导出"],["报表管理","昨日返佣等级(迁入)","【测试】昨日返佣等级验收","测试","测试","2","验证排序、上/下日导航、派发、导出"],["系统管理","IP黑名单","【前端】IP黑名单列表+批量导入弹窗","开发","前端","1","列表(IP/封禁类型多标签/原因/关联会员/操作人/状态) + CRUD;批量导入弹窗(.csv/.xlsx 上传+去重≤500),替换当前 toast 占位"],["系统管理","IP黑名单","【后端】IP黑名单CRUD与批量导入接口","开发","后端","1","[接口适配] BlackIp 增删改查;[新增接口] 文件解析导入(.csv/.xlsx)+去重≤500+成功/失败反馈"],["系统管理","IP黑名单","【测试】IP黑名单验收","测试","测试","1","验证 CRUD、封禁类型多标签、批量导入去重≤500、成功/失败统计"],["全局框架","顶部导航优化(mega menu)","【前端】8大主Tab多列分组下拉","开发","前端","2","8 大主 Tab 多列分组下拉(mega menu) + 自定义主类型排序;按 meta.roles 双端过滤"],["全局框架","顶部导航优化(mega menu)","【后端】菜单分类接口适配","开发","后端","3","[接口适配] 菜单 category 字段([1]admin/[2]tenant/[1,2]双端)映射 roles;主类型排序持久化"],["全局框架","顶部导航优化(mega menu)","【测试】顶部导航验收","测试","测试","2","验证 mega menu 分组展示、双端角色过滤、主类型排序、商户视角隐藏商户列"],["全局框架","多标签页签栏","【前端】多标签页签栏(可关闭并存)","开发","前端","2","功能页可关闭并存的标签页签栏;keepAlive 列表页保留滚动/筛选,详情/表单不缓存"],["全局框架","多标签页签栏","【测试】多标签页签栏验收","测试","测试","2","验证标签新增/关闭/切换、列表页状态保留、详情页不脏缓存"]];
+  const bar=document.getElementById("ztBar"),wrap=document.getElementById("ztTable");
+  if(!bar||!wrap)return;
+  const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  const ROLE={"前端":"#2563eb","后端":"#7c3aed"};
+  const PRI={"1":["高","#dc2626"],"2":["中","#d97706"],"3":["低","#6b7280"]};
+  let filter="前端";
+  function render(){
+    // 仅区分前后端：剔除测试任务，去掉「全部」入口
+    const DEV=TASKS.filter(t=>t[4]!=="测试");
+    const byRole={};DEV.forEach(t=>byRole[t[4]]=(byRole[t[4]]||0)+1);
+    bar.innerHTML=["前端","后端"].map(r=>`<button data-f="${r}" class="${filter===r?"on":""}">${r} ${byRole[r]||0}</button>`).join("");
+    const list=DEV.filter(t=>t[4]===filter);
+    let html=`<table class="zt"><tr><th width="150">需求</th><th>任务名称</th><th width="64">角色</th><th width="56">优先级</th><th>描述</th></tr>`;
+    let lastMod=null;
+    for(const t of list){
+      if(t[0]!==lastMod){html+=`<tr class="modrow"><td colspan="5">▸ ${esc(t[0])}</td></tr>`;lastMod=t[0];}
+      const rc=ROLE[t[4]]||"#64748b",pr=PRI[t[5]]||[t[5],"#64748b"];
+      html+=`<tr><td>${esc(t[1])}</td><td><b>${esc(t[2])}</b></td><td><span class="rb" style="color:${rc};background:${rc}1a">${esc(t[4])}</span></td><td><span class="rb" style="color:${pr[1]};background:${pr[1]}1a">${pr[0]}</span></td><td class="desc">${esc(t[6])}</td></tr>`;
+    }
+    html+=`</table>`;wrap.innerHTML=html;
+  }
+  bar.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;filter=b.dataset.f;render();});
+  render();
+})();
 </script>
 </body>
 </html>

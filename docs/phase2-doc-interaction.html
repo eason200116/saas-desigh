@@ -406,7 +406,7 @@
   <div class="pcard">
     <div class="shot"><img src="img/spec-vip-level-config.png" alt="VIP配置"></div>
     <div class="info">
-      <div class="nm">VIP配置 <span class="badge new">新</span> <span class="route">/config-center/vipConfig3</span></div>
+      <div class="nm">VIP配置 <span class="badge new">新</span> <span class="route">/config-center/vipConfig</span></div>
       <div class="use">VIP 等级与经验值规则（多商户/模板）。</div>
       <ul class="ctrl">
         <li><span class="lbl tb">配置模式</span>三选一：使用自定义模板(模板画廊) / 使用商户模板 / 单商户配置；「正在配置」栏：商户 select + 来源 + <b>状态三态(未配置/待发布/已发布)</b> + 保存 + 复制到其他商户。</li>
@@ -437,17 +437,17 @@
   <h2>⑥ 系统管理</h2>
 
   <div class="pcard">
-    <div class="shot"><img src="img/spec-ip-blacklist-batch.png" alt="IP黑名单·批量导入"></div>
+    <div class="shot"><img src="img/spec-ip-blacklist.png?v=0617a" alt="IP黑名单·列表页"></div>
     <div class="info">
       <div class="nm">IP黑名单 <span class="badge new">新</span> <span class="badge built">已增强</span> <span class="route">/system/ipBlacklist</span></div>
-      <div class="use">把恶意 IP 拉进黑名单（列表 + 两个互斥页内面板）。</div>
+      <div class="use">把恶意 IP 拉进黑名单（列表 + 新增/编辑页内面板 + 批量导入弹窗）。</div>
       <ul class="ctrl">
         <li><span class="lbl flt">筛选</span>IP地址 · 关键字 · 封禁类型(禁止登录/禁止注册) · 状态(生效中/已解除)。</li>
         <li><span class="lbl col">列</span>ID · IP · 封禁类型(注册warning/登录error Tag) · <b>状态(ConfirmSwitch 开关·二确·失败回滚)</b> · 封禁原因 · 命中次数(&gt;1000标红) · 备注 · 创建人/时间 · 最后修改人/时间。</li>
-        <li><span class="lbl tb">工具栏</span>新增 IP(开表单面板) · 批量导入(开批量面板)。</li>
+        <li><span class="lbl tb">工具栏</span>新增 IP(开表单面板) · 批量导入(开弹窗)。</li>
         <li><span class="lbl act">行操作</span>编辑(IP 不可改) · 删除。</li>
         <li><span class="lbl frm">新增/编辑面板</span>IP地址(textarea·新增可多行) · 封禁类型 · 封禁原因(≤50) · 备注(≤100)；提交前 IPv4 逐项校验。</li>
-        <li><span class="lbl frm">批量导入面板</span><span class="badge built">已增强</span>IP列表 textarea + 选择文件(.csv/.txt) + 下载模板 + <b>实时「已识别 N 个(去重后，忽略 M 个无效)」</b> + 封禁类型 + 封禁原因(默认「批量导入」) + 确认导入(N)。</li>
+        <li><span class="lbl frm">批量导入弹窗</span><span class="badge built">已增强</span>点「批量导入」打开弹窗：IP列表 textarea + 选择文件(.csv/.txt) + 下载模板 + <b>实时「已识别 N 个(去重后，忽略 M 个无效)」</b> + 封禁类型 + 封禁原因(默认「批量导入」) + 确认导入(N)。</li>
         <li><span class="lbl sp">特殊</span>批量解析：按 逗号/空格/换行/分号 拆 → IPv4 校验(每段0~255) → 去重 → <b>单次上限 500</b>；确认后插入列表顶部 + Toast「成功导入 N 条」。</li>
       </ul>
     </div>

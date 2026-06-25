@@ -50,7 +50,7 @@
   </table>
   </div>
 <script>
-const MAP={'member-list':'/member/user','user-group':'/member/groupManage','login-log':'/member/loginLog','sms-code':'/member/smsCode','inbox-message':'/operations/inboxMessage','announcement-msg':'/operations/announcement','banner-mgmt':'/operations/banner','channel-config':'/operations/channelConfig','domain-mgmt':'/operations/domainMgmt','domain-rescue':'/operations/domainRescue','domain-resolve-log':'/operations/domainResolveLog','vip-reward-log':'/operations/vipRewardLog','vip-level-count':'/operations/vipLevelCount','vip-op-log':'/operations/vipOpLog','member-rebate-level':'/operations/memberRebateLevel','agent-audit':'/operations/agentAudit','abnormal-member':'/risk-control/abnormalMember','same-ip':'/risk-control/sameIp','vip-level-config':'/config-center/vipConfig3','rebate-level':'/config-center/rebateConfig','agent-report':'/report/agentReport','rebate-level-yesterday':'/operations/rebateLevelYesterday','ip-blacklist':'/system/ipBlacklist'};
+const MAP={'member-list':'/member/user','user-group':'/member/groupManage','login-log':'/member/loginLog','sms-code':'/member/smsCode','inbox-message':'/operations/inboxMessage','announcement-msg':'/operations/announcement','banner-mgmt':'/operations/banner','channel-config':'/operations/channelConfig','domain-mgmt':'/operations/domainMgmt','domain-rescue':'/operations/domainRescue','domain-resolve-log':'/operations/domainResolveLog','vip-reward-log':'/operations/vipRewardLog','vip-level-count':'/operations/vipLevelCount','vip-op-log':'/operations/vipOpLog','member-rebate-level':'/operations/memberRebateLevel','agent-audit':'/operations/agentAudit','abnormal-member':'/risk-control/abnormalMember','same-ip':'/risk-control/sameIp','vip-level-config':'/config-center/vipConfig','rebate-level':'/config-center/rebateConfig','agent-report':'/report/agentReport','rebate-level-yesterday':'/operations/rebateLevelYesterday','ip-blacklist':'/system/ipBlacklist'};
 const PROTO3='http://localhost:3100';
 const ROWS=[
  ['会员管理',[
@@ -79,7 +79,7 @@ const ROWS=[
    ['同 IP/设备检测','4 子页签（同注册 IP/同注册设备/同登录 IP/同登录设备）；设备+指纹合并列；人数蓝链下钻','新','same-ip'],
  ]],
  ['配置中心',[
-   ['VIP 配置','双页签：VIP 等级（VIP0–VIP10 固定 11 级·行内编辑·去 ID）+ 经验值配置；商户工作区（选→保存→发布）+ 复制模板；保存校验','新','URL::http://localhost:3100/config-center/vipConfig3'],
+   ['VIP 配置','双页签：VIP 等级（VIP0–VIP10 固定 11 级·行内编辑·去 ID）+ 经验值配置；商户工作区（选→保存→发布）+ 复制模板；保存校验','新','URL::http://localhost:3100/config-center/vipConfig'],
    ['返佣配置','双页签：返佣等级管理（0 级不可删）+ 返佣费率配置（一~六级×五游戏）；同级费率之和 >4% 校验拦截','新','rebate-level'],
  ]],
  ['报表管理',[
