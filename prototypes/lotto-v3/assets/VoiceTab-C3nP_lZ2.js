@@ -1,1 +1,0 @@
-import{An as e,Gn as t,Sn as n}from"./vendor-naive-CddCc6E-.js";import{t as r}from"./SmsProviderTab-C58zICG6.js";var i=e({name:`OperationsSmsVoiceTab`,__name:`VoiceTab`,setup(e){return(e,i)=>(t(),n(r,{"sms-type":2}))}});export{i as default};
