@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="robots" content="noindex, nofollow" />
-<title>SaaS 多商户后台 · 二阶段技术方案（归因体系）</title>
+<title>SaaS 多商户后台 · 2.0技术方案（归因体系）</title>
 <script>if(window.self!==window.top)document.documentElement.classList.add('embedded')</script>
 <style>
   :root{--accent:#2563eb;--accent2:#7c3aed;--bg:#f5f6f8;--card:#fff;--border:#e5e7eb;--muted:#6b7280;--red:#dc2626;--green:#16a34a;--amber:#d97706;}
@@ -109,7 +109,7 @@
 </head>
 <body>
 <header>
-  <h1>🧩 SaaS 多商户后台 · 二阶段技术方案（研发说明）</h1>
+  <h1>🧩 SaaS 多商户后台 · 2.0技术方案（研发说明）</h1>
   <div class="ver">归因体系 / 流程矩阵 · 结合二期 PRD · 与「交互介绍」同套排版</div>
 </header>
 <div class="layout">
@@ -124,7 +124,7 @@
   <!-- 一、基础概念 -->
   <section id="concept">
     <h2 class="sec">一、基础概念</h2>
-    <p class="sec-desc">先把二阶段绕不开的几个核心概念讲清楚，后面的字段与流程都建立在这上面。结合二期 PRD（会员管理深度迁移与归因体系）。</p>
+    <p class="sec-desc">先把2.0绕不开的几个核心概念讲清楚，后面的字段与流程都建立在这上面。结合二期 PRD（会员管理深度迁移与归因体系）。</p>
 
     <h3 id="c-multi">1.1 多商户：一查询 + 两配置（能力地图）</h3>
     <p>一个总控后台管很多商户站点，所以同一功能要回答两个问题——<b>「现在看/管哪个（些）商户？」</b>（数据维度）和 <b>「一套参数怎么省力铺给一堆商户？」</b>（配置维度）。原型用三种形态解决：</p>
@@ -165,7 +165,7 @@
     <div class="note">详见《二期 PRD》第 12 节「多商户能力地图」与 V3《改动清单》同名章节。本技术方案聚焦 <b>① 分数据查询所依赖的会员归因字段</b>。</div>
 
     <h3 id="c-attr">1.2 归因体系：会员"从哪儿来"</h3>
-    <p>归因 = 在会员<b>注册那一刻</b>，按优先级判定其首个命中的来源，写入会员档案并<b>固化不再变更</b>。解决运营/代理「这个会员是谁带来的、从哪个渠道来的」。共 <b>4 大归因类型</b>（广告投放 / 邀请来源 / 官方直推 / 自然流量）× <b>22 种枚举情况</b>，详见第二章。</p>
+    <p>归因 = 在会员<b>注册那一刻</b>，按优先级判定其首个命中的来源，写入会员档案并<b>固化不再变更</b>。解决运营/代理「这个会员是谁带来的、从哪个渠道来的」。共 <b>4 大归因类型</b>（广告投放 / 邀请来源 / 官方直推 / 自然流量）× <b>21 种枚举情况</b>，详见第二章。</p>
 
     <h3 id="c-chain">1.3 推广闭环 + 代理体系</h3>
     <div class="cards">
@@ -181,7 +181,7 @@
   <!-- 二、归因流程图与矩阵 -->
   <section id="attr">
     <h2 class="sec">二、归因流程图与介绍（含矩阵）</h2>
-    <p class="sec-desc">归因如何判定、判定结果如何落库、22 种情况如何穷举。</p>
+    <p class="sec-desc">归因如何判定、判定结果如何落库、21 种情况如何穷举。</p>
 
     <h3 id="a-priority">2.1 优先级与判定规则</h3>
     <div class="flow">
@@ -208,7 +208,7 @@
     <table>
       <tr><th width="150">主归因</th><th width="140">入口形态</th><th>采集 / 识别方式与举例</th></tr>
       <tr><td>自然流量</td><td>搜索进入 / 直接访问</td><td>解析请求 <code>referrer</code> 的来源域名识别搜索引擎名称，无 referrer 则记为直接访问。覆盖<b>海外主流</b>：Google、Bing、Yahoo、DuckDuckGo、Yandex、Naver、Daum、Ecosia、Brave Search、Startpage、Qwant、Seznam、Ask.com、AOL 等；<b>国内引擎（百度 / 搜狗 / 360 / 神马 / 头条等）及未在白名单内的搜索引擎一律归「其他」。</b></td></tr>
-      <tr><td>广告投放</td><td>广告链接 / 落地页</td><td>读取 UTM 参数（<code>utm_source / utm_medium / utm_campaign / utm_content / utm_term</code>）+ 各平台点击 ID 回传。<b>暂定支持 4 个广告平台系列</b>：<br>• <b>谷歌系列</b>：Google Ads / YouTube / Google Display（含 AdMob 应用广告），点击 ID <code>gclid</code>（iOS ATT 后另有 <code>gbraid / wbraid</code>），<code>utm_source=google</code>。<br>• <b>Meta 系列</b>：Facebook / Instagram / Messenger / Audience Network，点击 ID <code>fbclid</code>，<code>utm_source=facebook</code> 或 <code>instagram</code>。<br>• <b>TikTok 系列</b>：TikTok Ads / TikTok for Business，点击 ID <code>ttclid</code>，<code>utm_source=tiktok</code>。<br>• <b>Kwai 系列（快手海外版）</b>：Kwai Ads / Kwai for Business，<code>utm_source=kwai</code>，点击 ID 随平台回传（参数名以对接 Kwai SDK 为准）。<br>例：<code>?utm_source=facebook&amp;utm_campaign=th_618</code>。</td></tr>
+      <tr><td>广告投放</td><td>广告链接 / 落地页</td><td>读取 UTM 参数（<code>utm_source / utm_medium / utm_campaign / utm_content / utm_term</code>）+ 各平台点击 ID 回传。<b>暂定支持 4 个广告平台系列</b>：<br>• <b>谷歌系列</b>：Google Ads / YouTube / Google Display（含 AdMob 应用广告），点击 ID <code>gclid</code>（iOS ATT 后另有 <code>gbraid / wbraid</code>），<code>utm_source=google</code>。开发文档：<a href="https://developers.google.com/google-ads/api" target="_blank" rel="noopener">Google Ads API</a>。<br>• <b>Meta 系列</b>：Facebook / Instagram / Messenger / Audience Network，点击 ID <code>fbclid</code>，<code>utm_source=facebook</code> 或 <code>instagram</code>。开发文档：<a href="https://developers.facebook.com/docs/marketing-apis/" target="_blank" rel="noopener">Meta Marketing API</a>。<br>• <b>TikTok 系列</b>：TikTok Ads / TikTok for Business，点击 ID <code>ttclid</code>，<code>utm_source=tiktok</code>。开发文档：<a href="https://business-api.tiktok.com/portal/docs" target="_blank" rel="noopener">TikTok Marketing API</a>。<br>• <b>Kwai 系列（快手海外版）</b>：Kwai Ads / Kwai for Business，<code>utm_source=kwai</code>，点击 ID 随平台回传（参数名以对接 Kwai SDK 为准）。开发文档：<a href="https://docs.qingque.cn/d/home/eZQD_B7D-wuESSFNbPJJqrt2c?identityId=1oEElSWqQi3" target="_blank" rel="noopener">Kwai Business API</a>。<br>例：<code>?utm_source=facebook&amp;utm_campaign=th_618</code>。</td></tr>
       <tr><td>官方直推</td><td>专属链接 / 二维码</td><td>商户在「官方直推渠道」生成带渠道标识的短链或二维码，扫码 / 点击即带上渠道 ID。例：线下展会物料二维码、KOL 专属 <code>?ch=kol_anna</code>。</td></tr>
       <tr><td>邀请来源 · 正常邀请</td><td>个人邀请码 / 邀请链接</td><td>链接或邀请码内含上级玩家 / 代理 ID，注册时写入代理树上级关系，<code>invite_type=normal</code>。例：<code>/r/INV8K3D</code> 或填邀请码 <code>8K3D</code>。</td></tr>
       <tr><td>邀请来源 · 转盘活动邀请</td><td>邀请转盘专属链接 / 海报</td><td>链接含上级 ID + 活动 ID，注册时既挂代理树又触发转盘奖励，<code>invite_type=wheel</code> 并记 <code>invite_activity_id</code>。例：<code>/act/wheel?inv=8K3D&amp;act=2026spin</code>。</td></tr>
@@ -249,9 +249,9 @@
     </div>
     <div class="note">「同IP / 同设备 / 同指纹」数值在会员详情/列表均<b>可点击下钻</b>到「风控 · 同IP/设备检测」对应维度并自动带入会员 ID。</div>
 
-    <h3 id="a-matrix">2.6 归因穷举矩阵（4 类 × 22 种，§4.6 的 18 种基础上补 4 种极端冲突/降级穷举）</h3>
+    <h3 id="a-matrix">2.6 归因穷举矩阵（4 类 × 21 种，§4.6 的 17 种基础上补 4 种极端冲突/降级穷举）</h3>
     <p class="sec-desc">每行 = 一种进入路径：命中标识 → 进入方式 → 落地渠道 → 邀请码·代理 → 最终归因结果。下方<b>速览表</b>快速对照；再往下是<b>融合进本方案的完整可交互矩阵</b>（每行可点编号展开 5 步脉络图），无需跳转外页。</p>
-    <h4>速览表（22 种一览）</h4>
+    <h4>速览表（21 种一览）</h4>
     <div class="mx-scroll"><table class="mx" id="t-matrix"></table></div>
     <h4>完整可交互矩阵（含每行 5 步脉络图）</h4>
     <div class="mxframe"><iframe src="attribution-matrix-4.6.html" title="归因穷举矩阵 §4.6（完整可交互）" loading="lazy"></iframe></div>
@@ -550,7 +550,7 @@
 </div>
 
 <script>
-// 归因矩阵（4 类 × 22 种，含 4 种极端冲突/降级补充）
+// 归因矩阵（4 类 × 21 种，含 4 种极端冲突/降级补充）
 const GCLS={'广告投放':'g-ad','邀请来源':'g-inv','官方直推':'g-off','自然流量':'g-nat'};
 const AMX=[
  ['A1','广告投放','Facebook','广告点击ID fbclid','广告·点击 Facebook 广告进入','广告落地页 apk-fb-me001-01','未填邀请码·无代理','主归因 广告投放 · 渠道 apk-fb-me001-01 · 平台 Facebook'],
@@ -566,7 +566,6 @@ const AMX=[
  ['B3','邀请来源','正常邀请(个人)','官方渠道 + 个人邀请码','官方渠道进入后手填邀请码','官方渠道 h5-01','填 AGENT100·绑上级/一级','主归因 邀请来源 · 渠道 官方 h5-01 · 邀请码 AGENT100'],
  ['B4','邀请来源','转盘邀请','转盘活动码 WHEEL8001','转盘活动分享进入','官方渠道 h5-01','填 WHEEL8001·绑上级/一级','主归因 邀请来源 · 邀请码 WHEEL8001 · 类型 转盘邀请'],
  ['B5','邀请来源','任务邀请','任务活动码 TASK8002','任务活动分享进入','官方渠道 h5-01','填 TASK8002·绑上级/一级','主归因 邀请来源 · 邀请码 TASK8002 · 类型 任务邀请'],
- ['B6','邀请来源','活动过期降级','活动邀请码已过期','活动分享进入（码已过期）','官方渠道 h5-01','活动码过期降级正常邀请·仍绑上级/一级','主归因 邀请来源 · 邀请码 WHEEL8001 · 降级正常邀请'],
  ['B1','官方直推','—','仅官方推广链接标识','官方·点官方推广链接进入','官方渠道 h5-01','未填邀请码·无代理','主归因 官方直推 · 渠道 官方 h5-01'],
  ['A7','自然流量','其他来源','Referrer（非搜索）','自然·站外非搜索链接进入','渠道 apk-fb-me001-01','未填邀请码·无代理','主归因 自然流量 · 渠道 apk-fb-me001-01 · 搜索引擎 其他'],
  ['B7','自然流量','Google 搜索','Referrer = Google','自然·Google 搜索结果进入','官方渠道 h5-01','未填邀请码·无代理','主归因 自然流量 · 渠道 官方 h5-01 · 搜索引擎 Google'],
