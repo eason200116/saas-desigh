@@ -207,7 +207,7 @@
     <p class="sec-desc">每类主归因对应的<b>入口形态</b>，以及注册时<b>如何采集 / 识别</b>。</p>
     <table>
       <tr><th width="150">主归因</th><th width="140">入口形态</th><th>采集 / 识别方式与举例</th></tr>
-      <tr><td>自然流量</td><td>搜索进入 / 直接访问</td><td>解析请求 <code>referrer</code> 的来源域名识别搜索引擎名称，无 referrer 则记为直接访问。可识别 Google、Bing、Yahoo、DuckDuckGo、Yandex、Naver 等海外搜索引擎；<b>中国搜索引擎（百度 / 搜狗 / 360 / 神马等）及未在白名单内的一律归「其他」。</b><br>另按 <code>User-Agent</code> 识别访问浏览器，覆盖主流海外浏览器：<b>Chrome、Safari、Edge、Firefox、Opera、Samsung Internet、Brave、Vivaldi</b> 等；未在白名单内的浏览器一律归「其他」。</td></tr>
+      <tr><td>自然流量</td><td>搜索进入 / 直接访问</td><td>解析请求 <code>referrer</code> 的来源域名识别搜索引擎名称，无 referrer 则记为直接访问。覆盖<b>海外主流</b>：Google、Bing、Yahoo、DuckDuckGo、Yandex、Naver、Daum、Ecosia、Brave Search、Startpage、Qwant、Seznam、Ask.com、AOL 等；<b>国内引擎（百度 / 搜狗 / 360 / 神马 / 头条等）及未在白名单内的搜索引擎一律归「其他」。</b></td></tr>
       <tr><td>广告投放</td><td>广告链接 / 落地页</td><td>读取 UTM 参数（<code>utm_source / utm_medium / utm_campaign / utm_content / utm_term</code>）+ 各平台点击 ID 回传。<b>暂定支持 4 个广告平台系列</b>：<br>• <b>谷歌系列</b>：Google Ads / YouTube / Google Display（含 AdMob 应用广告），点击 ID <code>gclid</code>（iOS ATT 后另有 <code>gbraid / wbraid</code>），<code>utm_source=google</code>。<br>• <b>Meta 系列</b>：Facebook / Instagram / Messenger / Audience Network，点击 ID <code>fbclid</code>，<code>utm_source=facebook</code> 或 <code>instagram</code>。<br>• <b>TikTok 系列</b>：TikTok Ads / TikTok for Business，点击 ID <code>ttclid</code>，<code>utm_source=tiktok</code>。<br>• <b>Kwai 系列（快手海外版）</b>：Kwai Ads / Kwai for Business，<code>utm_source=kwai</code>，点击 ID 随平台回传（参数名以对接 Kwai SDK 为准）。<br>例：<code>?utm_source=facebook&amp;utm_campaign=th_618</code>。</td></tr>
       <tr><td>官方直推</td><td>专属链接 / 二维码</td><td>商户在「官方直推渠道」生成带渠道标识的短链或二维码，扫码 / 点击即带上渠道 ID。例：线下展会物料二维码、KOL 专属 <code>?ch=kol_anna</code>。</td></tr>
       <tr><td>邀请来源 · 正常邀请</td><td>个人邀请码 / 邀请链接</td><td>链接或邀请码内含上级玩家 / 代理 ID，注册时写入代理树上级关系，<code>invite_type=normal</code>。例：<code>/r/INV8K3D</code> 或填邀请码 <code>8K3D</code>。</td></tr>
@@ -281,7 +281,11 @@
     <ul>
       <li><b>两段式</b>：<b>保存 = 存草稿</b>（先弹「保存预览」确认，提示「已保存（草稿），发布后对外生效」）；<b>发布 = 上线</b>（再走「确认发布」二次确认）。</li>
       <li><b>按钮位置</b>：保存 / 发布放在顶部「配置商户」选择条<b>同一行右侧</b>（MerchantSwitchBar <code>#actions</code> 插槽）。</li>
-      <li><b>校验</b>：保存/发布前校验，<b>失败必红框定位出错字段并指明错在哪</b>（顶部错误提示 + 字段红框）；行内表格用单元格 invalid 高亮 + errorTip；业务规则（如同级费率之和超限）直接拦截标红。</li>
+      <li><b>板块级保存（系统参数 / 配置开关）</b> <span class="gtag g-off">2026-06-26 调整</span>：<b>系统参数配置（<code>/config-center/sysParam</code>）与开关配置（<code>/config-center/configSwitch</code>）取消顶部全局「保存」按钮、顶部仅保留「发布」</b>；改为<b>每个板块/分组卡片各挂一个「保存」按钮</b>——系统参数 8 个分类卡（注册与登录安全 / 资金与绑定 / 汇率 / 营销与奖励 / 代理 / 预警监控 / 下发限制 / 第三方与外观）各自标题栏一个「保存」，<b>只校验并保存该板块（草稿，红框仅标该板块出错项）</b>；开关配置 10 个分组卡各自卡头一个「保存」（点击<b>不触发卡片折叠</b>），只保存该分组（草稿）。<b>「发布」仍为全局</b>（各板块分别存草稿，顶部「发布」统一对外生效）。其余配置页（注册管理 / 前台配置等）保持顶部全局保存/发布不变。</li>
+      <li><b>系统参数配置 / 开关配置 两页菜单隐藏</b> <span class="gtag g-off">2026-06-26 调整</span>：在路由 <code>config.ts</code> 给 <code>sysParam</code>（系统参数配置 <code>/config-center/sysParam</code>）、<code>configSwitch</code>（开关配置 <code>/config-center/configSwitch</code>）两条 <code>meta</code> 加 <code>hidden:true</code>，<b>配置中心菜单不再展示这两页</b>，但<b>路由与组件保留、可直达</b>（没删，只是菜单隐藏）；机制：菜单生成器 <code>utils/tree.ts</code> 按 <code>meta.hidden</code> 过滤。原因：这两页已被融合页<b>「开关参数配置」</b>取代。隐藏后配置中心大菜单现仅余 VIP配置 / 返佣配置 / 消息模板配置 / 开关参数配置 / 注册管理 / 前台配置。</li>
+      <li><b>共用侧导航「配置项·快捷入口」模糊搜索（增强：页面入口 + 跨页配置项名）</b> <span class="gtag g-off">2026-06-26 增强</span>：共用左侧导航组件 <code>ConfigSideNav</code>（覆盖 VIP配置 / 返佣配置 / 消息模板配置 三页）<b>仅展开态</b>在「配置项·快捷入口」标题下方常驻一个搜索框（placeholder「<b>搜索配置项…</b>」、可清空）。实现为<b>纯前端 computed 过滤</b>，匹配范围有<b>两类</b>：<b>①页面入口</b>——按入口的<b>标题 / 描述 / 短名</b> 做 <code>includes</code> 子串匹配（<b>不区分大小写</b>，对应 VIP配置 / 返佣配置 / 消息模板配置 三个入口）；<b>②跨页配置项名称</b>——新增索引文件 <code>src/views/config/shared/configSearchIndex.ts</code>，收录 <b>VIP配置 19 项（等级表列 + 经验值）+ 返佣配置 17 项（等级条件 + 费率）+ 消息模板 12 个推送场景名，共 48 项</b>，用户可直接搜某个具体配置项名（如「升级奖励」「洗码」「会员注册」）。结果列表每条带一个<b>彩色标签</b>：蓝色「<b>页面</b>」/ 紫色「<b>配置项</b>」，右侧主标题=命中名、副标题=所属页名；<b>点任意结果都跳转到其所属配置页</b>（页面入口跳该页，配置项跳所属页）。<b>无命中显示「无匹配配置项」</b>。<b>收起态</b>（左侧短标签竖排）不受影响。参照「开关参数配置」(<code>switchParam</code>) 页内目录搜索做法；<code>pnpm build</code> 通过，Playwright 实测：「返佣」→ 页面「返佣配置」+ 配置项「返佣等级/返佣费率配置」，「升级」→「升级条件(EXP)/升级奖励」，「会员注册」→ 消息模板场景，「洗码」→ 5 个洗码率列，无关词 → 「无匹配配置项」。</li>
+      <li><b>校验</b>：保存/发布前校验，<b>失败必红框定位出错字段并指明错在哪</b>（顶部错误提示 + 字段红框）；<b>板块级保存仅校验并标红该板块范围</b>；行内表格用单元格 invalid 高亮 + errorTip；业务规则（如同级费率之和超限）直接拦截标红。</li>
+      <li><b>绑定内容字段（系统参数·资金与绑定·会员绑定）</b> <span class="gtag g-off">2026-06-26 调整</span>：<code>memberBindCardContent</code><b>由单选下拉改为多选复选框</b>（与同板块下方「绑定触发条件」一致的多选形态）；选项不变——<b>银行卡 / USDT / 电子钱包 / PIX</b>，<b>默认勾选 银行卡 + USDT</b>。</li>
     </ul>
 
     <h3 id="ux-modal">3.3 弹窗规范（全站统一）</h3>
@@ -389,9 +393,152 @@
     </ul>
   </section>
 
+  <section id="schema">
+    <h2 class="sec">五、表结构建议 <span class="gtag g-off">2026-06-26 新增</span></h2>
+    <p class="sec-desc">本节给出本期<b>新功能 / 新数据模型的建议表结构</b>，供研发评审参考（<b>非强制、最终以研发评审 + 字段词典为准</b>）。标「<b>全新</b>」者旧后台无源、需新建；标「<b>适配</b>」者在现有表加字段。下表均省略下方「通用约定」里的公共列，只列业务字段。</p>
+
+    <div class="note"><b>通用约定（所有业务表统一，下表省略不再重复）</b>：① 主键 <code>id BIGINT 自增</code>；② <b>多商户隔离</b> <code>tenant_id BIGINT</code>（建索引，按商户查询/隔离）；③ 审计列 <code>created_at / updated_at DATETIME</code>、<code>created_by / updated_by BIGINT</code>；④ 逻辑删除 <code>is_deleted TINYINT 默认 0</code>；⑤ 金额 <code>DECIMAL(18,2)</code>、比率/费率 <code>DECIMAL(8,4)</code>；⑥ <b>逐语言文案统一用 JSON 列</b> <code>{"zh":"…","en":"…"}</code>（落地口径见 §3.6），缺译回退默认语言由应用层处理。</div>
+
+    <h3 id="s-attr">5.1 归因体系（全新 · 本期核心）</h3>
+    <p class="sec-desc">注册即按优先级判定并<b>一次性固化</b>，会员详情红字呈现（见 §二）。建议拆「归因明细 + 设备指纹」两张表，与会员一对一/一对多。</p>
+    <h4>归因明细表 <code>member_attribution</code>（全新 · 字段对齐词典「归因枚举专章」）</h4>
+    <table>
+      <tr><th width="230">字段（词典 key）</th><th width="140">类型</th><th>说明</th></tr>
+      <tr><td>user_id</td><td>BIGINT</td><td>会员ID（唯一索引）</td></tr>
+      <tr><td>main_attribution</td><td>TINYINT</td><td><code>mainAttribution</code> 归因类型(主归因)：1 广告投放 / 2 邀请来源 / 3 官方直推 / 4 自然流量（第5类待定），按优先级判定后<b>固化不变</b></td></tr>
+      <tr><td>channel_code</td><td>VARCHAR(64)</td><td><code>channelCode</code> 注册渠道（命中的后台渠道编码，如 apk-fb-me001-01）</td></tr>
+      <tr><td>inviter</td><td>BIGINT</td><td><code>inviter</code> 邀请人（拉他注册的会员）</td></tr>
+      <tr><td>register_domain</td><td>VARCHAR(128)</td><td><code>registerDomain</code> 注册域名</td></tr>
+      <tr><td>access_client</td><td>TINYINT</td><td><code>accessClient</code> 访问端（固定 7 端之一）</td></tr>
+      <tr><td>register_client_name</td><td>VARCHAR(32)</td><td><code>registerClientName</code> 注册客户端（细分）</td></tr>
+      <tr><td>register_device_id</td><td>VARCHAR(128)</td><td><code>registerDeviceId</code> 注册设备ID（App 有值，网页「-」）</td></tr>
+      <tr><td>register_fingerprint</td><td>VARCHAR(128)</td><td><code>registerFingerprint</code> 注册浏览器指纹（网页有值，App「-」）</td></tr>
+      <tr><td>is_emulator</td><td>TINYINT</td><td><code>isEmulator</code> 是否模拟器注册（风控）</td></tr>
+      <tr><td>register_ip</td><td>VARCHAR(45)</td><td><code>registerIP</code> 注册 IP</td></tr>
+      <tr><td>register_package</td><td>VARCHAR(64)</td><td><code>registerPackage</code> App 包名（如 com.daman.app）</td></tr>
+      <tr><td>register_version</td><td>VARCHAR(16)</td><td><code>registerVersion</code> App 版本号</td></tr>
+      <tr><td>register_time</td><td>DATETIME</td><td>注册时间（归因固化时刻）</td></tr>
+    </table>
+    <div class="note">① <b>代理体系字段</b>（词典第2组，可并入本表或挂会员主档）：<code>firstAgent</code> 一级代理 / <code>directParentAgent</code> 直接上级代理 / <code>agentLevel</code> 代理层级 / <code>commissionMode</code> 代理模式〔流水返佣/盈亏返利〕/ <code>rebateLevelToday</code> 返佣等级 / <code>isRebateToParent</code> 对上级返佣。② <b>「同IP注册数 / 同指纹注册数 / 最后3次登录同IP数」是聚合下钻结果、不入表</b>（按 register_ip / register_fingerprint 实时聚合，§风控同IP/设备检测复用）。</div>
+    <h4>设备指纹表 <code>device_fingerprint</code>（全新 · 注册/登录两时点）</h4>
+    <table>
+      <tr><th width="230">字段（词典 key）</th><th width="140">类型</th><th>说明</th></tr>
+      <tr><td>user_id</td><td>BIGINT</td><td>会员ID（建索引）</td></tr>
+      <tr><td>scene</td><td>TINYINT</td><td>采集时点：1 注册（取 register*）/ 2 登录（取 lastLogin*）</td></tr>
+      <tr><td>device_id</td><td>VARCHAR(128)</td><td><code>registerDeviceId</code> / <code>lastLoginDeviceId</code> 设备唯一号</td></tr>
+      <tr><td>fingerprint</td><td>VARCHAR(128)</td><td><code>registerFingerprint</code> / <code>lastLoginFingerprint</code> 浏览器指纹</td></tr>
+      <tr><td>client</td><td>TINYINT</td><td><code>accessClient</code> / <code>lastLoginClient</code> 设备类型（固定 7 端：H5 / PC / 安卓原生 / iOS原生 / 安卓壳包 / iOS壳包 / PWA）</td></tr>
+      <tr><td>domain</td><td>VARCHAR(128)</td><td><code>registerDomain</code> / <code>loginDomain</code> 进入域名</td></tr>
+      <tr><td>ip</td><td>VARCHAR(45)</td><td>IP（兼容 IPv6）</td></tr>
+      <tr><td>is_emulator</td><td>TINYINT</td><td>是否模拟器（注册时点）</td></tr>
+      <tr><td>collected_at</td><td>DATETIME</td><td>采集时间</td></tr>
+    </table>
+    <div class="note">同 IP / 同设备 / 同指纹检测（§风控 6Tab）按 <code>ip</code> / <code>device_id</code> / <code>fingerprint</code> × 注册/登录两时点聚合下钻，建议组合索引；登录设备保留<b>最近 3 次</b>（词典：最后3次登录拆 IP/同IP数）。</div>
+
+    <h3 id="s-promo">5.2 推广分发 · 域名 / 防封 / 解析（全新，旧后台无源）</h3>
+    <h4>防封救援规则表 <code>domain_rescue_rule</code>（全新 · 字段对齐词典 domainRescue）</h4>
+    <table>
+      <tr><th width="230">字段（词典 key）</th><th width="140">类型</th><th>说明</th></tr>
+      <tr><td>main_domain</td><td>VARCHAR(128)</td><td><code>mainDomain</code> 主域名（需防封保护）</td></tr>
+      <tr><td>backup_domain</td><td>JSON</td><td><code>backupDomain</code> 备用域名（多行/域名池，主域被封时顶上）</td></tr>
+      <tr><td>active_domain</td><td>VARCHAR(128)</td><td><code>activeDomain</code> 当前活跃域名</td></tr>
+      <tr><td>page_type</td><td>VARCHAR(32)</td><td><code>pageType</code> 页面类型（救援使用的页面）</td></tr>
+      <tr><td>rescue_plan</td><td>VARCHAR(64)</td><td><code>rescuePlan</code> 救援方案</td></tr>
+      <tr><td>popup_mode</td><td>VARCHAR(32)</td><td><code>popupMode</code> 弹窗方式（提示切换域名）</td></tr>
+      <tr><td>rescue_bonus</td><td>DECIMAL(18,2)</td><td><code>rescueBonus</code> 救援奖励（引导切新域名的激励）</td></tr>
+      <tr><td>rescue_state</td><td>TINYINT</td><td><code>rescueState</code> 救援状态：normal 正常 / switched 已触发切换</td></tr>
+      <tr><td>switch_count</td><td>INT</td><td><code>switchCount</code> 切换次数</td></tr>
+      <tr><td>last_switch_time</td><td>DATETIME</td><td><code>lastSwitchTime</code> 最后切换时间</td></tr>
+      <tr><td>state</td><td>TINYINT</td><td>启用状态 1/0</td></tr>
+    </table>
+    <div class="note"><code>rescueUserCount</code>（救援用户数 = 已迁移到新域名的人数）是统计值，由切换记录聚合得出、不直接维护。原 §禅道「检测间隔/失败阈值」属探活策略参数，词典页未列；如需可作规则表扩展列，<b>以评审为准</b>。</div>
+    <h4>救援切换记录表 <code>domain_rescue_switch_log</code>（全新 · 「救援记录」弹窗数据源）</h4>
+    <table>
+      <tr><th width="230">字段</th><th width="140">类型</th><th>说明</th></tr>
+      <tr><td>rule_id</td><td>BIGINT</td><td>关联救援规则</td></tr>
+      <tr><td>switch_time</td><td>DATETIME</td><td>切换时间</td></tr>
+      <tr><td>trigger_type</td><td>TINYINT</td><td>触发方式：1 自动 / 2 手动</td></tr>
+      <tr><td>reason</td><td>VARCHAR(255)</td><td>切换原因</td></tr>
+      <tr><td>effective_domain</td><td>VARCHAR(128)</td><td>切换后生效域名</td></tr>
+      <tr><td>rescued_user_count</td><td>INT</td><td>本次迁移用户数（汇总到 rescueUserCount）</td></tr>
+    </table>
+    <h4>解析检测日志表 <code>domain_resolve_log</code>（全新 · 只读日志，字段对齐词典 domainResolveLog）</h4>
+    <table>
+      <tr><th width="230">字段（词典 key）</th><th width="140">类型</th><th>说明</th></tr>
+      <tr><td>domain</td><td>VARCHAR(128)</td><td><code>domainUrl</code> 检测的目标域名</td></tr>
+      <tr><td>domain_type</td><td>VARCHAR(16)</td><td><code>domainType</code> 域名类型（主/推广/防封）</td></tr>
+      <tr><td>resolve_ip</td><td>VARCHAR(45)</td><td><code>resolveIp</code> 解析得到的实际 IP</td></tr>
+      <tr><td>node</td><td>VARCHAR(64)</td><td><code>node</code> 指向的 CDN/DNS 节点</td></tr>
+      <tr><td>check_method</td><td>VARCHAR(8)</td><td><code>checkMethod</code> 检测方法：DNS / HTTP / PING</td></tr>
+      <tr><td>result</td><td>TINYINT</td><td><code>result</code> 结果：1 success / 0 failed</td></tr>
+      <tr><td>response_time</td><td>INT</td><td><code>responseTime</code> 响应时间（毫秒）</td></tr>
+      <tr><td>ttl</td><td>INT</td><td><code>ttl</code> DNS 记录生存时间（秒）</td></tr>
+      <tr><td>check_time</td><td>DATETIME</td><td><code>checkTime</code> 检测执行时间</td></tr>
+    </table>
+
+    <h3 id="s-msg">5.3 站内消息 / 推送 / 消息模板（多语言）</h3>
+    <h4>推送消息表 <code>push_message</code>（全新 · 字段对齐词典 inboxMessage 推送）</h4>
+    <table>
+      <tr><th width="230">字段（词典 key）</th><th width="140">类型</th><th>说明</th></tr>
+      <tr><td>title_by_lang</td><td>JSON</td><td><code>titleByLang</code> 逐语言通知标题（默认语言必填）</td></tr>
+      <tr><td>content_by_lang</td><td>JSON</td><td><code>contentByLang / textByLang</code> 逐语言通知文案</td></tr>
+      <tr><td>image_by_lang</td><td>JSON</td><td><code>imageByLang</code> 逐语言配图（每语言一张，缺图回退默认语言）</td></tr>
+      <tr><td>channel</td><td>TINYINT</td><td><code>channel</code> 推送渠道：1 firebase / 2 jpush(极光)</td></tr>
+      <tr><td>jpush_devices</td><td>JSON</td><td>极光推送设备(web/app，仅 channel=极光，源自交互口径)</td></tr>
+      <tr><td>receiver</td><td>TINYINT</td><td><code>receiver</code> 推送对象：0 全体 / 1 指定用户</td></tr>
+      <tr><td>user_ids</td><td>JSON / 子表</td><td><code>userIds</code> 指定用户（量大拆 <code>push_message_target</code> 子表）</td></tr>
+      <tr><td>send_time</td><td>DATETIME</td><td><code>sendTime</code> 定时发送时间（空=立即）</td></tr>
+      <tr><td>send_state</td><td>TINYINT</td><td><code>sendState</code> 0 未发送 / 1 发送中 / 2 成功 / 3 部分 / 4 失败</td></tr>
+      <tr><td>sort / state</td><td>INT / TINYINT</td><td>排序 / 启用状态（「已配语言」<code>langsConfigured</code> 由 *_by_lang 计算、不入表）</td></tr>
+    </table>
+    <div class="note"><b>弹窗 / 滚动消息</b>（<code>inbox_message</code> / <code>scroll_message</code>）字段同构、无图片通道：<code>title_by_lang</code> JSON、<code>content_by_lang</code> JSON、<code>sort</code>、<code>state</code>。原「公告消息」与弹窗/滚动重复、<b>已下线、不建表</b>。</div>
+    <h4>消息模板配置 <code>message_template</code>（适配迁入 + 增强 · 商户 × 场景 × 语言，对齐词典）</h4>
+    <table>
+      <tr><th width="230">字段（词典 key）</th><th width="140">类型</th><th>说明</th></tr>
+      <tr><td>scene_id</td><td>TINYINT</td><td><code>templateID</code> 固定 12 业务场景（1–12，见 §4.5）</td></tr>
+      <tr><td>title_by_lang</td><td>JSON</td><td><code>titleByLang</code> 逐语言标题（≤50，默认语言简中必填）</td></tr>
+      <tr><td>content_by_lang</td><td>JSON</td><td><code>contentByLang</code> 逐语言内容（≤500，含变量占位 {0}{1}）</td></tr>
+      <tr><td>image_by_lang</td><td>JSON</td><td><code>imageByLang</code> 站内信配图·逐语言（+「应用到所有语言」一键铺平）</td></tr>
+      <tr><td>push_inapp</td><td>TINYINT</td><td><code>pushInApp</code> 是否推送站内信 1/0（可改）</td></tr>
+      <tr><td>jump_action</td><td>TINYINT</td><td><code>jumpAction</code> 跳转动作（不跳转/钱包/活动页/提现页，🔒 按场景固定）</td></tr>
+      <tr><td>push_style</td><td>VARCHAR(8)</td><td><code>pushStyle</code> 推送样式（B1/B2/C3/C4，🔒 按场景固定）</td></tr>
+    </table>
+    <div class="note">① <code>lang</code>（12 语言：简中默认/繁中/英/越/葡/泰/印尼/马来/孟加拉/印地/乌尔都/缅甸）是逐语言维度——建议标题/内容/配图用 JSON 列 <code>{lang:value}</code> 整存，唯一键 <code>(tenant_id, scene_id)</code>，而非每语言一行。② 场景 #9 到账 / #10 待领取的「活动子配置」（<code>activitySub</code>）另拆 <code>message_template_activity</code>（template_id / 活动名(枚举值) / 触发时机 / 关联模板 / 推送站内信 / 跳转动作🔒 / 推送样式🔒）。③ 旧版「状态」「验证类型」已移除，不建对应列。</div>
+
+    <h3 id="s-cfg">5.4 配置工作区 · VIP / 返佣 / 消息模板（模板化套用）</h3>
+    <p class="sec-desc">三者共用同一套「模板套用 / 保存草稿 / 发布 / 复制商户」状态机（§4.1）。建议<b>配置模板表 + 商户配置发布表</b>两张通用表承载，<code>config_type</code> 区分 vip / rebate / msg，<code>payload</code> 用 JSON 存整套配置，避免为每类配置单独建宽表。</p>
+    <h4>配置模板表 <code>config_template</code>（全新 · 通用）</h4>
+    <table>
+      <tr><th width="200">字段</th><th width="150">类型</th><th>说明</th></tr>
+      <tr><td>config_type</td><td>VARCHAR(16)</td><td>vip / rebate / msg</td></tr>
+      <tr><td>name</td><td>VARCHAR(20)</td><td>模板名（≤20，同类型内唯一）</td></tr>
+      <tr><td>payload</td><td>JSON</td><td>整套配置内容</td></tr>
+    </table>
+    <h4>商户配置发布表 <code>merchant_config</code>（全新 · 通用）</h4>
+    <table>
+      <tr><th width="200">字段</th><th width="150">类型</th><th>说明</th></tr>
+      <tr><td>config_type</td><td>VARCHAR(16)</td><td>vip / rebate / msg（与 tenant_id 组合唯一）</td></tr>
+      <tr><td>payload</td><td>JSON</td><td>该商户当前配置</td></tr>
+      <tr><td>status</td><td>TINYINT</td><td>0 未配置 / 1 待发布(草稿) / 2 已发布</td></tr>
+      <tr><td>source</td><td>VARCHAR(64)</td><td>来源：自定义模版名 / 复制自某商户 / 单商户自配</td></tr>
+      <tr><td>published_at</td><td>DATETIME</td><td>最近发布时间</td></tr>
+    </table>
+    <div class="note">VIP 多币种经验换算（<code>VipCurrencyExp</code>）、返佣 5×6 费率矩阵等明细，可作为 <code>payload</code> 的 JSON 子结构，或在评审时按性能需要下沉为子表；本期数据量小，JSON 整存优先。</div>
+
+    <h3 id="s-adapt">5.5 现有表字段适配（不新建表）</h3>
+    <table>
+      <tr><th width="220">表 / 接口</th><th>建议改动</th></tr>
+      <tr><td><code>User_RebateLv</code>（会员返佣等级）</td><td>加 <code>rebate_mode TINYINT</code>（1 固定返佣 / 2 动态返佣）；<code>max_days</code> 改为可空（动态返佣无天数，置 NULL）。</td></tr>
+      <tr><td>站内信 / 滚动 / 轮播图</td><td>原单语言「标题 / 内容 / 图片」列改为 <b>逐语言 JSON 列</b>（<code>*_by_lang</code>），或新增 JSON 列并迁移历史单语言值到默认语言键。</td></tr>
+      <tr><td><code>BlackIp</code>（IP 黑名单）</td><td>对齐词典：<code>tenantIds</code> 影响商户列表（多商户，JSON/关联）· <code>banType</code> 禁用类型（1 禁止登录 / 2 禁止注册）· <code>reason</code> · <code>hitCount</code> 触发次数 · <code>state</code>。批量导入（.csv/.xlsx）走应用层解析 + 去重（≤500）后批量 insert。</td></tr>
+      <tr><td>消息通道（短信商 / 邮件商配置）</td><td>短信 3 Tab 融合为单表，加「短信类型」区分；邮件配置新增「邮箱编号」字段。</td></tr>
+    </table>
+    <div class="note">以上为<b>建议口径</b>，字段名/类型最终以研发评审与「字段词典」为准；落地时统一补上方「通用约定」的公共列与索引。</div>
+  </section>
+
   <!-- 关联文档（已隐藏） -->
   <section id="related" style="display:none">
-    <h2 class="sec">五、关联文档</h2>
+    <h2 class="sec">六、关联文档</h2>
     <p class="sec-desc">本方案配套入口链接。</p>
     <a class="dlink" href="saas-phase2-product-intro.html" target="_blank"><span class="di">🖱️</span><span class="dx"><b>交互介绍</b><i>逐页内嵌可点击原型（活介绍）+ 8 Tab 定义 + 归因/会员详情图文</i></span></a>
     <a class="dlink" href="glossary.html" target="_blank"><span class="di">📖</span><span class="dx"><b>名词定义</b><i>会员详情新增字段 名词解释 / 应用场景 / 异常情况</i></span></a>

@@ -120,6 +120,8 @@
   </nav>
   <main>
 
+  <div class="note">📌 <b>说明：</b>本 PRD 所内嵌原型图中的<b>全部标识（如「新」标、🔒 锁标等）与路径/路由</b>，<b>仅供评审与研发阶段对照查看</b>；<b>评审完成后将另行生成一份线上无标识版本</b>对外使用。</div>
+
   <section id="info">
     <h2 class="sec">0 · 文档信息</h2>
     <table>
@@ -225,7 +227,7 @@
 
   <section id="zentao">
     <h2 class="sec">6 · 禅道任务</h2>
-    <p class="sd">本期研发任务清单（禅道批量导入口径，<b>共 58 条</b>：前端 28 / 后端 30，覆盖 7 模块 28 需求）。数据取自 <code>docs/migration/06-zentao-phase2-tasks.csv</code>（禅道导入源文件），下表为只读快照；可按角色筛选，优先级 1=高 / 2=中 / 3=低。</p>
+    <p class="sd">本期研发任务清单（禅道批量导入口径，<b>共 48 条</b>：前端 24 / 后端 24，覆盖 7 模块 24 需求；<b>「待定」页任务（域名管理 / 防封救援 / 解析检测记录）已隐藏，待方案定稿后再纳入</b>）。数据取自 <code>docs/migration/06-zentao-phase2-tasks.csv</code>（禅道导入源文件），下表为只读快照；可按角色筛选，优先级 1=高 / 2=中 / 3=低。</p>
     <div id="ztBar" class="ztbar"></div>
     <div id="ztTable"></div>
   </section>
@@ -385,8 +387,8 @@
   const PRI={"1":["高","#dc2626"],"2":["中","#d97706"],"3":["低","#6b7280"]};
   let filter="前端";
   function render(){
-    // 仅区分前后端：剔除测试任务，去掉「全部」入口
-    const DEV=TASKS.filter(t=>t[4]!=="测试");
+    // 仅区分前后端：剔除测试任务，去掉「全部」入口；并隐藏「待定」需求的任务（域名管理/防封救援/解析检测记录 待定页）
+    const DEV=TASKS.filter(t=>t[4]!=="测试" && !t[1].includes("（待定）"));
     const byRole={};DEV.forEach(t=>byRole[t[4]]=(byRole[t[4]]||0)+1);
     bar.innerHTML=["前端","后端"].map(r=>`<button data-f="${r}" class="${filter===r?"on":""}">${r} ${byRole[r]||0}</button>`).join("");
     const list=DEV.filter(t=>t[4]===filter);

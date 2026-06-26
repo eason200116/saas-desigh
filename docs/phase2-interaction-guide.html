@@ -442,6 +442,8 @@
     </div>
   </div>
 
+  <details class="pending-fold">
+    <summary style="cursor:pointer;background:#fff5f5;border:1px solid #f3c6c6;border-radius:10px;padding:11px 16px 11px 32px;margin:12px 0;font-weight:700;color:#d9534f;font-size:14px">待定页（3 项）· 域名管理 / 防封救援 / 解析检测记录 —— <span style="font-weight:500">方案未定稿、研发暂缓；默认收起，点击展开 / 收起</span></summary>
   <div class="pcard">
     <div class="shot"><img src="img/spec-domain-mgmt.png" alt="域名管理"></div>
     <div class="info">
@@ -489,6 +491,7 @@
       </ul>
     </div>
   </div>
+  </details>
 
   <div class="pcard">
     <div class="shot"><img src="img/spec-member-rebate-level.png" alt="会员返佣等级"></div>
@@ -657,6 +660,19 @@
 
   <h2>5 · 配置中心 <span class="muted" style="font-weight:400">（↑提升为一级）</span></h2>
 
+  <div class="pcard nopic">
+    <div class="nm">配置项·快捷入口 侧栏（共用 ConfigSideNav）<span class="badge new">改 2026-06-26</span></div>
+    <div class="use">VIP配置 / 返佣配置 / 消息模板配置 三页<b>共用的左侧导航</b>（页内快速切换配置项）；可展开/收起。<b>搜索增强：既能搜页面入口，也能直接搜某个具体配置项名。</b></div>
+    <ul class="ctrl">
+      <li><span class="lbl flt">搜索框</span><span class="badge new">新</span> <b>仅展开态</b>：侧栏顶部「配置项·快捷入口」标题<b>下方一个常驻搜索框</b>（placeholder「<b>搜索配置项…</b>」、<b>可清空</b>）。</li>
+      <li><span class="lbl flt">两类匹配</span><b>①页面入口</b>——按入口<b>标题 / 描述 / 短名</b>模糊匹配（不区分大小写、子串包含，对应三个配置页入口）；<b>②跨页配置项名</b>——可直接搜某个具体配置项（如「升级奖励」「洗码」「会员注册」），索引收录 <b>VIP配置 19 项 + 返佣配置 17 项 + 消息模板 12 个推送场景，共 48 项</b>。</li>
+      <li><span class="lbl col">结果样式</span>每条结果带<b>彩色标签</b>：蓝色「<b>页面</b>」/ 紫色「<b>配置项</b>」；主标题=命中名，副标题=<b>所属页名</b>。</li>
+      <li><span class="lbl act">点结果</span><b>点任意结果都跳转到其所属配置页</b>（页面入口跳该页，配置项也跳其所属页）。</li>
+      <li><span class="lbl sp">无命中</span>显示「<b>无匹配配置项</b>」；清空恢复全部入口卡。</li>
+      <li><span class="lbl sp">边界</span><b>收起态</b>（左侧短标签竖排）不受搜索影响、不显示搜索框。</li>
+    </ul>
+  </div>
+
   <div class="pcard">
     <div class="shot"><img src="img/spec-vip-level-config.png" alt="VIP配置"></div>
     <div class="info">
@@ -741,9 +757,11 @@
 
   <div class="pcard nopic">
     <div class="nm">系统参数配置 <span class="badge new">新</span> <span class="route">/config-center/sysParam</span></div>
-    <div class="use">商户级系统参数（数值/开关型）；顶部商户切换，按商户配置。</div>
+    <div class="use"><b>该页已从配置中心菜单隐藏（路由保留可直达），由融合页『开关参数配置』取代</b><span class="badge new">改 2026-06-26</span>。商户级系统参数（数值/开关型）；顶部商户切换，按商户配置。</div>
     <ul class="ctrl">
-      <li><span class="lbl cfg">配置</span><b>流程</b>：① 顶部切商户 → ② 左侧分类锚点(可折叠)点选或滚动定位到目标分类(注册与登录安全·资金与绑定·汇率·营销与奖励·代理·预警监控，每组含子组) → ③ 逐项填数值/切开关 → ④ 「保存」(<b>弹保存预览确认 → 存草稿</b>) → ⑤ 「发布」(<b>二次确认 → 对外生效</b>)。<b>注意事项</b>：数值参数<b>必填且须在各自 min/max 区间</b>内，校验失败<b>自动滚动到出错分类 + 标红出错项 + 指名「『X』填写有误」</b>；<b>保存=草稿、发布才生效</b>。</li>
+      <li><span class="lbl cfg">配置</span><b>流程</b>：① 顶部切商户 → ② 左侧分类锚点(可折叠)点选或滚动定位到目标分类(注册与登录安全·资金与绑定·汇率·营销与奖励·代理·预警监控，每组含子组) → ③ 逐项填数值/切开关 → ④ <b>每个分类卡标题栏各有一个「保存」</b>(<b>只校验+存该板块草稿</b>) → ⑤ 顶部「发布」(<b>全局·二次确认 → 对外生效</b>)。<b>注意事项</b>：数值参数<b>必填且须在各自 min/max 区间</b>内，校验失败<b>自动滚动到出错分类 + 标红出错项 + 指名「『X』填写有误」</b>；<b>保存=草稿、发布才生效</b>。</li>
+      <li><span class="lbl frm">保存</span><span class="badge new">改</span> <b>取消顶部全局「保存」，顶部仅保留「发布」</b>；改为<b>每个分类卡各一个「保存」按钮</b>，点击<b>只校验并保存该板块草稿</b>（红框仅标该板块出错项）；「发布」仍为全局（各板块存草稿后统一发布生效）。</li>
+      <li><span class="lbl frm">绑定内容</span><span class="badge new">改</span> 「资金与绑定 → 会员绑定」的<b>「绑定内容」由单选下拉改为多选复选框</b>（同板块「绑定触发条件」亦为多选）；选项不变：<b>银行卡 / USDT / 电子钱包 / PIX</b>，默认勾选 <b>银行卡 + USDT</b>。</li>
       <li><span class="lbl tab">二级导航</span>左侧锚点联动，分 6 组：注册与登录安全 · 资金与绑定 · 汇率 · 营销与奖励 · 代理 · 预警监控（每组含子组）。</li>
       <li><span class="lbl frm">校验</span>数值参数范围校验，失败红框 + 错误提示。</li>
     </ul>
@@ -751,9 +769,10 @@
 
   <div class="pcard nopic">
     <div class="nm">配置开关 <span class="badge new">新</span> <span class="route">/config-center/configSwitch</span></div>
-    <div class="use">商户级功能开关总览（双列开关网格）；顶部商户切换，按商户配置。</div>
+    <div class="use"><b>该页已从配置中心菜单隐藏（路由保留可直达），由融合页『开关参数配置』取代</b><span class="badge new">改 2026-06-26</span>。商户级功能开关总览（双列开关网格）；顶部商户切换，按商户配置。</div>
     <ul class="ctrl">
-      <li><span class="lbl cfg">配置</span><b>流程</b>：① 顶部切商户 → ② 左侧分类锚点(可折叠)点选或滚动定位到 10 组开关(登录与安全·充值与支付·提现·活动奖励·财务积分·积分商城·彩票游戏·代理风控·推广链接·数据追踪)，卡牌可点标题展开/收起 → ③ 逐项拨开关 → ④ 「保存」(<b>弹保存预览列出共 N 个开关、开启 M 个 → 确认存草稿</b>) → ⑤ 「发布」(<b>二次确认 → 对外生效</b>)。<b>注意事项</b>：纯开关、无字段校验；与注册管理的登录/注册类开关<b>不重复</b>；<b>保存=草稿、发布才生效</b>。</li>
+      <li><span class="lbl cfg">配置</span><b>流程</b>：① 顶部切商户 → ② 左侧分类锚点(可折叠)点选或滚动定位到 10 组开关(登录与安全·充值与支付·提现·活动奖励·财务积分·积分商城·彩票游戏·代理风控·推广链接·数据追踪)，卡牌可点标题展开/收起 → ③ 逐项拨开关 → ④ <b>每个分组卡卡头各有一个「保存」</b>(<b>只存该分组草稿；点保存不触发卡片折叠</b>) → ⑤ 顶部「发布」(<b>全局·二次确认 → 对外生效</b>)。<b>注意事项</b>：纯开关、无字段校验；与注册管理的登录/注册类开关<b>不重复</b>；<b>保存=草稿、发布才生效</b>。</li>
+      <li><span class="lbl frm">保存</span><span class="badge new">改</span> <b>取消顶部全局「保存」，顶部仅保留「发布」</b>；改为<b>10 个分组卡各自卡头一个「保存」按钮</b>，点击<b>只保存该分组草稿、且不触发卡片折叠</b>；「发布」仍为全局（各分组存草稿后统一发布生效）。</li>
       <li><span class="lbl tab">二级导航</span>左侧锚点 10 组：登录与安全 · 充值与支付 · 提现 · 活动奖励 · 财务积分 · 积分商城 · 彩票游戏 · 代理风控 · 推广链接 · 数据追踪。</li>
       <li><span class="lbl col">开关</span>每项 = 开关 + 名称 + 说明；与注册管理的注册流程开关不重复（登录/安全类开关在此）。</li>
     </ul>
