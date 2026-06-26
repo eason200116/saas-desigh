@@ -32,7 +32,7 @@
   .lbl{display:inline-block;font-size:11px;font-weight:700;color:#fff;border-radius:4px;padding:1px 7px;margin-right:6px;vertical-align:1px}
   .lbl.flt{background:#0ea5e9}.lbl.col{background:#64748b}.lbl.tb{background:#7c3aed}.lbl.act{background:#d97706}.lbl.frm{background:#16a34a}.lbl.sp{background:#dc2626}.lbl.tab{background:#1e293b}.lbl.ml{background:#0d9488}.lbl.op{background:#4338ca}.lbl.cfg{background:#a21caf}
   .badge{font-size:10px;border-radius:3px;padding:1px 6px;font-weight:700}
-  .badge.new{background:#dcfce7;color:#15803d}.badge.built{background:#dbeafe;color:#1d4ed8}
+  .badge.new{background:#dcfce7;color:#15803d}.badge.built{background:#dbeafe;color:#1d4ed8}.badge.pending{background:#fdeaea;color:#d9534f}
   b.k{color:#b45309}
   .muted{color:var(--sub);font-size:12px}
   code{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;padding:0 5px;font-size:11.5px}
@@ -372,7 +372,7 @@
       <div class="use">站内信 / 推送（标题+内容<b>逐语言</b>维护，多商户）。<b>3 个子页签，下方逐 Tab 介绍（点「试用此页签」直达对应 Tab）。</b></div>
       <ul class="ctrl">
         <li><span class="lbl op">操作</span>① 新增(弹窗/滚动两页签一致)：点「新增」→<b>弹窗(商户必选·编辑锁定 / 多语言标题·内容 / 排序≥0 / 状态开关)</b>→「确定」校验默认语言标题+内容必填(空则红框+Toast)→保存；② 编辑：行「编辑」→同弹窗(商户禁改·切商户按该商户启用语言集重建语言块)；③ 删除：行「删除」→<b>二次确认</b>；④ 推送页签：仅未发送行有「编辑/删除」(删除二次确认)，发送中/成功/失败行仅「详情」→<b>只读详情弹窗(逐语言标题/文案/图片+渠道/接收人/发送状态/时间/操作人)</b>。</li>
-        <li><span class="lbl cfg">配置</span><b>弹窗/滚动消息流程</b>：①选商户→按该商户「前台配置」启用语言集平铺语言块(默认语言常驻置顶高亮、其余可展开/收起)→②默认语言填标题(单行)+内容(多行)→③选填其余语言→④设排序(≥0)与状态开关→保存。<b>推送消息流程</b>：①选商户→逐语言横版卡牌(默认语言卡置首，每卡=标题+文案+图片)→②默认语言标题+文案必填、图片选填→③选渠道(Firebase/极光)、发送时间、接收人(全体/指定用户)→保存。<b>注意事项</b>：默认语言标题+内容(推送为标题+文案)为唯一必填(图片选填)；选「极光」才出现「极光推送设备(web/app 多选)」、选「指定用户」才出现「指定用户(多行用户ID)」；「通知名称/链接」label 随渠道变。</li>
+        <li><span class="lbl cfg">配置</span><b>弹窗/滚动消息流程</b>：①选商户→按该商户「前台配置」启用语言集平铺语言块(默认语言常驻置顶高亮、其余可展开/收起)→②默认语言填标题(单行)+内容(多行)→③选填其余语言→④设排序(≥0，与商户并排一行)与状态开关(置于「支持语言」标题行右)→保存。<b>推送消息流程</b>：①选商户→逐语言横版卡牌(默认语言卡置首，每卡=标题+文案+图片)→②默认语言标题+文案必填、图片选填→③选渠道(Firebase/极光)、发送时间、接收人(全体/指定用户)→保存。<b>注意事项</b>：默认语言标题+内容(推送为标题+文案)为唯一必填(图片选填)；选「极光」才出现「极光推送设备(web/app 多选)」、选「指定用户」才出现「指定用户(多行用户ID)」；「通知名称/链接」label 随渠道变。</li>
         <li><span class="lbl flt">通用筛选</span><b>商户</b> · 标题 · 状态(启用/禁用)。</li>
         <li><span class="lbl ml">通用·多语言（2026-06-25）</span>表单标题/内容统一用 <b>MultiLangFields</b>：①<b>默认语言区</b>(蓝底常驻、必填红框、标「默认」)；②<b>支持语言区</b>(按该商户启用语言分面板、可展开/收起全部、每语言标「已填/未填」)；缺译前台<b>回退默认语言</b>。语言集 = 当前所选商户启用的语言。</li>
       </ul>
@@ -381,7 +381,7 @@
         <div class="tshot"><img src="img/spec-inbox-message.png" alt="站内消息·弹窗消息"></div>
         <ul class="ctrl">
           <li><span class="lbl col">列</span><b>商户</b>/ID/标题(默认语言)/内容(默认语言，含 <b>「更多」查全语言</b>)/<b>已配语言(已填X/共Y)</b>/排序/添加时间/状态。</li>
-          <li><span class="lbl frm">表单</span>商户(单选·编辑锁定) · 标题/内容(<b>逐语言</b>) · 排序 · 状态开关。</li>
+          <li><span class="lbl frm">表单</span><b>商户(单选·编辑锁定)与排序并排一行</b> · 标题/内容(<b>逐语言</b>) · <b>状态开关置于「支持语言」标题行右侧</b>。</li>
           <li><span class="lbl sp">特殊</span>商户单选驱动可填语言集；默认语言标题/内容留空保存被拦(红框)。</li>
         </ul>
       </div>
@@ -390,7 +390,7 @@
         <div class="tshot"><img src="img/spec-inbox-message-scroll.png" alt="站内消息·滚动消息"></div>
         <ul class="ctrl">
           <li><span class="lbl col">列</span>同弹窗消息：<b>商户</b>/ID/标题(默认语言)/内容(含「更多」)/<b>已配语言</b>/排序/添加时间/状态。</li>
-          <li><span class="lbl frm">表单</span>商户 · 标题/内容(<b>逐语言</b>) · 排序 · 状态开关。</li>
+          <li><span class="lbl frm">表单</span>同弹窗消息：<b>商户(单选·编辑锁定)与排序并排一行</b> · 标题/内容(<b>逐语言</b>) · <b>状态开关置于「支持语言」标题行右侧</b>。</li>
           <li><span class="lbl sp">特殊</span>跑马灯滚动展示；多语言逻辑同弹窗。</li>
         </ul>
       </div>
@@ -400,7 +400,7 @@
         <ul class="ctrl">
           <li><span class="lbl flt">筛选</span>商户 · 通知标题 · 状态(未发送/发送中/成功/部分成功/失败)。</li>
           <li><span class="lbl col">列</span><b>商户</b> / ID / <b>已配语言(第 3 列)</b> / <b>通知内容（标题+文案+图片合并一列</b>，默认语言展示 + <b>「查看其他语言」</b>气泡看全部语言的标题/文案/图片） / 名称 / 推送通道(Firebase·极光) / 接收人(全体·指定) / 发送状态 / 发送·修改时间 / 操作人。</li>
-          <li><span class="lbl ml">表单·逐语言横版卡牌</span><b>弹窗加宽</b>（默认露 2 个多卡片、可<b>左右拖动</b>）；多语言区做成<b>横版卡牌</b>：每种启用语言一张卡 = <b>语言名 + 通知标题 + 通知文案 + 图片</b>（默认语言卡蓝底·标题/文案必填，其它语言选填、图片逐语言选填、缺译/缺图回退默认语言）。</li>
+          <li><span class="lbl ml">表单·逐语言横版卡牌</span><b>弹窗加宽</b>（默认露 2 个多卡片、可<b>左右拖动</b>）；多语言区做成<b>横版卡牌</b>：每种启用语言一张卡 = <b>语言名 + 通知标题 + 通知文案 + 图片</b>（默认语言卡蓝底·标题/文案必填，其它语言选填、图片逐语言选填、缺译/缺图回退默认语言；<b>图片链接输入框置于图片下方</b>）。</li>
           <li><span class="lbl frm">表单·推送参数(2 列网格)</span>推送通道(Firebase/极光) · <b>极光端(联动：选极光才显，WEB/APP复选)</b> · 名称/链接(<b>按通道变 label 与显隐</b>) · 发送时间 · 类型(全体/指定用户) · <b>用户ID(联动：选「指定用户」才显)</b>。</li>
           <li><span class="lbl act">行操作</span>未发送→编辑+删除；已发送→只读详情(详情按语言列出 标题/文案/图片)。</li>
         </ul>
@@ -445,7 +445,7 @@
   <div class="pcard">
     <div class="shot"><img src="img/spec-domain-mgmt.png" alt="域名管理"></div>
     <div class="info">
-      <div class="nm">域名管理 <span class="badge new">新</span> <span class="route">/operations/domainMgmt</span></div>
+      <div class="nm">域名管理 <span class="badge pending">待定</span> <span class="route">/operations/domainMgmt</span></div>
       <div class="use">推广/防封域名管理。</div>
       <ul class="ctrl">
         <li><span class="lbl op">操作</span>① 新增/编辑域名：点「新增域名」或行「编辑」→<b>弹窗(商户·域名·域名类型·落地指向·节点·CDN·跳转域名·防封救援开关·状态开关·备注)</b>→「确认」校验保存；② 详情：行「详情」→只读弹窗(底部可转「编辑」)；③ 解析检测：点「解析检测」仅提示「解析检测中…」(占位)；④ 防封配置：点「防封配置」→弹窗(见配置)；⑤ 防封救援(列开关)：点行内开关切换→立即保存提示，<b>无二次确认</b>；⑥ 删除：行「删除」→<b>二次确认</b>。</li>
@@ -462,7 +462,7 @@
   <div class="pcard">
     <div class="shot"><img src="img/spec-domain-rescue.png" alt="防封救援"></div>
     <div class="info">
-      <div class="nm">防封救援 <span class="badge new">新</span> <span class="route">/operations/domainRescue</span></div>
+      <div class="nm">防封救援 <span class="badge pending">待定</span> <span class="route">/operations/domainRescue</span></div>
       <div class="use">域名被封时的救援切换。</div>
       <ul class="ctrl">
         <li><span class="lbl op">操作</span>① 新增救援配置：点「新增救援配置」→<b>弹窗(商户·主域名·备用域名·检测间隔(分钟)·自动救援开关·状态开关)</b>→保存刷新；② 编辑：行「编辑」→同弹窗回显；③ 救援记录：行「救援记录」→<b>只读弹窗(主域名/当前生效域名/救援方案/弹窗方式/救援奖金/累计救援人数/累计切换次数/最近切换时间)</b>；④ 禁用：行「禁用」→<b>二次确认</b>；⑤ 删除：行「删除」→<b>二次确认</b>。</li>
@@ -479,7 +479,7 @@
   <div class="pcard">
     <div class="shot"><img src="img/spec-domain-resolve-log.png" alt="解析检测记录"></div>
     <div class="info">
-      <div class="nm">解析检测记录 <span class="badge new">新</span> <span class="route">/operations/domainResolveLog</span></div>
+      <div class="nm">解析检测记录 <span class="badge pending">待定</span> <span class="route">/operations/domainResolveLog</span></div>
       <div class="use">域名解析检测流水（只读日志）。</div>
       <ul class="ctrl">
         <li><span class="lbl flt">筛选</span>域名 · 检测结果(成功/失败) · 执行时间。</li>
@@ -496,30 +496,16 @@
       <div class="nm">会员返佣等级 <span class="badge new">新</span> <span class="route">/operations/memberRebateLevel</span></div>
       <div class="use">把返佣等级偏低的会员强制提到指定等级。</div>
       <ul class="ctrl">
-        <li><span class="lbl op">操作</span>① 新增等级：点「新增」→<b>弹窗(商户多选 + 会员ID必填 + 返佣等级Lv1~Lv10 + 可连续使用天数1~30)</b>→确定；② 编辑：行「编辑」→同弹窗(会员ID禁改)；③ 删除：行「删除」→<b>二次确认</b>；④ 批量删除：勾选行→「批量删除(N)」→<b>二次确认</b>；⑤ 查看费率表：点「返佣等级」列虚线标签 Lv→<b>只读费率表弹窗(860px)</b>。</li>
+        <li><span class="lbl op">操作</span>① 新增等级：点「新增」→<b>弹窗(商户单选·编辑锁定 + 会员ID必填 + 返佣模式〔固定返佣/动态返佣，置于返佣等级上方〕+ 返佣等级Lv1~Lv10 + 固定返佣才配「可连续使用天数1~30」)</b>→确定；② 编辑：行「编辑」→同弹窗(会员ID禁改)；③ 删除：行「删除」→<b>二次确认</b>；④ 批量删除：勾选行→「批量删除(N)」→<b>二次确认</b>；⑤ 查看费率表：点「返佣等级」列虚线标签 Lv→<b>只读费率表弹窗(860px)</b>。</li>
         <li><span class="lbl flt">筛选</span>会员ID。</li>
-        <li><span class="lbl col">列</span>会员ID(蓝链下钻详情) · <b>返佣等级(Lv，可点→只读「等级费率表」弹窗)</b> · 已连续使用天数 · 可连续使用天数 · 已连续使用期号 · 状态(已用≥可用则禁用) · 添加/更新时间。</li>
+        <li><span class="lbl col">列</span>会员ID(蓝链下钻详情) · <b>返佣等级(Lv，可点→只读「等级费率表」弹窗)</b> · <b>返佣模式(固定返佣=橙标/动态返佣=绿标)</b> · 已连续使用天数 · 可连续使用天数 · 已连续使用期号(动态返佣这三列显示 -) · 状态(已用≥可用则禁用) · 添加/更新时间。</li>
         <li><span class="lbl tb">工具栏</span>新增 · 批量删除(未选禁用·带数量)。</li>
         <li><span class="lbl act">行操作</span>编辑 · 删除(二确)。</li>
-        <li><span class="lbl frm">表单</span>会员ID(编辑态禁用) · 返佣等级(Lv1~5) · 可连续使用天数(1~30，默认7)；状态由系统按天数推导(表单无状态字段)。</li>
+        <li><span class="lbl frm">表单</span><b>商户(单选·编辑态置灰锁定)</b> · 会员ID(编辑态禁用) · <b>返佣模式(固定返佣/动态返佣，置于返佣等级上方)</b> · 返佣等级(Lv1~10)：选固定返佣才显示「可连续使用天数(1~30，默认7)」、选动态返佣无天数配置；<b>切换模式时商户/会员ID/返佣等级保留不变(配置一样)</b>；状态由系统按天数推导(表单无状态字段)。</li>
       </ul>
     </div>
   </div>
 
-  <div class="pcard">
-    <div class="shot"><img src="img/spec-agent-audit.png" alt="代理审核机制"></div>
-    <div class="info">
-      <div class="nm">代理审核机制 <span class="badge new">新</span> <span class="route">/operations/agentAudit</span></div>
-      <div class="use">审核代理返佣资格、改基础费率。</div>
-      <ul class="ctrl">
-        <li><span class="lbl op">操作</span>① 修改返佣：行「修改返佣」→<b>弹窗(配置状态开关 启用/关闭 + 彩票/电子/真人/体育/棋牌 五项基础费率〔单位%·最小0·步进0.01〕 + 备注)</b>→「确定」保存；开关变更即同步「启用/关闭返佣状态」(原独立启停按钮已并入此弹窗)。</li>
-        <li><span class="lbl flt">筛选</span>代理ID · 代理类型(外部/内部) · 返佣状态(已启用/已禁用) · 最小/最大天数(下级0首充天数)。</li>
-        <li><span class="lbl col">列</span>代理ID(蓝链下钻) · 上级ID · 直属下级 · 代理类型(Tag) · 下级0首充天数 · <b>返佣状态(启用绿/禁用灰 Tag)</b> · 昨日佣金 · 下级总投注 · 返佣/状态 最后操作人·时间。</li>
-        <li><span class="lbl act">行操作</span>修改返佣 · <b>启用/禁用配置(按当前态动态切换，点击直接 toggle 无二确)</b>。</li>
-        <li><span class="lbl frm">修改返佣弹窗</span>彩票/电子/真人/体育/棋牌 5 项基础返佣费率(数字 %·step0.01) · 备注(textarea)。</li>
-      </ul>
-    </div>
-  </div>
 
   <div class="pcard">
     <div class="shot"><img src="img/spec-vip-reward-log.png" alt="VIP升级奖励记录"></div>
@@ -618,6 +604,7 @@
       <ul class="ctrl">
         <li><span class="lbl flt">筛选</span>会员ID · 返佣等级(Lv1~6) · 最小团队人数。</li>
         <li><span class="lbl col">列</span>日期 · 会员ID · 返佣等级(Lv) · 团队人数 · 团队充值 · 游戏量 · 计算返佣 · 实发返佣 · 发放时间。</li>
+        <li><span class="lbl col">分组表头</span>彩票/电子/视讯/体育/棋牌 5 个游戏品类各为<b>父表头横跨「有效投注流水 + 返佣金额」两个子列</b>（两行分组合并表头，对齐源站）。</li>
         <li><span class="lbl tb">工具栏</span>导出。</li>
         <li><span class="lbl act">行操作</span>无。</li>
       </ul>
@@ -677,7 +664,7 @@
       <div class="use">VIP 等级与经验值规则（多商户/模板）。<b>2 个子页签，下方逐子页签介绍。</b></div>
       <ul class="ctrl">
         <li><span class="lbl op">操作</span>① 切商户：点「正在配置」栏商户 select（或模板卡商户 chip / 「查看全部」弹窗搜索点选）→ 载入该商户配置；② 模板：「＋新增模板」→<b>草稿横幅(模板名≤20+币种)</b>→「保存模板」(<b>保存前只读预览确认</b>)；点模板名/「编辑」进编辑态(名直接输入框改·失焦/回车提交，空或重名回退)；卡右上「✕」删除→<b>二次确认(仅删模板，用该模板的商户配置保留并转自定义)</b>；③ 套用：模板卡「＋增加商户」→<b>弹窗(多选目标商户)</b>→套用；④ 复制：「使用商户模版」模式「以当前商户复制到其他商户」→<b>弹窗(源预览+目标多选)</b>→确认。</li>
-        <li><span class="lbl cfg">配置</span><b>流程</b>：① 顶部选配置模式(使用自定义模版/使用商户模版) → ② 子页签切「VIP等级配置 / 经验值配置」 → ③ 表内逐格<b>行内编辑(常驻无弹窗)</b>各数值(步长不同：保险箱日利率 0.001 / 洗码·充值奖励 0.01 / 其余 1) → ④ 「保存配置」(自定义模版走<b>只读预览确认</b>；模版套用模式分保存草稿/发布，发布走<b>二次确认</b>对外生效) → ⑤ 可复制到其他商户。<b>注意事项</b>：等级固定 <b>VIP0–VIP10 共 11 级</b>，不可增删、名称只读；删模板不影响商户既有配置(自动转自定义)；<b>保存=草稿、发布才生效</b>。</li>
+        <li><span class="lbl cfg">配置</span><b>流程</b>：① 顶部选配置模式(使用自定义模版/使用商户模版) → ② 子页签切「VIP等级配置 / 经验值配置」 → ③ 表内逐格<b>行内编辑(常驻无弹窗)</b>各数值(步长不同：洗码·充值奖励 0.01 / 其余 1) → ④ 「保存配置」(自定义模版走<b>只读预览确认</b>；模版套用模式分保存草稿/发布，发布走<b>二次确认</b>对外生效) → ⑤ 可复制到其他商户。<b>注意事项</b>：等级固定 <b>VIP0–VIP10 共 11 级</b>，不可增删、名称只读；删模板不影响商户既有配置(自动转自定义)；<b>保存=草稿、发布才生效</b>。</li>
         <li><span class="lbl tb">通用·配置模式</span>三选一：使用自定义模板(模板画廊) / 使用商户模板 / 单商户配置；「正在配置」栏：商户 select + 来源 + <b>状态三态(未配置/待发布/已发布)</b> + 保存 + 复制到其他商户。</li>
         <li><span class="lbl frm">通用·复制弹窗</span>源配置预览 + 目标商户多选(全选/反选) + 覆盖警示(已配置实时计数) + 确认复制。</li>
         <li><span class="lbl sp">通用·特殊/边界</span><b>行内编辑无弹窗</b>；保存/发布前必弹只读预览确认；模板删除二确(转自定义)；复制跳过源自身；未点「确认保存」一律不落库。逻辑/边界全量见《研发说明》§4。</li>
@@ -686,8 +673,8 @@
         <div class="tabsec-h"><span class="tabidx">子页签 1</span>VIP 等级配置 <span class="tabhint">（实时原型内点顶部此子页签查看）</span></div>
         <div class="tshot"><img src="img/spec-vip-level-config.png" alt="VIP配置·VIP等级配置"></div>
         <ul class="ctrl">
-          <li><span class="lbl col">等级表(行内常驻可编辑)</span>名称(固定左) · 升级/保级/扣除经验 · 升级/月/充值奖励 · 赠送金额上限 · 保险箱日利率 · 电子/真人/体育/彩票/棋牌洗码率 · 单日提款次数 · 月奖励领取次数 · 结算日（各数值列行内编辑、不同步长）。</li>
-          <li><span class="lbl sp">边界</span>等级固定 <b>11 级 VIP0–VIP10</b> 不可增删、名称只读；数值列步长分档（保险箱日利率 0.001 / 洗码·充值奖励 0.01 / 其余 1）。</li>
+          <li><span class="lbl col">等级表(行内常驻可编辑)</span>名称(固定左) · 升级/保级/扣除经验 · 升级/月/充值奖励 · 单次赠送金额上限 · 电子/真人/体育/彩票/棋牌洗码率 · 单日提款次数 · 月奖累计可领取次数 · 结算日（各数值列行内编辑、不同步长）。</li>
+          <li><span class="lbl sp">边界</span>等级固定 <b>11 级 VIP0–VIP10</b> 不可增删、名称只读；数值列步长分档（洗码·充值奖励 0.01 / 其余 1）。</li>
         </ul>
       </div>
       <div class="tabsec">
