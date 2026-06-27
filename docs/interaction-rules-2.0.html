@@ -1754,6 +1754,15 @@
   </table>
   <p class="sd">弹窗底部「确定」保存：校验通过后 Toast「保存成功」并关闭刷新列表；失败 Toast「{后端 msg}」或「请求失败」。「取消」直接关闭不保存。</p>
 
+  <h4>保存校验枚举 <span class="kind">点「确定」逐项校验 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>保存</td><td><b>商户</b>（tenantId）</td><td>必填 · 单选</td><td>红框 + 下方红字「请选择商户」</td></tr>
+    <tr><td>保存</td><td><b>会员ID</b>（userId）</td><td>必填 · 纯数字 · ≤12 位</td><td>红框 + 下方红字「请输入会员ID」</td></tr>
+    <tr><td>保存</td><td><b>生效日期区间</b>（dateRange）</td><td>仅「固定返佣」模式必填（日期区间）；动态返佣不校验</td><td>红框 + 下方红字「请选择生效日期区间」</td></tr>
+  </table>
+  <p class="sd">「返佣模式」「返佣等级」为下拉必选（各有默认值，无输入错误）。</p>
+
   <h4>返佣等级费率表弹窗 <span class="kind">弹窗 · 只读详情</span></h4>
   <p class="sd">点击列表「返佣等级」标签打开（860 宽）。只读表格：行=等级（Lv1~Lv6 + 合计行），列=各游戏返佣费率（彩票 / 电子 / 真人 / 体育 / 棋牌，均以百分比展示如 0.8%）；当前会员所在等级行加粗高亮，合计行汇总各游戏费率列。无任何输入控件，底部仅「关闭」按钮关掉弹窗。</p>
 </section>
@@ -2208,6 +2217,15 @@
     </tr>
   </table>
 
+  <h4>保存 / 发布校验枚举 <span class="kind">保存=暂存草稿 · 发布=前台立即生效 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>保存（行内确定）</td><td><b>VIP 等级数值（14 个）</b>（upgradeExp/keepExp/deductExp/upgradeReward/monthReward/rechargeReward/giftCap/washEgame/washLive/washSport/washLottery/washChess/withdrawDailyCap/monthRewardTimes）</td><td>数值 · min=0；经验值/赠送上限 ≤ 99999999、奖励 ≤ 9999999、百分比类 ≤ 100、次数类 ≤ 999；非数字/负数自动归 0</td><td>配错单元格红框（status=error），hover 显示错误原因</td></tr>
+    <tr><td>保存（经验值确定）</td><td><b>经验值·兑换金额</b>（expBuffer.amountPerExp）</td><td>数值 · 整数 · min=0、上限 9999999；非数字/负数拦下置 0</td><td>红框（非数字/负数拦下置 0）</td></tr>
+    <tr><td>保存模板</td><td><b>模板名称</b>（draftName）</td><td>必填 · ≤ 20、不重名、模板数 ≤ 10</td><td>空：提示「如：标准VIP方案」；重名：提示「模板名称已存在」；满 10：提示「最多 10 个模板（不含自定义配置）」</td></tr>
+  </table>
+  <p class="sd">所有保存 / 发布 / 套用 / 新建模板均<b>先弹内容预览二次确认</b>再落库：保存 → Toast「已保存（待发布）」；发布 → Toast「已发布 (商户号)商户名，前台立即生效」。</p>
+
   <h4>套用模板到商户 弹窗 <span class="kind">弹窗 · 860 · 4 项</span></h4>
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
@@ -2245,6 +2263,13 @@
     </tr>
   </table>
 
+  <h4>保存校验枚举 <span class="kind">点「确认套用」校验 · 通过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>确认套用</td><td><b>目标商户多选</b>（checked）</td><td>必选 ≥ 1</td><td>未勾选任何商户时「确认套用」按钮置灰不可点</td></tr>
+  </table>
+  <p class="sd">勾选含已配置商户时红框标注 + 实时统计「其中 N 个商户已有配置，套用后将被覆盖」。</p>
+
   <h4>以当前商户复制到其他商户 弹窗 <span class="kind">弹窗 · 860 · 4 项</span></h4>
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
@@ -2281,6 +2306,13 @@
       <td class="lt">目标已有配置会被覆盖(已红框预警)，前台立即生效</td>
     </tr>
   </table>
+
+  <h4>保存校验枚举 <span class="kind">点「确认复制并发布」校验 · 通过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>确认复制并发布</td><td><b>目标商户多选</b>（checked）</td><td>必选 ≥ 1（排除源商户自身）</td><td>未勾选任何商户时「确认复制并发布」按钮置灰不可点</td></tr>
+  </table>
+  <p class="sd">勾选含已配置商户时红框标注 + 实时提示「其中 N 个商户已有配置，套用后将被覆盖」。</p>
 
   <h4>删除模板 二次确认弹窗 <span class="kind">弹窗 · 440 · 1 项</span></h4>
   <table class="ct">
@@ -2435,6 +2467,15 @@
     </tr>
   </table>
 
+  <h4>保存 / 发布校验枚举 <span class="kind">保存=暂存草稿 · 发布=对外生效 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>保存模板</td><td><b>模板名</b>（draftName / nameInput）</td><td>必填 · ≤ 20、不重名</td><td>空：Toast 警告「请输入模板名称」；重名：Toast 警告「模板名称已存在」</td></tr>
+    <tr><td>保存</td><td><b>等级门槛</b>（lvBuffer：tp/ta/tg/dp/da/dg）</td><td>数值 · min=0（负数自动夹回 0，空值按 0）</td><td>负数被 min=0 拦在 0（前端约束）</td></tr>
+    <tr><td>保存</td><td><b>费率单元格</b>（rateBuffer[game][tier]）</td><td>数值 · min=0；同一游戏大类跨一~六级纵向求和必须 ≤ 5%</td><td>超限整列标红 + Toast「保存失败：{大类（合计 X%）} 跨等级费率之和超过 5%，已标红，请调整后重试」</td></tr>
+  </table>
+  <p class="sd">暂存 / 发布均<b>先弹配置内容预览二次确认</b>再写库：暂存 → Toast「已暂存」；发布 → Toast「「{商户名}」已发布」。</p>
+
   <h4>列表/矩阵（仅展示，不逐列详述）<span class="kind">仅展示，不逐列详述</span></h4>
   <p class="sd">返佣等级管理表：等级（左固定·居中加粗 L0~L8）／团队下级条件（团队当日充值人数·满足人数·团队当日充值金额·满足人数·团队当日有效投注流水·满足人数）／直属下级条件（直属当日充值人数·满足人数·直属当日充值金额·满足人数·直属当日有效投注流水·满足人数）／操作（右固定）；列默认居中，「满足人数」为灰色只读统计列。返佣费率矩阵（每等级一张卡）：行=一级~六级，列=彩票／电子／真人／体育／棋牌（%）。均仅展示、无独立交互（编辑入口见上方控件）。</p>
 
@@ -2477,6 +2518,13 @@
       <td class="lt">选 0 个目标禁用且点击无效；覆盖前已通过红条提示，本步直接执行。</td>
     </tr>
   </table>
+
+  <h4>保存校验枚举 <span class="kind">点「确认复制 / 确认套用」校验 · 通过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>确认复制 / 套用</td><td><b>目标商户勾选</b>（checked[i]）</td><td>必选 ≥ 1（复制模式排除来源商户）</td><td>未选时「确认」按钮禁用、点击无效</td></tr>
+  </table>
+  <p class="sd">勾选含已配置目标时顶部红条提示「{N} 个目标已有配置，将被覆盖」；本步为覆盖类直接执行（无独立二次确认）。</p>
 
   <h4>保存 / 发布内容预览弹窗 <span class="kind">弹窗 · 2 项（只读预览）</span></h4>
   <table class="ct">
@@ -2743,6 +2791,13 @@
     </tr>
   </table>
 
+  <h4>保存校验枚举 <span class="kind">点「确认套用」校验 · 通过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>确认套用</td><td><b>目标商户多选</b>（checked）</td><td>必选 ≥ 1</td><td>勾选数 = 0 时「确认套用」按钮置灰禁用</td></tr>
+  </table>
+  <p class="sd">弹窗本身即<b>二次确认</b>覆盖面；勾选含已配置商户时顶部红框警示「{N} 个商户已有配置，套用后将被覆盖」。</p>
+
   <h4>复制到其他商户弹窗 <span class="kind">弹窗 · 860 · 4 项</span></h4>
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
@@ -2779,6 +2834,13 @@
       <td>已勾选项随关闭丢弃。</td>
     </tr>
   </table>
+
+  <h4>保存校验枚举 <span class="kind">点「确认复制」校验 · 通过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>确认复制</td><td><b>目标商户多选</b>（checked）</td><td>必选 ≥ 1（来源商户自身排除）</td><td>勾选数 = 0 时「确认复制」按钮置灰禁用</td></tr>
+  </table>
+  <p class="sd">弹窗本身即<b>二次确认</b>覆盖面；勾选含已配置商户时顶部红框警示「{N} 个商户已有配置，复制后将被覆盖」。</p>
 
   <h4>删除模板确认弹窗 <span class="kind">弹窗 · 440 · 2 项</span></h4>
   <table class="ct">
@@ -2821,6 +2883,15 @@
       <td>无。</td>
     </tr>
   </table>
+
+  <h4>暂存 / 发布校验枚举 <span class="kind">点「暂存 / 发布」逐项校验 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>暂存 / 发布</td><td><b>标题（编辑态·逐语言）</b>（titleByLang[lang]）</td><td>仅默认语言（简体中文）必填 · 长度 ≤ 50；其余语言可空</td><td>自动切回简体中文 + 红框 + Toast「请填写默认语言（简体中文）的标题」</td></tr>
+    <tr><td>暂存 / 发布</td><td><b>内容（编辑态·逐语言）</b>（contentByLang[lang]）</td><td>仅默认语言（简体中文）必填 · 长度 ≤ 500；其余语言可空</td><td>自动切回简体中文 + 红框 + Toast「请填写默认语言（简体中文）的内容」</td></tr>
+    <tr><td>保存模板</td><td><b>模板名称</b>（draftName / nameInput）</td><td>必填 · ≤ 20、不重名、模板数 ≤ 10</td><td>空：Toast「请输入模板名称」；重名：Toast「模板名称已存在」；超上限：Toast 警告</td></tr>
+  </table>
+  <p class="sd">暂存 / 发布均<b>先弹预览二次确认</b>再执行：暂存 → Toast「已暂存」；发布 → Toast「已发布『商户』的配置」。币种下拉无校验。</p>
 
   <h4>查看全部商户弹窗 <span class="kind">弹窗 · 600 · 2 项</span></h4>
   <table class="ct">
@@ -2971,6 +3042,15 @@
 
   <h4>迁移说明（只读） <span class="kind">仅展示，不可交互</span></h4>
   <p class="sd">开关 Tab 底部一张只读卡「迁移说明 · 源站有但不在本页」：逐条列出源站「配置开关」里有、但已迁到别页或本期未迁的开关（如 邀请码是否必填→注册管理页、手机/邮箱注册→注册管理页、注册图形验证码→注册管理页、注册隐私协议默认勾选→注册管理页、积分商城开关→本期未迁、充值通道纸飞机推送→直代付通道预警）；带「迁」徽标，仅供溯源、无任何交互。</p>
+
+  <h4>保存 / 发布校验枚举 <span class="kind">保存=分组/分类逐项校验存草稿 · 发布=全量逐项校验对外生效</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>保存</td><td><b>分组数值参数</b>（开关 Tab · 嵌入 int/float，如 rewardValidityTime/agentChargeDays/usdtAddressBindingCount）</td><td>仅校验本组内「已开启」开关下的嵌入数值字段在各自 min/max 内且非空</td><td>红框标出错字段 + Toast「『{字段名}』填写有误，请检查标红项」</td></tr>
+    <tr><td>保存</td><td><b>分类数值/文本参数</b>（系统参数 Tab · int/float/text）</td><td>仅校验本分类内数值字段在 min/max 内且非空；文本参数（如 Token≤128、群组Id≤32）为空报红</td><td>红框标出错字段 + Toast「『{字段名}』填写有误，请检查标红项」</td></tr>
+    <tr><td>发布</td><td><b>全量数值/文本字段</b>（参数 Tab 全部 + 开关 Tab 已开启开关下嵌入字段）</td><td>满足各自 min/max 且非空</td><td>自动切到出错字段所在 Tab 滚动定位 + 红框 + Toast「『{字段名}』填写有误，请检查标红项」</td></tr>
+  </table>
+  <p class="sd">保存、发布均<b>先二次确认再执行</b>：分组/分类保存确认后 Toast「已保存『{分组/分类名}』（草稿），点击『发布』后对外生效」；发布确认后整体对外生效。下拉/多选参数无校验；迁移说明卡只读不参与校验。</p>
 </section>
 <section id="p-config-registerManage">
   <h3>注册管理 <span class="pill p-in">2.0 新增</span></h3>
@@ -3143,6 +3223,16 @@
     </tr>
   </table>
   <p class="sd">说明：每张手机号卡片右上角有「删除（removePhone）」按钮，点击即从卡片区移除该条并重置标红状态，无二次确认、无 Toast（删除仅改本地表单，需「保存/发布」后才落库）。</p>
+
+  <h4>保存 / 发布校验枚举 <span class="kind">点「保存 / 发布」逐项校验 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>保存 / 发布</td><td><b>配置商户</b>（tenantId）</td><td>必填 · 单选（不可清空，必须有一个选中）</td><td>列表为空时下拉显示「请选择商户」</td></tr>
+    <tr><td>保存 / 发布</td><td><b>当前国家区号</b>（currentAreaCode）</td><td>纯数字、不带 + 号、≤6 位</td><td>红框 + 下方红字（非数字提示并清除）</td></tr>
+    <tr><td>保存 / 发布</td><td><b>区号（卡片内）</b>（phones[].areaCode）</td><td>必须以 + 开头后跟 1~3 位数字（如 +1/+66）、≤6 字符</td><td>该行标红 + 红字 Toast「必须以+开头后面跟着1-3位数字（第N行）」</td></tr>
+    <tr><td>保存 / 发布</td><td><b>手机区号长度（卡片内）</b>（phones[].phoneLength）</td><td>整数 6~15、不可为空</td><td>为空随该行标红拦截</td></tr>
+  </table>
+  <p class="sd">校验通过先弹<b>二次确认</b>再写库：保存 → Toast「已保存（草稿），点击『发布』后对外生效」；发布 → Toast「已发布」。注册限制/赠送数值框（同IP/浏览器/设备注册数、赠送金额/打码倍数）均 min=0、负数自动夹回 0，越界即标红；注册开关板块各开关无校验。</p>
 </section>
 <section id="p-config-languageConfig">
   <h3>前台配置 <span class="pill p-in">2.0 新增</span></h3>
@@ -3239,6 +3329,15 @@
       <td class="lt">未改：沿用回填值（默认 $）；切换商户：随该商户配置回填对应符号。</td>
     </tr>
   </table>
+
+  <h4>保存 / 发布校验枚举 <span class="kind">点「保存 / 发布」整页逐项校验 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>保存 / 发布</td><td><b>前端站点名称</b>（projectName）</td><td>必填 · 文本 ≤ 50</td><td>红框 + 红字「请输入前端站点名称」</td></tr>
+    <tr><td>保存 / 发布</td><td><b>支持语言</b>（supportLanguages）</td><td>必填 · 至少勾选 1 种</td><td>红框 + 红字「请至少勾选一种支持语言」</td></tr>
+    <tr><td>保存 / 发布</td><td><b>默认语言</b>（defaultLanguage）</td><td>必填 · 单选</td><td>红框 + 红字「请选择默认语言」</td></tr>
+  </table>
+  <p class="sd">校验通过先弹<b>二次确认</b>再写库：保存 → Toast「已保存（草稿），点击『发布』后对外生效」；发布（危险操作）→ Toast「已发布」。Logo/icon 图片选填、货币符号有默认值，均无必填校验。</p>
 </section>
   <section id="g-report"><h2 class="sec">报表管理</h2></section>
 <section id="p-report-channelAlert">
@@ -3387,6 +3486,7 @@
       <td class="lt">提交进行中重复点无效（submitting 拦截）；接口返回非 0 也按失败处理走「操作失败」。</td>
     </tr>
   </table>
+  <p class="sd">本弹窗为<b>二次确认</b>性质：唯一输入项「备注」选填、≤200 字、无必填校验；点「确认处理 / 确认忽略」直接提交（处理成功 Toast「处理成功」/ 忽略成功 Toast「忽略成功」，失败 Toast「操作失败」），无字段级保存校验枚举。</p>
 
   <h4>「预警规则配置」弹窗 <span class="kind">弹窗 · 4 类控件（规则表 · 4 条规则行）</span></h4>
   <p class="sd">弹窗顶部蓝色提示「配置各类预警的触发阈值和通知方式，修改后实时生效。」下方为规则表，<b>4 条规则行</b>（代收通道失败率预警 501 / 代收通道拉单失败预警 502 / 代付通道余额不足预警 503 / 大额出款预警 504），表头列：状态 / 预警类型 / 触发阈值（带红星必填）/ 通知渠道（带红星必填）；币种类规则（503/504）以可展开行内联编辑各币种阈值。底部为「关闭 + 保存」。</p>
@@ -3420,6 +3520,15 @@
       <td class="lt">校验不通过 → Toast「{类型} 的规则配置不完整」（或「{类型} 通知渠道 的规则配置不完整」）并停在弹窗。校验通过 → 提交，成功 Toast「规则保存成功」、关闭弹窗、刷新顶部统计卡；失败 Toast「操作失败」、弹窗不关。</td>
       <td class="lt">「关闭」直接关弹窗、改动不提交不二次确认；保存进行中重复点无效；接口返回非 0 按失败处理。</td>
     </tr>
+  </table>
+
+  <h4>保存校验枚举 <span class="kind">点「保存」逐项校验 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>保存</td><td><b>触发阈值 · 失败率(501)</b>（windowMinutes/minAttemptCount/failRateThreshold）</td><td>必填 · 窗口分钟数≥1 + 拉单总次数≥1 + 失败率1~100% 三项齐全</td><td>Toast「{类型} 的规则配置不完整」</td></tr>
+    <tr><td>保存</td><td><b>触发阈值 · 拉单失败(502)</b>（continuousFailCount）</td><td>必填 · 连续失败次数≥1</td><td>Toast「{类型} 的规则配置不完整」</td></tr>
+    <tr><td>保存</td><td><b>触发阈值 · 币种类(503/504)</b>（currencyThresholds.amount）</td><td>必填 · 至少一个币种且各币种金额（≥0）均非空</td><td>Toast「{类型} 的规则配置不完整」</td></tr>
+    <tr><td>保存</td><td><b>通知渠道</b>（noticeChannels）</td><td>必填 · 各规则通知渠道非空</td><td>Toast「{类型} 通知渠道 的规则配置不完整」</td></tr>
   </table>
 
   <h4>「数据追踪与推送」弹窗（本期新增 · 迁移自开关参数配置）<span class="kind">弹窗 · 表格化 5 行（状态 / 配置项 / 配置 三列）</span></h4>
@@ -3469,6 +3578,16 @@
       <td class="lt">「关闭」直接关弹窗、改动不提交不二次确认；保存进行中重复点无效（saving 拦截）；主开关关闭时即使下方留空也允许保存。</td>
     </tr>
   </table>
+
+  <h4>保存校验枚举 <span class="kind">点「保存」逐项校验 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>保存</td><td><b>推送间隔</b>（tgBotInterval）</td><td>仅主开关开启时校验 · 整数 5~1440</td><td>红框 status:error + Toast「『{字段名}』填写有误，请检查标红项」</td></tr>
+    <tr><td>保存</td><td><b>渠道预警</b>（successRateOrderCount/successRatePercent/makeOrderFailCount/makeOrderFailPercent）</td><td>仅主开关开启时校验 · 充值笔数≥0、成功率0~100%、拉单笔数≥0、失败率0~100%，均非空</td><td>红框 status:error + Toast「『{字段名}』填写有误，请检查标红项」</td></tr>
+    <tr><td>保存</td><td><b>金额预警</b>（merchantBalanceWarning/paymentOrderDataPush/highScoreWarning/warningAmountForLargeBets）</td><td>仅主开关开启时校验 · 前三项可为负、大额下注≥0，均非空</td><td>红框 status:error + Toast「『{字段名}』填写有误，请检查标红项」</td></tr>
+    <tr><td>保存</td><td><b>出款预警</b>（withdrawSubmitSeconds/withdrawLockSeconds）</td><td>仅主开关开启时校验 · 后台锁定时间≤100，均非空</td><td>红框 status:error + Toast「『{字段名}』填写有误，请检查标红项」</td></tr>
+  </table>
+  <p class="sd">主开关关闭则跳过全部数值校验直接放行；Token / 群组 Id 为文本，不参与必填校验。</p>
 </section>
 <section id="p-report-agentReport">
   <h3>代理报表 <span class="pill p-in">2.0 新增</span></h3>
@@ -3774,6 +3893,16 @@
   </table>
   <p class="sd">底部按钮：<b>取消</b>（关闭弹窗不保存）· <b>确认</b>（校验全部通过后提交，成功 Toast「操作成功」并刷新列表；校验未过停留弹窗并红框定位；提交失败 Toast「操作失败：{原因}」）。</p>
 
+  <h4>保存校验枚举 <span class="kind">点「确认」逐项校验 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>保存</td><td><b>封禁商户</b>（tenantId）</td><td>必填 · 单选</td><td>红框 + 下方红字「请至少选择一个商户」</td></tr>
+    <tr><td>保存</td><td><b>IP地址</b>（ip）</td><td>必填 · 多个 IPv4（逗号/中文逗号/换行分隔），每个须合法 IPv4（4 段 0~255，不考虑 IPv6）</td><td>空/全无效：红框 + 红字「请输入IP」；含非法项：红字「请输入正确的IP: {该非法IP}」</td></tr>
+    <tr><td>保存</td><td><b>封禁类型</b>（banType）</td><td>必填 · 单选（禁止登录 / 禁止注册）</td><td>红框 + 下方红字「请选择封禁类型」</td></tr>
+    <tr><td>保存</td><td><b>拉黑原因</b>（reason）</td><td>必填 · 单行文本 ≤ 50（前后空格自动去除）</td><td>红框 + 下方红字「请输入拉黑原因」</td></tr>
+  </table>
+  <p class="sd">「备注」选填、≤100 无校验；「状态」开关无校验。</p>
+
   <h4>编辑IP黑名单弹窗 <span class="kind">弹窗 · 6 项</span></h4>
   <p class="sd">弹窗宽度 600；字段同新增，差异：无顶部多 IP 提示；「IP地址」<b>只读单行、不可修改</b>，仅支持单个 IP；商户/类型/原因/备注/状态可改并回填原值。</p>
   <table class="ct">
@@ -3823,6 +3952,15 @@
   </table>
   <p class="sd">底部按钮：<b>取消</b>（关闭不保存）· <b>确认</b>（校验通过后提交，成功 Toast「操作成功」并刷新列表；校验未过停留并红框定位；失败 Toast「操作失败：{原因}」）。</p>
 
+  <h4>保存校验枚举 <span class="kind">点「确认」逐项校验 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>保存</td><td><b>封禁商户</b>（tenantId）</td><td>必填 · 单选（回填原商户，清空后保存触发）</td><td>红框 + 下方红字「请至少选择一个商户」</td></tr>
+    <tr><td>保存</td><td><b>封禁类型</b>（banType）</td><td>必填 · 单选（禁止登录 / 禁止注册）</td><td>红框 + 下方红字「请选择封禁类型」</td></tr>
+    <tr><td>保存</td><td><b>拉黑原因</b>（reason）</td><td>必填 · 单行文本 ≤ 50（前后空格自动去除）</td><td>红框 + 下方红字「请输入拉黑原因」</td></tr>
+  </table>
+  <p class="sd">「IP地址」编辑态<b>只读不校验</b>；「备注」选填无校验。</p>
+
   <h4>批量导入 IP 黑名单弹窗 <span class="kind">弹窗 · 6 项</span></h4>
   <p class="sd">弹窗宽度 600；用于一次性导入多条 IP，单次最多 500 条、自动去重并忽略无效 IP。</p>
   <table class="ct">
@@ -3871,6 +4009,12 @@
     </tr>
   </table>
   <p class="sd">底部按钮：<b>取消</b>（关闭并清空文本/类型/原因为默认）· <b>确认导入（N）</b>（N=已识别条数，0 条置灰）。</p>
+
+  <h4>保存校验枚举 <span class="kind">点「确认导入」逐项校验 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>确认导入</td><td><b>IP 列表</b>（batchText）</td><td>识别后合法 IPv4 条数 ≥ 1（识别为 0 则不能导入）</td><td>「确认导入」按钮置灰禁用；点击无有效 IP 时 Toast「未识别到有效 IP，无法导入」</td></tr>
+  </table>
 </section>
   </main>
 </div>
