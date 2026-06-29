@@ -18,7 +18,10 @@
   nav{width:262px;flex:none;position:sticky;top:57px;align-self:flex-start;height:calc(100vh - 57px);overflow:auto;padding:16px 8px;font-size:12.5px;border-right:1px solid var(--border);background:#fafbfc;}
   nav a{display:block;padding:3px 10px;color:#374151;text-decoration:none;border-radius:5px;line-height:1.5;}
   nav a:hover{background:#eef2ff;color:var(--accent);}
+  nav a.active{background:#e0e7ff;color:var(--accent);font-weight:600;box-shadow:inset 3px 0 0 var(--accent);}
   nav a.sub{padding-left:20px;color:#475569;font-size:12px;}
+  nav a.sub.active{color:var(--accent);font-weight:600;}
+  nav .grp.active{color:var(--accent);}
   nav .grp{font-weight:700;margin-top:10px;color:#111827;padding:4px 10px;}
   main{flex:1;min-width:0;padding:26px 40px 100px;max-width:none;}
   section{margin-bottom:30px;scroll-margin-top:70px;}
@@ -36,13 +39,18 @@
   /* 控件规范表：左侧短内容列垂直居中填补空白(R9 不留白)，长文本列仍顶对齐便于阅读 */
   table.ct td{vertical-align:middle;}
   table.ct td.lt{vertical-align:top;}
-  /* 控件名称/key 列宽随内容(名词长短)自适应，不固定 */
-  table.ct th.h-nm,table.ct th.h-key{width:1px;}
-  table.ct td.nm{text-align:center;width:1px;}
-  table.ct td.nm b{display:block;color:#1f2328;margin-bottom:2px;}
-  table.ct td.nm .k{display:block;font-weight:400;color:#9333ea;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;margin:0 0 5px;}
-  table.ct td.nm .iw{display:inline-block;}
-  table.ct td.kc{text-align:center;width:1px;}
+  /* 表格列宽统一：控件名称固定宽并平铺(名称+key 同行、控件在下)；名称定义/规范/逻辑/边界 4 内容列等宽 */
+  table.ct{table-layout:fixed;}
+  table.ct td,table.ct th{word-break:break-word;overflow-wrap:anywhere;}
+  table.ct th.h-nm,table.ct td.nm{width:200px;}
+  table.ct th:nth-child(n+2){width:auto;}      /* 覆盖内联 width=150，4 内容列等分剩余宽 */
+  table.ct td.nm{text-align:left;vertical-align:top;}
+  table.ct td.nm b{display:inline;color:#1f2328;}
+  table.ct td.nm .k{display:inline;font-weight:400;color:#9333ea;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;margin-left:6px;}
+  table.ct td.nm .iw{display:block;margin-top:7px;}
+  table.ct td.nm .iw-btn,table.ct td.nm .iw-up{white-space:nowrap;}   /* 按钮横向铺满、不竖排断字 */
+  table.ct td.lt{vertical-align:top;}
+  table.ct td.kc{text-align:center;}
   table.ct td.kc code{word-break:break-all;}
   .pill{display:inline-block;font-size:11px;padding:1px 9px;border-radius:20px;font-weight:600;vertical-align:middle;}
   .p-in{background:#dcfce7;color:#15803d;} .p-late{background:#fef3c7;color:#92400e;}
@@ -80,10 +88,12 @@
   .iw-ms-pop label{font-size:11px;color:#374151;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;}
   /* 单选/复选按钮组：多个真实选项并排 */
   .iw-grp{display:inline-flex;flex-wrap:wrap;gap:4px 12px;justify-content:center;}
-  .iw-btn{font-size:11.5px;padding:4px 12px;background:var(--accent);color:#fff;border:none;border-radius:5px;cursor:pointer;}
-  .iw-btn:hover{background:#1d4ed8;}
+  .iw-btn{font-size:11.5px;padding:4px 12px;background:#009688;color:#fff;border:none;border-radius:5px;cursor:pointer;}
+  .iw-btn:hover{background:#00897b;}
+  .iw-btn.danger{background:#d03050;} .iw-btn.danger:hover{background:#b91c1c;}
+  .iw-btn.sec{background:#fff;color:#374151;border:1px solid #d9d9d9;} .iw-btn.sec:hover{color:#009688;border-color:#009688;}
   .iw-up{font-size:11.5px;padding:4px 11px;background:#fff;color:#64748b;border:1px dashed #94a3b8;border-radius:5px;cursor:pointer;}
-  .iw-up:hover{border-color:var(--accent);color:var(--accent);}
+  .iw-up:hover{border-color:#009688;color:#009688;}
   .iw-opt{font-size:11.5px;color:#374151;cursor:pointer;display:inline-flex;align-items:center;gap:4px;}
   .iw-color{padding:0;width:30px;height:22px;border:1px solid #cbd5e1;border-radius:4px;cursor:pointer;background:none;vertical-align:middle;}
   .iw-img{display:inline-block;width:26px;height:20px;border:1px solid #cbd5e1;border-radius:4px;text-align:center;font-size:12px;line-height:20px;background:#f8fafc;}
@@ -99,7 +109,7 @@
 <body>
 <header>
   <span class="logo">📐 《交互规则》· AR V3 · 2.0 新增页面（前端研发实现规范）</span>
-  <span class="ver">v3.1 · 2026-06-27 · 2.0 可见页（26）+ 全局框架（2）</span>
+  <span class="ver">v3.2 · 2026-06-29 · 2.0 可见页（27）+ 全局框架（2）</span>
   <span class="grow"></span>
 </header>
 <div class="layout">
@@ -147,18 +157,46 @@
     <a href="#p-report-channelAlert" class="sub">支代付通道预警</a>
     <a href="#p-report-agentReport" class="sub">代理报表</a>
     <a href="#p-report-rebateReport" class="sub">返佣报表</a>
-    <div class="grp">系统管理（1）</div>
+    <div class="grp">系统管理（2）</div>
+    <a href="#p-system-role" class="sub">角色管理</a>
     <a href="#p-system-ipBlacklist" class="sub">IP黑名单</a>
   </nav>
   <main>
+
+  <style>
+  /* 顶部·修改日志：默认收起，点击展开 */
+  details.doc-cl{margin:14px 0;border:1px solid #c7d2fe;border-radius:8px;background:#eef2ff;overflow:hidden}
+  details.doc-cl>summary{cursor:pointer;user-select:none;list-style:none;display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:13.5px;font-weight:700;color:#4f46e5}
+  details.doc-cl>summary::-webkit-details-marker{display:none}
+  details.doc-cl>summary::before{content:"▸";font-size:12px;transition:transform .15s}
+  details.doc-cl[open]>summary::before{transform:rotate(90deg)}
+  details.doc-cl>summary:hover{background:#e0e7ff}
+  details.doc-cl .cl-b{padding:0 16px 14px;background:#fff}
+  details.doc-cl .cl-b p.tip{font-size:12px;color:#64748b;margin:10px 0 0}
+  details.doc-cl table{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0 0}
+  details.doc-cl th,details.doc-cl td{border:1px solid #e5e7eb;padding:6px 10px;text-align:left;vertical-align:top;line-height:1.7}
+  details.doc-cl th{background:#f8fafc;font-weight:600;color:#475569}
+  details.doc-cl td:first-child{white-space:nowrap;color:#64748b}
+  </style>
+  <details class="doc-cl">
+    <summary>📝 修改日志 · 点击展开</summary>
+    <div class="cl-b">
+      <p class="tip">本文档变更记录，最新在上。</p>
+      <table>
+        <tr><th width="110">日期</th><th>变更摘要</th></tr>
+        <tr><td>2026-06-29</td><td>顶部新增「修改日志」板块（默认收起，点击展开）；当前覆盖 2.0 可见页（27）+ 全局框架（2），据原型实况校准控件级规则（版本 v3.2）。</td></tr>
+        <tr><td>2026-06-27</td><td>26 处多选筛选控件（商户 / 支持语言 / 三方映射码 / 三方商户昵称 / 通道名称 / 预警类型）由单选下拉改为<b>真·多选下拉</b>：可勾选多个，「全部」与具体项互斥，未选回落占位文本。</td></tr>
+      </table>
+    </div>
+  </details>
   <section id="intro">
     <h2 class="sec">文档说明</h2>
     <div class="intro-note">📌 本文档为《交互规则》：<b>给前端研发照着实现用</b>。范围 = AR V3 <b>2.0（本期）真正新增、且目标站可见的页面</b>——数据分析 / 商户 / 系统监控等 1.0 已完成页，以及隐藏页 / 待定页，<b>均不收录</b>。文档先列 <b>框架规范（全站共用）</b>——通用骨架 / 布局 / 控件 / 字体色板 / 通用交互 / 弹窗，再逐页描述 6 要素：<b>控件名称 · key · 名称定义 · 控件规范（输入限制 + 正确/错误/空 呈现）· 控件逻辑 · 边界情况</b>，含弹窗 / 抽屉 / Tab 内控件。</div>
     <div class="stat">
-      <div class="b"><div class="n" style="color:var(--green)">26</div><div class="l">2.0 可见页</div></div>
+      <div class="b"><div class="n" style="color:var(--green)">27</div><div class="l">2.0 可见页</div></div>
       <div class="b"><div class="n">2</div><div class="l">全局框架</div></div>
       <div class="b"><div class="n">6</div><div class="l">框架规范章节</div></div>
-      <div class="b"><div class="n" style="color:var(--accent)">26 / 26</div><div class="l">已写（全部完成）</div></div>
+      <div class="b"><div class="n" style="color:var(--accent)">27 / 27</div><div class="l">已写（全部完成）</div></div>
     </div>
     <p class="sd">判定依据：最新 2.0 PRD（saas-phase2-prd-full · 里程碑判定 1.0/2.0）+ 禅道任务源（24 需求）+ V3 目标站路由可见性核验（剔除 hidden / 待定）。隐藏页（系统参数 / 配置开关 / 代理审核 / 版本·渠道包）、待定页（域名 / 防封救援 / 解析检测）均不收录。</p>
   </section>
@@ -286,7 +324,7 @@
   <section id="p-member-user">
     <h3>会员列表（增强） <span class="pill p-in">2.0 增强</span></h3>
     <p class="meta-line"><code>member/user</code> · 类型：列表（竖版 9 组列）</p>
-    <p class="sd">商户端会员总表：按 20 项条件查询，竖版把 44 个字段归并成 9 组列；支持批量导入、导出、10 种批量动作、行内返佣开关与重置密码。<b>会员详情弹窗本文档暂不展开。</b>本页筛选项均为<b>单选下拉</b>（已可点选）；多选下拉的操作示例见后续含多选的页面。</p>
+    <p class="sd">商户端会员总表：按 20 项条件查询，竖版把 44 个字段归并成 9 组列；支持批量导入、导出、10 种批量动作、行内返佣开关与修改密码。<b>会员详情弹窗本文档暂不展开。</b>本页筛选项均为<b>单选下拉</b>（已可点选）；多选下拉的操作示例见后续含多选的页面。</p>
     <div class="note">🆕 相对 V1 新增：注册/登录的域名·设备号·浏览器指纹，一级代理·代理模式，领取返佣 / 对上级返佣开关，批量 10 动作；列标题带「新」角标者为本期新增字段。</div>
 
     <h4>搜索控件 <span class="kind">20 项（主筛选 6 + 高级 14）</span></h4>
@@ -326,8 +364,8 @@
     <h4>工具栏 + 行操作 <span class="kind">3 项</span></h4>
     <table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="130">名称定义</th><th>控件规范</th><th>控件逻辑（含 Toast 文案）</th><th width="170">边界情况</th></tr>
     <tr><td class="nm"><b>批量导入</b><span class="k">handleOpenBatchImport</span><div class="iw"><button class="iw-up">⬆ 批量导入</button></div></td><td>批量导入会员</td><td class="lt">工具栏按钮（权限码 Member:Users:UserList:BatchImport）</td><td class="lt">弹批量导入弹窗（.csv / .xlsx）；预览表除账号等基础列外含 <b>代理模式 / 会员分组 / 转移渠道 / 重置谷歌</b> 4 个更新列（留空显「不更新」、重置谷歌显「重置 / 不更新」）。上传解析后 Toast「导入完成：成功 X 条、失败 Y 条」</td><td class="lt">无权限不显示；文件格式不符弹 Toast「请上传 .csv / .xlsx 文件」</td></tr>
-    <tr><td class="nm"><b>导出</b><span class="k">handleExport</span><div class="iw"><button class="iw-btn">导出</button></div></td><td>导出当前查询结果</td><td class="lt">工具栏 ExportButton；本页列 &gt;20 → 放导出（R21）</td><td class="lt">按当前筛选真实下载 CSV，完成 Toast「导出成功」</td><td class="lt">无数据时 Toast「暂无可导出的数据」</td></tr>
-    <tr><td class="nm"><b>重置密码</b><span class="k">handleResetPassword</span><div class="iw"><button class="iw-btn">重置密码</button></div></td><td>重置该会员密码</td><td class="lt">行内主色文字按钮</td><td class="lt">弹重置密码弹窗，确认提交后 Toast「密码已重置」</td><td class="lt">弹窗内新密码必填、不符规则会标红拦截</td></tr>
+    <tr><td class="nm"><b>导出</b><span class="k">handleExport</span><div class="iw"><button class="iw-btn sec">导出</button></div></td><td>导出当前查询结果</td><td class="lt">工具栏 ExportButton；本页列 &gt;20 → 放导出（R21）</td><td class="lt">按当前筛选真实下载 CSV，完成 Toast「导出成功」</td><td class="lt">无数据时 Toast「暂无可导出的数据」</td></tr>
+    <tr><td class="nm"><b>修改密码</b><span class="k">handleResetPassword</span><div class="iw"><button class="iw-btn">修改密码</button></div></td><td>修改该会员密码</td><td class="lt">行内主色文字按钮</td><td class="lt">弹修改密码弹窗，确认提交后 Toast「保存成功」</td><td class="lt">弹窗内新密码必填、不符规则会标红拦截</td></tr>
     </table>
 
     <h4>批量动作 <span class="kind">10 项（下拉 · 需先勾选）</span></h4>
@@ -500,7 +538,7 @@
   </table>
   <p class="sd">「分组类型」始终有值（默认自定义分组，无输错）；入组门槛（充值金额/次数·投注金额）min=0、为空按 0；「备注」≤100 选填、「状态」开关，均不参与必填校验。</p>
 
-  <h4>分组权限弹窗 <span class="kind">弹窗 560 · 3 项</span></h4>
+  <h4>分组权限弹窗 <span class="kind">弹窗 560 · 2 项</span></h4>
   <table class="ct">
     <tr>
       <th class="h-nm">控件名称（key）</th>
@@ -517,28 +555,21 @@
       <td class="lt">全不选 → 允许保存（表示该分组不展示任何模块）；加载中显示 spin 不可勾。</td>
     </tr>
     <tr>
-      <td class="nm"><b>批量隐藏</b><span class="k">batchHide</span><span class="pill p-in" style="margin-left:4px">新</span><div class="iw"><button class="iw-btn">批量隐藏</button></div></td>
-      <td>一键隐藏勾选的模块</td>
-      <td class="lt">按钮（警告色描边，置于勾选区上方左侧；「全选 / 清空」移到右侧），无输入。把当前勾选的模块批量设为隐藏。</td>
-      <td class="lt">未勾选任何模块就点 → Toast 警告「请先勾选要隐藏的项」；有勾选 → 批量隐藏并 Toast「已批量隐藏 {count} 项」。隐藏结果仍需点「保存权限」落库。</td>
-      <td class="lt">仅对已勾选项生效；未勾选时不弹隐藏、只给警告 Toast。</td>
-    </tr>
-    <tr>
-      <td class="nm"><b>全选</b><span class="k">selectAll</span><div class="iw"><button class="iw-btn">全选</button></div></td>
+      <td class="nm"><b>全选</b><span class="k">selectAll</span><div class="iw"><button class="iw-btn sec">全选</button></div></td>
       <td>一键勾全部</td>
       <td class="lt">小按钮，无输入。</td>
       <td class="lt">点击把全部权限项勾选；不直接保存，仍需点「保存权限」。</td>
       <td class="lt">权限项为空 → 点击无效果；已全选再点保持全选。</td>
     </tr>
     <tr>
-      <td class="nm"><b>清空</b><span class="k">clearAll</span><div class="iw"><button class="iw-btn">清空</button></div></td>
+      <td class="nm"><b>清空</b><span class="k">clearAll</span><div class="iw"><button class="iw-btn sec">清空</button></div></td>
       <td>一键取消全部</td>
       <td class="lt">小按钮，无输入。</td>
       <td class="lt">点击清空所有勾选；不直接保存，需点「保存权限」确认。</td>
       <td class="lt">本已全空 → 点击无变化；清空后保存 = 该分组无任何权限。</td>
     </tr>
   </table>
-  <p class="sd"><b>保存权限无字段级校验枚举</b>：权限勾选可多选可全不选（全不选=不展示任何模块，允许保存），无必填项；点「保存权限」直接提交，成功 Toast「操作成功」、失败 Toast「{原因}」。「批量隐藏」未勾任何项时 Toast 警告「请先勾选要隐藏的项」（属操作前置提示，非保存校验）。</p>
+  <p class="sd"><b>保存权限无字段级校验枚举</b>：权限勾选可多选可全不选（全不选=不展示任何模块，允许保存），无必填项；点「保存权限」直接提交，成功 Toast「操作成功」、失败 Toast「{原因}」。</p>
 
   <h4>数据配置弹窗（仅代理分组）<span class="kind">弹窗 600 · 2 项 + 发布</span></h4>
   <table class="ct">
@@ -740,10 +771,10 @@
       <td class="lt">编辑态切不了商户（语言集随商户固定）。</td>
     </tr>
     <tr>
-      <td class="nm"><b>删除</b><span class="k">delete</span><div class="iw"><button class="iw-btn">删除</button></div></td>
+      <td class="nm"><b>删除</b><span class="k">delete</span><div class="iw"><button class="iw-btn danger">删除</button></div></td>
       <td>行操作 · 删本条</td>
       <td class="lt">按钮，无输入；危险操作。</td>
-      <td class="lt">先弹二次确认「确认删除？」，确认后删除，Toast「删除成功」并刷新；取消则不动；失败 Toast「操作失败：{原因}」。</td>
+      <td class="lt">先弹二次确认「确认删除该条数据？」，确认后删除，Toast「删除成功」并刷新；取消则不动；失败 Toast「操作失败：{原因}」。</td>
       <td class="lt">取消确认不删除；删除当前页最后一条后回退分页。</td>
     </tr>
   </table>
@@ -805,7 +836,7 @@
   <p class="sd">商户 / ID / 标题 / 消息内容（居左·可换行·「更多」展开） / 已配语言 / 排序 / 创建时间 / 状态（只读标签）；仅展示、无交互。</p>
 
   <h4>【Tab2 滚动消息】工具栏 + 行操作 <span class="kind">3 项</span></h4>
-  <p class="sd">与弹窗消息一致：新增消息（按钮，打开滚动消息新增弹窗，Toast「保存成功」）/ 编辑（回显·商户置灰，Toast「保存成功」）/ 删除（二次确认「确认删除？」→Toast「删除成功」，失败「操作失败：{原因}」）。</p>
+  <p class="sd">与弹窗消息一致：新增消息（按钮，打开滚动消息新增弹窗，Toast「保存成功」）/ 编辑（回显·商户置灰，Toast「保存成功」）/ 删除（二次确认「确认删除该条数据？」→Toast「删除成功」，失败「操作失败：{原因}」）。</p>
 
   <h4>【Tab2】新增/编辑弹窗（滚动消息）<span class="kind">弹窗 880 · 5 类字段</span></h4>
   <p class="sd">字段与「弹窗消息」新增/编辑弹窗逐字段一致：商户（必填·编辑置灰，未选红框「请选择商户」）、排序（数字≥0，默认0）、状态（开关，默认开）、标题（逐语言·默认语言必填·≤50）、消息内容（逐语言·默认语言必填·≤500，红框 + Toast「默认语言的标题和内容必填」）。保存成功 Toast「保存成功」，失败「操作失败：{原因}」。</p>
@@ -867,14 +898,14 @@
       <td class="lt">已发送/发送中/成功/部分/失败行不显示编辑，改为「详情」。</td>
     </tr>
     <tr>
-      <td class="nm"><b>删除</b><span class="k">delete</span><div class="iw"><button class="iw-btn">删除</button></div></td>
+      <td class="nm"><b>删除</b><span class="k">delete</span><div class="iw"><button class="iw-btn danger">删除</button></div></td>
       <td>行操作 · 仅未发送可删</td>
       <td class="lt">按钮，无输入；危险操作；<b>仅「未发送」行显示</b>。</td>
-      <td class="lt">先弹二次确认「确认删除？」，确认后删除，Toast「删除成功」并刷新；取消不动；失败 Toast「操作失败：{原因}」。</td>
+      <td class="lt">先弹二次确认「确认删除该条数据？」，确认后删除，Toast「删除成功」并刷新；取消不动；失败 Toast「操作失败：{原因}」。</td>
       <td class="lt">已发送行无删除入口；取消确认不删除。</td>
     </tr>
     <tr>
-      <td class="nm"><b>详情</b><span class="k">detail</span><div class="iw"><button class="iw-btn">详情</button></div></td>
+      <td class="nm"><b>详情</b><span class="k">detail</span><div class="iw"><button class="iw-btn sec">详情</button></div></td>
       <td>行操作 · 已发送只读查看</td>
       <td class="lt">按钮，无输入；<b>「未发送」以外的所有行显示</b>（发送中/成功/部分/失败）。</td>
       <td class="lt">点击打开「推送详情」只读弹窗（600 宽）；无保存动作；不 Toast。</td>
@@ -1024,10 +1055,10 @@
       <td class="lt">编辑态商户置灰；jumpType=1 时回填并预加载厂商/子游戏级联选项。</td>
     </tr>
     <tr>
-      <td class="nm"><b>删除</b><span class="k">delete</span><div class="iw"><button class="iw-btn">删除</button></td>
+      <td class="nm"><b>删除</b><span class="k">delete</span><div class="iw"><button class="iw-btn danger">删除</button></td>
       <td>行操作-删除</td>
       <td class="lt">按钮，无输入；危险操作。</td>
-      <td class="lt">点击先弹二次确认（标题「提示」、内容「确认删除？」、确认/取消）；确认后调删除，Toast「删除成功」，并 reload 列表。</td>
+      <td class="lt">点击先弹二次确认（标题「提示」、内容「确认删除该条数据？」、确认/取消）；确认后调删除，Toast「删除成功」，并 reload 列表。</td>
       <td class="lt">点取消=不删除、关闭确认框；删除后当前页可能为空则停留在当前页展示空态。</td>
     </tr>
   </table>
@@ -1235,7 +1266,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>取消</b><span class="k">cancel</span><div class="iw"><button class="iw-btn">取消</button></div></td>
+      <td class="nm"><b>取消</b><span class="k">cancel</span><div class="iw"><button class="iw-btn sec">取消</button></div></td>
       <td>放弃编辑并关闭弹窗</td>
       <td class="lt">按钮，无输入。点击直接关闭弹窗，不写数据。</td>
       <td class="lt">点击 → 关闭弹窗，已填内容丢弃。无 Toast。</td>
@@ -1315,7 +1346,7 @@
     </tr>
   </table>
 
-  <h4>新增/编辑邮件供应商弹窗 <span class="kind">弹窗 860 · 13 项</span></h4>
+  <h4>新增/编辑邮件供应商弹窗 <span class="kind">弹窗 920 · 13 项</span></h4>
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
@@ -1480,7 +1511,7 @@
       <td class="lt">selectedCount=0 时禁用；执行后自动清空勾选并 reload。</td>
     </tr>
     <tr>
-      <td class="nm"><b>详情</b><span class="k">handleDetail</span><div class="iw"><button class="iw-btn">详情</button></div></td>
+      <td class="nm"><b>详情</b><span class="k">handleDetail</span><div class="iw"><button class="iw-btn sec">详情</button></div></td>
       <td>查看单个渠道详情</td>
       <td class="lt">行操作按钮，无输入。点击拉取 getChannelDetail 后打开「渠道详情」弹窗（宽 600，只读）。</td>
       <td class="lt">点击打开详情弹窗；弹窗内可「复制渠道」「编辑」（见详情弹窗节）；无独立 Toast。</td>
@@ -1494,9 +1525,9 @@
       <td class="lt">编辑态下「商户」「渠道ID」置灰不可改。</td>
     </tr>
     <tr>
-      <td class="nm"><b>删除</b><span class="k">handleDelete</span><div class="iw"><button class="iw-btn">删除</button></div></td>
+      <td class="nm"><b>删除</b><span class="k">handleDelete</span><div class="iw"><button class="iw-btn danger">删除</button></div></td>
       <td>删除单个渠道</td>
-      <td class="lt">行操作按钮（红色），无输入。点击先弹二次确认框「确认删除？」。</td>
+      <td class="lt">行操作按钮（红色），无输入。点击先弹二次确认框「确认删除该条数据？」。</td>
       <td class="lt">确认后调 deleteChannel：成功 Toast「删除成功」并 reload；失败 Toast「操作失败：{原因}」。取消则不动。</td>
       <td class="lt">危险操作必须二次确认；删除后当前页若空自动回上一页（由列表组件处理）。</td>
     </tr>
@@ -1667,7 +1698,7 @@
   <h3>VIP操作日志 <span class="pill p-in">2.0 新增</span></h3>
   <p class="meta-line"><code>operations/vipOpLog</code> · 类型：列表</p>
   <p class="sd">查会员 VIP 等级变动的流水：谁、哪个商户、什么时候、升级/降级/月奖励/充值奖励、领了多少、加了多少经验、成功还是失败，一条一条记下来。</p>
-  <div class="note">🆕 相对 V1：新增独立的「VIP操作日志」列表页，把 VIP 升降级、月奖励、充值奖励的发放流水集中查询，支持按商户/会员ID/订单号/日志类型/状态/创建时间多条件筛选并导出。</div>
+  <div class="note">🆕 相对 V1：新增独立的「VIP操作日志」列表页，把 VIP 升降级、月奖励、充值奖励的发放流水集中查询，支持按商户/会员ID/订单号/日志类型/状态/创建时间多条件筛选、导出，并支持每行「查看」打开只读详情弹窗。</div>
 
   <h4>搜索控件 <span class="kind">6 项</span></h4>
   <table class="ct">
@@ -1675,7 +1706,7 @@
     <tr>
       <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>全部</option><option>1050（商户A）</option><option>1048（商户B）</option><option>1021（商户C）</option></select></div></td>
       <td>按所属商户筛选日志</td>
-      <td class="lt">可搜索下拉，选项来自全站商户列表，显示「商户号（商户名）」；单选；可清空；下拉无手输错误。</td>
+      <td class="lt">可搜索下拉，选项来自全站商户列表，显示「商户号（商户名）」；多选（顶部「全部」互斥，不选＝全部）；可清空；下拉无手输错误。</td>
       <td class="lt">选中后随查询条件一起带入分页接口过滤；清空＝不限商户。切换后点查询刷新列表。</td>
       <td class="lt">不选＝全部商户；商户列表为空时下拉只剩「全部」；选中的商户无数据则列表为空、显示空态。</td>
     </tr>
@@ -1723,7 +1754,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>导出</b><span class="k">handleExport</span><div class="iw"><button class="iw-btn">导出</button></div></td>
+      <td class="nm"><b>导出</b><span class="k">handleExport</span><div class="iw"><button class="iw-btn sec">导出</button></div></td>
       <td>导出当前筛选结果</td>
       <td class="lt">按钮，无输入；点击即触发，无表单校验。</td>
       <td class="lt">按当前搜索条件导出日志列表。Toast：触发「导出中…」；成功「导出成功」；失败「导出失败：{原因}」。</td>
@@ -1770,7 +1801,7 @@
       <td class="lt">同一会员重复配置以最新一条为准；保存中再次点击不重复提交（按钮在弹窗内）。</td>
     </tr>
     <tr>
-      <td class="nm"><b>批量删除</b><span class="k">handleBatchDelete</span><div class="iw"><button class="iw-btn">批量删除 (2)</button></div></td>
+      <td class="nm"><b>批量删除</b><span class="k">handleBatchDelete</span><div class="iw"><button class="iw-btn danger">批量删除 (2)</button></div></td>
       <td>工具栏 · 删除所有勾选记录</td>
       <td class="lt">按钮，无输入。未勾选任何行时置灰禁用；勾选后亮起并在按钮后显示已选条数。危险操作。</td>
       <td class="lt">点击先弹二次确认「确定删除（N）？」→ 确定后调用删除，Toast「删除成功」，清空勾选并刷新列表；取消则不动作。失败 Toast「操作失败：{原因}」。</td>
@@ -1798,7 +1829,7 @@
       <td class="lt">编辑态下商户、会员ID置灰不可改；模式由固定改为动态则清空日期区间。</td>
     </tr>
     <tr>
-      <td class="nm"><b>删除</b><span class="k">handleDelete</span><div class="iw"><button class="iw-btn">删除</button></div></td>
+      <td class="nm"><b>删除</b><span class="k">handleDelete</span><div class="iw"><button class="iw-btn danger">删除</button></div></td>
       <td>行操作 · 删除本条返佣等级</td>
       <td class="lt">按钮，无输入。危险操作，点击先二次确认。</td>
       <td class="lt">点击弹确认框「确定删除？」→ 确定后删除并 Toast「删除成功」+刷新列表；取消不动作。失败 Toast「操作失败：{原因}」。</td>
@@ -1947,7 +1978,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>导出</b><span class="k">handleExport</span><div class="iw"><button class="iw-btn">导出</button></div></td>
+      <td class="nm"><b>导出</b><span class="k">handleExport</span><div class="iw"><button class="iw-btn sec">导出</button></div></td>
       <td>导出当前结果到 Excel</td>
       <td class="lt">按钮，无输入。报表类页面（R21）固定提供导出。按当前搜索条件＋表格「显隐/排序后的列」所见即所得导出，导出上限默认 10000 条。</td>
       <td class="lt">点击进入 loading（按钮禁用防重复点），成功 Toast「导出成功」；失败 Toast「导出失败」；数据过多时提示「导出数据过多，请稍后前往数据导出中心获取导出文件」。文件名为「昨日返佣等级」。</td>
@@ -2225,7 +2256,7 @@
     </tr>
 
     <tr>
-      <td class="nm"><b>行操作（编辑/确定/取消）</b><span class="k">startEditLevel / saveLevel / cancelEditLevel</span><div class="iw"><button class="iw-btn">编辑</button> <button class="iw-btn">确定</button> <button class="iw-btn">取消</button></div></td>
+      <td class="nm"><b>行操作（编辑/确定/取消）</b><span class="k">startEditLevel / saveLevel / cancelEditLevel</span><div class="iw"><button class="iw-btn">编辑</button> <button class="iw-btn">确定</button> <button class="iw-btn sec">取消</button></div></td>
       <td>每行最右操作：只读态显示「编辑」，编辑态显示「确定」「取消」</td>
       <td class="lt">按钮，无输入；只读态点「编辑」进入；编辑态「确定」走保存预览确认、「取消」放弃</td>
       <td class="lt">「确定」先弹保存预览弹窗(只读 mini 表，标明保存到哪个商户 + 黄色提示)，再次确认才落库、Toast「保存成功」；「取消」直接退出编辑态不弹窗、不保存</td>
@@ -2246,7 +2277,7 @@
     </tr>
 
     <tr>
-      <td class="nm"><b>查看全部（商户）</b><span class="k">openViewAll</span><div class="iw"><button class="iw-btn">+N 查看全部</button></div></td>
+      <td class="nm"><b>查看全部（商户）</b><span class="k">openViewAll</span><div class="iw"><button class="iw-btn sec">+N 查看全部</button></div></td>
       <td>某模板/自定义配置下商户超 3 个时，打开 600 弹窗看全部商户并可搜索切换</td>
       <td class="lt">按钮 → 600 弹窗内含搜索框（按商户号/名称过滤）+ 商户网格；无校验</td>
       <td class="lt">点弹窗内某商户即切换并关闭弹窗；无匹配显示「无匹配商户」；无 Toast</td>
@@ -2332,7 +2363,7 @@
     </tr>
 
     <tr>
-      <td class="nm"><b>全选 / 反选 / 清空</b><span class="k">selectAll / invert</span><div class="iw"><button class="iw-btn">全选</button> <button class="iw-btn">反选</button> <button class="iw-btn">清空</button></div></td>
+      <td class="nm"><b>全选 / 反选 / 清空</b><span class="k">selectAll / invert</span><div class="iw"><button class="iw-btn sec">全选</button> <button class="iw-btn sec">反选</button> <button class="iw-btn sec">清空</button></div></td>
       <td>批量勾选辅助：全选 / 反选当前勾选 / 全部清空</td>
       <td class="lt">按钮，无输入；作用于全部可选目标</td>
       <td class="lt">点击即时更新勾选状态与「已选 N 个」计数及覆盖提示；无 Toast</td>
@@ -2348,7 +2379,7 @@
     </tr>
 
     <tr>
-      <td class="nm"><b>取消</b><span class="k">close</span><div class="iw"><button class="iw-btn">取消</button></div></td>
+      <td class="nm"><b>取消</b><span class="k">close</span><div class="iw"><button class="iw-btn sec">取消</button></div></td>
       <td>关闭弹窗不套用</td>
       <td class="lt">按钮，无输入</td>
       <td class="lt">点击直接关闭弹窗，勾选作废、无任何写入，无 Toast</td>
@@ -2384,7 +2415,7 @@
     </tr>
 
     <tr>
-      <td class="nm"><b>全选 / 反选 / 清空</b><span class="k">selectAll / invert</span><div class="iw"><button class="iw-btn">全选</button> <button class="iw-btn">反选</button> <button class="iw-btn">清空</button></div></td>
+      <td class="nm"><b>全选 / 反选 / 清空</b><span class="k">selectAll / invert</span><div class="iw"><button class="iw-btn sec">全选</button> <button class="iw-btn sec">反选</button> <button class="iw-btn sec">清空</button></div></td>
       <td>批量勾选辅助</td>
       <td class="lt">按钮，无输入；作用于全部可选目标（不含源商户）</td>
       <td class="lt">点击即时更新勾选与「已选 N 个」及覆盖提示；无 Toast</td>
@@ -2392,7 +2423,7 @@
     </tr>
 
     <tr>
-      <td class="nm"><b>确认复制并发布 / 取消</b><span class="k">confirm / close</span><div class="iw"><button class="iw-btn">确认复制并发布</button> <button class="iw-btn">取消</button></div></td>
+      <td class="nm"><b>确认复制并发布 / 取消</b><span class="k">confirm / close</span><div class="iw"><button class="iw-btn">确认复制并发布</button> <button class="iw-btn sec">取消</button></div></td>
       <td>把当前商户配置复制并发布到所选目标商户 / 关闭不复制</td>
       <td class="lt">「确认」按钮未选目标时置灰；「取消」直接关闭</td>
       <td class="lt">确认后复制并发布、关闭弹窗，Toast「已将「(商户号)商户名」的配置复制到 N 个商户」；「取消」不写入、无 Toast</td>
@@ -2412,7 +2443,7 @@
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
 
     <tr>
-      <td class="nm"><b>确认删除 / 取消</b><span class="k">deleteTemplate</span><div class="iw"><button class="iw-btn">确认删除</button> <button class="iw-btn">取消</button></div></td>
+      <td class="nm"><b>确认删除 / 取消</b><span class="k">deleteTemplate</span><div class="iw"><button class="iw-btn danger">确认删除</button> <button class="iw-btn sec">取消</button></div></td>
       <td>危险操作二次确认：弹窗正文提示「确认删除模板「{名称}」？」并蓝框说明「仅删除该模板，不影响商户配置：使用该模板的商户将保留各自的当前配置，并自动转为自定义配置」</td>
       <td class="lt">按钮，无输入；「确认删除」红色危险按钮</td>
       <td class="lt">点「确认删除」执行删除并关闭，Toast「已删除模板「{名称}」，N 个商户转为自定义配置」；点「取消」关闭不删、无 Toast</td>
@@ -2433,7 +2464,7 @@
     </tr>
 
     <tr>
-      <td class="nm"><b>确认 / 取消</b><span class="k">onOk / cancel</span><div class="iw"><button class="iw-btn">确认保存</button> <button class="iw-btn">确认发布</button> <button class="iw-btn">取消</button></div></td>
+      <td class="nm"><b>确认 / 取消</b><span class="k">onOk / cancel</span><div class="iw"><button class="iw-btn">确认保存</button> <button class="iw-btn">确认发布</button> <button class="iw-btn sec">取消</button></div></td>
       <td>核对后确认执行 或 放弃</td>
       <td class="lt">按钮，无输入；确认按钮文案随场景：确认保存 / 确认发布 / 保存模板 / 确认复制并发布</td>
       <td class="lt">点确认才真正落库/发布并按各场景弹对应成功 Toast(保存成功 / 已保存（待发布）/ 已发布 ... / 已创建模板 ...)；点「取消」关闭弹窗、不执行、不留改动</td>
@@ -2510,7 +2541,7 @@
       <td class="nm"><b>暂存 / 发布</b><span class="k">onSaveDraft / onPublish</span><div class="iw"><button class="iw-btn">暂存</button> <button class="iw-btn">发布</button></div></td>
       <td>把当前商户配置暂存为草稿 / 正式发布</td>
       <td class="lt">两个按钮，无输入；「暂存」在有改动（dirty）时高亮为主色。</td>
-      <td class="lt">点击均先弹「配置内容预览」二次确认；暂存确认后状态→待发布 + Toast「已暂存」；发布确认后状态→已发布 + Toast「「{商户名}」已发布」。</td>
+      <td class="lt">点击均先弹「配置内容预览」二次确认；暂存确认后状态→待发布 + Toast「已保存（待发布）」；发布确认后状态→已发布 + Toast「已发布 (商户号)商户名，前台立即生效」。</td>
       <td class="lt">无改动时暂存按钮为普通态；状态标签随之在「未配置/待发布/已发布」间切换。</td>
     </tr>
   </table>
@@ -2533,7 +2564,7 @@
       <td class="lt">「满足人数」列恒为灰色 0（运行时统计、配置态不可填）；负数被 min=0 拦在 0；L0 基础级该行不可编辑（操作列显示灰字「基础级」）。</td>
     </tr>
     <tr>
-      <td class="nm"><b>行操作（编辑/删除/确认/取消）</b><span class="k">startEditLevel / handleDeleteLevel / saveLevel / cancelEditLevel</span><div class="iw"><button class="iw-btn">编辑</button> <button class="iw-btn">删除</button></div></td>
+      <td class="nm"><b>行操作（编辑/删除/确认/取消）</b><span class="k">startEditLevel / handleDeleteLevel / saveLevel / cancelEditLevel</span><div class="iw"><button class="iw-btn">编辑</button> <button class="iw-btn danger">删除</button></div></td>
       <td>每行的等级操作</td>
       <td class="lt">文字按钮，无输入；编辑态显示「确认/取消」，非编辑态显示「编辑/删除」；L0 行无操作按钮（显示灰字「基础级」）。</td>
       <td class="lt">「编辑」进入行内编辑；「删除」弹二次确认（内容「确认删除该返佣等级配置？」），确认后 Toast「删除成功」；「确认」弹保存预览后 Toast「保存成功」；「取消」退出编辑不保存。</td>
@@ -2567,7 +2598,7 @@
     <tr><td>保存</td><td><b>等级门槛</b>（lvBuffer：tp/ta/tg/dp/da/dg）</td><td>数值 · min=0（负数自动夹回 0，空值按 0）</td><td>负数被 min=0 拦在 0（前端约束）</td></tr>
     <tr><td>保存</td><td><b>费率单元格</b>（rateBuffer[game][tier]）</td><td>数值 · min=0；同一游戏大类跨一~六级纵向求和必须 ≤ 5%</td><td>超限整列标红 + Toast「保存失败：{大类（合计 X%）} 跨等级费率之和超过 5%，已标红，请调整后重试」</td></tr>
   </table>
-  <p class="sd">暂存 / 发布均<b>先弹配置内容预览二次确认</b>再写库：暂存 → Toast「已暂存」；发布 → Toast「「{商户名}」已发布」。</p>
+  <p class="sd">暂存 / 发布均<b>先弹配置内容预览二次确认</b>再写库：暂存 → Toast「已保存（待发布）」；发布 → Toast「已发布 (商户号)商户名，前台立即生效」。</p>
 
   <h4>列表/矩阵（仅展示，不逐列详述）<span class="kind">仅展示，不逐列详述</span></h4>
   <p class="sd">返佣等级管理表：等级（左固定·居中加粗 L0~L8）／团队下级条件（团队当日充值人数·满足人数·团队当日充值金额·满足人数·团队当日有效投注流水·满足人数）／直属下级条件（直属当日充值人数·满足人数·直属当日充值金额·满足人数·直属当日有效投注流水·满足人数）／操作（右固定）；列默认居中，「满足人数」为灰色只读统计列。返佣费率矩阵（每等级一张卡）：行=一级~六级，列=彩票／电子／真人／体育／棋牌（%）。均仅展示、无独立交互（编辑入口见上方控件）。</p>
@@ -2583,7 +2614,7 @@
       <td class="lt">套用模板模式不展示源配置表（仅展示模板名）。</td>
     </tr>
     <tr>
-      <td class="nm"><b>全选 / 反选 / 清空</b><span class="k">selectAll / invert</span><div class="iw"><button class="iw-btn">全选</button> <button class="iw-btn">反选</button> <button class="iw-btn">清空</button></div></td>
+      <td class="nm"><b>全选 / 反选 / 清空</b><span class="k">selectAll / invert</span><div class="iw"><button class="iw-btn sec">全选</button> <button class="iw-btn sec">反选</button> <button class="iw-btn sec">清空</button></div></td>
       <td>批量勾选目标商户</td>
       <td class="lt">三个小按钮，无输入。</td>
       <td class="lt">分别全选/反选/清空目标商户勾选；勾选数实时显示「已选 {N}」。无 Toast。</td>
@@ -2597,7 +2628,7 @@
       <td class="lt">未配置目标显示灰「未配置」标签；已配置显示其来源（模板名/复制自某商户/自定义）。</td>
     </tr>
     <tr>
-      <td class="nm"><b>取消</b><span class="k">emit('close')</span><div class="iw"><button class="iw-btn">取消</button></div></td>
+      <td class="nm"><b>取消</b><span class="k">emit('close')</span><div class="iw"><button class="iw-btn sec">取消</button></div></td>
       <td>关闭弹窗不复制</td>
       <td class="lt">按钮，无输入。</td>
       <td class="lt">点击关闭弹窗，不做任何写入。无 Toast。</td>
@@ -2630,10 +2661,10 @@
       <td class="lt">行内逐条保存、整卡费率保存、商户暂存/发布、新建模板均复用此预览。</td>
     </tr>
     <tr>
-      <td class="nm"><b>取消 / 确认保存（发布）</b><span class="k">inst.destroy / onOk</span><div class="iw"><button class="iw-btn">取消</button> <button class="iw-btn">确认保存</button></div></td>
+      <td class="nm"><b>取消 / 确认保存（发布）</b><span class="k">inst.destroy / onOk</span><div class="iw"><button class="iw-btn sec">取消</button> <button class="iw-btn">确认保存</button></div></td>
       <td>确认或放弃本次写入</td>
       <td class="lt">两个按钮，无输入；确认按钮文案随场景为「确认保存 / 确认发布」。</td>
-      <td class="lt">「确认」执行 persist 写入并关闭：保存类 Toast「保存成功」、暂存 Toast「已暂存」、发布 Toast「「{商户名}」已发布」、新建模板 Toast「模板「{名称}」已创建」；「取消」关闭不写入。</td>
+      <td class="lt">「确认」执行 persist 写入并关闭：保存类 Toast「保存成功」、暂存 Toast「已保存（待发布）」、发布 Toast「已发布 (商户号)商户名，前台立即生效」、新建模板 Toast「模板「{名称}」已创建」；「取消」关闭不写入。</td>
       <td class="lt">弹窗未确认前不改任何配置；关闭即丢弃本次预览。</td>
     </tr>
   </table>
@@ -2642,7 +2673,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>取消 / 确认删除</b><span class="k">onDeleteTemplate</span><div class="iw"><button class="iw-btn">取消</button> <button class="iw-btn">确认删除</button></div></td>
+      <td class="nm"><b>取消 / 确认删除</b><span class="k">onDeleteTemplate</span><div class="iw"><button class="iw-btn sec">取消</button> <button class="iw-btn danger">确认删除</button></div></td>
       <td>删除模板画廊里某个模板（危险操作·二次确认）</td>
       <td class="lt">弹窗含蓝色说明「仅删除该模板，不影响商户配置：使用该模板的商户将保留各自的当前配置，并自动转为「自定义配置」」+ 取消/确认删除按钮，无输入。</td>
       <td class="lt">点模板卡右上角红 ✕ 触发；「确认删除」Toast「已删除模板「{名称}」，{N} 个商户转为自定义配置」；「取消」关闭不删。</td>
@@ -2672,7 +2703,7 @@
       <td class="nm"><b>正在配置商户</b><span class="k">state.current</span><div class="iw"><select class="iw-sel"><option>(1050) daman</option><option>(1040) 66bet</option><option>(1048) 91club</option></select></div></td>
       <td>「使用商户模版」模式下选择当前正在查看/配置的商户</td>
       <td class="lt">可搜索下拉（filterable），选项=全部 50 个商户，格式「(商户号) 商户名」，如「(1050) daman」「(1051) lucky7」。只能选不能手输商户号；清空后保持原选中（不可为空）。</td>
-      <td class="lt">切换后重新载入该商户的 12 条模板配置，退出模板编辑态、退出行内编辑。来源徽标随之更新：自有配置=「独立配置」、套用模板=「模板·{方案名}」、复制自某商户=「复制自{商户}」。状态徽标显示 未配置/待发布/已发布。切换无 Toast。</td>
+      <td class="lt">切换后重新载入该商户的 12 条模板配置，退出模板编辑态、退出行内编辑。来源徽标随之更新：自有配置=「单商户配置」、套用模板=「自定义模版·{方案名}」、复制自某商户=「商户模版·来自{商户}」。状态徽标显示 未配置/待发布/已发布。切换无 Toast。</td>
       <td>切换商户时若正处于某行行内编辑，未保存的编辑缓存被丢弃（不提示）；切到「未配置」商户时表格为全空白配置（推送全关）。</td>
     </tr>
 
@@ -2688,7 +2719,7 @@
       <td class="nm"><b>暂存（保存草稿）</b><span class="k">saveDraft</span><div class="iw"><button class="iw-btn">暂存</button></div></td>
       <td>「使用自定义模版」按商户编辑态下，把当前商户改动存为草稿（待发布）</td>
       <td class="lt">按钮，无输入。点击先弹「保存预览」弹窗，展示将保存的配置（场景/标题/是否推送 3 列只读 mini 表）+ 确认。</td>
-      <td class="lt">确认后当前商户状态置「待发布」。成功 Toast：「已暂存」。仅按商户编辑态可用；处于新建/编辑套餐态时暂存不生效（直接返回）。</td>
+      <td class="lt">确认后当前商户状态置「待发布」。成功 Toast：「已保存（待发布）」。仅按商户编辑态可用；处于新建/编辑套餐态时暂存不生效（直接返回）。</td>
       <td>无任何改动时按钮按默认灰显（dirty=false），仍可点开预览；处于套餐草稿/编辑态时点击无效果。</td>
     </tr>
 
@@ -2696,7 +2727,7 @@
       <td class="nm"><b>发布</b><span class="k">publish</span><div class="iw"><button class="iw-btn">发布</button></div></td>
       <td>把当前商户配置正式发布生效</td>
       <td class="lt">按钮，无输入。点击先弹「发布预览」弹窗（同暂存的 3 列 mini 表）+ 确认，属重要操作故先二次确认。</td>
-      <td class="lt">确认后当前商户状态置「已发布」。成功 Toast：「已发布「{当前商户}」的配置」。</td>
+      <td class="lt">确认后当前商户状态置「已发布」。成功 Toast：「已发布 (商户号)商户名，前台立即生效」。</td>
       <td>处于新建/编辑套餐态时发布不生效；目标为「套用模板来源」的商户可先「脱离模板」转独立配置后再编辑发布。</td>
     </tr>
   </table>
@@ -2745,7 +2776,7 @@
     </tr>
 
     <tr>
-      <td class="nm"><b>编辑 / 保存 / 取消</b><span class="k">startEdit / saveEdit / cancelEdit</span><div class="iw"><button class="iw-btn">编辑</button> <button class="iw-btn">保存</button> <button class="iw-btn">取消</button></div></td>
+      <td class="nm"><b>编辑 / 保存 / 取消</b><span class="k">startEdit / saveEdit / cancelEdit</span><div class="iw"><button class="iw-btn">编辑</button> <button class="iw-btn">保存</button> <button class="iw-btn sec">取消</button></div></td>
       <td>进入/提交/放弃该行的逐语言文案编辑（操作列，末列、右侧冻结）</td>
       <td class="lt">文字按钮。只读态显「编辑」；进入编辑态显「保存」「取消」。同一时刻只能编辑一行（其他行「编辑」按钮置灰）。</td>
       <td class="lt">「编辑」→ 进入该行编辑、载入全语言缓存。「保存」→ 校验默认语言（简体中文）标题/内容均非空：缺则自动切回简体中文、对应输入框红框，并 Toast 报错「请填写默认语言（简体中文）的标题」或「…的内容」；通过则落库、退出编辑，成功 Toast：「保存成功」。「取消」→ 不保存、退出编辑、丢弃缓存（无 Toast）。</td>
@@ -2802,7 +2833,7 @@
     </tr>
 
     <tr>
-      <td class="nm"><b>保存模板 / 取消</b><span class="k">onSaveTemplate / onCancelTemplate</span><div class="iw"><button class="iw-btn">保存模板</button> <button class="iw-btn">取消</button></div></td>
+      <td class="nm"><b>保存模板 / 取消</b><span class="k">onSaveTemplate / onCancelTemplate</span><div class="iw"><button class="iw-btn">保存模板</button> <button class="iw-btn sec">取消</button></div></td>
       <td>提交或放弃新建模板草稿</td>
       <td class="lt">两个按钮。保存前必经名称非空、未超上限、不重名三道校验（任一不过弹对应 Toast 警告，见上）。</td>
       <td class="lt">「保存模板」→ 通过校验后弹「保存预览」二次确认 → 登记模板，成功 Toast：「已创建模板「{名称}」」。「取消」→ 退出草稿态、清空草稿（无 Toast）。</td>
@@ -2860,7 +2891,7 @@
     </tr>
 
     <tr>
-      <td class="nm"><b>全选 / 反选 / 清空</b><span class="k">selectAll / invert</span><div class="iw"><button class="iw-btn">全选</button> <button class="iw-btn">反选</button> <button class="iw-btn">清空</button></div></td>
+      <td class="nm"><b>全选 / 反选 / 清空</b><span class="k">selectAll / invert</span><div class="iw"><button class="iw-btn sec">全选</button> <button class="iw-btn sec">反选</button> <button class="iw-btn sec">清空</button></div></td>
       <td>批量勾选目标商户</td>
       <td class="lt">三个快捷按钮，无输入。</td>
       <td class="lt">全选=勾选全部可选商户；反选=取反；清空=取消全部勾选。即时更新「已选 {N}」与覆盖警示。无 Toast。</td>
@@ -2876,7 +2907,7 @@
     </tr>
 
     <tr>
-      <td class="nm"><b>取消</b><span class="k">close</span><div class="iw"><button class="iw-btn">取消</button></div></td>
+      <td class="nm"><b>取消</b><span class="k">close</span><div class="iw"><button class="iw-btn sec">取消</button></div></td>
       <td>放弃套用、关闭弹窗</td>
       <td class="lt">次按钮，无输入。</td>
       <td class="lt">关闭弹窗，不做任何更改（无 Toast）。</td>
@@ -2904,7 +2935,7 @@
     </tr>
 
     <tr>
-      <td class="nm"><b>全选 / 反选 / 清空</b><span class="k">selectAll / invert</span><div class="iw"><button class="iw-btn">全选</button> <button class="iw-btn">反选</button> <button class="iw-btn">清空</button></div></td>
+      <td class="nm"><b>全选 / 反选 / 清空</b><span class="k">selectAll / invert</span><div class="iw"><button class="iw-btn sec">全选</button> <button class="iw-btn sec">反选</button> <button class="iw-btn sec">清空</button></div></td>
       <td>批量勾选目标商户</td>
       <td class="lt">三个快捷按钮，无输入。</td>
       <td class="lt">同套用弹窗：全选/反选/清空即时更新选中数与覆盖警示。无 Toast。</td>
@@ -2920,7 +2951,7 @@
     </tr>
 
     <tr>
-      <td class="nm"><b>取消</b><span class="k">close</span><div class="iw"><button class="iw-btn">取消</button></div></td>
+      <td class="nm"><b>取消</b><span class="k">close</span><div class="iw"><button class="iw-btn sec">取消</button></div></td>
       <td>放弃复制、关闭弹窗</td>
       <td class="lt">次按钮，无输入。</td>
       <td class="lt">关闭弹窗，不做更改（无 Toast）。</td>
@@ -2940,7 +2971,7 @@
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
 
     <tr>
-      <td class="nm"><b>确认删除</b><span class="k">deleteTemplate</span><div class="iw"><button class="iw-btn">确认删除</button></div></td>
+      <td class="nm"><b>确认删除</b><span class="k">deleteTemplate</span><div class="iw"><button class="iw-btn danger">确认删除</button></div></td>
       <td>点模板卡右上角红色「✕」触发，删除该消息方案模板</td>
       <td class="lt">红色主按钮，无输入。弹窗为危险操作二次确认：标题「删除模板」，正文「确认删除模板「{名称}」？」并蓝色提示「仅删除该模板，不影响商户配置：使用该模板的商户将保留各自的当前配置，并自动转为「自定义配置」」。</td>
       <td class="lt">确认后移除模板，套用它的商户来源转为「独立配置（自定义）」、配置数据保留。成功 Toast：「已删除模板「{名称}」，{N} 个商户转为自定义配置」。</td>
@@ -2948,7 +2979,7 @@
     </tr>
 
     <tr>
-      <td class="nm"><b>取消</b><span class="k">destroy</span><div class="iw"><button class="iw-btn">取消</button></div></td>
+      <td class="nm"><b>取消</b><span class="k">destroy</span><div class="iw"><button class="iw-btn sec">取消</button></div></td>
       <td>放弃删除、关闭弹窗</td>
       <td class="lt">次按钮，无输入。</td>
       <td class="lt">关闭弹窗，模板保留（无 Toast）。</td>
@@ -2964,12 +2995,12 @@
       <td class="nm"><b>确认（保存/发布）</b><span class="k">onOk</span><div class="iw"><button class="iw-btn">确认暂存</button> <button class="iw-btn">确认发布</button></div></td>
       <td>暂存/发布前预览将生效的配置内容并确认</td>
       <td class="lt">主按钮，无输入。弹窗内只读 mini 表展示当前配置（场景 / 标题 / 是否推送 三列，居中），底部黄色提示说明影响范围。</td>
-      <td class="lt">暂存确认 → 当前商户状态置「待发布」，成功 Toast：「已暂存」。发布确认 → 状态置「已发布」，成功 Toast：「已发布「{当前商户}」的配置」。确认后关闭弹窗。</td>
+      <td class="lt">暂存确认 → 当前商户状态置「待发布」，成功 Toast：「已保存（待发布）」。发布确认 → 状态置「已发布」，成功 Toast：「已发布 (商户号)商户名，前台立即生效」。确认后关闭弹窗。</td>
       <td>新建模板保存也复用此预览（标题改为「新增模板 · {名称}」、确认按钮为「保存模板」）。</td>
     </tr>
 
     <tr>
-      <td class="nm"><b>取消</b><span class="k">destroy</span><div class="iw"><button class="iw-btn">取消</button></div></td>
+      <td class="nm"><b>取消</b><span class="k">destroy</span><div class="iw"><button class="iw-btn sec">取消</button></div></td>
       <td>放弃本次暂存/发布，返回继续编辑</td>
       <td class="lt">次按钮，无输入。</td>
       <td class="lt">关闭弹窗，状态不变（无 Toast）。</td>
@@ -2984,7 +3015,7 @@
     <tr><td>暂存 / 发布</td><td><b>内容（编辑态·逐语言）</b>（contentByLang[lang]）</td><td>仅默认语言（简体中文）必填 · 长度 ≤ 500；其余语言可空</td><td>自动切回简体中文 + 红框 + Toast「请填写默认语言（简体中文）的内容」</td></tr>
     <tr><td>保存模板</td><td><b>模板名称</b>（draftName / nameInput）</td><td>必填 · ≤ 20、不重名、模板数 ≤ 10</td><td>空：Toast「请输入模板名称」；重名：Toast「模板名称已存在」；超上限：Toast 警告</td></tr>
   </table>
-  <p class="sd">暂存 / 发布均<b>先弹预览二次确认</b>再执行：暂存 → Toast「已暂存」；发布 → Toast「已发布『商户』的配置」。币种下拉无校验。</p>
+  <p class="sd">暂存 / 发布均<b>先弹预览二次确认</b>再执行：暂存 → Toast「已保存（待发布）」；发布 → Toast「已发布 (商户号)商户名，前台立即生效」。币种下拉无校验。</p>
 
   <h4>查看全部商户弹窗 <span class="kind">弹窗 · 600 · 2 项</span></h4>
   <table class="ct">
@@ -3045,7 +3076,7 @@
   </table>
 
   <h4>Tab：开关配置 <span class="kind">≈78 个开关 · 9 分组 · 每组 1 保存</span></h4>
-  <p class="sd">9 个分组卡片：登录与安全(8) / 验证码-手机短信(3)·邮件(3) / 充值与支付(13) / 提现(3) / 活动与奖励(17) / 财务与积分(5) / 彩票与游戏(4) / 代理与风控(4) / 推广与链接(2)。每个开关是一行「名称 + 溯源徽标(原/新) + 来源路径 + 开关」；其中 3 个开关带「含配置项」徽标，开启后就地展开参数。下方另有「迁移说明」只读卡（源站有但迁到别页的开关，仅展示）。</p>
+  <p class="sd">9 个分组卡片：登录与安全(8) / 验证码-手机短信(3)·邮件(3) / 充值与支付(13) / 提现(3) / 活动与奖励(16) / 财务与积分(5) / 彩票与游戏(4) / 代理与风控(4) / 推广与链接(2)。每个开关是一行「名称 + 溯源徽标(原/新) + 来源路径 + 开关」；其中 3 个开关带「含配置项」徽标，开启后就地展开参数。下方另有「迁移说明」只读卡（源站有但迁到别页的开关，仅展示）。</p>
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
@@ -3510,7 +3541,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>导出</b><span class="k">handleExport</span><div class="iw"><button class="iw-btn">导出</button></div></td>
+      <td class="nm"><b>导出</b><span class="k">handleExport</span><div class="iw"><button class="iw-btn sec">导出</button></div></td>
       <td>工具栏 · 导出当前筛选结果</td>
       <td class="lt">按钮，无输入。报表类页面按 R21 提供导出；点击先弹格式下拉（Excel .xlsx / CSV .csv），选格式后才导出。导出中按钮置 loading 防重复点击。</td>
       <td class="lt">按当前搜索条件（商户/通道/类型/状态/时间）拉全量生成文件，文件名取页名「支代付通道预警」。成功 Toast「导出成功」；失败 Toast「操作失败：{原因}」。</td>
@@ -3565,7 +3596,7 @@
       <td class="lt">单条模式弹窗上方显示「预警类型 + 预警内容」；批量模式上方显示「操作数量：N」。默认空。</td>
     </tr>
     <tr>
-      <td class="nm"><b>取消</b><span class="k">cancel</span><div class="iw"><button class="iw-btn">取消</button></div></td>
+      <td class="nm"><b>取消</b><span class="k">cancel</span><div class="iw"><button class="iw-btn sec">取消</button></div></td>
       <td>放弃操作并关闭弹窗</td>
       <td class="lt">按钮，无输入。点击直接关闭弹窗，不提交。</td>
       <td class="lt">点击 → 关闭弹窗，已填备注丢弃。无 Toast。</td>
@@ -3607,7 +3638,7 @@
       <td class="lt">后端未下发渠道时回退默认「站内信」；多渠道按 Tag 列表逐个展示。</td>
     </tr>
     <tr>
-      <td class="nm"><b>关闭 / 保存</b><span class="k">close / handleSave</span><div class="iw"><button class="iw-btn">关闭</button> <button class="iw-btn">保存</button></div></td>
+      <td class="nm"><b>关闭 / 保存</b><span class="k">close / handleSave</span><div class="iw"><button class="iw-btn sec">关闭</button> <button class="iw-btn">保存</button></div></td>
       <td>弹窗底部操作</td>
       <td class="lt">两个按钮，无输入。「关闭」常在；「保存」仅有保存权限时显示、带 loading 防重复点击。保存先校验：501 需 窗口分钟/拉单次数/失败率 三项齐全；502 需 连续失败次数；503/504 需 至少一个币种且各币种金额均非空；各规则通知渠道非空。</td>
       <td class="lt">校验不通过 → Toast「{类型} 的规则配置不完整」（或「{类型} 通知渠道 的规则配置不完整」）并停在弹窗。校验通过 → 提交，成功 Toast「规则保存成功」、关闭弹窗、刷新顶部统计卡；失败 Toast「操作失败」、弹窗不关。</td>
@@ -3664,7 +3695,7 @@
       <td class="lt">后台锁定时间上限 100；会员提交时间无显式上限；主开关关闭时不校验。</td>
     </tr>
     <tr>
-      <td class="nm"><b>关闭 / 保存</b><span class="k">close / handleSave</span><div class="iw"><button class="iw-btn">关闭</button> <button class="iw-btn">保存</button></div></td>
+      <td class="nm"><b>关闭 / 保存</b><span class="k">close / handleSave</span><div class="iw"><button class="iw-btn sec">关闭</button> <button class="iw-btn">保存</button></div></td>
       <td>弹窗底部操作</td>
       <td class="lt">两个按钮，无输入。「关闭」常在；「保存」仅有保存权限时显示、带 loading 防重复点击。保存前校验：仅当主开关「开启」时才逐个校验整数字段（空 / 小于 min / 大于 max 均非法并标红框），主开关关闭直接放行；文本字段（Token / 群组 Id）不参与必填。</td>
       <td class="lt">校验失败 → Toast「『{字段名}』填写有误，请检查标红项」（指名首个出错字段）并把错误项标红框，停在弹窗。校验通过 → 提交，成功 Toast「保存成功」、关闭弹窗；接口返回非 0 或异常 → Toast「操作失败」、弹窗不关。</td>
@@ -3721,7 +3752,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>导出</b><span class="k">handleExport</span><div class="iw"><button class="iw-btn">导出</button></td>
+      <td class="nm"><b>导出</b><span class="k">handleExport</span><div class="iw"><button class="iw-btn sec">导出</button></td>
       <td>导出当前筛选口径的代理报表</td>
       <td class="lt">工具栏按钮，无输入。报表类页面按 R21 提供导出。导出中按钮置 loading 禁止重复点击。</td>
       <td class="lt">点击后按当前搜索条件（商户/时间/代理）拉取全量数据生成文件，文件名取页名「代理报表」。成功 Toast「导出成功」；失败 Toast「导出失败：{原因}」。</td>
@@ -3778,7 +3809,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>导出</b><span class="k">handleExport</span><div class="iw"><button class="iw-btn">导出</button></div></td>
+      <td class="nm"><b>导出</b><span class="k">handleExport</span><div class="iw"><button class="iw-btn sec">导出</button></div></td>
       <td>把当前筛选条件下的全部流水导出为表格文件</td>
       <td class="lt">按钮，无输入。报表类页面按 R21 保留导出。导出范围 = 当前搜索条件下全量（pageNo=1、pageSize=10000），非仅本页。</td>
       <td class="lt">点击进入 loading（带最小展示时长，防一闪而过）；导出中防重复点击（上一次未结束则吞掉本次）。成功 Toast「导出成功」；失败 Toast「导出失败」（若有具体原因则展示该原因）。文件名取 Tab 名「流水返佣」。</td>
@@ -3812,7 +3843,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>导出</b><span class="k">handleExport</span><div class="iw"><button class="iw-btn">导出</button></div></td>
+      <td class="nm"><b>导出</b><span class="k">handleExport</span><div class="iw"><button class="iw-btn sec">导出</button></div></td>
       <td>把当前筛选条件下的全部返佣报表导出为表格文件</td>
       <td class="lt">按钮，无输入。报表类按 R21 保留导出；导出范围为当前条件下全量（pageNo=1、pageSize=10000）。</td>
       <td class="lt">点击进 loading 并防重复点击；成功 Toast「导出成功」，失败 Toast「导出失败」（有原因则展示原因）。文件名取 Tab 名「返佣报表」。</td>
@@ -3846,7 +3877,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>导出</b><span class="k">handleExport</span><div class="iw"><button class="iw-btn">导出</button></div></td>
+      <td class="nm"><b>导出</b><span class="k">handleExport</span><div class="iw"><button class="iw-btn sec">导出</button></div></td>
       <td>把当前筛选条件下的全部层级返佣报表导出为表格文件</td>
       <td class="lt">按钮，无输入。报表类按 R21 保留导出；导出范围为当前条件下全量（pageNo=1、pageSize=10000）。</td>
       <td class="lt">点击进 loading 并防重复点击；成功 Toast「导出成功」，失败 Toast「导出失败」（有原因则展示原因）。文件名取 Tab 名「层级返佣报表」。</td>
@@ -3855,6 +3886,141 @@
   </table>
 </section>
   <section id="g-system"><h2 class="sec">系统管理</h2></section>
+<section id="p-system-role">
+  <h3>角色管理 <span class="pill p-in">2.0 增强</span></h3>
+  <p class="meta-line"><code>system/role</code> · 类型：混合（左侧列表 + 右侧「分配权限」菜单树卡 + 新增/编辑弹窗）</p>
+  <p class="sd">维护后台账号角色：新增/编辑/删除角色，并通过右侧三级菜单树为选中角色「分配权限」（勾哪些菜单与操作就有哪些权限）。左 2/3 为角色列表，右 1/3 为常驻的「分配权限」卡（点列表任意行或行内「权限编辑」即载入该角色已分配权限）。</p>
+  <div class="note">🆕 本期增强：① 右侧「分配权限」树<b>补全为目标站全部可见菜单</b>——10 模块 / 64 页 / 184 个操作权限叶（顶层顺序：会员→运营→财务→游戏→配置→报表→风控→系统→数据分析→商户）；② 2.0 新增的模块/页节点带<b>可一键去除的「新」小标</b>（开关 NEW_MARK_ENABLED=false 即全部隐藏），打「新」的共 <b>2 个模块（配置中心、风控管理）+ 25 个页</b>：会员管理（会员列表 / 分组管理 / 登录日志 / 短信验证码查询）、运营管理（会员返佣等级 / 站内消息 / 轮播图管理 / 短信商配置 / 邮件商配置 / 渠道管理 / VIP升级奖励记录 / VIP人数 / VIP操作日志 / 昨日返佣等级）、配置中心（VIP配置 / 返佣配置 / 消息模板配置 / 开关参数配置 / 注册管理 / 前台配置）、报表管理（代理报表 / 返佣报表）、风控管理（异常会员处理 / 同IP·设备检测）、系统管理（IP黑名单）；③ 危险操作叶（编辑/删除/审核/批量导入等）带「敏感」红标，勾选后保存先弹二次确认。</div>
+
+  <h4>搜索控件 <span class="kind">1 项</span></h4>
+  <table class="ct">
+    <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
+    <tr>
+      <td class="nm"><b>角色名称</b><span class="k">keyword</span><div class="iw"><input class="iw-inp" placeholder="请输入角色名称"></div></td>
+      <td>按角色名称/描述精确搜</td>
+      <td class="lt">单行文本，可清空；前后空格自动去除（trim 后为空按未输处理）；对「角色名称/描述」做精确匹配（需完整输入、不支持模糊）。无格式校验、不会红框报错。</td>
+      <td class="lt">点「查询」带 keyword 到列表请求（trim 后为空则不传该条件）；列表按 id 倒序返回。无 Toast。</td>
+      <td class="lt">留空=不按关键字过滤；无匹配 → 列表空态「暂无数据」。</td>
+    </tr>
+  </table>
+
+  <h4>列表列（全部居中）<span class="kind">仅展示，不逐列详述</span></h4>
+  <p class="sd">ID / 角色名称 / 创建人 / 创建时间 / 描述（remark·超长省略·悬停看全文） / 最后修改人 / 最后修改时间 / 状态（标签：启用绿·停用灰，列表态只读，启停在新增/编辑弹窗内用开关）；以上仅展示、无交互、不逐列介绍。整行可点击：点行（或行内「权限编辑」）即在右侧卡载入该角色已分配权限并高亮选中行。</p>
+
+  <h4>工具栏 + 行操作 <span class="kind">4 项</span></h4>
+  <table class="ct">
+    <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
+    <tr>
+      <td class="nm"><b>新增角色</b><span class="k">handleAdd</span><div class="iw"><button class="iw-btn">＋ 新增角色</button></div></td>
+      <td>工具栏 · 打开新增弹窗</td>
+      <td class="lt">按钮，无输入。点击直接打开空白「新增角色」弹窗（600 宽，状态默认启用）。</td>
+      <td class="lt">点击 → 清空表单 → 打开弹窗。保存成功后 Toast「新增成功」并刷新列表；失败 Toast「{后端 msg}」。</td>
+      <td class="lt">弹窗未保存关闭不写数据；新增的角色暂无任何权限，需再用「权限编辑」分配。</td>
+    </tr>
+    <tr>
+      <td class="nm"><b>权限编辑</b><span class="k">handleMenuAuth</span><div class="iw"><button class="iw-btn">权限编辑</button></div></td>
+      <td>行操作 · 载入该角色权限树</td>
+      <td class="lt">按钮，无输入。点击（或点整行）把该角色名带到右侧卡标题，并按其已分配权限回显勾选状态。</td>
+      <td class="lt">点击 → 调 getMenuTreeByRoleId 拿该角色已分配叶子 → 勾选回显；加载期右卡转圈、重复点击在加载中被忽略。无 Toast（加载成功无提示）。</td>
+      <td class="lt">未选任何角色时右卡「全选/取消全选」「保存」按钮置灰；切换角色会丢弃未保存的勾选改动并重载。</td>
+    </tr>
+    <tr>
+      <td class="nm"><b>编辑</b><span class="k">handleEdit</span><div class="iw"><button class="iw-btn">编辑</button></div></td>
+      <td>行操作 · 打开编辑弹窗</td>
+      <td class="lt">按钮，无输入。点击打开「编辑角色」弹窗并回填该行的角色名称/描述/状态。</td>
+      <td class="lt">点击 → 回填表单 → 打开弹窗。保存成功 Toast「编辑成功」并刷新列表；失败 Toast「{后端 msg}」。本弹窗只改角色基本信息，不改权限。</td>
+      <td class="lt">回填值与列表一致；纯空格描述按空处理。</td>
+    </tr>
+    <tr>
+      <td class="nm"><b>删除</b><span class="k">handleDelete</span><div class="iw"><button class="iw-btn" style="color:#d03050;border-color:#d03050">删除</button></div></td>
+      <td>行操作 · 危险操作（二次确认）</td>
+      <td class="lt">按钮（红色危险态），无输入。点击先弹二次确认「确认删除该角色？」，确认后才执行删除。</td>
+      <td class="lt">确认 → 调 deleteMark 删除该角色 → 同时失效角色下拉字典（roleList，供系统用户选角色处即时刷新）。成功 Toast「删除成功」并回到第 1 页刷新；失败 Toast「{后端 msg}」不删除。</td>
+      <td class="lt">系统内置角色（如超级管理员，isAllowDelete=false）不允许删除；删除已绑定用户的角色按后端约束处理（原型仅演示删除生效）。</td>
+    </tr>
+  </table>
+
+  <h4>新增/编辑角色弹窗 <span class="kind">弹窗 · 3 项</span></h4>
+  <table class="ct">
+    <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
+    <tr>
+      <td class="nm"><b>角色名称</b><span class="k">name</span><div class="iw"><input class="iw-inp" placeholder="请输入角色名称"></div></td>
+      <td>角色显示名称</td>
+      <td class="lt">单行文本，必填。为空（含纯空格）保存时红框 + 下方红字「请输入角色名称」；保存时自动 trim 首尾空格。</td>
+      <td class="lt">输入即写入 name；保存校验必填，失败由整体保存拦截、不单独 Toast。</td>
+      <td class="lt">默认值：新增空、编辑回填原名；纯空格视为未填会被拦截。</td>
+    </tr>
+    <tr>
+      <td class="nm"><b>描述</b><span class="k">remark</span><div class="iw"><input class="iw-inp" placeholder="请输入角色描述"></div></td>
+      <td>角色用途/说明（多行）</td>
+      <td class="lt">多行文本框（textarea），选填，≤100 字，带字数计数（show-count）。超 100 字不可再输；选填不触发必填红字。</td>
+      <td class="lt">保存随表单提交（trim 后为空则不传）。无单控 Toast。</td>
+      <td class="lt">默认值：新增空、编辑回填原描述；纯空格按空处理。</td>
+    </tr>
+    <tr>
+      <td class="nm"><b>状态</b><span class="k">state</span><div class="iw"><label class="iw-switch"><input type="checkbox" checked><span></span></label></div></td>
+      <td>启用/停用</td>
+      <td class="lt">开关，开=启用 / 关=停用，默认启用；无输入错误。</td>
+      <td class="lt">开关态随表单提交，停用的角色不可被分配给新用户（按业务约束）。整体保存成功 Toast「新增成功 / 编辑成功」、失败「{后端 msg}」。</td>
+      <td class="lt">启停用开关，不用只读 Tag/单选；停用角色仍在列表可见、可再启用。</td>
+    </tr>
+  </table>
+
+  <h4>新增/编辑角色 · 保存校验枚举 <span class="kind">点「确认」逐项校验 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>确认</td><td><b>角色名称</b>（name）</td><td>必填 · trim 后非空</td><td>红框 + 下方红字「请输入角色名称」</td></tr>
+  </table>
+  <p class="sd">「描述」（remark）选填、≤100 字（show-count 限长，不参与必填校验）；「状态」（state）开关默认启用，均不阻断保存。</p>
+
+  <h4>分配权限（右侧菜单树卡）<span class="kind">三级菜单树 · 父子级联勾选</span></h4>
+  <table class="ct">
+    <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
+    <tr>
+      <td class="nm"><b>菜单搜索框</b><span class="k">pattern</span><div class="iw"><input class="iw-inp" placeholder="请输入菜单名称"></div></td>
+      <td>按菜单名过滤权限树</td>
+      <td class="lt">单行文本，可清空；按节点名称（模块/页/操作名）实时过滤树，命中节点高亮、自动展开其祖先；不相关节点隐藏（show-irrelevant-nodes=false）。无格式校验、不报错。</td>
+      <td class="lt">输入即过滤、清空恢复全树。过滤不影响已勾选状态。无 Toast。</td>
+      <td class="lt">无命中 → 树区空白；过滤期间仍可勾选可见节点。</td>
+    </tr>
+    <tr>
+      <td class="nm"><b>权限树</b><span class="k">treeData</span><div class="iw"><span class="lt">☑ 模块 ▸ ☑ 页面 ▸ ☑ 操作（查看/新增/编辑/删除/导出/审核/发布/批量导入…）</span></div></td>
+      <td>三级可勾选菜单树（核心）</td>
+      <td class="lt">三级树：模块（menuType1·绿标「模块」）▸ 页面（menuType2·蓝标「菜单」）▸ 操作权限叶（menuType3·橙标「权限」，如 查看/新增/编辑/删除/导出/审核/发布/批量导入）。<b>可勾选 + 父子级联</b>（checkable cascade：勾父自动勾全部子、子全勾父变全选、部分勾父显半选）。带<b>虚拟滚动</b>（virtual-scroll，树高约 550px）。2.0 新增节点名后追加可一键去除的「新」小标；危险操作叶名后带红色「敏感」标。每个节点的 category 决定其归属：[1]=仅总控、[2]=仅商户、[1,2]=双端可见。仅勾选，无文本输入、无输入错误。</td>
+      <td class="lt">勾选写入 checkedKeys（提交时含模块/页/操作所有已勾节点 id）；进入时按 getMenuTreeByRoleId 回显该角色已分配叶子（其祖先因级联自动呈勾/半选）。勾选本身无 Toast，结果在「保存」处提示。</td>
+      <td class="lt">全树覆盖目标站全部可见菜单（10 模块 / 64 页 / 184 操作叶，新页清单见顶部 note）；级联下勾掉某页最后一个操作会连带取消其页/模块勾选；过滤态下勾选只影响可见节点。</td>
+    </tr>
+    <tr>
+      <td class="nm"><b>全部展开/折叠</b><span class="k">packHandle</span><div class="iw"><button class="iw-btn">全部展开</button></div></td>
+      <td>一键展开或收起整棵树</td>
+      <td class="lt">按钮，无输入。当前有展开节点时显「全部折叠」、否则显「全部展开」。点击在两态间切换。</td>
+      <td class="lt">点击 → 一次性展开/折叠所有层级（写 expandedKeys）。无 Toast。</td>
+      <td class="lt">树为空时点击无效；不影响勾选状态。</td>
+    </tr>
+    <tr>
+      <td class="nm"><b>全选/取消全选</b><span class="k">checkedAllHandle</span><div class="iw"><button class="iw-btn sec">全选</button></div></td>
+      <td>一键勾选/清空全部节点</td>
+      <td class="lt">按钮，无输入。未选角色时置灰不可点；当前未全选时显「全选」、已全选时显「取消全选」。</td>
+      <td class="lt">点击「全选」勾选全树所有节点；「取消全选」清空全部勾选。无 Toast。</td>
+      <td class="lt">必须先选中一个角色（右卡标题有角色名）才可用；切换角色后该态重置。</td>
+    </tr>
+    <tr>
+      <td class="nm"><b>保存</b><span class="k">handleRoleForm</span><div class="iw"><button class="iw-btn">保存</button></div></td>
+      <td>把当前勾选保存为该角色权限</td>
+      <td class="lt">按钮，无输入。未选角色时置灰；保存中按钮转 loading、防重复提交。</td>
+      <td class="lt">点击 → 若勾中任一「敏感」操作（needSecondConfirm）先弹「敏感权限确认」弹窗列出敏感项，确认后才提交；否则直接提交。调 updateList 提交全部已勾节点 id。成功 Toast「编辑成功」并刷新列表；失败 Toast「{后端 msg}」。</td>
+      <td class="lt">未选角色不可保存；可全不勾后保存（=该角色无任何权限）；未点保存就切换角色，未保存的改动丢失。</td>
+    </tr>
+  </table>
+
+  <h4>分配权限 · 保存校验枚举 <span class="kind">点「保存」校验 · 通过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>保存（前置）</td><td><b>当前角色</b>（roleId）</td><td>必须已选中一个角色（右卡标题有角色名）才可点保存；否则保存按钮置灰、点不动</td><td>无角色时按钮置灰（无红字，靠禁用拦截）</td></tr>
+    <tr><td>保存（前置）</td><td><b>敏感权限</b>（needSecondConfirm 叶）</td><td>勾中任一敏感操作 → 先弹二次确认弹窗列出敏感项，取消则不提交</td><td>二次确认弹窗（非红框校验）；取消即停止保存</td></tr>
+  </table>
+  <p class="sd">权限树<b>无「至少勾 1 项」强制校验</b>——可全不勾后保存，结果即该角色无任何权限（getRoleTree 提交空列表，updateList 正常返回成功 Toast「编辑成功」）。叶子节点为只读勾选项，无字段级输入校验。</p>
+</section>
 <section id="p-system-ipBlacklist">
   <h3>IP黑名单 <span class="pill p-in">2.0 新增</span></h3>
   <p class="meta-line"><code>system/ipBlacklist</code> · 类型：列表</p>
@@ -3929,7 +4095,7 @@
       <td class="lt">编辑态 IP 输入框只读、仅允许单个 IP；多个 IP 仅在新增时支持。</td>
     </tr>
     <tr>
-      <td class="nm"><b>删除</b><span class="k">handleDelete</span><div class="iw"><button class="iw-btn">删除</button></div></td>
+      <td class="nm"><b>删除</b><span class="k">handleDelete</span><div class="iw"><button class="iw-btn danger">删除</button></div></td>
       <td>行操作 · 删除该条黑名单</td>
       <td class="lt">行内危险按钮，无输入。点击先弹二次确认，确认后才删除（按 id+ip 删除该条记录）。</td>
       <td class="lt">二次确认 → 调用删除 → 成功 Toast「操作成功」并刷新列表；失败 Toast「操作失败：{原因}」。</td>
@@ -4146,6 +4312,47 @@
     boxes.forEach(function(b){ b.addEventListener('change',render); });
     render();
   });
+})();
+</script>
+<script>
+/* 目录滚动联动(scrollspy)：滚到哪个版块，左侧对应目录项就高亮，并把它带进导航可视区(只滚导航不动正文) */
+(function(){
+  var links=[].slice.call(document.querySelectorAll('nav a[href^="#"]'));
+  if(!links.length) return;
+  var map={}; links.forEach(function(a){ map[a.getAttribute('href').slice(1)]=a; });
+  var targets=Object.keys(map).map(function(id){return document.getElementById(id);}).filter(Boolean);
+  if(!targets.length) return;
+  var nav=links[0].closest('nav');
+  var visible={};
+  function keepInView(a){
+    if(!nav) return;
+    var ar=a.getBoundingClientRect(), nr=nav.getBoundingClientRect();
+    if(ar.top<nr.top) nav.scrollTop-=(nr.top-ar.top)+10;
+    else if(ar.bottom>nr.bottom) nav.scrollTop+=(ar.bottom-nr.bottom)+10;
+  }
+  function activate(id){
+    var cur=nav&&nav.querySelector('a.active');
+    if(cur&&cur===map[id]) return;
+    links.forEach(function(a){ a.classList.remove('active'); });
+    nav&&nav.querySelectorAll('.grp.active').forEach(function(g){g.classList.remove('active');});
+    var a=map[id]; if(!a) return;
+    a.classList.add('active');
+    /* 同步高亮其所属分组标题 */
+    var p=a.previousElementSibling;
+    while(p){ if(p.classList&&p.classList.contains('grp')){ p.classList.add('active'); break; } p=p.previousElementSibling; }
+    keepInView(a);
+  }
+  function update(){
+    /* 取文档顺序里第一个仍在顶部检测带内的版块 */
+    for(var i=0;i<targets.length;i++){ if(visible[targets[i].id]){ activate(targets[i].id); return; } }
+  }
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ visible[e.target.id]=e.isIntersecting; });
+    update();
+  }, { rootMargin:'-60px 0px -75% 0px', threshold:0 });
+  targets.forEach(function(el){ io.observe(el); });
+  /* 点击目录后立即高亮该项 */
+  links.forEach(function(a){ a.addEventListener('click',function(){ activate(a.getAttribute('href').slice(1)); }); });
 })();
 </script>
 </body>

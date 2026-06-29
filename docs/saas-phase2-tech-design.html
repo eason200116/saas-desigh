@@ -116,6 +116,34 @@
   <nav class="toc" id="toc"></nav>
   <main>
 
+  <style>
+  /* 顶部·修改日志：默认收起，点击展开 */
+  details.doc-cl{margin:14px 0;border:1px solid #c7d2fe;border-radius:8px;background:#eef2ff;overflow:hidden}
+  details.doc-cl>summary{cursor:pointer;user-select:none;list-style:none;display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:13.5px;font-weight:700;color:#4f46e5}
+  details.doc-cl>summary::-webkit-details-marker{display:none}
+  details.doc-cl>summary::before{content:"▸";font-size:12px;transition:transform .15s}
+  details.doc-cl[open]>summary::before{transform:rotate(90deg)}
+  details.doc-cl>summary:hover{background:#e0e7ff}
+  details.doc-cl .cl-b{padding:0 16px 14px;background:#fff}
+  details.doc-cl .cl-b p.tip{font-size:12px;color:#64748b;margin:10px 0 0}
+  details.doc-cl table{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0 0}
+  details.doc-cl th,details.doc-cl td{border:1px solid #e5e7eb;padding:6px 10px;text-align:left;vertical-align:top;line-height:1.7}
+  details.doc-cl th{background:#f8fafc;font-weight:600;color:#475569}
+  details.doc-cl td:first-child{white-space:nowrap;color:#64748b}
+  </style>
+  <details class="doc-cl">
+    <summary>📝 修改日志 · 点击展开</summary>
+    <div class="cl-b">
+      <p class="tip">本文档变更记录，最新在上。</p>
+      <table>
+        <tr><th width="110">日期</th><th>变更摘要</th></tr>
+        <tr><td>2026-06-29</td><td>顶部新增「修改日志」板块（默认收起，点击展开）。</td></tr>
+        <tr><td>2026-06-25</td><td>新增 §3.6 多语言落地口径、§4.5 消息模板配置；通用规范订正，截图同步。</td></tr>
+        <tr><td>2026-06-22</td><td>研发说明（技术方案）首次发布，与 PRD / 交互介绍同套排版并同步编辑版本。</td></tr>
+      </table>
+    </div>
+  </details>
+
   <div class="lead">
     <b>读法</b>：本页是<b>研发说明（研发口径）</b>——讲清归因体系怎么算、流程如何固化。<b>左侧目录随滚动高亮</b>当前章节、点击平滑跳转。<b>逐字段定义（中文名 / key / 状态 / 取值 / 说明）已抽离为独立「字段词典」</b>，见 PRD 顶部「📖 字段词典」Tab。<br>
     控件级「怎么点、点了发生什么」见<b>「交互介绍」</b>；需求「做什么、为什么」见 <b>PRD</b>；本页只讲<b>研发落地口径</b>。

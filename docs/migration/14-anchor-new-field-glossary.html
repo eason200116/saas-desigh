@@ -125,6 +125,35 @@
   <h1>🧭 锚点页 · 全字段词典</h1>
   <div class="sub">目标站 V3 vs .NET 源站(8899 Admin_UERP) ｜ 每页全字段(原有+新增+变更) + 真实截图 + 归因枚举专章 ｜ 列：字段·原中文·现中文·定义·名词介绍</div>
 
+  <style>
+  /* 顶部·修改日志：默认收起，点击展开 */
+  details.doc-cl{margin:14px 0;border:1px solid #c7d2fe;border-radius:8px;background:#eef2ff;overflow:hidden}
+  details.doc-cl>summary{cursor:pointer;user-select:none;list-style:none;display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:13.5px;font-weight:700;color:#4f46e5}
+  details.doc-cl>summary::-webkit-details-marker{display:none}
+  details.doc-cl>summary::before{content:"▸";font-size:12px;transition:transform .15s}
+  details.doc-cl[open]>summary::before{transform:rotate(90deg)}
+  details.doc-cl>summary:hover{background:#e0e7ff}
+  details.doc-cl .cl-b{padding:0 16px 14px;background:#fff}
+  details.doc-cl .cl-b p.tip{font-size:12px;color:#64748b;margin:10px 0 0}
+  details.doc-cl table{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0 0}
+  details.doc-cl th,details.doc-cl td{border:1px solid #e5e7eb;padding:6px 10px;text-align:left;vertical-align:top;line-height:1.7}
+  details.doc-cl th{background:#f8fafc;font-weight:600;color:#475569}
+  details.doc-cl td:first-child{white-space:nowrap;color:#64748b}
+  </style>
+  <details class="doc-cl">
+    <summary>📝 修改日志 · 点击展开</summary>
+    <div class="cl-b">
+      <p class="tip">本文档变更记录，最新在上。</p>
+      <table>
+        <tr><th width="110">日期</th><th>变更摘要</th></tr>
+        <tr><td>2026-06-29</td><td>顶部新增「修改日志」板块（默认收起，点击展开）。</td></tr>
+        <tr><td>2026-06-27</td><td>随 PRD v1.6 同步字段口径：会员归因新增字段、会员分组类型重定义（默认 / 黑名单 / 代理 / 自定义）、开关参数迁移等。</td></tr>
+        <tr><td>2026-06-25</td><td>各页条目补多语言字段 + 推送配置字段（随 PRD v1.5）。</td></tr>
+        <tr><td>创建</td><td>锚点页·全字段词典：目标站 V3 vs .NET 源站(8899 Admin_UERP) 逐页全字段（原有 / 新增 / 变更）+ 真实截图 + 归因枚举专章；原中文按源站重新核对。</td></tr>
+      </table>
+    </div>
+  </details>
+
   <div class="panel">
     <div class="legend" style="margin-bottom:7px">
       <span><span class="badge b-old">原有</span> 源站已有沿用</span>
