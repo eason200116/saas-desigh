@@ -132,12 +132,14 @@
   details.doc-cl td:first-child{white-space:nowrap;color:#64748b}
   </style>
   <details class="doc-cl">
-    <summary>📝 修改日志 · 点击展开</summary>
+    <summary>📝 修改日志 · 点击展开版本变更记录（共 5 个版本，最新 v1.3 · 2026-06-29）</summary>
     <div class="cl-b">
       <p class="tip">本文档变更记录，最新在上。</p>
       <table>
         <tr><th width="110">日期</th><th>变更摘要</th></tr>
+        <tr><td><b>2026-06-29</b></td><td><b>v1.3</b>：★配置类页由「保存草稿+发布」<b>反转为「保存即生效·去发布按钮·状态徽标已生效/待生效」</b>（VIP/返佣/开关参数/系统参数·订正 §3.2、§4.1）；§3.8 分配权限树补 <code>permTreeLabel.ts</code>（中文→i18n 渲染映射）；新增 §3.9 系统日志双端化 + 四级级联筛选 + <code>operationCatalog</code> 操作目录、开关参数「配置记录」Tab、VIP 数值列上限校验、注册管理国家区号校验、短信供应商配置、风控异常会员设备枚举 4→7；中台日志整页下线。<b>据最新原型/代码全面校验</b>：§3.8 权限树规模订正 64→<b>63 页</b>、184→<b>182 操作叶</b>，isNew 28 处 = 2 模块 + <b>26 页</b>（系统角色 id7200 属页面级、无操作叶标新）；§3.9 操作目录配置项数订正 818→<b>816</b>（与 <code>operationCatalog.ts</code> 自带统计一致，125 位置节点不变）；§3.7 会员返佣等级列表「生效日期区间(effectiveRange)」新增、且现态仍并列保留「已连续使用天数(usedDays)」只读列；§3.8② <code>deleteMark</code> 的字典失效实由 <code>role.vue</code>/<code>RoleFormModal</code> 删除/提交成功后调用（非数据层方法内）；其余 §3.2 保存即生效、§4 VIP/返佣（11 级/14 数值列/6+2 模板/费率 ≤5% &gt;5.000001）、§5.5 邮件 10/短信 9 供应商、会员分组 4 枚举、消息模板固定 12 语言等均与代码一致。</td></tr>
         <tr><td>2026-06-29</td><td>顶部新增「修改日志」板块（默认收起，点击展开）。</td></tr>
+        <tr><td>2026-06-27</td><td>新增 §3.7 公共组件与跨页交互、§3.8 角色与菜单权限（分配权限树）；导出按钮改两段式选格式、轮播图配图组件改逐语言横排卡牌（768×300 单横版）；表结构建议补 邮件 / 短信（短信商→短信供应商）/ 渠道 / 会员分组类型 / 会员主档归因登录扩展 / 短信验证码失效时间等订正。</td></tr>
         <tr><td>2026-06-25</td><td>新增 §3.6 多语言落地口径、§4.5 消息模板配置；通用规范订正，截图同步。</td></tr>
         <tr><td>2026-06-22</td><td>研发说明（技术方案）首次发布，与 PRD / 交互介绍同套排版并同步编辑版本。</td></tr>
       </table>
@@ -304,16 +306,18 @@
       <li><b>嵌套分组列（group columns）</b> <span class="gtag g-off">2026-06-26 新增</span>：底层表格 <code>ProDataTable</code> 的列规范化 <code>processedColumns</code> 原先逐列拍平、丢弃嵌套 <code>children</code>，导致两行分组表头失效（昨日返佣等级 5 游戏品类退化成 5 个单列、数据全显 <code>-</code>）。已抽出 <code>buildLeafColumn</code>（统一构造叶子列）并新增 <code>normalizeNode</code> 递归处理 <code>children</code>（<b>纯新增分支、不改既有叶子列逻辑</b>），支持父表头横跨多子列。修复后<b>昨日返佣等级</b>每个游戏品类作父表头横跨「有效投注流水 / 返佣金额」两子列、显示真实数据；<code>pnpm build</code> 通过，实测表头由 1 行变 2 行、父列 <code>colspan=2</code>。</li>
     </ul>
 
-    <h3 id="ux-cfg">3.2 配置类页 · 保存 / 发布两段式</h3>
-    <p>注册管理 / 系统参数 / 配置开关 / 前台配置等配置页统一：</p>
+    <h3 id="ux-cfg">3.2 配置类页 · 保存即生效（原两段式已反转） <span class="gtag g-off">2026-06-29 调整</span></h3>
+    <div class="ok">📌 <b>本期口径（2026-06-29 反转）</b>：VIP 配置 / 返佣配置 / 开关参数配置 / 系统参数配置 / 注册管理 / 前台配置等配置页<b>统一去掉「发布」按钮，仅留「保存」，保存即生效、无草稿态</b>。底栏/顶部不再有「发布」；状态徽标由<b>「已发布 / 待发布」改为「已生效 / 待生效」</b>；保存成功提示、保存预览弹窗文案同步改为<b>「保存后立即生效 / 已保存，配置已生效」</b>。下方「两段式（保存草稿 + 发布）」与「板块级保存只存草稿、发布全局上线」为<b>历史口径，已被本反转取代</b>，保留备查。</div>
+    <p><b>历史口径（2026-06-29 前，已废止）</b>——注册管理 / 系统参数 / 配置开关 / 前台配置等配置页曾统一：</p>
     <ul>
-      <li><b>两段式</b>：<b>保存 = 存草稿</b>（先弹「保存预览」确认，提示「已保存（草稿），发布后对外生效」）；<b>发布 = 上线</b>（再走「确认发布」二次确认）。</li>
-      <li><b>按钮位置</b>：保存 / 发布放在顶部「配置商户」选择条<b>同一行右侧</b>（MerchantSwitchBar <code>#actions</code> 插槽）。</li>
-      <li><b>板块级保存（系统参数 / 配置开关）</b> <span class="gtag g-off">2026-06-26 调整</span>：<b>系统参数配置（<code>/config-center/sysParam</code>）与开关配置（<code>/config-center/configSwitch</code>）取消顶部全局「保存」按钮、顶部仅保留「发布」</b>；改为<b>每个板块/分组卡片各挂一个「保存」按钮</b>——系统参数 8 个分类卡（注册与登录安全 / 资金与绑定 / 汇率 / 营销与奖励 / 代理 / 预警监控 / 下发限制 / 第三方与外观）各自标题栏一个「保存」，<b>只校验并保存该板块（草稿，红框仅标该板块出错项）</b>；开关配置 10 个分组卡各自卡头一个「保存」（点击<b>不触发卡片折叠</b>），只保存该分组（草稿）。<b>「发布」仍为全局</b>（各板块分别存草稿，顶部「发布」统一对外生效）。其余配置页（注册管理 / 前台配置等）保持顶部全局保存/发布不变。</li>
+      <li><b>两段式（历史）</b>：<b>保存 = 存草稿</b>（先弹「保存预览」确认，提示「已保存（草稿），发布后对外生效」）；<b>发布 = 上线</b>（再走「确认发布」二次确认）。<b>→ 现已改为保存即生效、删发布。</b></li>
+      <li><b>按钮位置</b>：保存（原含发布）放在顶部「配置商户」选择条<b>同一行右侧</b>（MerchantSwitchBar <code>#actions</code> 插槽）。</li>
+      <li><b>板块级保存（系统参数 / 配置开关）</b> <span class="gtag g-off">2026-06-26 调整</span>：<b>系统参数配置（<code>/config-center/sysParam</code>）与开关配置（<code>/config-center/configSwitch</code>）取消顶部全局「保存」按钮、顶部仅保留「发布」</b>；改为<b>每个板块/分组卡片各挂一个「保存」按钮</b>——系统参数 8 个分类卡（注册与登录安全 / 资金与绑定 / 汇率 / 营销与奖励 / 代理 / 预警监控 / 下发限制 / 第三方与外观）各自标题栏一个「保存」，<b>只校验并保存该板块（草稿，红框仅标该板块出错项）</b>；开关配置 10 个分组卡各自卡头一个「保存」（点击<b>不触发卡片折叠</b>），只保存该分组（草稿）。<b>「发布」仍为全局</b>（各板块分别存草稿，顶部「发布」统一对外生效）。其余配置页（注册管理 / 前台配置等）保持顶部全局保存/发布不变。<span class="gtag g-off">2026-06-29 反转</span> <b>系统参数配置改为「按板块即时生效」</b>：删全局「发布」，各板块「保存」=校验该板块→二次确认→<b>直接生效</b>（不再存草稿）；本条历史描述保留备查。</li>
       <li><b>系统参数配置 / 开关配置 两页菜单隐藏</b> <span class="gtag g-off">2026-06-26 调整</span>：在路由 <code>config.ts</code> 给 <code>sysParam</code>（系统参数配置 <code>/config-center/sysParam</code>）、<code>configSwitch</code>（开关配置 <code>/config-center/configSwitch</code>）两条 <code>meta</code> 加 <code>hidden:true</code>，<b>配置中心菜单不再展示这两页</b>，但<b>路由与组件保留、可直达</b>（没删，只是菜单隐藏）；机制：菜单生成器 <code>utils/tree.ts</code> 按 <code>meta.hidden</code> 过滤。原因：这两页已被融合页<b>「开关参数配置」</b>取代。隐藏后配置中心大菜单现仅余 VIP配置 / 返佣配置 / 消息模板配置 / 开关参数配置 / 注册管理 / 前台配置。<span class="gtag g-off">2026-06-27 复核</span> <code>sysParam</code> 仍 <code>hidden:true</code>（<b>仅商户端 tenant</b>），技术上路由保留可直达、菜单不展示。</li>
       <li><b>系统参数 字段裁剪 / 数据追踪推送迁出</b> <span class="gtag g-off">2026-06-27 调整</span>：① 系统参数 <code>sysParam</code> 删「资金与绑定·绑定数量上限」组的 <code>newUpiBindingCount</code>（New Upi 绑定数）字段，删「第三方」类的 <code>dsp</code>（DSP 流量平台）整组（<code>dspHostName / dspAppId / dspToken</code> 三字段）；<code>config.ts</code> 仅改 sysParam 路由注释「8 大类 → 合并页实显 7 大类」（<b>独立页 CATEGORIES 仍 8 类</b>）。② 开关参数配置 <code>switchParam</code> 删「充值通道纸飞机推送」开关 <code>IsOpenOrderVolumeSenderSwitch</code> 及其嵌入的「充值通道 TG 机器人」三参数（<code>tgBotInterval / tgBotToken / tgBotChannelId</code>）——整组「数据追踪与推送」<b>迁出本页 → 报表「直代付通道预警」（数据追踪与推送弹窗）</b>（srcId 308）；顶部开关分组过滤掉整个 <code>dataPush</code> 组、系统参数 Tab 不再显示预警监控类/TG 机器人类参数；<code>EmbedRule</code> 新增多子组能力 <code>subGroups[]</code>（当前未启用、为后续预留）；剩余仍有嵌入的开关：<code>JackpotRewardSwitch</code>（超级大奖）/ <code>AgentReviewMechanism</code>（代理审核）/ <code>IsAllowUserAddUSDT</code>（USDT 绑定数量）。</li>
       <li><b>共用侧导航「配置项·快捷入口」模糊搜索（增强：页面入口 + 跨页配置项名）</b> <span class="gtag g-off">2026-06-26 增强</span>：共用左侧导航组件 <code>ConfigSideNav</code>（覆盖 VIP配置 / 返佣配置 / 消息模板配置 三页）<b>仅展开态</b>在「配置项·快捷入口」标题下方常驻一个搜索框（placeholder「<b>搜索配置项…</b>」、可清空）。实现为<b>纯前端 computed 过滤</b>，匹配范围有<b>两类</b>：<b>①页面入口</b>——按入口的<b>标题 / 描述 / 短名</b> 做 <code>includes</code> 子串匹配（<b>不区分大小写</b>，对应 VIP配置 / 返佣配置 / 消息模板配置 三个入口）；<b>②跨页配置项名称</b>——新增索引文件 <code>src/views/config/shared/configSearchIndex.ts</code>，收录 <b>VIP配置 19 项（等级表列 + 经验值）+ 返佣配置 17 项（等级条件 + 费率）+ 消息模板 12 个推送场景名，共 48 项</b>，用户可直接搜某个具体配置项名（如「升级奖励」「洗码」「会员注册」）。结果列表每条带一个<b>彩色标签</b>：蓝色「<b>页面</b>」/ 紫色「<b>配置项</b>」，右侧主标题=命中名、副标题=所属页名；<b>点任意结果都跳转到其所属配置页</b>（页面入口跳该页，配置项跳所属页）。<b>无命中显示「无匹配配置项」</b>。<b>收起态</b>（左侧短标签竖排）不受影响。参照「开关参数配置」(<code>switchParam</code>) 页内目录搜索做法；<code>pnpm build</code> 通过，Playwright 实测：「返佣」→ 页面「返佣配置」+ 配置项「返佣等级/返佣费率配置」，「升级」→「升级条件(EXP)/升级奖励」，「会员注册」→ 消息模板场景，「洗码」→ 5 个洗码率列，无关词 → 「无匹配配置项」。</li>
-      <li><b>校验</b>：保存/发布前校验，<b>失败必红框定位出错字段并指明错在哪</b>（顶部错误提示 + 字段红框）；<b>板块级保存仅校验并标红该板块范围</b>；行内表格用单元格 invalid 高亮 + errorTip；业务规则（如同级费率之和超限）直接拦截标红。</li>
+      <li><b>校验</b>：保存（原保存/发布）前校验，<b>失败必红框定位出错字段并指明错在哪</b>（顶部错误提示 + 字段红框）；<b>板块级保存仅校验并标红该板块范围</b>；行内表格用单元格 invalid 高亮 + errorTip；业务规则（如同级费率之和超限）直接拦截标红。<span class="gtag g-off">2026-06-29 调整</span> 因配置改「保存即生效」，校验在<b>保存时一次完成</b>，通过即落库生效（不再有「发布前再校验」环节）。</li>
+      <li><b>VIP 配置 · 数值列上限校验</b> <span class="gtag g-off">2026-06-29 新增</span>：VIP 等级配置表数值列新增<b>上限校验</b>（超限红框 + hover 错因 + 拦截保存 + 顶部指名出错字段）：<b>经验类</b>（升级 / 保级 / 扣除经验 · 赠送上限）<b>≤ 99999999</b>、<b>奖励类</b>（升级奖励 / 月奖）<b>≤ 9999999</b>、<b>百分比类</b>（充值奖励 % / 各洗码率）<b>≤ 100</b>、<b>次数类</b>（单日提款次数 / 月奖次数）<b>≤ 999</b>；经验值兑换规则「累计充值金额」上限 <b>≤ 9999999</b>。实现：<code>InlineNumberCell</code> 新增 <code>max</code> 透传到底层输入框。</li>
       <li><b>绑定内容字段（系统参数·资金与绑定·会员绑定）</b> <span class="gtag g-off">2026-06-26 调整</span>：<code>memberBindCardContent</code><b>由单选下拉改为多选复选框</b>（与同板块下方「绑定触发条件」一致的多选形态）；选项不变——<b>银行卡 / USDT / 电子钱包 / PIX</b>，<b>默认勾选 银行卡 + USDT</b>。</li>
     </ul>
 
@@ -359,14 +363,14 @@
       <li><b><code>MerchantFilterSelect</code> 商户筛选 · 新增单选模式</b>：组件新增 <code>multiple</code> 开关（<b>默认 true，原多选行为不变</b>）；<code>multiple=false</code> 单选模式下<b>无「全部」选项、不可清空、必选一个</b>，占位「请选择商户」，<b>回传 <code>number</code> 而非 <code>number[]</code></b>。当前仅<b>会员列表</b>启用单选必填（<code>useUserPage.ts:141</code>，配 <code>showRequireMark</code> 红色必填星号）。</li>
       <li><b><code>useExcelTemplate</code> 会员批量导入模板 · 新增 4 列</b>：会员导入 Excel 模板新增列及示例——<b>代理模式</b>（盈亏返利/流水返佣）/ <b>会员分组</b> / <b>转移渠道</b> / <b>重置谷歌</b>（重置/不更新）。对应批量导入预览表（<code>BatchImportModal</code>）同步加 4 列（横宽 1480→1980，空值灰字「不更新」）。</li>
       <li><b>报表「直代付通道预警」· 数据追踪与推送弹窗 <code>DataTrackPushPanel.vue</code></b>（承接 <code>switchParam</code> 迁出的整组，来源备注「迁移自：开关参数配置 - 开关配置 · 数据追踪与推送」）：工具栏左区新增「数据追踪与推送」按钮（warning 橙 + 铃铛图标 + 右上「新」徽标）。弹窗为 <code>card</code> 形态、<b>宽 860</b>、<code>maskClosable:false</code>，<b>三列表（状态 / 配置项 / 配置）× 5 行</b>：① 主开关「充值通道纸飞机推送」（<code>n-switch</code>）② 充值通道 TG 机器人（推送间隔 5~1440 分 / Token / 群组 Id 支持负数）③ 渠道预警（充值笔数大于 / 成功率小于 % / 拉单数量大于 / 失败率不低于 %）④ 金额预警（商户余额/代付/上分/彩票大额下注阈值）⑤ 出款预警（会员提交时间秒 / 后台锁定时间 ≤100 秒）。<b>整数用 <code>n-input-number</code>（precision 0 + min/max + 宽 120 + 单位小字）、文本用 <code>n-input</code>（宽 200）</b>；<b>主开关关闭（或无保存权限）→ 下方全部配置项置灰禁用</b>。mock 接口 <code>getDataTrackPush</code> / <code>saveDataTrackPush</code>。<b>校验：仅主开关「开启」时才校验数值字段，关闭直接放行</b>；整数非法（空/小于 min/大于 max）红框 <code>status:error</code>，文本（Token/群组 Id）不参与必填。Toast：成功 <code>dataPush.saveSuccess</code> / 校验失败 <code>dataPush.invalid</code>（指名首个出错字段）/ 接口异常 <code>common.action_failed</code>。</li>
-      <li><b>会员返佣等级 · 固定返佣生效日期区间</b>：列表删「可连续使用天数 <code>maxDays</code>」「已连续使用期号 <code>usedIssues</code>」两列、新增合并列「生效日期区间」（<code>startDate ~ endDate</code>，无值显 -）；弹窗固定返佣的天数 <code>n-input-number</code> 改为 <code>n-date-picker type=daterange</code>（时间戳数组 ↔ yyyy-MM-dd），<b>新增 dateRange 必填仅固定返佣模式校验</b>（动态返佣放行，空区间报「请选择生效日期区间」红框）。</li>
+      <li><b>会员返佣等级 · 固定返佣生效日期区间</b>：列表删「可连续使用天数 <code>maxDays</code>」「已连续使用期号 <code>usedIssues</code>」两列、新增「生效日期区间」（<code>effectiveRange</code>，<code>startDate ~ endDate</code>，无值显 -）；现态列表仍保留「已连续使用天数」（<code>usedDays</code>）只读列并列展示；弹窗固定返佣的天数 <code>n-input-number</code> 改为 <code>n-date-picker type=daterange</code>（时间戳数组 ↔ yyyy-MM-dd），<b>新增 dateRange 必填仅固定返佣模式校验</b>（动态返佣放行，空区间报「请选择生效日期区间」红框）。</li>
     </ul>
 
     <h3 id="ux-role">3.8 角色与菜单权限（分配权限树） <span class="gtag g-off">2026-06-29 新增</span></h3>
-    <p class="sec-desc">系统管理 · 系统角色页（<code>/system/role</code>，双端可见）的研发落地口径：左侧「角色管理」列表（CRUD）+ 右侧「分配权限菜单树」勾选保存。控件级「怎么点」见《交互介绍》，本节讲<b>数据模型、接口职责、关键组件与实现口径</b>。组件位置 <code>src/views/system/role/</code>（<code>role.vue</code> + <code>data.ts</code> + <code>components/RoleFormModal.vue</code> + <code>components/SensitiveConfirmModal.vue</code>）。</p>
+    <p class="sec-desc">系统管理 · 系统角色页（<code>/system/role</code>，双端可见）的研发落地口径：左侧「角色管理」列表（CRUD）+ 右侧「分配权限菜单树」勾选保存。控件级「怎么点」见《交互介绍》，本节讲<b>数据模型、接口职责、关键组件与实现口径</b>。组件位置 <code>src/views/system/role/</code>（<code>role.vue</code> + <code>data.ts</code> + <code>permTreeLabel.ts</code> + <code>components/RoleFormModal.vue</code> + <code>components/SensitiveConfirmModal.vue</code>）。<span class="gtag g-off">2026-06-29 调整</span> 本期「分配权限」<b>权限树扩为覆盖 10 大模块全量菜单树</b>（会员 / 运营 / 财务 / 游戏 / 配置中心 / 报表 / 风控 / 系统 / 数据分析 / 商户管理），<b>28 个节点标「新」</b>，新增 <code>permTreeLabel.ts</code> 做<b>中文 → i18n 映射渲染</b>，敏感操作保存前<b>二次确认</b>。</p>
 
     <h4>① 权限树三级数据模型（<code>ADMIN_MENU_TREE</code>）</h4>
-    <p>权限树为<b>三级树结构</b>：<b>模块（<code>menuType:1</code>）→ 页面（<code>menuType:2</code>）→ 操作权限叶（<code>menuType:3</code>）</b>。节点来源对齐 <code>src/router/modules/*</code> 真实路由（仅收 <code>meta.hidden!==true</code> 的可见页），规模 <b>10 模块 / 64 页 / 184 操作叶</b>；顶层模块顺序：<b>会员 → 运营 → 财务 → 游戏 → 配置 → 报表 → 风控 → 系统 → 数据分析 → 商户</b>（hidden / 待定页不纳入）。每个节点字段如下：</p>
+    <p>权限树为<b>三级树结构</b>：<b>模块（<code>menuType:1</code>）→ 页面（<code>menuType:2</code>）→ 操作权限叶（<code>menuType:3</code>）</b>。节点来源对齐 <code>src/router/modules/*</code> 真实路由（仅收 <code>meta.hidden!==true</code> 的可见页），规模 <b>10 模块 / 63 页 / 182 操作叶</b>；顶层模块顺序：<b>会员 → 运营 → 财务 → 游戏 → 配置 → 报表 → 风控 → 系统 → 数据分析 → 商户</b>（hidden / 待定页不纳入）。每个节点字段如下：</p>
     <table>
       <tr><th width="170">字段</th><th width="130">类型</th><th>说明</th></tr>
       <tr><td><code>id</code></td><td>number</td><td>节点唯一键（<code>n-tree</code> 的 <code>key-field</code>），模块/页面/操作叶按规则编号（如模块 1000、页面 1100、操作叶 1101）</td></tr>
@@ -394,12 +398,13 @@
       <tr><td><code>updateList</code></td><td><b>保存勾选</b>。提交 <code>{ roleId, list }</code>，<code>list</code> 为所有已勾选节点（含模块/页面/操作叶）映射成 <code>{ menuId }</code>。</td></tr>
       <tr><td><code>roleGetPageList</code></td><td>左侧角色列表分页查询（支持 <code>keyword</code> 按名称/备注过滤）。</td></tr>
       <tr><td><code>roleAdd</code> / <code>roleUpdate</code></td><td>角色新增 / 编辑（<code>RoleFormModal</code> 提交）；字段 = 角色名 <code>name</code>（必填）+ 描述 <code>remark</code>（≤100）+ 状态 <code>state</code>（<code>n-switch</code>）。</td></tr>
-      <tr><td><code>deleteMark</code></td><td>删除角色；<b>删除后调 <code>invalidateDictionary('roleList')</code></b> 立即失效角色字典缓存（系统用户选角色下拉对时效敏感，下次读触发后台重新拉取）；<code>roleAdd/roleUpdate</code> 成功后同样失效该字典。</td></tr>
+      <tr><td><code>deleteMark</code></td><td>删除角色；<b>删除流程（<code>role.vue</code>）在删除成功后调 <code>invalidateDictionary('roleList')</code></b> 立即失效角色字典缓存（系统用户选角色下拉对时效敏感，下次读触发后台重新拉取）；<code>roleAdd / roleUpdate</code>（经全局 http stub 走通）成功后由 <code>RoleFormModal</code> 同样失效该字典。</td></tr>
     </table>
 
     <h4>③ 关键组件与实现口径</h4>
     <ul>
       <li><b>权限树（naive <code>n-tree</code>）</b>：属性 <code>checkable cascade virtual-scroll</code> + <code>show-irrelevant-nodes="false"</code>（搜索时隐藏无关节点）；<code>key-field="id" label-field="name"</code>；搜索框 <code>v-model:value="pattern"</code> 绑 <code>n-tree</code> 的 <code>:pattern</code> 即时过滤。<b><code>cascade</code> 级联勾选</b>：勾父自动连带子、勾全部子自动连带父。</li>
+      <li><b>中文 → i18n 渲染映射（<code>permTreeLabel.ts</code>）</b> <span class="gtag g-off">2026-06-29 新增</span>：<code>data.ts</code> 里的菜单树节点 <code>name</code> 与角色名是<b>固定中文（同时用于逻辑/匹配，绝不改 mock）</b>；本模块只在<b>渲染处</b>把中文值映射成 i18n key（<code>NODE_KEY_MAP</code> 节点名 + 动作词 + 角色类型名），渲染时引用 <code>t()</code> 求值——<b>命中映射 → <code>t(key)</code>，未命中 → 原样返回中文</b>，切换语言无需 reload。key 复用优先级：模块/页面名复用左侧菜单 <code>menu.*</code>、通用动作词（查看/新增/编辑/删除/导出）复用 <code>common.*</code>、其余动作词 <code>system.role.permActions.*</code>、角色类型名 <code>system.role.roleTypes.*</code>。中文原型界面观感不变，仅为英文态正确显示。</li>
       <li><b>全选 / 全部展开切换</b>：「全部展开/折叠」按 <code>expandedKeys</code> 是否为空在 <code>getTreeAll(treeData)</code> 与 <code>[]</code> 间切换；「全选/取消全选」同理切换 <code>checkedKeys</code>（未选角色时按钮禁用）。</li>
       <li><b>节点前缀/后缀 Tag</b>（<code>createPrefix</code>）：每节点按 <code>menuType</code> 加前缀 Tag——模块=success「模块」/ 页面=info「页面」/ 操作叶=warning「权限」；<code>needSecondConfirm</code> 节点加红色后缀 Tag「敏感」。</li>
       <li><b><code>RoleFormModal.vue</code>（新增/编辑角色表单）</b>：<code>modal.create preset:card</code> 宽 600；字段 角色名 / 角色描述（textarea show-count ≤100）/ 状态（<code>n-switch</code>，R47 二值状态用开关）；角色名 <code>required</code> 校验；提交成功 <code>emit('success')</code> 关弹窗 + 列表 reload。</li>
@@ -408,8 +413,32 @@
 
     <h4>④「新」标与敏感二次确认实现口径</h4>
     <ul>
-      <li><b>「新」标</b>：<code>n-tree</code> 用 <code>:render-label</code> 自定义渲染，对 <code>option.isNew</code> 的节点调 <code>renderNewBadge()</code>（<code>src/utils/newMark.ts</code>）追加低调「新」小标。权限树内 <code>isNew:true</code> 共 <b>28 处</b>：<b>2 模块</b>（配置中心 id5000 / 风控管理 id8000）+ <b>25 页</b> + <b>系统角色 id7200</b>。此外 role 路由 <code>meta.isNew:true</code>（左侧菜单同步标「新」，因「分配权限」全量菜单树为本期增强）。<b>一键去除</b>：把 <code>NEW_MARK_ENABLED</code> 置为 <code>false</code>，全站「新」标即全部消失（迁移收尾用）。</li>
+      <li><b>「新」标</b>：<code>n-tree</code> 用 <code>:render-label</code> 自定义渲染，对 <code>option.isNew</code> 的节点调 <code>renderNewBadge()</code>（<code>src/utils/newMark.ts</code>）追加低调「新」小标。权限树内 <code>isNew:true</code> 共 <b>28 处</b>：<b>2 模块</b>（配置中心 id5000 / 风控管理 id8000）+ <b>26 页</b>（含系统角色 id7200，均为 <code>menuType:2</code>；无操作叶 <code>menuType:3</code> 标新）。此外 role 路由 <code>meta.isNew:true</code>（左侧菜单同步标「新」，因「分配权限」全量菜单树为本期增强）。<b>一键去除</b>：把 <code>NEW_MARK_ENABLED</code> 置为 <code>false</code>，全站「新」标即全部消失（迁移收尾用）。</li>
       <li><b>敏感二次确认</b>：以节点 <code>needSecondConfirm:true</code> 标识危险操作叶（编辑 / 删除 / 发布 / 审核 / 处理 / 清缓存 / 重置密码 / 批量导入等）。保存权限时仅当<b>勾中了至少一个</b>敏感叶才弹 <code>SensitiveConfirmModal</code> 让管理员复核确认，避免误授高危权限；与 §3.5「危险操作二次确认 + Toast」口径一致。</li>
+    </ul>
+
+    <h3 id="ux-syslog">3.9 系统日志 / 配置记录 / 其它本批落地口径 <span class="gtag g-off">2026-06-29 新增</span></h3>
+    <p class="sec-desc">本节收口 2026-06-29 下午其余研发口径改动：系统日志重构（含操作目录数据源）、开关参数「配置记录」Tab、注册管理 / 短信供应商 / 风控设备枚举等。</p>
+
+    <h4>① 系统日志（原「平台日志」 <code>/system/platformLog</code>）重构</h4>
+    <p style="margin:8px 0 10px"><a href="http://localhost:8770/docs/migration/18-%E6%93%8D%E4%BD%9C%E6%97%A5%E5%BF%97%E8%8C%83%E6%9C%AC.html#mod-system" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#4f46e5;color:#fff;padding:9px 16px;border-radius:8px;text-decoration:none;font-size:13.5px;font-weight:600">📋 路径文档 · 操作日志范本（系统模块）↗</a> <span style="color:#6b7280;font-size:13px">即 <code>operationCatalog</code> 的完整「模块 › 页面 › 控件」路径清单，前端按此对照搜索区级联与列展示落表。</span></p>
+    <ul>
+      <li><b>菜单与端归属</b>：菜单名「平台日志」<b>→「系统日志」</b>；由<b>仅商户端 → 双端可见</b>，加 <code>keepAlive</code>，菜单标「新」。<b>同时「中台日志」（原 <code>/system/log</code>）整页下线删除</b>（视图 4 文件 + 菜单节点 id7600 全移除）。</li>
+      <li><b>搜索区四级级联</b>：新增<b>日志类型 / 操作模块 / 操作页面 / 操作控件</b>四级；商户改多选；<b>「日志类型」上移第 2 位</b>，选「操作日志」才启用下方三级级联，选「登录日志」则模块/页面/控件三下拉禁用；操作模块 → 操作页面 → 操作控件<b>三级级联</b>，数据源自新增的 <code>operationCatalog.ts</code> 操作目录（<b>平台级、不随商户变</b>）。</li>
+      <li><b>列重构</b>：新增 日志类型 / 操作模块 / 操作页面（含弹窗层级，如「域名管理 › 防封配置弹窗」）/ 操作控件 / 操作内容（原 <code>logInfo</code> 后移）；<b>「用户IP」+「IP所在地」合并为「用户IP(所在地)」</b>（IP 上 / 所在地括号下，全 IPv4）；<b>「操作用户」→「操作人员」</b>；<b>「日志时间」→「操作时间」</b>；删旧「日志标题 / 内容描述 / IP所在地单列」。</li>
+      <li><b><code>operationCatalog.ts</code> 操作目录（新增数据文件）</b>：全站可设置项目录，<b>125 个位置节点（页面级 33 / 二级弹窗 78 / 三级弹窗 14），共 816 个配置项</b>。结构：每个「位置节点」= 页面 + 弹窗层级 <code>modalPath</code> + 该位置的配置项 <code>items[]</code>，<code>level</code> 1=页面级 / 2=二级弹窗 / 3=三级弹窗，<code>location</code>=「页面 › …弹窗链」。<b>用途</b>：搜索区「所在页面」下拉（<code>location</code>，含弹窗层级）+「配置内容」级联下拉（选位置 → 配置项随之过滤），列表「操作页面 / 操作控件」据此展示。由脚本枚举合并生成，研发自行据此设计落表。</li>
+    </ul>
+
+    <h4>② 开关参数配置 · 新增「配置记录」Tab</h4>
+    <ul>
+      <li>新增第 3 个 Tab <b>「配置记录」</b>（带条数徽标），Tab 序：<b>开关配置 / 系统参数配置 / 配置记录</b>。「配置记录」为<b>变更日志列表</b>，列：序号 / 配置名称 / 配置值（旧值 → 新值带箭头着色）/ 操作用户 / 操作时间 / 用户IP / IP所在地 / 内容描述；带「配置名称」下拉筛选（含「全部」）。</li>
+    </ul>
+
+    <h4>③ 注册管理 / 短信供应商配置 / 风控设备枚举</h4>
+    <ul>
+      <li><b>注册管理（<code>/operations/registerManage</code>）· 区号校验</b>：删「发布」按钮、顶部仅留「保存」，由草稿/发布两步 → <b>保存即生效</b>（保存确认与成功提示改写为「立即生效」，与 §3.2 一致）。「当前国家区号」新增校验：<b>纯数字、不带 + 号、最多 6 位</b>，违则红框 + 行内红字 + 顶部报错。</li>
+      <li><b>短信供应商配置（<code>/operations/smsConfig</code>）</b>：新增/编辑弹窗<b>标签「短信供应商名称」→「短信供应商」</b>（列表列标题不变，仍「短信供应商名称」）；<b>编辑模式「商户」下拉禁用不可改</b>（商户为记录归属键），新增时可选。</li>
+      <li><b>风控 · 异常会员处理（<code>/riskControl/abnormalMember</code>）· 设备枚举</b>：<code>device</code> 枚举由 4 种（android/ios/pc/h5）扩为<b>固定 7 种（R20）</b>，下拉顺序 H5 / PC / Android原生 / iOS原生 / Android壳包 / iOS壳包 / PWA；mock 同步补壳包 / PWA 样本。</li>
     </ul>
   </section>
 
@@ -423,7 +452,7 @@
     <p>两页共用一个<b>模块级 reactive 单例</b>状态（跨页面 / 跨导航保持，等价参考站挂 window 的全局态）。每个商户记两个维度：</p>
     <table>
       <tr><th width="120">维度</th><th>取值</th><th>含义</th></tr>
-      <tr><td><b>status</b> 状态</td><td><code>0</code> / <code>1</code> / <code>2</code></td><td>未配置（灰）/ 待发布（橙）/ 已发布（绿），顶部状态徽标据此渲染</td></tr>
+      <tr><td><b>status</b> 状态</td><td><code>0</code> / <code>1</code> / <code>2</code></td><td>未配置（灰）/ <b>待生效（橙）</b> / <b>已生效（绿）</b>，顶部状态徽标据此渲染。<span class="gtag g-off">2026-06-29 调整</span> 徽标文案由「待发布 / 已发布」<b>改为「待生效 / 已生效」</b>（配合保存即生效，见 §3.2）</td></tr>
       <tr><td><b>source</b> 来源</td><td><code>null</code> / <code>__tpl:模板名</code> / <code>商户下标</code></td><td>独立配置 / 套用某模板 / 复制自某商户</td></tr>
     </table>
     <p>三种<b>配置模式</b>（分段单选按钮，非下拉；右侧灰字显示当前模式说明）：</p>
@@ -434,7 +463,7 @@
       <tr><td>③ 单商户配置 <code>custom</code></td><td><b>当前暂隐藏</b>（保留逻辑分支、不显示按钮）。</td></tr>
     </table>
     <p>三种<b>展示态</b>（决定下方表格读哪份数据）：商户态 → 编辑模板态 <code>editingTemplate</code>（点模板名进入，载入模板自身配置，改动经 deep watch <b>自动回存模板</b>）→ 新建草稿态 <code>creatingTemplate</code>（本地草稿，保存模板才提交）。</p>
-    <div class="note"><b>保存 = 两段式 + 强制预览</b>：点「保存配置」先弹<b>内容预览只读 mini 表 + 黄色提示 + 确认</b>，确认后才落库；草稿态 / 编辑模板态<b>不写商户库</b>。</div>
+    <div class="note"><b>保存 = 强制预览 + 保存即生效</b> <span class="gtag g-off">2026-06-29 调整</span>：VIP / 返佣<b>删「发布」、底栏仅留「保存」</b>，点「保存配置」先弹<b>内容预览只读 mini 表 + 黄色提示 + 确认</b>，确认后<b>直接落库并生效</b>（无「待发布草稿」中间态）；预览/成功提示文案改为「保存后立即生效 / 已保存，配置已生效」。<b>仅</b>新建草稿态 / 编辑模板态<b>不写商户库</b>（模板本地暂存）。原「两段式（保存草稿 + 发布）」已废止。</div>
 
     <h3 id="cfg-vip">4.2 VIP 配置逻辑</h3>
     <ul>
@@ -628,6 +657,7 @@
       <tr><td>短信验证码（<code>SmsCode</code>）</td><td><span class="gtag g-off">2026-06-27 新增</span> 新增 <code>expire_time DATETIME</code> 失效时间（按 bizType 1/2/3/4 → 5/10/15/30 分钟派生）+ <code>third_info</code> 三方信息（通道名/三方流水号）+ <code>contact_type</code> 联系方式类型（手机/邮箱，列表前置彩色 Tag）。</td></tr>
     </table>
     <div class="note">以上为<b>建议口径</b>，字段名/类型最终以研发评审与「字段词典」为准；落地时统一补上方「通用约定」的公共列与索引。</div>
+    <div class="note"><span class="gtag g-off">2026-06-29 补</span> <b>系统日志操作目录（<code>operationCatalog</code>）/ 开关参数「配置记录」</b>：原型内仅为<b>前端 mock 数据</b>（操作目录 125 位置节点 / 816 配置项见 §3.9；配置记录列见 §3.9②），<b>未给建议表结构</b>，由研发自行设计落表——操作目录可固化为「位置-配置项」字典表或随代码维护的静态目录；配置记录建议落「配置变更日志表」（配置名 / 旧值 / 新值 / 操作人 / 操作时间 / IP / 所在地 / 描述）。</div>
   </section>
 
   <!-- 关联文档（已隐藏） -->
