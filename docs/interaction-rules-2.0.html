@@ -74,7 +74,9 @@
   .iw-ms>summary::-webkit-details-marker{display:none;}
   .iw-ms>summary .t{background:#eef2ff;color:#4338ca;border-radius:4px;padding:0 6px;font-size:11px;}
   .iw-ms>summary i{color:#94a3b8;font-style:normal;}
-  .iw-ms-pop{margin-top:4px;border:1px solid #cbd5e1;border-radius:5px;background:#fff;padding:5px 9px;display:inline-flex;flex-direction:column;gap:3px;align-items:flex-start;}
+  .iw-ms:not([open])>.iw-ms-pop{display:none!important;}
+  .iw-ms-pop{margin-top:4px;border:1px solid #cbd5e1;border-radius:5px;background:#fff;padding:5px 9px;display:inline-flex;flex-direction:column;gap:3px;align-items:flex-start;position:absolute;z-index:5;box-shadow:0 4px 14px rgba(0,0,0,.12);}
+  .iw-ms{position:relative;}
   .iw-ms-pop label{font-size:11px;color:#374151;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;}
   /* 单选/复选按钮组：多个真实选项并排 */
   .iw-grp{display:inline-flex;flex-wrap:wrap;gap:4px 12px;justify-content:center;}
@@ -359,7 +361,7 @@
       <th width="160">边界情况</th>
     </tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>全部</option><option>daman</option><option>91club</option><option>fun88</option><option>55club</option><option>ugame</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="全部">全部</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox" data-all checked> 全部</label><label><input type="checkbox"> daman</label><label><input type="checkbox"> 91club</label><label><input type="checkbox"> fun88</label><label><input type="checkbox"> 55club</label><label><input type="checkbox"> ugame</label></div></details></div></td>
       <td>按所属商户筛选分组</td>
       <td class="lt">下拉多选，可勾选多个商户；含固定项「全部」，「全部」与具体商户互斥（选「全部」自动清空其它，选具体商户自动取消「全部」）。无文本输入、不存在输错；不选视同「全部」。</td>
       <td class="lt">选项来自商户主数据下拉；变更即作为查询条件，点「查询」按勾选商户集合过滤列表；无匹配时列表显示空态，无 Toast。</td>
@@ -433,7 +435,7 @@
       <th width="160">边界情况</th>
     </tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>请选择商户</option><option>daman（1050）</option><option>91club（1048）</option><option>fun88（1052）</option><option>55club（1021）</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="请选择商户">请选择商户</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox"> daman（1050）</label><label><input type="checkbox"> 91club（1048）</label><label><input type="checkbox"> fun88（1052）</label><label><input type="checkbox"> 55club（1021）</label></div></details></div></td>
       <td>分组所属商户</td>
       <td class="lt">下拉<b>单选</b>、可搜索；<b>必填</b>（一个分组只归属一个商户，<b>不支持多商户 /「全部」</b>）。无文本输入、不存在输错。<b>输错提醒</b>：未选就保存 → 红框 + 下方红字「请选择商户」。默认值：新增=空，编辑=回填原商户。</td>
       <td class="lt">选定后写入表单 tenantId，保存随表单一并提交；校验通过才可保存。</td>
@@ -490,6 +492,14 @@
     </tr>
   </table>
 
+  <h4>保存校验枚举 <span class="kind">点「确定」逐项校验 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>保存</td><td><b>商户</b>（tenantId）</td><td>必填 · 单选（不支持多商户 /「全部」）</td><td>红框 + 下方红字「请选择商户」</td></tr>
+    <tr><td>保存</td><td><b>分组名称</b>（groupName）</td><td>仅「分组类型 = 自定义分组」时显示且必填 · ≤50（纯空格视为未填）</td><td>红框 + 下方红字「请输入分组名称」</td></tr>
+  </table>
+  <p class="sd">「分组类型」始终有值（默认自定义分组，无输错）；入组门槛（充值金额/次数·投注金额）min=0、为空按 0；「备注」≤100 选填、「状态」开关，均不参与必填校验。</p>
+
   <h4>分组权限弹窗 <span class="kind">弹窗 560 · 3 项</span></h4>
   <table class="ct">
     <tr>
@@ -528,6 +538,7 @@
       <td class="lt">本已全空 → 点击无变化；清空后保存 = 该分组无任何权限。</td>
     </tr>
   </table>
+  <p class="sd"><b>保存权限无字段级校验枚举</b>：权限勾选可多选可全不选（全不选=不展示任何模块，允许保存），无必填项；点「保存权限」直接提交，成功 Toast「操作成功」、失败 Toast「{原因}」。「批量隐藏」未勾任何项时 Toast 警告「请先勾选要隐藏的项」（属操作前置提示，非保存校验）。</p>
 
   <h4>数据配置弹窗（仅代理分组）<span class="kind">弹窗 600 · 2 项 + 发布</span></h4>
   <table class="ct">
@@ -560,6 +571,13 @@
       <td class="lt">校验失败不弹确认；发布中按钮 loading 防重复；取消二次确认 → 保留当前编辑态。</td>
     </tr>
   </table>
+
+  <h4>发布校验枚举 <span class="kind">点「保存（发布）」逐项校验 · 全过才弹确认</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>发布</td><td><b>显示天数</b>（days）</td><td>逐行整数 · min=0、无小数（为空或 &lt; 0 即非法）</td><td>该行红框 + Toast「「{名称}」显示天数填写有误，请检查标红项」并自动展开天数表</td></tr>
+  </table>
+  <p class="sd">天数校验通过后<b>先弹「保存预览 · 确认发布（{分组名}）」二次确认</b>，点「发布」才提交，Toast「已发布，配置已对本分组生效」。「数据隐藏」行内开关无校验。</p>
 </section>
 <section id="p-member-loginLog">
   <h3>登录日志（增强） <span class="pill p-in">2.0 新增</span></h3>
@@ -571,7 +589,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>全部</option><option>1050（金禧体育）</option><option>1048（鼎盛娱乐）</option><option>1021（环球电竞）</option><option>1040（盛世棋牌）</option><option>1070（星耀彩票）</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="全部">全部</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox" data-all checked> 全部</label><label><input type="checkbox"> 1050（金禧体育）</label><label><input type="checkbox"> 1048（鼎盛娱乐）</label><label><input type="checkbox"> 1021（环球电竞）</label><label><input type="checkbox"> 1040（盛世棋牌）</label><label><input type="checkbox"> 1070（星耀彩票）</label></div></details></div></td>
       <td>按商户筛选登录日志</td>
       <td class="lt">下拉多选，选项＝「全部」＋当前可见商户列表（显示为「商户号（商户名）」）；商户端默认仅本商户范围。不选或选「全部」＝不限商户。下拉选择无输入错误。</td>
       <td class="lt">改值后点「查询」按 tenantId 过滤列表；选「全部」清空该条件。</td>
@@ -639,7 +657,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>全部</option><option>1050</option><option>1048</option><option>1021</option><option>1040</option><option>1070</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="全部">全部</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox" data-all checked> 全部</label><label><input type="checkbox"> 1050</label><label><input type="checkbox"> 1048</label><label><input type="checkbox"> 1021</label><label><input type="checkbox"> 1040</label><label><input type="checkbox"> 1070</label></div></details></div></td>
       <td>按所属商户（站点）筛选验证码记录</td>
       <td class="lt">下拉多选，可勾多个商户；含「全部」选项与具体商户互斥（勾「全部」自动清空已选商户，勾具体商户自动取消「全部」）。下拉选择无输入校验。</td>
       <td class="lt">选中后点查询按商户过滤；不选或选「全部」= 不限商户、返回全部。切换条件→列表 loading→刷新结果。无 Toast（查询类静默刷新）。</td>
@@ -679,7 +697,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>全部</option><option>1050 - 商户A</option><option>1048 - 商户B</option><option>1021 - 商户C</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="全部">全部</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox" data-all checked> 全部</label><label><input type="checkbox"> 1050 - 商户A</label><label><input type="checkbox"> 1048 - 商户B</label><label><input type="checkbox"> 1021 - 商户C</label></div></details></div></td>
       <td>按所属商户筛消息</td>
       <td class="lt">可搜索下拉，支持按商户号/商户名输入过滤后多选；不输入=全部；选项来自商户主数据，无自由文本。下拉选择无输入校验。</td>
       <td class="lt">选中后点查询按所选商户过滤列表；不单独 Toast。</td>
@@ -770,6 +788,15 @@
     </tr>
   </table>
 
+  <h4>保存校验枚举 <span class="kind">点「保存」逐项校验 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>保存</td><td><b>商户</b>（tenantId）</td><td>必填 · 单选（编辑态置灰）</td><td>红框 + 下方红字「请选择商户」</td></tr>
+    <tr><td>保存</td><td><b>标题（逐语言）</b>（titleByLang[lang]）</td><td>仅默认语言必填 · ≤50；其余语言选填</td><td>默认语言空：红框 + Toast「默认语言的标题和内容必填」</td></tr>
+    <tr><td>保存</td><td><b>消息内容（逐语言）</b>（contentByLang[lang]）</td><td>仅默认语言必填 · ≤500；其余语言选填</td><td>默认语言空：红框 + Toast「默认语言的标题和内容必填」</td></tr>
+  </table>
+  <p class="sd">「排序」数字≥0、「状态」开关，均不参与必填校验。</p>
+
   <!-- ============ Tab 2：滚动消息 ============ -->
   <h4>【Tab2 滚动消息】搜索控件 <span class="kind">3 项</span></h4>
   <p class="sd">与「弹窗消息」完全一致：商户（可搜索多选下拉）/ 标题（≤50 字精确）/ 状态（启用·禁用 下拉，可清空=全部）。</p>
@@ -783,12 +810,21 @@
   <h4>【Tab2】新增/编辑弹窗（滚动消息）<span class="kind">弹窗 880 · 5 类字段</span></h4>
   <p class="sd">字段与「弹窗消息」新增/编辑弹窗逐字段一致：商户（必填·编辑置灰，未选红框「请选择商户」）、排序（数字≥0，默认0）、状态（开关，默认开）、标题（逐语言·默认语言必填·≤50）、消息内容（逐语言·默认语言必填·≤500，红框 + Toast「默认语言的标题和内容必填」）。保存成功 Toast「保存成功」，失败「操作失败：{原因}」。</p>
 
+  <h4>保存校验枚举 <span class="kind">点「保存」逐项校验 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>保存</td><td><b>商户</b>（tenantId）</td><td>必填 · 单选（编辑态置灰）</td><td>红框 + 下方红字「请选择商户」</td></tr>
+    <tr><td>保存</td><td><b>标题（逐语言）</b>（titleByLang[lang]）</td><td>仅默认语言必填 · ≤50；其余语言选填</td><td>默认语言空：红框 + Toast「默认语言的标题和内容必填」</td></tr>
+    <tr><td>保存</td><td><b>消息内容（逐语言）</b>（contentByLang[lang]）</td><td>仅默认语言必填 · ≤500；其余语言选填</td><td>默认语言空：红框 + Toast「默认语言的标题和内容必填」</td></tr>
+  </table>
+  <p class="sd">「排序」数字≥0、「状态」开关，均不参与必填校验。</p>
+
   <!-- ============ Tab 3：推送消息 ============ -->
   <h4>【Tab3 推送消息】搜索控件 <span class="kind">3 项</span></h4>
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>全部</option><option>1050 - 商户A</option><option>1048 - 商户B</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="全部">全部</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox" data-all checked> 全部</label><label><input type="checkbox"> 1050 - 商户A</label><label><input type="checkbox"> 1048 - 商户B</label></div></details></div></td>
       <td>按所属商户筛推送</td>
       <td class="lt">可搜索下拉、按商户号/名过滤后多选；不输入=全部；选项来自商户主数据，无自由文本。下拉无输入校验。</td>
       <td class="lt">选中后点查询过滤列表；不单独 Toast。</td>
@@ -921,6 +957,17 @@
     </tr>
   </table>
 
+  <h4>保存校验枚举 <span class="kind">点「保存」逐项校验 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>保存</td><td><b>商户</b>（tenantId）</td><td>必填 · 单选（编辑态置灰）</td><td>红框 + 下方红字「请选择商户」</td></tr>
+    <tr><td>保存</td><td><b>通知标题（逐语言）</b>（titleByLang[lang]）</td><td>仅默认语言必填 · ≤50；其余语言选填</td><td>默认语言空：红框 + Toast「默认语言的标题和内容必填」</td></tr>
+    <tr><td>保存</td><td><b>通知文字（逐语言）</b>（textByLang[lang]）</td><td>仅默认语言必填 · ≤500；其余语言选填</td><td>默认语言空：红框 + Toast「默认语言的标题和内容必填」</td></tr>
+    <tr><td>保存</td><td><b>推送通道</b>（channel）</td><td>必填 · 单选（Firebase / 极光）</td><td>红框 + 红字「请选择推送通道」</td></tr>
+    <tr><td>保存</td><td><b>类型（接收人）</b>（receiver）</td><td>必填 · 单选（全体 / 指定用户）</td><td>红框 + 红字「请选择类型」</td></tr>
+  </table>
+  <p class="sd">图片（逐语言）、发送时间、极光推送设备、通知名称/链接、会员ID 均选填（会员ID 在「指定用户」下为前端弱校验、建议补填），不参与必填拦截。</p>
+
   <h4>【Tab3】推送详情弹窗（只读）<span class="kind">弹窗 600 · 只读</span></h4>
   <p class="sd">已发送（含发送中/成功/部分/失败）行点「详情」打开，<b>纯只读、无可编辑控件、无保存</b>。上部逐语言只读展示：通知标题 / 通知文字 / 图片（缩略图悬停放大），默认语言置顶标「默认」；下部描述列表只读展示：推送通道（Firebase/极光）、类型（全体/指定用户）、状态（未发送/发送中/发送成功/部分成功/发送失败）、发送时间、最后修改时间、操作人。底部仅「关闭」按钮。</p>
 </section>
@@ -934,7 +981,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>全部</option><option>1050 平台演示商户</option><option>1048 越南站</option><option>1021 港澳站</option><option>1040 巴西站</option><option>1070 缅甸站</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="全部">全部</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox" data-all checked> 全部</label><label><input type="checkbox"> 1050 平台演示商户</label><label><input type="checkbox"> 1048 越南站</label><label><input type="checkbox"> 1021 港澳站</label><label><input type="checkbox"> 1040 巴西站</label><label><input type="checkbox"> 1070 缅甸站</label></div></details></div></td>
       <td>按所属商户筛选轮播图</td>
       <td class="lt">多选下拉，可多选具体商户；顶部「全部」与具体项互斥（点「全部」清空其余、点具体项去掉「全部」）；不选=全部。仅可选不可输入，无输入错误。</td>
       <td class="lt">选中后即作为筛选条件参与查询；空值或含「全部」时不过滤、返回全量。点查询触发列表重载（无 Toast）。</td>
@@ -1052,6 +1099,15 @@
       <td class="lt">停用的轮播图列表仍可见但前台不展示；启停在新增/编辑里用开关，不用只读 Tag。</td>
     </tr>
   </table>
+
+  <h4>保存校验枚举 <span class="kind">点「确认」逐项校验 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>保存</td><td><b>商户</b>（tenantId）</td><td>必填 · 单选（编辑态置灰）</td><td>红框 + 提示「请选择商户」</td></tr>
+    <tr><td>保存</td><td><b>多语言轮播图</b>（imageByLang）</td><td>默认语言图必填（其余语言可空，前台回退默认语言图）</td><td>默认语言卡红框 + 卡内红字 + Toast「默认语言的轮播图必须上传」</td></tr>
+    <tr><td>保存</td><td><b>跳转方式</b>（jumpType）</td><td>必填 · 单选（跳转链接 / 跳转子游戏 / 在线客服）</td><td>红框 + 提示「请选择跳转方式」</td></tr>
+  </table>
+  <p class="sd">跳转链接 / 游戏大类·厂商·子游戏随跳转方式联动显隐、为空也可保存（按业务约束，无独立必填红字）；「排序」min=0、「状态」开关，均不参与必填校验。</p>
 </section>
 <section id="p-operations-smsConfig">
   <h3>短信商配置 <span class="pill p-in">2.0 新增</span></h3>
@@ -1063,7 +1119,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>全部</option><option>1050（阿里测试商户）</option><option>1048（腾讯运营商户）</option><option>1021（自定义商户）</option><option>1040（容联云商户）</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="全部">全部</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox" data-all checked> 全部</label><label><input type="checkbox"> 1050（阿里测试商户）</label><label><input type="checkbox"> 1048（腾讯运营商户）</label><label><input type="checkbox"> 1021（自定义商户）</label><label><input type="checkbox"> 1040（容联云商户）</label></div></details></div></td>
       <td>按所属商户过滤短信商配置</td>
       <td class="lt">下拉多选，可搜索；选项为「商户号（商户名）」，不选或选「全部」= 不限商户。无文本输入、不存在输错。</td>
       <td class="lt">改值即触发查询并刷新列表；与供应商、名称为「且」关系（同时满足）。无 Toast。</td>
@@ -1193,6 +1249,17 @@
       <td class="lt">多个必填同时缺 → 全部红框、滚动到首个错误；提交失败保持弹窗在编辑态不关闭。</td>
     </tr>
   </table>
+
+  <h4>保存校验枚举 <span class="kind">点「保存」逐项校验 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>保存</td><td><b>商户</b>（tenantId）</td><td>必填 · 单选</td><td>红框 + 下方红字「请选择商户」</td></tr>
+    <tr><td>保存</td><td><b>短信供应商</b>（provider）</td><td>必填 · 单选（9 项固定，编辑态禁用）</td><td>红框 + 红字「请选择短信供应商」</td></tr>
+    <tr><td>保存</td><td><b>短信供应商名称</b>（name）</td><td>必填 · 文本 ≤ 50（纯空格视为未填）</td><td>红框 + 红字「请输入短信供应商名称」</td></tr>
+    <tr><td>保存</td><td><b>API地址</b>（url）</td><td>必填 · 文本 ≤ 200（不校验 URL 格式）</td><td>红框 + 红字「请输入API地址」</td></tr>
+    <tr><td>保存</td><td><b>模板内容</b>（template）</td><td>必填 · 多行文本 ≤ 200（纯空格视为未填）</td><td>红框 + 红字「请输入模板内容」</td></tr>
+  </table>
+  <p class="sd">「API商户号」「API KEY」「API密钥」选填、「状态」开关，均不参与必填校验；多个必填同缺则全部红框并滚动到首个错误。</p>
 </section>
 <section id="p-operations-emailConfig">
   <h3>邮件商配置 <span class="pill p-in">2.0 新增</span></h3>
@@ -1204,7 +1271,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>全部</option><option>1050 系统商户</option><option>1048 营销商户</option><option>1021 财务商户</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="全部">全部</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox" data-all checked> 全部</label><label><input type="checkbox"> 1050 系统商户</label><label><input type="checkbox"> 1048 营销商户</label><label><input type="checkbox"> 1021 财务商户</label></div></details></div></td>
       <td>按所属商户筛选邮件配置</td>
       <td class="lt">下拉多选（支持搜索/清空），选项来自商户列表；不输入=全部，无手输错误。</td>
       <td class="lt">选择后即触发查询，仅展示所选商户的邮件配置；清空恢复全部。</td>
@@ -1344,6 +1411,21 @@
     </tr>
   </table>
   <p class="sd">保存逻辑：点「保存」先做必填校验，任一必填为空则对应控件红框 + 下方红字定位、停在弹窗；全部通过后调用保存，成功 Toast「保存成功」并关弹窗刷新列表，失败 Toast「操作失败：{原因}」。点「取消」直接关弹窗不写库。</p>
+
+  <h4>保存校验枚举 <span class="kind">点「保存」逐项校验 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>保存</td><td><b>商户</b>（tenantId）</td><td>必填 · 单选（编辑态置灰）</td><td>红框 + 下方红字「请选择商户」</td></tr>
+    <tr><td>保存</td><td><b>邮件供应商</b>（provider）</td><td>必填 · 单选（10 项固定，编辑态置灰）</td><td>红框 + 下方红字「请选择邮件供应商」</td></tr>
+    <tr><td>保存</td><td><b>自定义名称</b>（name）</td><td>必填 · 单行 ≤ 50（纯空格视为空）</td><td>红框 + 下方红字「请输入自定义名称」</td></tr>
+    <tr><td>保存</td><td><b>邮件标题</b>（mailTitle）</td><td>必填 · 单行 ≤ 50（纯空格视为空）</td><td>红框 + 下方红字「请输入邮件标题」</td></tr>
+    <tr><td>保存</td><td><b>邮箱账号</b>（sendAccount）</td><td>必填 · 单行 ≤ 64（原型不强校验邮箱格式）</td><td>红框 + 下方红字「请输入邮箱账号」</td></tr>
+    <tr><td>保存</td><td><b>邮箱密码</b>（password）</td><td>必填 · 单行 ≤ 64（纯空格视为空）</td><td>红框 + 下方红字「请输入邮箱密码」</td></tr>
+    <tr><td>保存</td><td><b>邮箱服务器</b>（smtpServer）</td><td>必填 · 单行 ≤ 64（纯空格视为空）</td><td>红框 + 下方红字「请输入邮箱服务器」</td></tr>
+    <tr><td>保存</td><td><b>邮箱端口</b>（port）</td><td>必填 · 整数 1~65535</td><td>红框 + 下方红字「请输入邮箱端口」</td></tr>
+    <tr><td>保存</td><td><b>邮件Logo</b>（logo）</td><td>必填 · 单图上传</td><td>红框 + 下方红字「请选择邮件Logo」</td></tr>
+  </table>
+  <p class="sd">「API商户号」「API密钥」「备注」选填、「状态」开关，均不参与必填校验。</p>
 </section>
 <section id="p-operations-channelConfig">
   <h3>渠道管理 <span class="pill p-in">2.0 新增</span></h3>
@@ -1355,7 +1437,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>全部</option><option>1050</option><option>1048</option><option>1021</option><option>1040</option><option>1070</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="全部">全部</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox" data-all checked> 全部</label><label><input type="checkbox"> 1050</label><label><input type="checkbox"> 1048</label><label><input type="checkbox"> 1021</label><label><input type="checkbox"> 1040</label><label><input type="checkbox"> 1070</label></div></details></div></td>
       <td>按所属商户过滤渠道</td>
       <td class="lt">下拉多选，可同时选多个商户；「全部」与具体商户互斥（选「全部」自动清掉已选商户，反之亦然）。仅从已有商户中选择，无手输、无错误态。</td>
       <td class="lt">选择即作为查询条件，配合「查询」按钮刷新列表；无独立 Toast。</td>
@@ -1492,6 +1574,17 @@
   </table>
   <p class="sd"><b>保存逻辑：</b>点「确定」先做整表校验，校验不过停在弹窗并红框定位错误字段；通过后调 saveChannelConfig，成功 Toast「保存成功」、关弹窗并 reload 列表；失败 Toast「操作失败：{原因}」。点「取消」直接关弹窗不保存。</p>
 
+  <h4>保存校验枚举 <span class="kind">点「确定」逐项校验 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>保存</td><td><b>商户</b>（tenantId）</td><td>必填 · 单选（编辑态置灰）</td><td>红框 + 下方红字「请选择商户」</td></tr>
+    <tr><td>保存</td><td><b>渠道名</b>（channelName）</td><td>必填 · 单行文本 ≤ 50</td><td>红框 + 下方红字「请输入渠道名」</td></tr>
+    <tr><td>保存</td><td><b>域名地址</b>（domainUrl）</td><td>必填 · 单行文本 ≤ 200（不强校验 URL 格式）</td><td>红框 + 下方红字「请输入域名地址」</td></tr>
+    <tr><td>保存</td><td><b>渠道编码</b>（channelCode）</td><td>必填 · 单行文本 ≤ 40</td><td>红框 + 下方红字「请输入渠道编码」</td></tr>
+    <tr><td>保存</td><td><b>渠道类型</b>（channelType）</td><td>必填 · 单选（官方渠道 / 推广渠道）</td><td>红框 + 下方红字「请选择渠道类型」</td></tr>
+  </table>
+  <p class="sd">「渠道ID」系统自动生成只读、「备注」≤400 选填、「状态」开关，均不参与必填校验。</p>
+
   <h4>渠道详情弹窗 <span class="kind">弹窗 · 只读（宽 600）</span></h4>
   <p class="sd">只读详情，描述列表（2 列）展示「基础信息」：渠道ID / 渠道名 / 域名地址（空显示「—」）/ 渠道编码（等宽字体高亮）/ 渠道类型（Tag）/ 状态（Tag：启用 绿 / 停用 灰）/ 备注（空显示「—」）。底部三个操作按钮：<b>关闭</b>（关弹窗）、<b>复制渠道</b>（关详情→弹二次确认「确认复制渠道「{name}」？将生成停用状态的副本」，确认调 duplicateChannel：成功 Toast「已复制为新渠道「{name}-副本」（停用状态）」并 reload，取消不动）、<b>编辑</b>（关详情→打开编辑弹窗）。仅展示，无可输入控件。</p>
 </section>
@@ -1505,7 +1598,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>全部</option><option>1050（XX体育）</option><option>1048（XX彩票）</option><option>1021（XX娱乐）</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="全部">全部</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox" data-all checked> 全部</label><label><input type="checkbox"> 1050（XX体育）</label><label><input type="checkbox"> 1048（XX彩票）</label><label><input type="checkbox"> 1021（XX娱乐）</label></div></details></div></td>
       <td>按所属商户过滤记录</td>
       <td class="lt">下拉多选，选项格式「商户号（商户名）」，来源全站统一商户数据；可清空；不可手输文字。下拉/无文字输入，无输入校验。</td>
       <td class="lt">选中后即作为过滤条件参与查询；多选时取并集（任一选中商户的记录都出）。清空=不限商户。</td>
@@ -1547,7 +1640,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>全部</option><option>1050 (商户A)</option><option>1048 (商户B)</option><option>1021 (商户C)</option><option>1040 (商户D)</option><option>1070 (商户E)</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="全部">全部</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox" data-all checked> 全部</label><label><input type="checkbox"> 1050 (商户A)</label><label><input type="checkbox"> 1048 (商户B)</label><label><input type="checkbox"> 1021 (商户C)</label><label><input type="checkbox"> 1040 (商户D)</label><label><input type="checkbox"> 1070 (商户E)</label></div></details></div></td>
       <td>按所属商户筛选 VIP 人数统计，下拉多选（可选多个商户）。</td>
       <td class="lt">从全站商户字典选择，可多选；下拉项展示「商户号(商户名)」；不可手输，无输入校验。不选=查全部商户。</td>
       <td class="lt">选择后点「查询」按所选商户过滤列表；多选时为「或」关系（命中任一即显示）。无匹配数据时表格显示空态「暂无数据」，不弹 Toast。</td>
@@ -1648,7 +1741,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>全部</option><option>1050</option><option>1048</option><option>1021</option><option>1040</option><option>1070</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="全部">全部</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox" data-all checked> 全部</label><label><input type="checkbox"> 1050</label><label><input type="checkbox"> 1048</label><label><input type="checkbox"> 1021</label><label><input type="checkbox"> 1040</label><label><input type="checkbox"> 1070</label></div></details></div></td>
       <td>按所属商户筛选返佣等级记录</td>
       <td class="lt">下拉多选；选项为系统全量商户，含「全部」项，「全部」与具体商户互斥（选「全部」自动清空已选具体商户，反之亦然）。可清空。无文本输入故无输入错误提醒。</td>
       <td class="lt">选择后并入查询条件，命中 matchMerchantFilter 过滤列表；无匹配 Toast，靠列表区刷新呈现。</td>
@@ -1776,7 +1869,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>全部</option><option>1050</option><option>1048</option><option>1021</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="全部">全部</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox" data-all checked> 全部</label><label><input type="checkbox"> 1050</label><label><input type="checkbox"> 1048</label><label><input type="checkbox"> 1021</label></div></details></div></td>
       <td>按所属商户筛选</td>
       <td class="lt">下拉多选，可多选具体商户，「全部」与具体商户互斥（选「全部」清掉已选商户，反之亦然）。下拉项为系统已配置的商户号(商户名)，不手输、无输入错误。</td>
       <td class="lt">选中后点查询按商户号过滤；总控端可见全部商户，商户端默认锁定为本商户。改值不立即请求，点「查询」才刷新列表。</td>
@@ -2022,7 +2115,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>全部</option><option>1050 招财猫娱乐</option><option>1048 钱柜国际</option><option>1021 黄金海岸</option><option>1040 大富翁</option><option>1070 星河会</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="全部">全部</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox" data-all checked> 全部</label><label><input type="checkbox"> 1050 招财猫娱乐</label><label><input type="checkbox"> 1048 钱柜国际</label><label><input type="checkbox"> 1021 黄金海岸</label><label><input type="checkbox"> 1040 大富翁</label><label><input type="checkbox"> 1070 星河会</label></div></details></div></td>
       <td>按所属商户站点过滤。</td>
       <td class="lt">下拉选择，可搜索商户号/商户名；支持多选（默认不限项数）。不手输自由文本，无格式校验。空=全部商户。</td>
       <td class="lt">选择后随其它条件提交查询；一行维度值可能跨多个商户，命中任一所选商户即保留该行。无输入错误，无 Toast。</td>
@@ -3303,7 +3396,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>支持语言</b><span class="k">supportLanguages</span><div class="iw"><select class="iw-sel"><option>简体中文</option><option>英语</option><option>越南语</option><option>泰语</option><option>繁体中文</option></select></div></td>
+      <td class="nm"><b>支持语言</b><span class="k">supportLanguages</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="全部">全部</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox"> 简体中文</label><label><input type="checkbox"> 英语</label><label><input type="checkbox"> 越南语</label><label><input type="checkbox"> 泰语</label><label><input type="checkbox"> 繁体中文</label></div></details></div></td>
       <td>前台可切换的语言集合（多选）</td>
       <td class="lt">复选框组，多选，至少勾 1 种；可选 15 种：英语 / 印尼语 / 越南语 / 葡萄牙语(巴西) / 泰语 / 简体中文 / 繁体中文 / 缅甸语 / 孟加拉语 / 印地语 / 马来语 / 乌尔都语 / 阿拉伯语 / 泰米尔语 / 泰卢固语。全不勾时保存/发布校验失败：该区红框 + 红字「请至少勾选一种支持语言」。</td>
       <td class="lt">勾选即写入 form.supportLanguages 数组；随整页保存/发布提交，不单独 Toast。</td>
@@ -3350,28 +3443,28 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantIds</span><div class="iw"><select class="iw-sel"><option>请选择商户</option><option>1050（阿里测试商户）</option><option>1048（腾讯运营商户）</option><option>1021（自定义商户）</option><option>1040（容联云商户）</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantIds</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="请选择商户">请选择商户</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox"> 1050（阿里测试商户）</label><label><input type="checkbox"> 1048（腾讯运营商户）</label><label><input type="checkbox"> 1021（自定义商户）</label><label><input type="checkbox"> 1040（容联云商户）</label></div></details></div></td>
       <td>按所属商户过滤预警（必填·红星）</td>
       <td class="lt">下拉多选，可搜索；选项为「商户号（商户名）」。带红色必填星号（showRequireMark，纯视觉提示，不阻断搜索）。无文本输入、不存在输错。</td>
       <td class="lt">改值即触发下游级联：清空「三方映射码 / 三方商户 / 通道名称」并重新加载联动字典。改值后随搜索一起查询。无单控 Toast。</td>
       <td class="lt">仅选中「唯一商户」时才向后端拉取通道联动字典；选多个或选「全部」哨兵时通道名称下拉走全局字典兜底。联动加载期间上游筛选项与重置按钮置灰禁用，防并发。</td>
     </tr>
     <tr>
-      <td class="nm"><b>三方映射码</b><span class="k">thirdMappingCodes</span><div class="iw"><select class="iw-sel"><option>请选择三方映射码</option><option>INR_UPI_A</option><option>USDT_TRC20</option><option>BRL_PIX_01</option></select></div></td>
+      <td class="nm"><b>三方映射码</b><span class="k">thirdMappingCodes</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="请选择三方映射码">请选择三方映射码</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox"> INR_UPI_A</label><label><input type="checkbox"> USDT_TRC20</label><label><input type="checkbox"> BRL_PIX_01</label></div></details></div></td>
       <td>按三方支付映射码过滤</td>
       <td class="lt">下拉多选，可搜索、可清空，超量折叠（maxTagCount=responsive）。选项随商户联动派生。无文本输入、不存在输错。</td>
       <td class="lt">改值即清空下游「三方商户 / 通道名称」并重载联动字典；与其它条件「且」关系。无 Toast。</td>
       <td class="lt">联动加载期间该字段禁用（linkageFieldDisabled）；未选商户时选项走三方商户字典兜底；清空恢复全部映射码。</td>
     </tr>
     <tr>
-      <td class="nm"><b>三方商户昵称/商户号</b><span class="k">thirdMerchantIds</span><div class="iw"><select class="iw-sel"><option>请选择三方商户</option><option>UPI主商户A</option><option>USDT收款商户</option><option>PIX巴西商户</option></select></div></td>
+      <td class="nm"><b>三方商户昵称/商户号</b><span class="k">thirdMerchantIds</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="请选择三方商户">请选择三方商户</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox"> UPI主商户A</label><label><input type="checkbox"> USDT收款商户</label><label><input type="checkbox"> PIX巴西商户</label></div></details></div></td>
       <td>按三方商户过滤</td>
       <td class="lt">下拉多选，可搜索、可清空，超量折叠。选项随商户 / 映射码联动派生（label=商户昵称，value=商户 id）。无文本输入、不存在输错。</td>
       <td class="lt">改值即清空下游「通道名称」并重载联动字典；与其它条件「且」关系。无 Toast。</td>
       <td class="lt">联动加载期间禁用；选了映射码会按映射码进一步收窄三方商户候选；清空恢复。</td>
     </tr>
     <tr>
-      <td class="nm"><b>通道名称</b><span class="k">tenantChannelIds</span><div class="iw"><select class="iw-sel"><option>请选择通道名称</option><option>30021 -&gt; UPI快捷</option><option>30045 -&gt; USDT-TRC20</option><option>30088 -&gt; PIX即时</option></select></div></td>
+      <td class="nm"><b>通道名称</b><span class="k">tenantChannelIds</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="请选择通道名称">请选择通道名称</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox"> 30021 -&gt; UPI快捷</label><label><input type="checkbox"> 30045 -&gt; USDT-TRC20</label><label><input type="checkbox"> 30088 -&gt; PIX即时</label></div></details></div></td>
       <td>按具体商户通道过滤</td>
       <td class="lt">下拉多选，可搜索、可清空，超量折叠。选项 label 为「通道Id -&gt; 通道自定义名」，仅展示启用（state=1）通道。无文本输入、不存在输错。</td>
       <td class="lt">改值随搜索一起查询，与其它条件「且」关系。无 Toast。</td>
@@ -3385,7 +3478,7 @@
       <td class="lt">联动加载期间禁用；清空 = 不限通道类型，通道名称候选恢复两类。</td>
     </tr>
     <tr>
-      <td class="nm"><b>预警类型</b><span class="k">warningTypes</span><div class="iw"><select class="iw-sel"><option>请选择预警类型</option><option>代收通道失败率预警</option><option>代收通道拉单失败预警</option><option>代付通道余额不足预警</option><option>大额出款预警</option></select></div></td>
+      <td class="nm"><b>预警类型</b><span class="k">warningTypes</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="请选择预警类型">请选择预警类型</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox"> 代收通道失败率预警</label><label><input type="checkbox"> 代收通道拉单失败预警</label><label><input type="checkbox"> 代付通道余额不足预警</label><label><input type="checkbox"> 大额出款预警</label></div></details></div></td>
       <td>按预警类别过滤</td>
       <td class="lt">下拉多选，可搜索、可清空，超量折叠。选项完全由后端字典 warningTypeList 中「通道类预警(warningCategoryType=1)」驱动（label 用字典名），不固定枚举。无文本输入、不存在输错。</td>
       <td class="lt">改值随搜索查询，与其它条件「且」关系。无 Toast。点统计卡 / 站内信跳转时会程序化写入本字段并自动搜索。</td>
@@ -3599,7 +3692,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>全部</option><option>1050</option><option>1048</option><option>1021</option><option>1040</option><option>1070</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="全部">全部</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox" data-all checked> 全部</label><label><input type="checkbox"> 1050</label><label><input type="checkbox"> 1048</label><label><input type="checkbox"> 1021</label><label><input type="checkbox"> 1040</label><label><input type="checkbox"> 1070</label></div></details></div></td>
       <td>按所属商户筛选代理报表</td>
       <td class="lt">下拉多选，首项为「全部」（值=0，与其它互斥）；其余为真实商户号（1050/1048/1021/1040/1070）。仅选择、无文本输入，无输入错误提醒。</td>
       <td class="lt">选「全部」或不选 → 不过滤、全部命中；选具体商户 → 仅命中所属该商户的代理行。改值即触发列表重查。无 Toast。</td>
@@ -3656,7 +3749,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>全部</option><option>1050（XX商户）</option><option>1048（XX商户）</option><option>1021（XX商户）</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="全部">全部</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox" data-all checked> 全部</label><label><input type="checkbox"> 1050（XX商户）</label><label><input type="checkbox"> 1048（XX商户）</label><label><input type="checkbox"> 1021（XX商户）</label></div></details></div></td>
       <td>按所属商户筛选会员返佣流水</td>
       <td class="lt">下拉多选，选项来自商户主数据（含「全部」哨兵）；可多选具体商户，也可选「全部」。「全部」与具体商户互斥：选「全部」清空其它，选具体项自动取消「全部」。下拉无手输错误。</td>
       <td class="lt">变更后不自动查询，点「查询」才生效；选「全部」或留空 = 不按商户过滤，命中所有行；选若干商户 = 只命中行商户 id 在所选集合内的记录。</td>
@@ -3697,7 +3790,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>全部</option><option>1050（XX商户）</option><option>1048（XX商户）</option><option>1021（XX商户）</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="全部">全部</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox" data-all checked> 全部</label><label><input type="checkbox"> 1050（XX商户）</label><label><input type="checkbox"> 1048（XX商户）</label><label><input type="checkbox"> 1021（XX商户）</label></div></details></div></td>
       <td>按所属商户筛选返佣报表</td>
       <td class="lt">下拉多选，选项来自商户主数据（含「全部」哨兵）；「全部」与具体商户互斥（同 Tab1 逻辑）。下拉无手输错误。</td>
       <td class="lt">变更后点「查询」生效；选「全部」或留空 = 不过滤；选若干商户 = 仅命中所选商户的行。</td>
@@ -3731,7 +3824,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>全部</option><option>1050（XX商户）</option><option>1048（XX商户）</option><option>1021（XX商户）</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="全部">全部</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox" data-all checked> 全部</label><label><input type="checkbox"> 1050（XX商户）</label><label><input type="checkbox"> 1048（XX商户）</label><label><input type="checkbox"> 1021（XX商户）</label></div></details></div></td>
       <td>按所属商户筛选层级返佣报表</td>
       <td class="lt">下拉多选，选项来自商户主数据（含「全部」哨兵）；「全部」与具体商户互斥（同 Tab1 逻辑）。下拉无手输错误。</td>
       <td class="lt">变更后点「查询」生效；选「全部」或留空 = 不过滤；选若干商户 = 仅命中所选商户的行。</td>
@@ -3772,7 +3865,7 @@
   <table class="ct">
     <tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑（含 Toast 文案）</th><th width="160">边界情况</th></tr>
     <tr>
-      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>全部</option><option>1050</option><option>1048</option><option>1021</option><option>1040</option><option>1070</option></select></div></td>
+      <td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><details class="iw-ms"><summary><span class="ph" data-empty="全部">全部</span><i>▾</i></summary><div class="iw-ms-pop"><label><input type="checkbox" data-all checked> 全部</label><label><input type="checkbox"> 1050</label><label><input type="checkbox"> 1048</label><label><input type="checkbox"> 1021</label><label><input type="checkbox"> 1040</label><label><input type="checkbox"> 1070</label></div></details></div></td>
       <td>按记录所属封禁商户筛选</td>
       <td class="lt">多选下拉，可多选商户；「全部」与具体商户互斥（选「全部」清空其余，选具体商户取消「全部」）。仅可点选，无文本输入，无输入错误。</td>
       <td class="lt">值变更后随「查询」按钮带 tenantId 数组到列表请求；选「全部」即不传该条件。无 Toast。</td>
@@ -4034,6 +4127,26 @@
       if(empty)empty.style.display=(q&&!anyVisible)?'block':'none';
     });
   })();
+</script>
+<script>
+/* 多选下拉 .iw-ms 交互：勾选更新摘要标签 / 「全部」哨兵互斥 / 不选=默认文本 */
+(function(){
+  document.querySelectorAll('.iw-ms').forEach(function(ms){
+    var pop=ms.querySelector('.iw-ms-pop'), ph=ms.querySelector('summary .ph');
+    if(!pop||!ph) return;
+    var empty=ph.getAttribute('data-empty')||'全部';
+    var all=pop.querySelector('input[data-all]');
+    var boxes=[].slice.call(pop.querySelectorAll('input[type=checkbox]:not([data-all])'));
+    function render(){
+      var sel=boxes.filter(function(b){return b.checked;});
+      if(sel.length===0){ if(all)all.checked=true; ph.innerHTML=''; ph.textContent=empty; }
+      else { if(all)all.checked=false; ph.innerHTML=sel.map(function(b){return '<span class="t">'+b.parentNode.textContent.trim()+'</span>';}).join(''); }
+    }
+    if(all) all.addEventListener('change',function(){ if(all.checked) boxes.forEach(function(b){b.checked=false;}); render(); });
+    boxes.forEach(function(b){ b.addEventListener('change',render); });
+    render();
+  });
+})();
 </script>
 </body>
 </html>
