@@ -361,6 +361,56 @@
       <li><b>报表「直代付通道预警」· 数据追踪与推送弹窗 <code>DataTrackPushPanel.vue</code></b>（承接 <code>switchParam</code> 迁出的整组，来源备注「迁移自：开关参数配置 - 开关配置 · 数据追踪与推送」）：工具栏左区新增「数据追踪与推送」按钮（warning 橙 + 铃铛图标 + 右上「新」徽标）。弹窗为 <code>card</code> 形态、<b>宽 860</b>、<code>maskClosable:false</code>，<b>三列表（状态 / 配置项 / 配置）× 5 行</b>：① 主开关「充值通道纸飞机推送」（<code>n-switch</code>）② 充值通道 TG 机器人（推送间隔 5~1440 分 / Token / 群组 Id 支持负数）③ 渠道预警（充值笔数大于 / 成功率小于 % / 拉单数量大于 / 失败率不低于 %）④ 金额预警（商户余额/代付/上分/彩票大额下注阈值）⑤ 出款预警（会员提交时间秒 / 后台锁定时间 ≤100 秒）。<b>整数用 <code>n-input-number</code>（precision 0 + min/max + 宽 120 + 单位小字）、文本用 <code>n-input</code>（宽 200）</b>；<b>主开关关闭（或无保存权限）→ 下方全部配置项置灰禁用</b>。mock 接口 <code>getDataTrackPush</code> / <code>saveDataTrackPush</code>。<b>校验：仅主开关「开启」时才校验数值字段，关闭直接放行</b>；整数非法（空/小于 min/大于 max）红框 <code>status:error</code>，文本（Token/群组 Id）不参与必填。Toast：成功 <code>dataPush.saveSuccess</code> / 校验失败 <code>dataPush.invalid</code>（指名首个出错字段）/ 接口异常 <code>common.action_failed</code>。</li>
       <li><b>会员返佣等级 · 固定返佣生效日期区间</b>：列表删「可连续使用天数 <code>maxDays</code>」「已连续使用期号 <code>usedIssues</code>」两列、新增合并列「生效日期区间」（<code>startDate ~ endDate</code>，无值显 -）；弹窗固定返佣的天数 <code>n-input-number</code> 改为 <code>n-date-picker type=daterange</code>（时间戳数组 ↔ yyyy-MM-dd），<b>新增 dateRange 必填仅固定返佣模式校验</b>（动态返佣放行，空区间报「请选择生效日期区间」红框）。</li>
     </ul>
+
+    <h3 id="ux-role">3.8 角色与菜单权限（分配权限树） <span class="gtag g-off">2026-06-29 新增</span></h3>
+    <p class="sec-desc">系统管理 · 系统角色页（<code>/system/role</code>，双端可见）的研发落地口径：左侧「角色管理」列表（CRUD）+ 右侧「分配权限菜单树」勾选保存。控件级「怎么点」见《交互介绍》，本节讲<b>数据模型、接口职责、关键组件与实现口径</b>。组件位置 <code>src/views/system/role/</code>（<code>role.vue</code> + <code>data.ts</code> + <code>components/RoleFormModal.vue</code> + <code>components/SensitiveConfirmModal.vue</code>）。</p>
+
+    <h4>① 权限树三级数据模型（<code>ADMIN_MENU_TREE</code>）</h4>
+    <p>权限树为<b>三级树结构</b>：<b>模块（<code>menuType:1</code>）→ 页面（<code>menuType:2</code>）→ 操作权限叶（<code>menuType:3</code>）</b>。节点来源对齐 <code>src/router/modules/*</code> 真实路由（仅收 <code>meta.hidden!==true</code> 的可见页），规模 <b>10 模块 / 64 页 / 184 操作叶</b>；顶层模块顺序：<b>会员 → 运营 → 财务 → 游戏 → 配置 → 报表 → 风控 → 系统 → 数据分析 → 商户</b>（hidden / 待定页不纳入）。每个节点字段如下：</p>
+    <table>
+      <tr><th width="170">字段</th><th width="130">类型</th><th>说明</th></tr>
+      <tr><td><code>id</code></td><td>number</td><td>节点唯一键（<code>n-tree</code> 的 <code>key-field</code>），模块/页面/操作叶按规则编号（如模块 1000、页面 1100、操作叶 1101）</td></tr>
+      <tr><td><code>name</code></td><td>string</td><td>节点显示名（<code>n-tree</code> 的 <code>label-field</code>）</td></tr>
+      <tr><td><code>authCode</code></td><td>string</td><td>权限标识码（模块 <code>module:xxx</code> / 页面 <code>module:page</code> / 操作叶 <code>Page:Action</code> 如 <code>MemberList:View</code>）</td></tr>
+      <tr><td><code>menuType</code></td><td>number</td><td><b>1 模块 / 2 页面 / 3 操作权限叶</b>，决定树前缀 Tag 颜色（success / info / warning）</td></tr>
+      <tr><td><code>category</code></td><td>number[]</td><td>端归属，映射见下表；<b>模块取其下页面并集</b></td></tr>
+      <tr><td><code>needSecondConfirm</code></td><td>boolean</td><td>是否敏感操作叶（保存前触发二次确认，多为编辑/删除/发布/审核等）</td></tr>
+      <tr><td><code>isNew</code></td><td>boolean</td><td>本期新增标记，渲染时追加可一键去除的「新」小标</td></tr>
+      <tr><td><code>children</code></td><td>node[]</td><td>子节点（操作叶为空数组 <code>[]</code>）</td></tr>
+    </table>
+    <p><b><code>category</code> 端映射口径</b>（与路由 <code>meta.roles</code> 一致）：</p>
+    <table>
+      <tr><th width="120">category</th><th>含义</th></tr>
+      <tr><td><code>[1]</code></td><td>仅总控端（admin）</td></tr>
+      <tr><td><code>[2]</code></td><td>仅商户端（tenant）</td></tr>
+      <tr><td><code>[1, 2]</code></td><td>双端可见</td></tr>
+    </table>
+
+    <h4>② 接口职责（共 4 个 + 角色 CRUD）</h4>
+    <table>
+      <tr><th width="220">接口（<code>api.system.*</code>）</th><th>职责</th></tr>
+      <tr><td><code>getAdminMenuTree</code></td><td>取<b>全量权限树</b>（<code>ADMIN_MENU_TREE</code>）。页面 <code>onMounted</code> 调用，初始化右侧树数据与展开态。</td></tr>
+      <tr><td><code>getMenuTreeByRoleId</code></td><td>按角色 ID 取<b>该角色已分配的叶子节点</b>，用于点选某角色后回显勾选态（递归取叶子 id 填入 <code>checkedKeys</code>）。</td></tr>
+      <tr><td><code>updateList</code></td><td><b>保存勾选</b>。提交 <code>{ roleId, list }</code>，<code>list</code> 为所有已勾选节点（含模块/页面/操作叶）映射成 <code>{ menuId }</code>。</td></tr>
+      <tr><td><code>roleGetPageList</code></td><td>左侧角色列表分页查询（支持 <code>keyword</code> 按名称/备注过滤）。</td></tr>
+      <tr><td><code>roleAdd</code> / <code>roleUpdate</code></td><td>角色新增 / 编辑（<code>RoleFormModal</code> 提交）；字段 = 角色名 <code>name</code>（必填）+ 描述 <code>remark</code>（≤100）+ 状态 <code>state</code>（<code>n-switch</code>）。</td></tr>
+      <tr><td><code>deleteMark</code></td><td>删除角色；<b>删除后调 <code>invalidateDictionary('roleList')</code></b> 立即失效角色字典缓存（系统用户选角色下拉对时效敏感，下次读触发后台重新拉取）；<code>roleAdd/roleUpdate</code> 成功后同样失效该字典。</td></tr>
+    </table>
+
+    <h4>③ 关键组件与实现口径</h4>
+    <ul>
+      <li><b>权限树（naive <code>n-tree</code>）</b>：属性 <code>checkable cascade virtual-scroll</code> + <code>show-irrelevant-nodes="false"</code>（搜索时隐藏无关节点）；<code>key-field="id" label-field="name"</code>；搜索框 <code>v-model:value="pattern"</code> 绑 <code>n-tree</code> 的 <code>:pattern</code> 即时过滤。<b><code>cascade</code> 级联勾选</b>：勾父自动连带子、勾全部子自动连带父。</li>
+      <li><b>全选 / 全部展开切换</b>：「全部展开/折叠」按 <code>expandedKeys</code> 是否为空在 <code>getTreeAll(treeData)</code> 与 <code>[]</code> 间切换；「全选/取消全选」同理切换 <code>checkedKeys</code>（未选角色时按钮禁用）。</li>
+      <li><b>节点前缀/后缀 Tag</b>（<code>createPrefix</code>）：每节点按 <code>menuType</code> 加前缀 Tag——模块=success「模块」/ 页面=info「页面」/ 操作叶=warning「权限」；<code>needSecondConfirm</code> 节点加红色后缀 Tag「敏感」。</li>
+      <li><b><code>RoleFormModal.vue</code>（新增/编辑角色表单）</b>：<code>modal.create preset:card</code> 宽 600；字段 角色名 / 角色描述（textarea show-count ≤100）/ 状态（<code>n-switch</code>，R47 二值状态用开关）；角色名 <code>required</code> 校验；提交成功 <code>emit('success')</code> 关弹窗 + 列表 reload。</li>
+      <li><b><code>SensitiveConfirmModal.vue</code>（敏感权限二次确认）</b>：<b>保存前</b>用 <code>getSensitiveCheckedItems()</code> 扫出「已勾选 且 <code>needSecondConfirm</code>」的叶子；<b>非空才弹</b>该确认弹窗（黄色 alert 警示 + 把扁平敏感项按 模块→菜单→权限 层级还原成分组列表展示），确认（<code>onConfirm</code>）后才真正 <code>doSaveRole()</code>；取消则不保存。无敏感项直接保存。</li>
+    </ul>
+
+    <h4>④「新」标与敏感二次确认实现口径</h4>
+    <ul>
+      <li><b>「新」标</b>：<code>n-tree</code> 用 <code>:render-label</code> 自定义渲染，对 <code>option.isNew</code> 的节点调 <code>renderNewBadge()</code>（<code>src/utils/newMark.ts</code>）追加低调「新」小标。权限树内 <code>isNew:true</code> 共 <b>28 处</b>：<b>2 模块</b>（配置中心 id5000 / 风控管理 id8000）+ <b>25 页</b> + <b>系统角色 id7200</b>。此外 role 路由 <code>meta.isNew:true</code>（左侧菜单同步标「新」，因「分配权限」全量菜单树为本期增强）。<b>一键去除</b>：把 <code>NEW_MARK_ENABLED</code> 置为 <code>false</code>，全站「新」标即全部消失（迁移收尾用）。</li>
+      <li><b>敏感二次确认</b>：以节点 <code>needSecondConfirm:true</code> 标识危险操作叶（编辑 / 删除 / 发布 / 审核 / 处理 / 清缓存 / 重置密码 / 批量导入等）。保存权限时仅当<b>勾中了至少一个</b>敏感叶才弹 <code>SensitiveConfirmModal</code> 让管理员复核确认，避免误授高危权限；与 §3.5「危险操作二次确认 + Toast」口径一致。</li>
+    </ul>
   </section>
 
   <!-- 五、配置中心 · VIP / 返佣配置逻辑与边界 -->

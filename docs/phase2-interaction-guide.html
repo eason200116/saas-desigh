@@ -226,7 +226,7 @@
     <ul class="ctrl">
       <li><span class="lbl act">编辑形态</span>行「编辑」按页面约定为<b>弹窗编辑</b>或<b>页内编辑</b>（不混用，以各页说明为准）；新增/编辑弹窗自带「取消 / 确定」并就地校验。</li>
       <li><span class="lbl act">二次确认</span><b>删除 / 拉黑 / 禁用</b>等危险操作、以及<b>行内开关切换</b>，均弹二次确认后才执行并 Toast；危险操作主按钮用红。</li>
-      <li><span class="lbl tab">顶部多标签</span>页面顶部的多标签页签条支持<b>按住左右拖动 / 触控板横滑滚动</b>、<b>拖拽排序</b>、关闭（含关闭其它 / 左侧 / 右侧 / 全部）；当前页签主色高亮。</li>
+      <li><span class="lbl tab">顶部多标签</span>页面顶部的多标签页签条支持<b>按住左右拖动 / 触控板横滑滚动</b>、<b>拖拽排序</b>、关闭（含关闭其它 / 左侧 / 右侧 / 全部）；当前页签主色高亮。<b>标签栏(TagsView)右键菜单新增「关闭左侧标签页」「新」（2026-06-29）。</b></li>
       <li><span class="lbl tab">二级分类导航</span>左侧分类锚点（系统参数 / 配置开关等）点选后，<b>右侧对应卡牌边框 + 标题高亮</b>，并随内容滚动联动高亮。</li>
       <li><span class="lbl sp">横向溢出</span>卡片 / 内容平铺超出宽度时，可<b>左右拖动滚动条</b>查看（如可注册手机号区号卡片）。</li>
       <li><span class="lbl col">图片 / 二维码</span>列表缩略图、收款二维码、凭证图等<b>均可点击 / 悬停放大预览</b>；上传走 image-card（点击上传 + 缩略图预览 + 删除）。</li>
@@ -329,10 +329,12 @@
         <li><span class="lbl col">列</span>分组ID · 商户 · 分组名称 · 会员数 · 充值金额 · 充值次数 · 投注额 · 创建/更新时间 · <b>状态(行内开关 1/0，直接切换、无二次确认)</b>。</li>
         <li><span class="lbl tb">工具栏</span>新增 · 刷新。</li>
         <li><span class="lbl act">行操作 <span class="badge new">新</span></span><b>编辑 ｜ 分组权限 ｜ 数据显示配置</b>——参考会员列表操作列：文字链接、「|」分界线、三色区分（编辑=主色 / 分组权限=蓝 / 数据显示配置=橙·新）。</li>
-        <li><span class="lbl frm">表单(弹窗)</span>分组名称(必填) · 分组类型(手动/自动) · 充值金额≥ · 充值次数≥ · 投注额≥ · 备注。</li>
-        <li><span class="lbl frm">分组权限(弹窗) <span class="badge new">新</span></span>改为<b>弹窗</b>呈现：勾选该分组可访问的权限项（全选 / 清空 + 保存）；已<b>移除原「数据显示限制」项</b>（迁出为下方独立「数据显示配置」）。</li>
+        <li><span class="lbl frm">表单(弹窗)</span>分组名称(必填) · 分组类型(默认分组/黑名单/代理分组/自定义分组；仅「自定义分组」可填分组名称，其余名称自动取类型名) · 充值金额≥ · 充值次数≥ · 投注额≥ · 备注。</li>
+        <li><span class="lbl frm">分组权限(弹窗) <span class="badge new">新</span></span>改为<b>弹窗</b>呈现：勾选该分组可访问的权限项；权限项 <b>18 项</b> 按「账变记录 / 团队推广 / 佣金返佣 / 资金账务」<b>4 类分区</b>（每类主题色竖条标题 + 两列网格勾选）；已<b>移除原「数据显示限制」项</b>（迁出为下方独立「数据显示配置」）。</li>
+        <li><span class="lbl sp">分组权限·交互规则 <span class="badge new">新</span></span>① 勾选 / 取消<b>即时反映</b>到该分组；② 顶部支持 <b>全选 / 清空</b>；<b>原「批量隐藏」里配置的内容已融合进本「分组权限」</b>统一在此勾选管理（不再有独立的「批量隐藏」按钮 / 入口）；③ <b>系统分组只读</b>：默认分组=权限全开、黑名单=权限全关，弹窗置灰不可改、底部只留「关闭」，仅「自定义 / 代理分组」可编辑；④ 保存走<b>只读预览二次确认</b>后生效，成功 Toast。</li>
         <li><span class="lbl frm">数据显示配置(弹窗) <span class="badge new">新</span></span>迁移自旧后台「配置管理 · 数据显示管理」，<b>按会员分组各一套</b>。弹窗内<b>两张可收起 / 展开</b>的表：①<b>显示天数设置</b>（交易记录 / 下注记录 / 充值记录 / 提现记录 / 团队报表 / 佣金明细 / 返佣金额 / 比赛记录）行内数字框设天数；②<b>数据隐藏</b>（昨日团队 / 昨日佣金 / 邀请奖励 / 新增下级月记录 / 游戏统计 / VIP数据 / 删除全部数据 / 推广数据）显示·隐藏开关。行内编辑 → 底部「保存」<b>弹二次确认窗预览全部配置</b> → 「取消 / 发布」，<b>点「发布」才生效</b>。</li>
         <li><span class="lbl sp">本次改动 <span class="badge new">新</span></span>① 操作列对齐会员列表（分界线 + 分色）；② 分组权限抽屉 → 弹窗；③ 新增「数据显示配置」弹窗（两表可折叠 + 保存预览 / 发布两段式生效）。</li>
+        <li><span class="lbl sp">本次改动 <span class="badge new">新</span></span>①(2026-06-27) 分组类型枚举由「手动/自动」改为「默认分组/黑名单/代理分组/自定义分组」四类，列表新增分色「分组类型」列；分组权限弹窗权限项扩为 <b>18 项（融合自原「批量隐藏」配置的内容）</b>、按「账变记录 / 团队推广 / 佣金返佣 / 资金账务」<b>4 类分区渲染</b>。②(2026-06-29) 顶部新增「类型聚合卡」（默认 / 黑名单 / 代理 三张卡，每卡聚合多商户 + 人数 / 充值金额 / 充值次数 / 有效投注流水）；下方表格只保留「自定义分组」；分组改为「一个分组可归属多商户」（商户由单选 → <b>多选必填</b>）；系统分组（默认 / 黑名单）的配置 / 权限弹窗<b>只读置灰、底部只留「关闭」</b>；代理卡专属操作 = 编辑 / 分组权限 / 数据配置 / 新增商户。（2026-06-27/29）</li>
       </ul>
     </div>
   </div>
@@ -357,7 +359,7 @@
       <div class="use">按手机号/验证码查记录。</div>
       <ul class="ctrl">
         <li><span class="lbl flt">筛选</span>手机号 · 验证码。</li>
-        <li><span class="lbl col">列</span>手机号 · 验证码 · 业务类型(登录/注册/绑定手机/重置密码) · 内容 · 发送时间 · 状态(成功/失败 Tag) · 发送IP。</li>
+        <li><span class="lbl col">列</span>手机号 · 验证码 · 业务类型(登录/注册/绑定手机/重置密码) · 内容 · 发送时间 · <b>失效时间「新」</b> · 状态(成功/失败 Tag) · 发送IP · <b>三方信息「新」(通道名 + 三方流水号)</b>；<b>联系方式列加「手机 / 邮箱」Tag 前缀「新」</b>。</li>
         <li><span class="lbl sp">特殊</span>无工具栏、无导出、无行操作。</li>
       </ul>
     </div>
@@ -421,6 +423,7 @@
         <li><span class="lbl ml">多语言（配图）</span>图片改为 <b>MultiLangImageFields</b>：①默认语言区(蓝底常驻、<b>默认语言图必传</b>、标「默认」)；②支持语言区(按商户启用语言分面板、可展开/收起、每语言标「已配/未配」)；<b>各语言独立上传（无「应用到所有语言」）</b>，缺图前台回退默认语言图。</li>
         <li><span class="lbl frm">表单(跳转方式三选一联动)</span>商户(单选·编辑锁定) · <b>逐语言配图(默认必传)</b> · 跳转方式：①跳转链接→填 URL；②<b>跳转子游戏→游戏大类(电子/真人/体育/棋牌)→厂商→子游戏 三级联动</b>(上级切换清空下级)；③在线客服→无附加 · 排序 · 状态。</li>
         <li><span class="lbl act">行操作</span>编辑 · 删除(二确)。</li>
+        <li><span class="lbl sp">本次改动 <span class="badge new">新</span></span>(2026-06-27) 多语言图由「竖版 + 横版双版」<b>合并为单张横版(768×300)</b>；改为逐语言卡牌横向平铺，空白处可左右拖动滚动（在输入控件上不触发拖动）；<b>默认语言卡置首 + 高亮 + 必填红框</b>；编辑弹窗加宽至 <b>760px</b>。（2026-06-27）</li>
       </ul>
     </div>
   </div>
@@ -438,6 +441,7 @@
         <li><span class="lbl act">行操作</span>编辑 · 删除(二确)。</li>
         <li><span class="lbl frm">表单</span>渠道名(必填) · 域名地址(必填) · 渠道编码(数字·手填) · 赠送金额 · 打码量倍数 · 备注(≤400)。</li>
         <li><span class="lbl sp">特殊</span>「批量设置赠送金额 / 批量调整推广接入」组件与文案<b>已预留但未接线</b>，当前页无批量按钮；无「渠道类型/分发端/编码自动生成」。</li>
+        <li><span class="lbl sp">本次改动 <span class="badge new">新</span></span>(2026-06-27) 渠道编码加 tooltip（编码规则说明）；商户 / 域名 / 渠道编码 / 渠道类型补<b>必填校验</b>。（2026-06-27）</li>
       </ul>
     </div>
   </div>
@@ -505,6 +509,7 @@
         <li><span class="lbl tb">工具栏</span>新增 · 批量删除(未选禁用·带数量)。</li>
         <li><span class="lbl act">行操作</span>编辑 · 删除(二确)。</li>
         <li><span class="lbl frm">表单</span><b>商户(单选·编辑态置灰锁定)</b> · 会员ID(编辑态禁用) · <b>返佣模式(固定返佣/动态返佣，置于返佣等级上方)</b> · 返佣等级(Lv1~10)：选固定返佣才显示「可连续使用天数(1~30，默认7)」、选动态返佣无天数配置；<b>切换模式时商户/会员ID/返佣等级保留不变(配置一样)</b>；状态由系统按天数推导(表单无状态字段)。</li>
+        <li><span class="lbl sp">本次改动 <span class="badge new">新</span></span>(2026-06-27) 固定返佣的「可连续使用天数」改为「<b>生效日期区间</b>」日期选择器（必填红框）；列表删除「可连续使用天数 / 已连续使用期号」两列，合并为「<b>生效日期区间</b>」列。（2026-06-27）</li>
       </ul>
     </div>
   </div>
@@ -546,15 +551,16 @@
         <li><span class="lbl flt">筛选</span>会员ID · 订单号 · 日志类型(升级/月奖励/充值/降级) · 状态(成功/失败) · 创建日期(必填)。</li>
         <li><span class="lbl col">列</span>订单号 · 时间 · 会员ID · 日志类型(Tag) · 领取类型(积分/余额) · 领取数值 · 经验值 · 总经验 · 明细 · 状态(Tag)。</li>
         <li><span class="lbl tb">工具栏</span>导出(演示提示)。</li>
-        <li><span class="lbl act">行操作</span>无操作列。</li>
+        <li><span class="lbl act">行操作</span>操作列新增「<b>查看「新」</b>」按钮。</li>
+        <li><span class="lbl sp">本次改动 <span class="badge new">新</span></span>(2026-06-29) 操作列新增「<b>查看</b>」按钮 + <b>详情弹窗</b>（商户 / 单号 / 时间 / 会员ID / 日志类型 / 领取类型 / 经验 / 明细 / 状态 全字段只读展示）。（2026-06-29）</li>
       </ul>
     </div>
   </div>
 
   <div class="pcard">
-    <div class="shot"><img src="img/spec-sms-config.png" alt="短信商配置"></div>
+    <div class="shot"><img src="img/spec-sms-config.png" alt="短信供应商配置"></div>
     <div class="info">
-      <div class="nm">短信商配置 <span class="badge new">新</span> <span class="badge built">单表融合（2026-06-25）</span> <span class="route">/operations/smsConfig</span></div>
+      <div class="nm">短信供应商配置 <span class="badge new">新</span> <span class="badge built">单表融合（2026-06-25）</span> <span class="route">/operations/smsConfig</span></div>
       <div class="use">短信通道商配置（多商户）；原「验证码 / 语音 / 通知」3 Tab <b>融合为单列表</b>，新增用「短信类型」下拉区分。</div>
       <ul class="ctrl">
         <li><span class="lbl op">操作</span>① 新增：点「新增」→<b>弹窗(商户多选必选 + 名称必填 + 短信类型〔下拉·当前仅「验证码」〕必选 + 接口地址必填 + 验证类型〔注册/提现/找回密码〕必选 + 模板内容〔可插占位变量〕 + 状态开关)</b>→「保存」(校验失败红框标错)；② 编辑：行「编辑」→同弹窗(ApiKey/密码留空=不修改)；③ 删除：行「删除」→<b>二次确认</b>。</li>
@@ -563,14 +569,15 @@
         <li><span class="lbl frm">表单</span>商户(多选·必填) · <b>短信类型(下拉：验证码/语音/通知)</b> · 名称 · URL · <b>验证类型(下拉：注册验证/新增提现验证/忘记密码验证)</b> · 模板(textarea) · 状态开关。</li>
         <li><span class="lbl act">行操作</span>编辑 · 删除(二确) · <b>测试发送(演示提示)</b>。</li>
         <li><span class="lbl sp">特殊</span>标题由「短信配置」<b>更名「短信商配置」</b>；ApiKey 列表脱敏；密码/ApiKey 留空 = 不修改。</li>
+        <li><span class="lbl sp">本次改动 <span class="badge new">新</span></span>(2026-06-27) 卡片更名为「<b>短信供应商配置</b>」；新增「<b>短信供应商</b>」下拉（必填 · 前置于名称 · 联动默认名称 · 编辑禁用）+ 列表查询；列表精简为「商户 / 名称 / 验证码 / 模板内容」<b>4 列</b>；字段改名 <b>账户→API KEY、API接口→API地址、三方商户号→API商户号</b>，API 密钥编辑脱敏回显；删除「短信类型」表单项（固定为验证码）/ 顶部提示条 / 行内删除；模板内容改<b>必填</b>。（2026-06-27）</li>
       </ul>
     </div>
   </div>
 
   <div class="pcard">
-    <div class="shot"><img src="img/spec-email-config.png" alt="邮件商配置"></div>
+    <div class="shot"><img src="img/spec-email-config.png" alt="邮件供应商配置"></div>
     <div class="info">
-      <div class="nm">邮件商配置 <span class="badge new">新</span> <span class="badge built">字段对齐源站（2026-06-25）</span> <span class="route">/operations/emailConfig</span></div>
+      <div class="nm">邮件供应商配置 <span class="badge new">新</span> <span class="badge built">字段对齐源站（2026-06-25）</span> <span class="route">/operations/emailConfig</span></div>
       <div class="use">邮件通道商配置（多商户）；字段对齐源站、新增「邮箱编号」。</div>
       <ul class="ctrl">
         <li><span class="lbl op">操作</span>① 新增：点「新增」→<b>弹窗(920px两列；商户多选必选 + 验证类型〔注册/提现/找回密码〕必填 + 邮箱编号/Logo/名称/邮件标题 必填 + 邮箱账号必填 + 密码+确认密码〔须一致〕 + 状态开关 + 邮箱服务器/邮箱端口1~65535 必填 + 备注)</b>→「保存」(校验失败红框，含确认密码不一致)；② 编辑：行「编辑」→同弹窗(密码留空=不修改)；③ 删除：行「删除」→<b>二次确认</b>。</li>
@@ -579,11 +586,25 @@
         <li><span class="lbl frm">表单</span>商户(多选·必填) · 验证类型(必填) · <b>邮箱编号</b>(必填) · 邮件Logo(必填) · 邮件名称(必填) · 邮件标题(必填) · 发件箱账号(必填) · 邮箱密码(新增必填/编辑留空不改) · 确认密码 · 状态 · <b>邮箱服务器</b>(必填) · <b>邮箱端口</b>(1–65535·必填) · 备注。</li>
         <li><span class="lbl act">行操作</span>编辑 · 删除(二确) · 测试发送(演示提示)。</li>
         <li><span class="lbl sp">特殊</span>标题由「邮件配置」<b>更名「邮件商配置」</b>；字段更名：发件账号→邮箱账号、SMTP服务器→邮箱服务器、端口→邮箱端口；密码不回填、两次输入须一致。</li>
+        <li><span class="lbl sp">本次改动 <span class="badge new">新</span></span>(2026-06-27) 卡片更名为「<b>邮件供应商配置</b>」；新增「<b>邮件供应商</b>」下拉（必填 · 前置 · 联动名称）+ 查询；新增「<b>邮箱密码</b>」必填（脱敏）；状态改为<b>开关</b>；列表精简为「商户 / 名称 / 供应商 / Logo / 邮件内容 / 备注」，新增「<b>邮件内容</b>」只读多行列；删除行内删除；字段「<b>三方商户号→API商户号</b>」。（2026-06-27）</li>
       </ul>
     </div>
   </div>
 
   <h2>3 · 报表管理</h2>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-placeholder.png" alt="数据追踪与推送（渠道预警）"></div>
+    <div class="info">
+      <div class="nm">数据追踪与推送（渠道预警）<span class="badge new">新</span> <span class="route">/report/channelAlert</span></div>
+      <div class="use">渠道预警页的纸飞机（Telegram）数据追踪与推送配置。</div>
+      <ul class="ctrl">
+        <li><span class="lbl tb">工具栏</span>新增「<b>数据追踪与推送</b>」按钮 → 打开<b>表格化配置弹窗</b>。</li>
+        <li><span class="lbl cfg">配置(弹窗)</span>顶部<b>主开关「充值通道纸飞机推送」</b>；下分<b>三组</b>：①<b>TG机器人</b>（推送间隔 5–1440 分 / Token / 群组 Id）；②<b>渠道预警</b>（充值成功率 · 拉单失败阈值）；③<b>金额预警</b>（商户余额预警阈值等）。<b>主开关关闭则下方所有项置灰不可编辑</b>；保存时数值校验<b>红框</b>定位出错项。</li>
+        <li><span class="lbl sp">本次改动 <span class="badge new">新</span></span>(2026-06-27) 该组配置从配置页「<b>开关参数配置</b>」<b>迁入</b>本页（系统参数同步删除「New Upi 绑定数 / DSP 流量平台」，「预警监控 + TG机器人」整组迁出到此）。（2026-06-27）</li>
+      </ul>
+    </div>
+  </div>
 
   <div class="pcard">
     <div class="shot"><img src="img/spec-rebate-report.png" alt="代理报表"></div>
@@ -640,6 +661,7 @@
         <li><span class="lbl tb">工具栏(批量·未勾选禁用)</span>回收余额 · 保险箱转出 · 驳回提现 · 余额扣除。</li>
         <li><span class="lbl act">行操作</span>同名四项(单条)。</li>
         <li><span class="lbl sp">特殊(处置确认弹窗)</span>回收/转出仅二确；<b>驳回提现</b>需填备注(必填·不能含中文)；<b>余额扣除</b>需填金额(必须为负)+备注(同上)。</li>
+        <li><span class="lbl sp">本次改动 <span class="badge new">新</span></span>(2026-06-29) 设备枚举由 4 种扩为<b>固定 7 种</b>：H5 / PC / 安卓原生 / iOS原生 / 安卓壳包 / iOS壳包 / PWA。（2026-06-29）</li>
       </ul>
     </div>
   </div>
@@ -684,6 +706,7 @@
         <li><span class="lbl tb">通用·配置模式</span>三选一：使用自定义模板(模板画廊) / 使用商户模板 / 单商户配置；「正在配置」栏：商户 select + 来源 + <b>状态三态(未配置/待发布/已发布)</b> + 保存 + 复制到其他商户。</li>
         <li><span class="lbl frm">通用·复制弹窗</span>源配置预览 + 目标商户多选(全选/反选) + 覆盖警示(已配置实时计数) + 确认复制。</li>
         <li><span class="lbl sp">通用·特殊/边界</span><b>行内编辑无弹窗</b>；保存/发布前必弹只读预览确认；模板删除二确(转自定义)；复制跳过源自身；未点「确认保存」一律不落库。逻辑/边界全量见《研发说明》§4。</li>
+        <li><span class="lbl sp">本次改动 <span class="badge new">新</span></span>(2026-06-29) 等级表各数值列加<b>保存上限校验红框</b>——经验值(升级/保级/扣除) · 单次赠送金额上限 <b>≤99999999</b>；升级奖励 · 月奖励 <b>≤9999999</b>；充值奖励% · 5 项洗码率 <b>≤100</b>；每日提现次数 · 月奖累计次数 <b>≤999</b>；经验值兑换金额 <b>≤9999999</b>。超限<b>即时红框 + 悬停看错因</b>，保存拦截并指名出错字段。（2026-06-29）</li>
       </ul>
       <div class="tabsec">
         <div class="tabsec-h"><span class="tabidx">子页签 1</span>VIP 等级配置 <span class="tabhint">（实时原型内点顶部此子页签查看）</span></div>
@@ -741,6 +764,7 @@
       <li><span class="lbl col">板块</span>注册开关（开启注册 + 短信/手机/邮箱/图形验证码/邀请码必填/隐私默认勾选/游客登录 + 关闭注册提示文案）· 注册限制（同IP/同指纹/同设备数）· 注册赠送（金额 + 打码倍数）· 可注册手机号（区号+长度卡片平铺、页内增删）· 图形验证码（启用/类型〔数字·字母·算术·滑块〕/位数/有效期/错误上限/适用场景 + 实时预览）。</li>
       <li><span class="lbl frm">校验</span>可注册手机号区号格式红框；图形验证码启用时 位数·有效期 必填红框。</li>
       <li><span class="lbl sp">特殊</span>关闭「开启注册」→ 展开前台关闭提示文案；全页单一保存统一校验。</li>
+      <li><span class="lbl sp">本次改动 <span class="badge new">新</span></span>(2026-06-29) 「<b>当前国家区号</b>」加格式校验（<b>纯数字 · 不带 + 号 · ≤6 位</b>），失败<b>标红 + 红字提示 + 保存/发布拦截</b>。（2026-06-29）</li>
     </ul>
   </div>
 
@@ -813,6 +837,21 @@
         <li><span class="lbl frm">新增/编辑弹窗</span>IP地址(textarea·新增可多行) · 封禁类型 · 封禁原因(≤50) · 备注(≤100)；提交前 IPv4 逐项校验。</li>
         <li><span class="lbl frm">批量导入弹窗</span><span class="badge built">已增强</span>IP列表 textarea + 选择文件(.csv/.txt) + 下载模板 + <b>实时「已识别 N 个(去重后，忽略 M 个无效)」</b> + 封禁类型 + 封禁原因(默认「批量导入」) + 确认导入(N)。</li>
         <li><span class="lbl sp">特殊</span>批量解析：按 逗号/空格/换行/分号 拆 → IPv4 校验(每段0~255) → 去重 → <b>单次上限 500</b>；确认后插入列表顶部 + Toast「成功导入 N 条」。</li>
+        <li><span class="lbl sp">本次改动 <span class="badge new">新</span></span>①(2026-06-27) 商户由多选改为<b>单选必填</b>；②(2026-06-29) 批量拉黑「<b>封禁原因</b>」加 <b>50 字上限 + 字数计数</b>。（2026-06-27/29）</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>6 · 系统管理 · 新增</h2>
+
+  <div class="pcard">
+    <div class="shot"><img src="img/spec-placeholder.png" alt="系统角色 · 分配权限"></div>
+    <div class="info">
+      <div class="nm">系统角色 · 分配权限 <span class="badge new">新</span> <span class="route">/system/role</span></div>
+      <div class="use">系统角色管理，重点是「分配权限」的权限树还原。</div>
+      <ul class="ctrl">
+        <li><span class="lbl act">行操作</span>「<b>分配权限</b>」→ 右侧权限树抽屉勾选。</li>
+        <li><span class="lbl sp">本次改动 <span class="badge new">新</span></span>(2026-06-29) 「分配权限」权限树由 3 模块占位<b>重写为按真实路由还原的 10 大模块</b>（会员管理 / 运营管理 / 财务 / 游戏管理 / 配置中心 / 报表管理 / 风控管理 / 系统管理 / 数据分析 / 商户管理）全量树，细到 查看 / 新增 / 编辑 / 删除 / 导出 / 审核 / 发布 / 处理 / 分配权限 等<b>操作级权限叶子</b>，标注<b>总控 / 商户归属</b> + <b>危险操作二次确认</b> + 新节点带「<b>新</b>」标。（2026-06-29）</li>
       </ul>
     </div>
   </div>
