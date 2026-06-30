@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>VIP配置·配置项操作记录 方案</title>
+<style>
+  :root{--teal:#18a058;--teal-d:#0c7a43;--line:#e5e7eb;--ink:#1f2329;--sub:#6b7280;--bg:#f6f8f8;}
+  *{box-sizing:border-box;}
+  body{margin:0;font:14px/1.6 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg);padding:24px;}
+  .wrap{max-width:1180px;margin:0 auto;}
+  .title{font-size:20px;font-weight:800;margin:0 0 4px;}
+  .desc{color:var(--sub);font-size:13px;margin:0 0 18px;}
+  .desc b{color:var(--teal-d);}
+  /* 子tab */
+  .subtabs{display:flex;gap:6px;margin-bottom:14px;}
+  .subtab{padding:6px 18px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:13.5px;cursor:pointer;}
+  .subtab.on{background:var(--teal);color:#fff;border-color:var(--teal);font-weight:700;}
+  /* 卡片 */
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:0;box-shadow:0 1px 3px rgba(0,0,0,.04);overflow:visible;}
+  table{border-collapse:collapse;width:100%;font-size:13px;}
+  th,td{border-bottom:1px solid var(--line);padding:10px 12px;text-align:center;white-space:nowrap;}
+  thead th{background:#f3f6f5;color:#374151;font-weight:700;font-size:12.5px;}
+  tbody tr:hover{background:#fafdfb;}
+  .lv{font-weight:700;color:var(--teal-d);}
+  /* 配置值 + 操作记录小icon */
+  .cell{display:inline-flex;align-items:center;gap:5px;justify-content:center;}
+  .val{font-variant-numeric:tabular-nums;}
+  .oplog-ic{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:5px;color:#9aa4b2;cursor:pointer;border:1px solid transparent;transition:.12s;}
+  .oplog-ic:hover{color:var(--teal);background:var(--teal-l,#e8f6ef);border-color:#bfe6d2;}
+  .oplog-ic svg{width:13px;height:13px;}
+  .cell.active .oplog-ic{color:#fff;background:var(--teal);border-color:var(--teal);}
+  /* 弹出操作记录卡 */
+  .pop{position:absolute;z-index:20;width:430px;background:#fff;border:1px solid #d7dde3;border-radius:10px;box-shadow:0 10px 30px rgba(15,40,30,.18);padding:0;}
+  .pop-hd{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;border-bottom:1px solid var(--line);}
+  .pop-hd .t{font-weight:700;font-size:13px;}
+  .pop-hd .t span{color:var(--teal-d);}
+  .pop-hd .x{color:#9aa4b2;cursor:pointer;font-size:15px;}
+  .pop table{font-size:12.5px;}
+  .pop th{background:#f7f9f9;font-size:11.5px;color:#6b7280;padding:7px 10px;}
+  .pop td{padding:7px 10px;color:#374151;}
+  .pop .c-time{white-space:nowrap;color:#6b7280;font-variant-numeric:tabular-nums;}
+  .pop .c-user{white-space:nowrap;}
+  .pop .c-op{text-align:left;}
+  .pop-ft{padding:7px 13px;text-align:right;border-top:1px solid var(--line);}
+  .pop-ft a{color:var(--teal-d);font-size:12px;text-decoration:none;}
+  .pop-arrow{position:absolute;top:-7px;left:60px;width:12px;height:12px;background:#fff;border-left:1px solid #d7dde3;border-top:1px solid #d7dde3;transform:rotate(45deg);}
+  /* 标注 */
+  .note{position:absolute;font-size:12px;color:#b4530a;background:#fff7ed;border:1px dashed #fdba74;border-radius:7px;padding:4px 9px;}
+  .legend{margin-top:16px;font-size:12.5px;color:var(--sub);background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 16px;}
+  .legend b{color:var(--ink);}
+  .legend li{margin:3px 0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="title">VIP 配置 · 等级配置　<span style="font-size:13px;color:#b4530a;font-weight:600;">（方案预览 · 配置项操作记录）</span></div>
+  <div class="desc">每个<b>配置项（可编辑值）</b>后增加「操作记录」小图标 🕘，点击展开 <b>3 列 × 4 行</b>记录表：<b>操作时间 / 操作人员 / 操作内容</b>，数据来源参考「系统管理 · 系统日志」。</div>
+
+  <div class="subtabs">
+    <div class="subtab on">等级配置</div>
+    <div class="subtab">经验值配置</div>
+  </div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>VIP等级</th><th>升级经验</th><th>保级经验</th><th>升级奖励</th><th>月奖励</th><th>充值奖励%</th><th>赠送上限</th><th>每日提现上限</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="lv">VIP0</td>
+          <td><span class="cell"><span class="val">0</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">0</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">0</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">0</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">0.00</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">0</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">100</span><span class="oplog-ic">🕘</span></span></td>
+        </tr>
+        <tr>
+          <td class="lv">VIP1</td>
+          <td><span class="cell"><span class="val">2,000</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">1,500</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">18</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">8</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">0.50</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">5,000</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">300</span><span class="oplog-ic">🕘</span></span></td>
+        </tr>
+        <tr style="position:relative;">
+          <td class="lv">VIP2</td>
+          <td style="position:relative;">
+            <span class="cell active"><span class="val">8,000</span><span class="oplog-ic" style="background:var(--teal);color:#fff;border-color:var(--teal);">🕘</span></span>
+            <!-- 弹出卡 -->
+            <div class="pop" style="left:-6px;top:42px;">
+              <div class="pop-arrow"></div>
+              <div class="pop-hd"><div class="t">操作记录 · <span>升级经验（VIP2）</span></div><div class="x">✕</div></div>
+              <table>
+                <thead><tr><th class="c-time">操作时间</th><th class="c-user">操作人员</th><th>操作内容</th></tr></thead>
+                <tbody>
+                  <tr><td class="c-time">2026-03-25 17:48</td><td class="c-user">admin超管</td><td class="c-op">升级经验 5000 → 8000</td></tr>
+                  <tr><td class="c-time">2026-03-20 10:12</td><td class="c-user">ops李明</td><td class="c-op">升级经验 3000 → 5000</td></tr>
+                  <tr><td class="c-time">2026-03-12 09:30</td><td class="c-user">admin超管</td><td class="c-op">升级经验 2000 → 3000</td></tr>
+                  <tr><td class="c-time">2026-03-01 14:05</td><td class="c-user">财务专员</td><td class="c-op">新增初始值 2000</td></tr>
+                </tbody>
+              </table>
+              <div class="pop-ft"><a href="#">查看全部记录 →</a></div>
+            </div>
+          </td>
+          <td><span class="cell"><span class="val">6,000</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">38</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">18</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">1.00</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">12,000</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">500</span><span class="oplog-ic">🕘</span></span></td>
+        </tr>
+        <tr>
+          <td class="lv">VIP3</td>
+          <td><span class="cell"><span class="val">20,000</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">15,000</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">88</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">38</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">1.50</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">30,000</span><span class="oplog-ic">🕘</span></span></td>
+          <td><span class="cell"><span class="val">800</span><span class="oplog-ic">🕘</span></span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="position:relative;height:0;">
+    <div class="note" style="left:250px;top:-232px;">① 每个配置值后：操作记录小图标（默认灰、悬停/点击变绿）</div>
+    <div class="note" style="left:360px;top:-150px;">② 点击 → 弹出 3列×4行 记录表（时间/人员/内容），不挡其它单元格</div>
+  </div>
+
+  <div class="legend">
+    <b>说明：</b>
+    <ul style="margin:6px 0 0;padding-left:18px;">
+      <li><b>放置粒度</b>：每个「配置项 = 可编辑值」后挂一个小图标（等级配置=每个数值单元格；经验值配置=兑换金额字段）。图标极小、默认浅灰不抢视线，hover/点击变绿。</li>
+      <li><b>弹层内容</b>：固定 3 列「操作时间 / 操作人员 / 操作内容」；默认展示最近 <b>4 条</b>，底部「查看全部记录 →」跳系统日志并带该配置项筛选。</li>
+      <li><b>数据来源</b>：复用「系统管理 · 系统日志」字段（logDateStr / userName / logInfo），按 该页面+该配置项 过滤。</li>
+      <li><b>只读</b>：弹层仅查看，不可编辑；点击空白处或 ✕ 关闭。</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>
