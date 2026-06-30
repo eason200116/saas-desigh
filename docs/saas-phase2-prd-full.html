@@ -92,6 +92,7 @@
     <button class="tabbtn" data-proto="1" data-src="https://eason200116.github.io/saas-desigh/prototypes/lotto-v3/#/home/welcome">产品原型</button>
     <button class="tabbtn" data-src="interaction-rules-2.0.html">交互规则</button>
     <button class="tabbtn" data-src="saas-phase2-tech-design.html">研发说明</button>
+    <button class="tabbtn" data-oplog="1" data-src="http://localhost:8770/docs/migration/18-操作日志范本.html">📋 操作路径</button>
     <button class="tabbtn" data-glossary="1" data-src="http://localhost:8770/docs/migration/14-anchor-new-field-glossary.html">📖 字段词典</button>
     <button class="tabbtn" data-src="saas-phase2-acceptance-cases-v3.html">验收用例</button>
   </div>
@@ -384,6 +385,11 @@
     const GLOSSARY_ONLINE='migration/14-anchor-new-field-glossary.html';
     const glossaryBtn=document.querySelector('.tabbtn[data-glossary]');
     if(glossaryBtn) glossaryBtn.dataset.src=isLocal?GLOSSARY_LOCAL:GLOSSARY_ONLINE;
+    // 操作路径（平台日志*操作路径）：同字段词典，docs/migration 文档，本地 8770 / 线上 saas-desigh Pages
+    const OPLOG_LOCAL='http://localhost:8770/docs/migration/18-操作日志范本.html';
+    const OPLOG_ONLINE='migration/18-操作日志范本.html';
+    const oplogBtn=document.querySelector('.tabbtn[data-oplog]');
+    if(oplogBtn) oplogBtn.dataset.src=isLocal?OPLOG_LOCAL:OPLOG_ONLINE;
     // 本地环境下，把正文里指向线上原型的 <a> 也改为本地 3100，保持「本地文档↔本地原型」
     if(isLocal){
       document.querySelectorAll('a[href*="github.io/saas-desigh/prototypes/lotto-v3"]').forEach(a=>{ a.href=PROTO; });
