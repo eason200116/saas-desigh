@@ -1,0 +1,1 @@
+import{t as e}from"./main-AxrouRZe.js";import{t}from"./role-filter-D0_FfrfA.js";var n=t(e,`tenant`);export{n as tenantRoutes};

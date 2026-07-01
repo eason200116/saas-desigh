@@ -1,1 +1,0 @@
-import{An as e,Gn as t,Sn as n}from"./vendor-naive-CddCc6E-.js";import{t as r}from"./VersionTab-CY_mdKSF.js";var i=e({__name:`index`,setup(e){return(e,i)=>(t(),n(r))}});export{i as default};
