@@ -1,0 +1,1 @@
+import{t as e}from"./main-BY4X-6Ru.js";import{t}from"./role-filter-CNWTsLha.js";var n=t(e,`admin`);export{n as adminRoutes};
