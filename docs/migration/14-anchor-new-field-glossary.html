@@ -407,8 +407,9 @@ const PAGES=[
  ['old','domainUrl','域名地址','域名','推广域名（必填·请输入域名地址）','这条渠道用的推广网址','fix'],
  ['chg','channelCode','渠道编码','渠道编码','注册归因码；<b>【2026-06-27】改必填、不再自动生成</b>(placeholder 改「请输入渠道编码」·maxlength40)；<b>编码规则：设备 + 推广渠道缩写 + 编号，例如 H5_001；推广渠道缩写如 Facebook 用 FB；官网渠道可不填缩写</b>（label 旁帮助图标 Tooltip codeRule）','埋在链接里识别来源的代码；按"设备_推广渠道缩写_编号"自己填','fix'],
  ['old','channelType','源站未见（V3补充）','渠道类型','官方/推广（必填·请选择渠道类型）','官方渠道还是外部推广','na'],
- ['old','state','源站未见（V3补充）','状态','1启用/0停用','开/关','na'],
-]},
+ ['old','state','源站未见（V3补充）','状态','1启用/0停用','开/关','na'],,
+      ["new","remark","源站未见（V3补充）","备注","渠道备注说明（新增/编辑弹窗中唯一非必填项，不加星号；列表渲染 row.remark || '--'，空值显示 --）","给这条渠道随手记的说明，可留空","na"]
+    ]},
 {m:'运营管理',p:'VIP奖励发放记录（原 VIP升级奖励记录·VIP记录页签一）',route:'/operations/vipRecord (reward页签)',img:'spec-vip-reward-log.png',
  pageNote:'【2026-07-02】原独立页「VIP升级奖励记录」并入「VIP记录」父壳页作页签一「VIP奖励发放记录」（复用原 vipRewardLog；路由 vipRewardLog → vipRecord/reward 页签，子标签 operations.vipRecord.tabs.reward）。<b>新增「奖励类型 rewardType」列 + 同名筛选下拉，最终枚举 2 项：升级礼包 upgradeGift / 每月奖励 monthlyReward（07-02 早间曾一度扩到 9 种，同日又收窄回 2 种）。</b>源站需输入 UID 才显示结果，列较简（会员ID/VIP等级/奖励发放时间/奖励领取时间）；奖励金额/领取状态为 V3 补充。',fields:[
  ['new','tenantId','无（源站单商户无此列）','商户','会员所属商户（列表首列·renderTenantTag）','这条奖励记录归哪个商户'],
@@ -446,10 +447,15 @@ const PAGES=[
  ['old','rebateLevel','返佣等级','返佣等级','1~6（同会员返佣等级体系）','昨天评定的返佣档位','fix'],
  ['old','teamCount/teamRecharge','团队人数·团队充值金额','团队人数/充值','团队规模与充值','整个团队多少人、充了多少','ok'],
  ['old','gameAmount','有效投注流水','有效投注流水','团队有效投注流水','团队一共有效投注流水多少','fix'],
- ['old','lotteryGame/lotteryRebate','各游戏 有效投注流水·返佣金额（5游戏子列）','各游戏有效投注流水/返佣额','彩票/电子/视讯/体育/棋牌','每类游戏团队有效投注流水/返了多少','ok'],
+ ["chg","lotteryGame/lotteryRebate","源站多层表头「彩票」品类的 游戏金额/返佣金额 两子列","彩票 有效投注流水·返佣金额","彩票品类分组列(catGroup catLottery),含两子列:有效投注流水(子列key lotteryGame,title=catGameAmount)=团队彩票有效投注流水额、返佣金额(子列key lotteryRebate,title=catRebate)=彩票品类返佣额;均 render fmtMoney2。现有词典把该单键写成「5游戏子列/彩票·电子·视讯·体育·棋牌」通用定义有误——此键仅代表彩票一个品类,其余4品类各有独立键","彩票这一类,团队有效投注流水多少、返了多少佣;不是5类合一","fix"],
  ['old','calcRebate/payoutRebate','计算返佣金额·派发返佣金额','计算/结算返佣额','计算与实际结算返佣','算出该返多少、实际结多少','fix'],
- ['old','payoutTime','派发时间','返佣时间','返佣结算时间','什么时候结的','fix'],
-]},
+ ['old','payoutTime','派发时间','返佣时间','返佣结算时间','什么时候结的','fix'],,
+      ["new","tenantId","无(V3新增)","商户","该昨日返佣等级记录所属商户;列表首列,render=renderTenantTag(row.tenantId),以标签展示商户号+商户名","这条昨日返佣记录归哪个商户","ok"],
+      ["new","egameGame/egameRebate","源站多层表头「电子」品类的 游戏金额/返佣金额 两子列","电子 有效投注流水·返佣金额","电子品类分组列(catGroup catEgame),含两子列:有效投注流水(子列key egameGame,title=catGameAmount)=团队电子有效投注流水额、返佣金额(子列key egameRebate,title=catRebate)=电子品类返佣额;均 render fmtMoney2","电子这一类,团队有效投注流水多少、返了多少佣","ok"],
+      ["new","liveGame/liveRebate","源站多层表头「视讯(真人)」品类的 游戏金额/返佣金额 两子列","视讯 有效投注流水·返佣金额","视讯品类分组列(catGroup catLive,i18n catLive=视讯),含两子列:有效投注流水(子列key liveGame,title=catGameAmount)=团队视讯有效投注流水额、返佣金额(子列key liveRebate,title=catRebate)=视讯品类返佣额;均 render fmtMoney2","视讯这一类,团队有效投注流水多少、返了多少佣","ok"],
+      ["new","sportGame/sportRebate","源站多层表头「体育」品类的 游戏金额/返佣金额 两子列","体育 有效投注流水·返佣金额","体育品类分组列(catGroup catSport),含两子列:有效投注流水(子列key sportGame,title=catGameAmount)=团队体育有效投注流水额、返佣金额(子列key sportRebate,title=catRebate)=体育品类返佣额;均 render fmtMoney2","体育这一类,团队有效投注流水多少、返了多少佣","ok"],
+      ["new","chessGame/chessRebate","源站多层表头「棋牌」品类的 游戏金额/返佣金额 两子列","棋牌 有效投注流水·返佣金额","棋牌品类分组列(catGroup catChess),含两子列:有效投注流水(子列key chessGame,title=catGameAmount)=团队棋牌有效投注流水额、返佣金额(子列key chessRebate,title=catRebate)=棋牌品类返佣额;均 render fmtMoney2","棋牌这一类,团队有效投注流水多少、返了多少佣","ok"]
+    ]},
 
 {m:'运营管理',p:'协议管理（2026-07-02 新增页）',route:'/operations/agreementMgmt',img:null,pageTag:'待定 · 纯新增页（源站无）',
  pageNote:'【2026-07-02】新增「协议管理」页（menu.ops_agreementMgmt）。非列表页，交互三步走：①顶部页签选<b>协议类型</b>（隐私协议/风险协议/玩法指引/公告设置 4 类）；②下方 MerchantSwitchBar 选<b>配置商户</b>；③再选<b>语言</b>并在富文本编辑器（BasicTiptapEditor·profile=plain）里编辑，语言随所选商户「已开通语言」联动（未选商户回退中英双语），切商户/类型保留上次保存内容。4 类内容统一为「单篇多语言富文本」，按 商户-type-language 三键存取、单商户相互隔离；点「保存」二次确认后即生效，编辑器底部右上角只读展示 最后更新时间＋操作人。',fields:[
@@ -606,8 +612,9 @@ const PAGES=[
  ['old','rechargeAmount/withdrawAmount/betAmount','充值(金额/次)·提现(金额/次)·有效投注流水','充值/提现/有效投注流水','交易统计','团队充了/提了/有效投注流水多少','ok'],
  ['old','rebateAmount','佣金','返佣','返给代理的佣金','给这个代理的佣金','fix'],
  ['old','profit','源站为「中奖」（无盈亏列）','盈亏','平台盈亏（正盈负亏）','平台在他团队身上赚还是亏','na'],
- ['old','date','日期','日期','统计周期','统计哪段时间','ok'],
-]},
+ ['old','date','日期','日期','统计周期','统计哪段时间','ok'],,
+      ["new","tenantId","无(V3新增)","商户","该代理所属商户；表格首列，由 renderTenantTag(row.tenantId) 渲染成「商户号(商户名)」标签。V3 多商户架构新增，源站 Agent/D_Report_InviteChart 为单商户旧后台无此列。","这条代理数据是哪个商户的","ok"]
+    ]},
 {m:'报表管理',p:'返佣报表 · 流水',route:'/report/rebateReport/flow',img:'spec-rebate-report.png',fields:[
  ['old','memberId','会员ID','会员ID','会员标识','谁的流水','ok'],
  ['old','lottery/egame/live/sport/chess','游戏金额','各游戏投注额','5类游戏投注金额','每类游戏投了多少','fix'],
@@ -641,8 +648,19 @@ const PAGES=[
  ['new','warningAmountForLargeBets','无（迁自系统参数）','彩票大额下注预警金额','整数 ≥0，单位「元」，≥该值推送，0=不预警','彩票单笔下注≥该额就推送，填0关掉'],
  ['grp','出款预警'],
  ['new','withdrawSubmitSeconds','无（迁自系统参数）','会员提交时间','整数，单位「秒」','会员提交超过 N 秒就预警'],
- ['new','withdrawLockSeconds','无（迁自系统参数）','后台锁定时间','整数 ≤100，单位「秒」','后台锁定未处理超过 N 秒就预警'],
-]},
+ ['new','withdrawLockSeconds','无（迁自系统参数）','后台锁定时间','整数 ≤100，单位「秒」','后台锁定未处理超过 N 秒就预警'],,
+      ["new","triggerTenant","无(V3新增)","预警来源商户","触发该条预警的商户;renderTenantTag(triggerTenantId, triggerTenant) 渲染为『商户号(商户名)』Tag,首列,width160","这条预警是哪个商户触发的","na"],
+      ["new","channelName","无(V3新增)","通道名称","预警所在的商户通道;ChannelCell 渲染为『通道ID → 自定义名』(tenantChannelId→customName),接口未下发 channelName 时由 tenantPayChannelList 字典反查兜底,超长 tooltip","预警落在哪条支付/代付通道上","na"],
+      ["new","thirdMerchantText","无(V3新增)","三方商户昵称/商户号","该通道对应的三方支付商户;两行渲染(第1行商户昵称 nickName、第2行商户号 merchantNo),由 thirdPayMerchantList 字典按 orgId+币种+payCode 反查 customName/merchantCode 兜底;多行故 align:left","这条通道背后接的是哪个三方商户","na"],
+      ["new","currencyCode","无(V3新增)","币种","预警涉及的币种代码;resolveCurrencyCode 从 currencyCode/sysCurrency/预警内容/映射码/通道名里按 CURRENCY_CODE_HINTS(USDT/INR/VND/BRL… 24种)提取命中的币种码,success 绿色 Tag,无则 --","这笔预警是哪种币的","na"],
+      ["new","thirdMappingCode","无(V3新增)","三方映射码","通道的三方映射码(row.thirdMappingCode);info 蓝色 Tag,超长 tooltip","三方通道的映射编码","na"],
+      ["new","warningType","无(V3新增)","预警类型","预警分类,Tag 显示(代收通道失败率/代收通道拉单失败/代付通道余额不足/大额出款,字典驱动可扩);颜色 getWarningTypeTagType:501失败率/502拉单失败=error红、503余额低/504大额出款=warning黄、字典新增或空=default灰","这条属于哪一类预警","na"],
+      ["new","warningContent","无(V3新增)","预警内容","预警明细文案(row.warningContent);单元格 NTooltip 悬停展开全文(max-width450、可换行),空显示 --,minWidth420","预警具体说了什么","na"],
+      ["new","warningTime","无(V3新增)","预警时间","预警触发时间;按触发商户时区展示(showTenantTimeZone: searchTenantIdKey=tenantIds / rowTenantIdKey=triggerTenantId,formatTenantDateTime),列可排序(sorter,默认 WarningTime Desc)","什么时候报的这条警(按该商户时区)","na"],
+      ["new","noticeChannelName","无(V3新增)","通知渠道","该预警已推送的通知渠道;resolveNoticeChannels 拆分 noticeChannelName(按顿号/逗号/斜杠)或按 noticeChannel 字典兜底(站内信),renderTagList info 蓝色 Tag 列表","这条预警通过什么渠道通知出去了","na"],
+      ["new","remark","无(V3新增)","备注","预警备注(row.remark);空显示 --,超长 tooltip(可换行 max-width400);title 取 common.remark","针对这条预警的补充说明","na"],
+      ["new","warningStatus","无(V3新增)","状态","预警处理状态;renderStatusTag 三态:1待处理=warning黄/2已处理=success绿/3已忽略=default灰(WARNING_STATUS_LABEL_KEYS);仅 warningStatus=1 待处理行可勾选/可点『处理·忽略』","这条预警处理到哪一步了","na"]
+    ]},
 
 // ===================== 风控管理 =====================
 {m:'风控管理',p:'异常会员处理',route:'/risk-control/abnormalMember',img:'spec-abnormal-member.png',
@@ -700,8 +718,11 @@ const PAGES=[
  ['old','hitCount','源站未见（V3补充）','触发次数','规则触发累计次数','这条规则拦下多少次','na'],
  ['old','remark','备注','备注','补充说明','额外备注','ok'],
  ['old','creator/lastUpdateMan','创建人·创建时间（源站无修改人）','创建/修改人与时间','审计字段','谁、何时加的/改的','ok'],
- ['old','state','源站未见（V3补充）','状态','0/1','开/关','na'],
-]},
+ ['old','state','源站未见（V3补充）','状态','0/1','开/关','na'],,
+      ["new","id","源站未见（V3补充）","ID","该条 IP 黑名单记录的唯一编号（列表可见列，title 直接写死为「ID」）；同时作为表格 row-key，编辑/删除按此 id 定位记录。","每条黑名单的独立编号","na"],
+      ["new","createTime","创建时间","创建时间","该条黑名单记录的创建时间；showTenantTimeZone=true，按当前商户时区展示。","这条黑名单是什么时候加的","ok"],
+      ["new","lastUpdateTime","无（源站无修改时间·V3新增）","最后修改时间","该条黑名单记录最后一次被修改的时间；showTenantTimeZone=true，按当前商户时区展示（与「最后修改人 lastUpdateMan」成对）。","这条黑名单最后一次改动的时间","na"]
+    ]},
 {m:'系统管理',p:'系统日志（原「平台日志」·列重构）',route:'/system/platform-log',img:null,
  pageNote:'【2026-06-29】菜单「平台日志」→「系统日志」；由仅商户端改<b>双端可见</b>，加 keepAlive、标「新」；旧「中台日志 /system/log」整页下线删除（视图4文件＋菜单 id7600 移除）。<b>搜索（6 项）</b>：商户 tenantId<b>多选</b> / 日志类型 logType（上移第2位） / <b>操作路径 operationPath（单一级联 cascader：操作模块 › 操作页面（含弹窗层级）› 操作控件，可在任意层级选定；登录日志时禁用）</b> / 关键词 keyWords / 状态 logState / 操作时间 logTime（proDateRange）。注意：是<b>一个 operationPath 级联控件</b>，不是「操作模块/操作页面/操作控件」三个独立下拉。<b>列（7 列）</b>：商户 tenantId / 日志类型 logType（彩色 Tag） / <b>操作路径 operationPath（模块Tag › 页面 › 控件＋控件类型Tag 合一渲染；登录日志显「后台登录」橙 Tag）</b> / 操作内容 logInfo / 关键词 keyword（渲染 logTitle） / 操作人员 userName / 操作时间 logDateStr。<b>【据 2026-06-29 原型校验】用户IP userIP / IP所在地 userIPArea / 操作系统 userOS / 浏览器 userIE / 状态 logState 已移入「详情弹窗（Info.vue）」展示，不再作列表列</b>。<b>operationCatalog 操作目录</b>（全站可设置项目录·平台级·不随商户变）：125 位置节点［页面级 33 / 二级弹窗 78 / 三级弹窗 14］·<b>816 配置项</b>。',fields:[
  ['grp','一、入参（搜索区 · 6 项）'],
