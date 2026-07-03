@@ -425,7 +425,7 @@
 
   <h4>列表列（全部居中/居左）<span class="kind">仅展示，不逐列详述</span></h4>
   <p class="sd">商户 / 会员ID / 短信·邮箱厂商 / 手机号·邮箱（居左，带「手机」「邮箱」标签）/ 业务类型（登录验证·注册验证·绑定手机·重置密码）/ 内容（居左）/ 发送时间 / 失效时间 / 状态（发送成功·发送失败）/ 发送IP / 三方信息（通道名 + 三方流水号）；共 11 列，仅展示、无交互、不逐列介绍。</p>
-</section>
+<h4>列内可点单元格<span class="kind">1 项</span></h4><table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr><tr><td class="nm"><b>会员ID链接</b><span class="k">memberId</span></td><td>列表「会员ID」列为可点蓝链</td><td class="lt">真实会员ID渲染为蓝色链接可点；未注册/非真实会员（灰标签）不可点</td><td class="lt">点击调用 openMemberDetailModal(memberId, tenantId) 打开该会员只读详情弹窗；本页不承载新增/编辑（全站「真实会员ID一律可点跳详情」统一规范）</td><td class="lt">—</td><td class="lt">详情数据缺失时弹窗内显示「无数据」；灰标签不响应点击</td></tr></table></section>
   <section id="g-operations"><h2 class="sec">运营管理</h2></section>
 <section id="p-operations-inboxMessage">
   <h3>站内消息 <span class="pill p-in">2.0 新增</span></h3>
@@ -747,7 +747,7 @@
   <h4>工具栏 + 行操作 <span class="kind">1 项</span></h4>
   <table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr><tr><td class="nm"><b>导出</b><span class="k">handleExport</span><div class="iw"><button class="iw-btn sec">导出</button></div></td><td>导出当前结果到 Excel</td><td class="lt">按钮，无输入。报表类页面（R21）固定提供导出。按当前搜索条件＋表格「显隐/排序后的列」所见即所得导出，导出上限默认 10000 条。</td><td class="lt">点击进入 loading（按钮禁用防重复点），文件名为「昨日返佣等级」</td><td class="lt">成功 Toast「导出成功」；失败 Toast「导出失败」；数据过多时提示「导出数据过多，请稍后前往数据导出中心获取导出文件」</td><td class="lt">空结果仍可点（导出仅表头）；导出中再次点击被忽略；超 10000 条走数据导出中心异步领取；时区列标题带时区后缀。</td></tr></table>
 
-</section>
+<h4>列内可点单元格<span class="kind">1 项</span></h4><table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr><tr><td class="nm"><b>会员ID链接</b><span class="k">memberId</span></td><td>列表「会员ID」列为可点蓝链</td><td class="lt">真实会员ID渲染为蓝色链接可点；未注册/非真实会员（灰标签）不可点</td><td class="lt">点击调用 openMemberDetailModal(memberId, tenantId) 打开该会员只读详情弹窗；本页不承载新增/编辑（全站「真实会员ID一律可点跳详情」统一规范）</td><td class="lt">—</td><td class="lt">详情数据缺失时弹窗内显示「无数据」；灰标签不响应点击</td></tr></table></section>
   <section id="g-risk"><h2 class="sec">风控管理</h2></section>
 <section id="p-risk-abnormalMember">
   <h3>异常会员处理 <span class="pill p-in">2.0 新增</span></h3>
@@ -773,7 +773,7 @@
 
   <h4>余额扣除确认弹窗 <span class="kind">弹窗 · 2 项</span></h4>
   <table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr><tr><td class="nm"><b>扣除金额</b><span class="k">amount</span><div class="iw"><input class="iw-num" placeholder="请输入金额（必须为负数）"></div></td><td>本次扣减的金额（负数）</td><td class="lt">数字框，必填；必须为负数（上限 -0.01，不能 ≥0）；支持小数。未填或 ≥0 → Toast「扣除金额必须为负数」。</td><td class="lt">点确定先校验金额：为空或 ≥0 则拦截不提交。通过后随接口提交（ids + amount + remark）</td><td class="lt">—</td><td class="lt">每次打开重置为空；输入框已限制最大值 -0.01；正数/0 被拦；点取消不执行。弹窗为系统默认确认框宽度（未定制宽度）。</td></tr><tr><td class="nm"><b>备注</b><span class="k">remark</span><div class="iw"><textarea class="iw-ta" placeholder="请输入备注（必填，不可含中文）"></textarea></div></td><td>扣除原因/处置说明</td><td class="lt">多行文本框（2~4 行自适应），必填；不可含中文；不限字数。空 → Toast「备注为必填项」；含中文 → Toast「备注不可包含中文字符」。</td><td class="lt">点确定时与金额一并校验：金额校验先行，金额通过后再校验备注（空/含中文拦截）。全部通过调接口，关闭弹窗 + 清空勾选 + 刷新</td><td class="lt">成功 Toast「「余额扣除」已执行」</td><td class="lt">每次打开自动清空；仅空格视为未填被拦；任一校验失败均保持弹窗打开；点取消不执行。</td></tr></table>
-</section>
+<h4>列内可点单元格<span class="kind">1 项</span></h4><table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr><tr><td class="nm"><b>会员ID链接</b><span class="k">memberId</span></td><td>列表「会员ID」列为可点蓝链</td><td class="lt">真实会员ID渲染为蓝色链接可点；未注册/非真实会员（灰标签）不可点</td><td class="lt">点击调用 openMemberDetailModal(memberId, tenantId) 打开该会员只读详情弹窗；本页不承载新增/编辑（全站「真实会员ID一律可点跳详情」统一规范）</td><td class="lt">—</td><td class="lt">详情数据缺失时弹窗内显示「无数据」；灰标签不响应点击</td></tr></table></section>
 <section id="p-risk-sameIp">
   <h3>同IP/设备检测 <span class="pill p-in">2.0 新增</span></h3>
   <p class="meta-line"><code>risk-control/sameIp</code> · 类型：列表</p>
@@ -851,7 +851,7 @@
 
   <h4>保存 / 发布 / 套用内容预览弹窗 <span class="kind">弹窗 · 860 · 2 项</span></h4>
   <table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr><tr><td class="nm"><b>内容预览（只读）</b><span class="k">openSavePreview / openConfigPreview</span><div class="iw">（只读 mini 表 + 黄色提示）</div></td><td>保存/套用/新建模板前统一弹出：标明操作对象(商户/模板名) + 将生效的配置只读表 + 黄色风险提示</td><td class="lt">只读，无输入、无校验；仅供二次核对</td><td class="lt">展示「保存商户：(商户号)商户名」「<b>确认后将以下配置保存到 XX，保存后立即生效</b>」等对应文案（已无草稿 / 发布两段措辞）；不可编辑</td><td class="lt">—</td><td class="lt">行/列随触发场景不同(整行等级、经验值、模板内容)；预览表横向超宽可滚动</td></tr><tr><td class="nm"><b>确认 / 取消</b><span class="k">onOk / cancel</span><div class="iw"><button class="iw-btn">确认保存</button> <button class="iw-btn">确认发布</button> <button class="iw-btn sec">取消</button></div></td><td>核对后确认执行 或 放弃</td><td class="lt">按钮，无输入；确认按钮文案随场景：确认保存 / 保存模板 / 确认复制 / 确认套用（<b>已无「确认发布」</b>）</td><td class="lt">点「取消」关闭弹窗、不执行、不留改动</td><td class="lt">点确认才真正落库并按各场景弹对应成功 Toast(保存成功 / 已保存，配置已生效 / 已创建模板 ...)</td><td class="lt">所有写库/发布动作都必须经此预览二次确认；取消后原编辑态/草稿仍保留可继续改</td></tr></table>
-</section>
+<h4>商户配置版本管理<span class="kind">4 项</span></h4><table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr><tr><td class="nm"><b>商户配置版本号</b><span class="k">mchVersion</span></td><td>当前商户所用配置的版本号（v{ver} 标签）</td><td class="lt">只读展示，随商户/来源变化</td><td class="lt">展示当前生效配置版本</td><td class="lt">—</td><td class="lt">来源为模板时显示所用模板版本</td></tr><tr><td class="nm"><b>有新版徽标</b><span class="k">chipNewVer</span></td><td>模板有更新时显示「有新版🔔」；无更新显示「已最新」</td><td class="lt">只读标记，由版本比对驱动</td><td class="lt">模板版本高于商户当前版本时亮起</td><td class="lt">—</td><td class="lt">自定义来源不比对模板版本</td></tr><tr><td class="nm"><b>有新版提示</b><span class="k">newVerTip</span></td><td>「有新版 v{from}→v{to}」提示条</td><td class="lt">只读提示</td><td class="lt">提示可更新到的目标版本</td><td class="lt">—</td><td class="lt">无更新时不显示</td></tr><tr><td class="nm"><b>立即更新</b><span class="k">updateToLatest</span></td><td>把商户配置更新到最新模板版本</td><td class="lt">按钮，仅「有新版」时可点</td><td class="lt">点击将当前商户配置更新到最新版本并生效</td><td class="lt">更新成功提示；无新版时按钮不可点</td><td class="lt">为覆盖操作，建议二次确认</td></tr></table></section>
 <section id="p-config-rebateConfig">
   <h3>返佣配置 <span class="pill p-in">2.0 新增</span></h3>
   <p class="meta-line"><code>config/rebateConfig</code> · 类型：配置</p>
@@ -896,7 +896,7 @@
 
   <h4>删除模板确认弹窗 <span class="kind">弹窗 · 1 项</span></h4>
   <table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr><tr><td class="nm"><b>取消 / 确认删除</b><span class="k">onDeleteTemplate</span><div class="iw"><button class="iw-btn sec">取消</button> <button class="iw-btn danger">确认删除</button></div></td><td>删除模板画廊里某个模板（危险操作·二次确认）</td><td class="lt">弹窗含蓝色说明「仅删除该模板，不影响商户配置：使用该模板的商户将保留各自的当前配置，并自动转为「自定义配置」」+ 取消/确认删除按钮，无输入。</td><td class="lt">点模板卡右上角红 ✕ 触发；{N} 个商户转为自定义配置」；「取消」关闭不删</td><td class="lt">「确认删除」Toast「已删除模板「{名称}」</td><td class="lt">删模板不影响在用商户的实际配置（自动转「自定义配置」）；删除前必须二次确认。</td></tr></table>
-</section>
+<h4>商户配置版本管理<span class="kind">4 项</span></h4><table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr><tr><td class="nm"><b>商户配置版本号</b><span class="k">mchVersion</span></td><td>当前商户所用配置的版本号（v{ver} 标签）</td><td class="lt">只读展示，随商户/来源变化</td><td class="lt">展示当前生效配置版本</td><td class="lt">—</td><td class="lt">来源为模板时显示所用模板版本</td></tr><tr><td class="nm"><b>有新版徽标</b><span class="k">chipNewVer</span></td><td>模板有更新时显示「有新版🔔」；无更新显示「已最新」</td><td class="lt">只读标记，由版本比对驱动</td><td class="lt">模板版本高于商户当前版本时亮起</td><td class="lt">—</td><td class="lt">自定义来源不比对模板版本</td></tr><tr><td class="nm"><b>有新版提示</b><span class="k">newVerTip</span></td><td>「有新版 v{from}→v{to}」提示条</td><td class="lt">只读提示</td><td class="lt">提示可更新到的目标版本</td><td class="lt">—</td><td class="lt">无更新时不显示</td></tr><tr><td class="nm"><b>立即更新</b><span class="k">updateToLatest</span></td><td>把商户配置更新到最新模板版本</td><td class="lt">按钮，仅「有新版」时可点</td><td class="lt">点击将当前商户配置更新到最新版本并生效</td><td class="lt">更新成功提示；无新版时按钮不可点</td><td class="lt">为覆盖操作，建议二次确认</td></tr></table></section>
 <section id="p-config-messageTemplate">
   <h3>系统消息配置 <span class="pill p-in">2.0 新增</span></h3>
   <p class="meta-line"><code>config/messageTemplate</code> · 类型：配置</p>
@@ -1028,7 +1028,7 @@
     <tr><td>保存</td><td><b>手机区号长度（卡片内）</b>（phones[].phoneLength）</td><td>整数 6~15、不可为空</td><td>为空随该行标红拦截</td></tr>
   </table>
   <p class="sd">校验通过先弹<b>二次确认</b>再写库、<b>保存即生效</b>（已删「发布」步骤）→ Toast「已保存，配置已生效」。注册限制/赠送数值框（同IP/浏览器/设备注册数、赠送金额/打码倍数）均 min=0、负数自动夹回 0，越界即标红；注册开关板块各开关无校验。</p>
-</section>
+<h4>可注册手机号·行内操作<span class="kind">1 项</span></h4><table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr><tr><td class="nm"><b>删除手机号卡片</b><span class="k">removePhone</span></td><td>删除一张「区号+长度」手机号规则卡片</td><td class="lt">每张卡片右上角「删除」按钮</td><td class="lt">点击移除该张手机号规则卡片；无二次确认</td><td class="lt">无 Toast</td><td class="lt">删空由保存校验兜底</td></tr></table></section>
 <section id="p-config-languageConfig">
   <h3>前台配置 <span class="pill p-in">2.0 新增</span></h3>
   <p class="meta-line"><code>config/languageConfig</code> · 类型：配置</p>
@@ -1193,7 +1193,7 @@
 
   <h4>Tab 3 · 层级返佣报表 — 工具栏 <span class="kind">1 项</span></h4>
   <table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr><tr><td class="nm"><b>导出</b><span class="k">handleExport</span><div class="iw"><button class="iw-btn sec">导出</button></div></td><td>把当前筛选条件下的全部层级返佣报表导出为表格文件</td><td class="lt">按钮，无输入。报表类按 R21 保留导出；导出范围为当前条件下全量（pageNo=1、pageSize=10000）。</td><td class="lt">点击进 loading 并防重复点击；文件名取 Tab 名「层级返佣报表」</td><td class="lt">成功 Toast「导出成功」，失败 Toast「导出失败」（有原因则展示原因）</td><td class="lt">无数据仍可点（导出空表/带表头）；导出中再点无效；异常 → 失败 Toast。</td></tr></table>
-</section>
+<h4>列内可点单元格<span class="kind">1 项</span></h4><table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr><tr><td class="nm"><b>会员ID链接</b><span class="k">memberId</span></td><td>列表「会员ID」列为可点蓝链</td><td class="lt">真实会员ID渲染为蓝色链接可点；未注册/非真实会员（灰标签）不可点</td><td class="lt">点击调用 openMemberDetailModal(memberId, tenantId) 打开该会员只读详情弹窗；本页不承载新增/编辑（全站「真实会员ID一律可点跳详情」统一规范）</td><td class="lt">—</td><td class="lt">详情数据缺失时弹窗内显示「无数据」；灰标签不响应点击</td></tr></table></section>
   <section id="g-system"><h2 class="sec">系统管理</h2></section>
 <section id="p-system-role">
   <h3>角色管理 <span class="pill p-in">2.0 增强</span></h3>
