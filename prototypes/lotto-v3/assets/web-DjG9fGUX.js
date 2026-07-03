@@ -1,1 +1,0 @@
-import{s as e}from"./vue-router-C_mPoCAp.js";import{$ as t,tt as n}from"./main-CQIgPoMU.js";import"./useRouteTabs-DBi9RgOE.js";function r(e){console.error(e)}function i(i){let a;i||(a=e());let{push:o,replace:s}=i||a;function c(e=n.BASE_HOME,i=!1){if(e)if(t(e))i?s(e).catch(r):o(e).catch(r);else{let t=e;i?s(t).catch(r):o(t).catch(r)}}return c}export{i as t};
