@@ -1,1 +1,0 @@
-import{t as e}from"./main-C7Q_Nviz.js";import{t}from"./role-filter-Cs-FkUl-.js";var n=t(e,`admin`);export{n as adminRoutes};
