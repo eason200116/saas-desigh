@@ -1,1 +1,0 @@
-import{hr as e}from"./vendor-naive-CddCc6E-.js";var t=e(0);function n(){t.value+=1}export{n,t};
