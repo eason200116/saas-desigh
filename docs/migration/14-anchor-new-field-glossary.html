@@ -709,7 +709,7 @@ const PAGES=[
  ['new','isNew','无（权限树为 V3 新增）','新增标记','布尔：true=2.0 新增节点，树上带「新」标；共 28 个','标出哪些是这版新加的菜单/页面'],
  ['new','children','无（权限树为 V3 新增）','子节点','下级节点数组（模块装页面、页面装操作；操作叶为空数组 []）','这一行下面还挂着哪些子菜单/按钮'],
 ]},
-{m:'系统管理',p:'IP黑名单',route:'/system/ipBlacklist',img:'spec-ip-blacklist.png',
+{m:'运营管理',p:'会员IP黑名单',route:'/operations/ipBlacklist',img:'spec-ip-blacklist.png',
  pageNote:'【2026-06-27 commit 91efb0b】「商户」由多商户(tenantIds 数组·多 Tag)改<b>单商户(tenantId 单值·单 Tag)</b>，一条记录只归属一个商户、空值显 -；弹窗商户选择器 多选→单选(去 multiple、加 clearable、保留 filterable)；商户必填校验由数组型(array,min1)改数值型(number)。IP 校验无变化（仅 IPv4、不支持 IPv6、支持批量录入、编辑态仅单 IP）。',fields:[
  ['chg','tenantIds→tenantId','无（源站单商户无此列）','商户','<b>【2026-06-27】由多商户 tenantIds(数组·多 Tag) 改单商户 tenantId(单值·单 Tag)</b>，空值显 -；弹窗多选→单选(可清空·可搜索)；校验由 type:array,min1 改 type:number','这条黑名单作用于哪个商户（现一条只归一个商户）'],
  ['old','ip','IP地址','IP地址','黑名单IP','被拉黑的网络地址','ok'],
