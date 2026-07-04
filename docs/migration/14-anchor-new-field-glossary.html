@@ -530,14 +530,15 @@ const PAGES=[
 {m:'配置中心',p:'注册管理（单页表单·注册配置）',route:'/config-center/registerManage',img:null,
  pageNote:'⚠ 源站无独立「注册管理」页，注册项分散在 H5Setting（手机号/区号）、ParameterConfig（注册数量）、ApiSetting（区号）等；V3 整合为本页。<b>【据 2026-06-29 原型校验】当前组件仅渲染单页「注册配置」表单（注册开关/注册限制/注册赠送/可注册手机号 四段）；原拟「图形验证码 Tab2」未在现态渲染（getCaptchaConfig mock 存在但无 .vue 消费·属预留）。</b>原中文按源站对应项标注。',subs:[
  {title:'注册配置（单页·注册开关段）',fields:[
-  ['old','registerSms/registerMobile/registerEmail','源站分散（MobileFlag/EmailFlag）','短信/手机/邮箱注册','允许的注册方式（各 n-switch）','允许用短信/手机/邮箱注册','na'],
+  ['old','registerMobile/registerEmail','源站分散（MobileFlag/EmailFlag）','手机/邮箱注册','允许的注册方式（各 n-switch）','允许用手机/邮箱注册','na'],
   ['old','isOpenRegisterCaptcha/isInvitecode','源站分散（IsOpenCaptcha/IsInvitecode）','图形验证码/邀请码必填','注册校验项（各 n-switch）','注册要不要图形码、邀请码是否必填','na'],
   ['new','registerPrivacyChecked','无（V3新增·注册开关段）','隐私协议勾选','注册需勾选隐私协议（n-switch）','注册时要不要强制勾隐私条款'],
+  ['old','mobileFirstZeroLimit/mobileLengthVerify','源站「配置开关」297/170（2026-07-04 迁入）','注册手机号首位限制0 / 后台注册手机号长度校验','手机号注册限制类开关（各 n-switch）：首位是否限 0 / 后台是否校验长度','限制手机号首位为 0 / 后台校验手机号长度','na'],
  ]},
  {title:'注册配置（单页·注册限制 / 注册赠送 / 可注册手机号 段）',fields:[
   ['old','registerCount/sameBrowserRegistCount/sameDeviceRegistCount','源站 ParameterConfig 注册数量','同IP/指纹/设备注册数','注册限制段：同IP registerCount / 同浏览器指纹 sameBrowserRegistCount(V3新增) / 同设备 sameDeviceRegistCount（各 n-input-number）','同IP/浏览器/设备最多注册几个号','fix'],
   ['old','registerGiftAmount/registerGiftRollover','源站分散（注册赠送）','注册赠送金额/打码倍数','注册赠送段：赠送金额 + 打码倍数','注册送多少、投注多少倍才能提','na'],
-  ['chg','currentAreaCode','当前国家区号（源站「接口配置」AreaCode）','当前国家区号','默认电话区号（单输入框·校验 ^\\d{1,6}$ 纯数字不带+；迁自接口配置）','注册时手机号默认带的国家区号（如印度91）；原在接口配置页本期搬来','fix'],
+  ['chg','currentAreaCode','当前国家区号（源站「接口配置」AreaCode）','当前国家区号','默认电话区号（下拉选择·选项显示「区号（国家）」如 +91（印度）·来自国家字典·只能选合法项无格式校验；2026-07-04 由文本框改下拉）','注册时手机号默认带的国家区号（如印度 +91）；原在接口配置页搬来','fix'],
   ['old','areaCode/phoneLength','源站 H5Setting 可注册手机号表','可注册手机号表（区号/长度）','phones[] 卡片数组，每张含 areaCode（区号·校验 ^\\+\\d{1,3}$）+ phoneLength（手机号长度·6~15）','支持哪些国家、各国手机号几位','fix'],
  ]},
 ]},
