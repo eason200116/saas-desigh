@@ -109,7 +109,7 @@
 <body>
 <header>
   <span class="logo">📐 《交互规则》· AR V3 · 2.0 新增页面（前端研发实现规范）</span>
-  <span class="ver">v3.6 · 2026-07-02 · 2.0 可见页（28）+ 全局框架（2）</span>
+  <span class="ver">v3.7 · 2026-07-06 · 2.0 可见页（29）+ 全局框架（2）</span>
   <span class="grow"></span>
 </header>
 <div class="layout">
@@ -182,11 +182,12 @@
   details.doc-cl td:first-child{white-space:nowrap;color:#64748b}
   </style>
   <details class="doc-cl">
-    <summary>📝 修改日志 · 点击展开版本变更记录（最新 v3.6 · 2026-07-02）</summary>
+    <summary>📝 修改日志 · 点击展开版本变更记录（最新 v3.7 · 2026-07-06）</summary>
     <div class="cl-b">
       <p class="tip">本文档变更记录，最新在上。</p>
       <table>
         <tr><th width="110">日期 / 版本</th><th>变更摘要</th></tr>
+        <tr><td>2026-07-06 · v3.7</td><td><b>本期 7/6 变更收录 + 财务纳入范围（原型 v1.1.2 / v1.1.3 · commit 56eb589 / 927a9a5）：</b>① <b>系统日志·搜索精简（已生效）</b>：搜索区移除「记录类型」「状态」（6→4 项）、列表移除「记录类型」列（7→6 列），默认展示全部记录（操作 + 登录，登录在「操作路径」列显「后台登录」），「操作路径」级联始终可用；记录类型 / 状态移入详情弹窗（正文 note 已注，本条并入版本）。② <b>财务·资金账变（自会员管理迁入财务·商户端）</b>：账变类型由单层下拉改<b>「主类型 › 子类型」两级级联单选</b>——checkStrategy=child 只选叶子（无多选勾选框）、选主类型「（全部）」叶子按整组筛、可输入模糊匹配主 / 子类型名（不区分大小写）；金额列正绿负红、账变类型列换行居左(R41)。③ <b>财务·人工充值（全新·3 Tab）</b>：未查询会员前右侧充值表单禁用、金额空 / 0 校验拦截、备注必填；审核列表「批量通过」走 BatchApproveModal（最大金额 / 排除重复）、「驳回」走 RejectModal。④ 全站输入框套用 <code>inputConstraints</code> 预设 + <code>formValidate</code> 校验红框基线（会员列表 / 分组 / 登录日志 / 短信验证码 等控件落地：失败红框 + Toast + 边界）。<br><b style="color:#16a34a">✔ 已补</b>：财务「<b>资金账变</b>」逐控件悬停规范已授权生成——新增页控件级区块见「财务管理 › 资金账变」（6 搜索控件 + 11 列 + 会员ID跳转），DevLocator 接入 <code>spec-data/pages/financeFundChange.json</code> + <code>_registry.json</code> + 页面 6 搜索项 data-spec 锚点（列走 ProCrudTable 自动 data-col-key），build 通过。<b style="color:#d9534f">⚠ 待补</b>：财务「<b>人工充值</b>」页（3 Tab·~45 控件）逐控件悬停规范尚未生成，随后续悬停规范工作补入。字段口径见《字段词典 v1.6》、研发口径见《研发说明 §3.5》。</td></tr>
         <tr><td>2026-07-02 · v3.6</td><td><b>据最新原型逐页复核订正（本轮）：</b>① <b>开关参数配置 · 开关配置</b>分组数订正 <b>9→8 组、开关数 ≈78→58 个</b>——实际 8 组：登录与安全(8) / 验证码(手机短信3·邮件3) / 充值与支付(13) / <b>提现与洗码(6)</b>（原文档误写「提现(3)」）/ 活动与奖励(15)（原写 16）/ 彩票与游戏(4) / 代理与风控(4) / 推广与链接(2)；<b>删除原文档虚构的「财务与积分(5)」分组</b>（原型无此组）；「数据追踪与推送」组已整组迁出至报表「支代付通道预警」、本页不再展示。② <b>报表列名</b>：代理报表 / 层级返佣报表列表列「投注金额」订正为「<b>有效投注流水</b>」（i18n 现态 betAmount=有效投注流水），与全站口径一致。③ <b>页名订正</b>：开关参数配置迁移说明 / 系统参数文本参数注里的「直代付通道预警」订正为「<b>支代付通道预警</b>」（与报表页实名一致）。④ <b>会员·分组管理澄清</b>：现行原型 = <b>单表格 + 保留「分组类型」列 + 商户单选必填</b>（MemberGroupFormModal tenantId 单选、groupType 保留），与正文小节一致；<b>v3.3 变更日志中「改三聚合卡 / 商户改多选必填 / 删分组类型列」及 ㉒「商户订正为多选必填」的表述属早期方案、已回退，以正文与本行为准。</b>⑤ 修复轮播图管理 note 块结尾误用 <code>&lt;/p&gt;</code> 闭合 <code>&lt;div class="note"&gt;</code> 的结构问题。</td></tr>
         <tr><td>2026-06-30 · v3.5</td><td><b>运营 · 短信商配置（列表 + 弹窗调整）：</b>① 列表<b>新增「自定义名称」列</b>（显示 name 自定义名）；② 原「短信供应商名称」列改<b>「短信供应商」</b>并改显示供应商品牌 provider；③ 列表「验证码」列改<b>「短信类型」</b>、值显示「验证码」（smsType 固定 1）；④ 搜索项「短信供应商名称」改<b>「自定义名称」</b>；⑤ 弹窗 name 字段标签由「短信供应商」改<b>「自定义名称」</b>（消除与「短信供应商」下拉重名）；⑥ <b>删除模板内容下方「可用变量…」灰字提示</b>。列序：商户 / 自定义名称 / 短信供应商 / 短信类型 / 模板内容。</td></tr>
         <tr><td>2026-06-30 · v3.4</td><td><b>配置中心 · 开关参数配置（删除两项）：</b>① 删除第 3 个 Tab<b>「配置记录」</b>，恢复为 开关配置 / 系统参数配置 两 Tab（v3.3 ④ 新增的「配置记录」Tab 本期下线，历史条目保留备查）；② 「活动与奖励」分组删除<b>「充值等级」开关</b>项。</td></tr>
@@ -1099,6 +1100,44 @@
     <tr><td>保存</td><td><b>默认语言</b>（defaultLanguage）</td><td>必填 · 单选</td><td>红框 + 红字「请选择默认语言」</td></tr>
   </table>
   <p class="sd">校验通过先弹<b>二次确认</b>再写库、<b>保存即生效</b>（已删「发布」步骤）→ Toast「已保存，配置已生效」。Logo/icon 图片选填、货币符号有默认值，均无必填校验。</p>
+</section>
+  <section id="g-finance"><h2 class="sec">财务管理</h2></section>
+<section id="p-finance-fundChange">
+  <h3>资金账变 <span class="pill p-in">2.0 迁入财务 · 类型改造</span></h3>
+  <p class="meta-line"><code>finance/fundChange</code> · 类型：列表（商户端 roles=[tenant]）</p>
+  <p class="sd">查看会员账户每一笔资金增减的流水：哪个商户下的哪个会员、什么账变类型、变动前后余额、账变金额、时间、操作员，用于对账与资金核查。</p>
+  <div class="note">🆕 相对 V1：本页由「会员管理」<b>迁入财务管理</b>（菜单标「移」·商户端专属）；<b>账变类型</b>由单层下拉改为<b>「主类型 › 子类型」两级级联单选</b>——8 主类型 / 62 子类型，code 沿用迁移源站 V1 真实编码，全站单一数据源 <code>src/constants/financialType.ts</code>。</div>
+
+  <h4>搜索控件 <span class="kind">6 项</span></h4>
+  <table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr>
+  <tr><td class="nm"><b>商户</b><span class="k">tenantId</span><div class="iw"><select class="iw-sel"><option>当前商户（锁定）</option></select></div></td><td>按所属商户过滤资金账变</td><td class="lt">商户下拉，展示「商户号（商户名）」；商户端默认锁定当前商户。无文本输入、不存在输错。</td><td class="lt">选中后按 tenantId 过滤列表</td><td class="lt">无 Toast（查询类静默刷新）</td><td class="lt">商户端固定当前商户不可改；总控端可切换。</td></tr>
+  <tr><td class="nm"><b>会员ID</b><span class="k">userID</span><div class="iw"><input class="iw-inp" placeholder="请输入会员ID"></div></td><td>按会员ID精确过滤</td><td class="lt">文本输入，仅允许正整数数字字符（allowInput=onlyDigits），长度按 intNum 预设；非数字字符被拦截不输入。</td><td class="lt">点查询按 userID 过滤；留空=不按会员筛</td><td class="lt">无 Toast</td><td class="lt">与订单号等为「4 选 1」查询条件（页逻辑校验，本项不单独标必填）。</td></tr>
+  <tr><td class="nm"><b>订单号</b><span class="k">orderNum</span><div class="iw"><input class="iw-inp" placeholder="请输入订单号"></div></td><td>按业务订单号模糊查</td><td class="lt">文本输入，可清空；套用 searchKw 输入约束（长度/字符）。</td><td class="lt">点查询按 orderNum 模糊匹配；留空=不按订单号筛</td><td class="lt">无 Toast</td><td class="lt">首尾空格自动去除；无匹配→列表空态。</td></tr>
+  <tr><td class="nm"><b>账变类型</b><span class="k">type</span><div class="iw"><select class="iw-sel"><option>账变类型（主类型 › 子类型）</option></select></div></td><td>按账变类型筛（主类型 › 子类型 两级级联单选）</td><td class="lt"><b>两级级联「单选」</b>：checkStrategy=child 只选叶子（无多选勾选框）；选主类型下「（全部）」叶子=按整组筛，选具体子类型=按单个 code 筛；可输入模糊匹配主/子类型名（不区分大小写）。选项源自 financialType.ts（8 主 / 62 子·V1 真实 code）。</td><td class="lt">选中值（主类型 key 或子 code）经 <code>expandFinancialTypeValue</code> 展开为纯子类型 code 数组传后端 type 过滤；留空=不限类型</td><td class="lt">无 Toast</td><td class="lt">面板宽度按字体自适应不留大片空白（R49）；输入无匹配时级联无候选。</td></tr>
+  <tr><td class="nm"><b>操作员</b><span class="k">reserved</span><div class="iw"><input class="iw-inp" placeholder="请输入操作员"></div></td><td>按操作人筛</td><td class="lt">文本输入，可清空；套用 name 输入约束。</td><td class="lt">点查询按 reserved 过滤；留空=不按操作员筛</td><td class="lt">无 Toast</td><td class="lt">首尾空格自动去除；无匹配→列表空态。</td></tr>
+  <tr><td class="nm"><b>时间区间</b><span class="k">timeRange</span><div class="iw"><span class="iw-range"><input class="iw-date" type="date"><i>~</i><input class="iw-date" type="date"></span></div></td><td>按账变时间区间筛</td><td class="lt">proDateRange 日期时间区间（精确到秒·跟随商户时区），首屏默认 today；展平写回 startTime/endTime。</td><td class="lt">点查询按账变时间落在 [起,止] 过滤；清空=不限时间</td><td class="lt">无 Toast</td><td class="lt">只选单边时按单边边界过滤。</td></tr>
+  </table>
+
+  <h4>列表列（内容居中，账变类型换行列居左）<span class="kind">11 列 · 逐列明细见下表（R44 代码序）</span></h4>
+  <p class="sd">商户 / 会员ID（蓝链跳详情）/ 订单号 / 账变类型（主-子·居左）/ 币种 / 变动前余额 / 账变金额（正绿负红）/ 变动后余额 / 账变时间 / 备注说明 / 操作员；共 11 列。逐列明细见下表。</p>
+  <table class="ct"><tr><th class="h-nm">列名（key）</th><th width="220">渲染方式</th><th width="70">对齐</th><th>说明</th></tr>
+  <tr><td class="nm"><b>商户</b><span class="k">tenantId</span></td><td class="lt">Tag「商户号(商户名)」</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>会员ID</b><span class="k">userID</span></td><td class="lt">蓝色链接 → 会员详情弹窗（可点）</td><td class="lt">居中</td><td class="lt">跳转类，详见下「行操作」</td></tr>
+  <tr><td class="nm"><b>订单号</b><span class="k">orderNum</span></td><td class="lt">原值</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>账变类型</b><span class="k">type</span></td><td class="lt">「主类型-子类型」合并文案（如「充值-人工充值」）</td><td class="lt"><b>居左</b></td><td class="lt">文案较长可换行（R41 居左）</td></tr>
+  <tr><td class="nm"><b>币种</b><span class="k">currency</span></td><td class="lt">绿色 Tag（按商户解析）</td><td class="lt">居中</td><td class="lt">空显 --</td></tr>
+  <tr><td class="nm"><b>变动前余额</b><span class="k">beforeAmount</span></td><td class="lt">金额</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>账变金额</b><span class="k">amount</span></td><td class="lt"><b>正数绿色带 +、负数红色带 -</b></td><td class="lt">居中</td><td class="lt">如 +100.00 / -50.00</td></tr>
+  <tr><td class="nm"><b>变动后余额</b><span class="k">backAmount</span></td><td class="lt">金额</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>账变时间</b><span class="k">addTimeStr</span></td><td class="lt">时间（商户时区）</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>备注说明</b><span class="k">remarkDisplay</span></td><td class="lt">原值</td><td class="lt">居中</td><td class="lt">空显 --</td></tr>
+  <tr><td class="nm"><b>操作员</b><span class="k">reserved</span></td><td class="lt">原值</td><td class="lt">居中</td><td class="lt">空显 --（系统类账变为空）</td></tr>
+  </table>
+
+  <h4>行操作 <span class="kind">1 项</span></h4>
+  <table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr>
+  <tr><td class="nm"><b>会员ID链接</b><span class="k">userID</span></td><td>点会员ID跳会员详情</td><td class="lt">列表「会员ID」列渲染为蓝色可点链接，非输入控件、无输入校验（renderMemberIdLink）。</td><td class="lt">点击调用 openMemberDetailModal(userID, tenantId) 打开该会员只读详情弹窗；本页不承载新增/编辑（全站「真实会员ID一律可点跳详情」统一规范）。</td><td class="lt">加载失败 Toast「加载失败：{原因}」</td><td class="lt">userID 为空显「--」且不可点；详情查不到弹窗内显示空态；本页无导出/新增/批量。</td></tr>
+  </table>
 </section>
   <section id="g-report"><h2 class="sec">报表管理</h2></section>
 <section id="p-report-channelAlert">
