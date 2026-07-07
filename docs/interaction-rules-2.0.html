@@ -132,6 +132,9 @@
     <a href="#p-member-groupManage" class="sub">分组管理（融合页）</a>
     <a href="#p-member-loginLog" class="sub">登录记录（增强）</a>
     <a href="#p-member-smsCode" class="sub">验证码查询</a>
+    <div class="grp">财务管理（2）</div>
+    <a href="#p-finance-fundChange" class="sub">资金账变（迁入·类型改造）</a>
+    <a href="#p-finance-manualRecharge" class="sub">人工充值（新增）</a>
     <div class="grp">运营管理（11）</div>
     <a href="#p-operations-inboxMessage" class="sub">站内消息</a>
     <a href="#p-operations-banner" class="sub">轮播图管理</a>
@@ -159,9 +162,10 @@
     <a href="#p-report-channelAlert" class="sub">支代付通道预警</a>
     <a href="#p-report-agentReport" class="sub">代理报表</a>
     <a href="#p-report-rebateReport" class="sub">返佣报表</a>
-    <div class="grp">系统管理（3）</div>
+    <div class="grp">系统管理（4）</div>
     <a href="#p-system-role" class="sub">角色管理</a>
     <a href="#p-system-ipBlacklist" class="sub">会员IP黑名单</a>
+    <a href="#p-system-whiteIp" class="sub">后台IP白名单（新增）</a>
     <a href="#p-system-platformLog" class="sub">系统日志（增强）</a>
   </nav>
   <main>
@@ -1140,6 +1144,124 @@
   </table>
 </section>
   <section id="g-report"><h2 class="sec">报表管理</h2></section>
+<section id="p-finance-manualRecharge">
+  <h3>人工充值管理 <span class="pill p-in">2.0 新增</span></h3>
+  <p class="meta-line"><code>finance/manualRecharge</code> · 路由 <code>/finance/manualRecharge</code> · 类型：3 Tab 父壳（商户端 roles=[tenant]）</p>
+  <p class="sd">商户端人工给会员调整余额/彩金的操作台：先按会员ID查到该会员，再选存款类型、填金额与备注提交充值（大额自动转审核），并支持整商户批量导入 Excel 一键执行；另两个 Tab 分别是「审核列表」（待审核·可通过/拒绝/批量处理）与「审核记录」（历史全量只读）。</p>
+  <div class="note">🆕 相对 V1：本期新增页，由「人工充值」「人工充值审核列表」「人工充值审核记录」三个独立子页合并为单页 3 个 Tab（与「充值订单管理」rechargeOrder 同一「单入口多 Tab」模式，<code>route.meta.tabs</code> + <code>useRouteTabs</code>），仅商户端可见。</div>
+
+  <h4>Tab 一览 <span class="kind">3 个 Tab</span></h4>
+  <p class="sd">人工充值（默认·录入+批量导入）/ 人工充值审核列表（待审核·可操作）/ 人工充值审核记录（历史只读）；三个 Tab 各自常驻 DOM，切换不重建（ProTabs）。</p>
+
+  <!-- ============ Tab 1：人工充值 ============ -->
+  <h4>【Tab1 人工充值】查询控件 <span class="kind">4 项</span></h4>
+  <table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr>
+  <tr><td class="nm"><b>商户</b><span class="k">currentTenantId</span><div class="iw"><select class="iw-sel"><option>请选择商户</option></select></div></td><td>决定按哪个商户查会员/提交充值</td><td class="lt">ProTenantSelect 单选下拉，可搜索(filterable)；默认自动填充为当前默认商户（defaultTenantId）。带红色必填星号（show-require-mark，纯视觉）。无文本自由输入。</td><td class="lt">切换后清空已查会员卡片需重新查询；批量导入按钮的可用性随本值联动</td><td class="lt">不单独 Toast</td><td class="lt">未选商户时点「查询」→ Toast「请选择商户」；未选时「批量人工充值」按钮禁用。</td></tr>
+  <tr><td class="nm"><b>会员Id</b><span class="k">userId</span><div class="iw"><input class="iw-inp" placeholder="请输入会员Id"></div></td><td>要充值/查询的会员ID</td><td class="lt">单行文本，仅数字（INPUT_PRESETS.intNum：maxlength=9，仅整数字符）；回车（keyup.enter）等价点击「查询」。</td><td class="lt">点查询触发 queryMember()：Number(userId) 非法（空/非数字）→ 提示；合法则按 {userId, tenantId} 查会员</td><td class="lt">未填/非法数字 → Toast「请输入会员Id」</td><td class="lt">mock 对任意未命中真实 3 条模拟数据的 userId，会<b>回退返回第一条模拟会员</b>（MEMBER_DB.find ?? MEMBER_DB[0]），故实际不会出现「查无该会员」的空态路径；仅未点过查询时会员卡片显示「暂无数据，请查询!」。</td></tr>
+  <tr><td class="nm"><b>查询</b><span class="k">handleQueryMember</span><div class="iw"><button class="iw-btn">🔍 查询</button></div></td><td>按会员Id + 商户拉取会员信息</td><td class="lt">主按钮，loading=memberLoading，无输入。</td><td class="lt">校验通过后调用 getRechargeUserInfo，回填会员卡片 + 充值表单默认存款类型/打码量（取后端下拉第一项）</td><td class="lt">见上两行的失败提示</td><td class="lt">查询中重复点击不拦截（无 disabled 绑定，仅 loading 视觉）。</td></tr>
+  <tr><td class="nm"><b>批量人工充值</b><span class="k">handleOpenBatchImport</span><div class="iw"><button class="iw-btn sec">⬆ 批量人工充值</button></div></td><td>打开整商户批量导入弹窗</td><td class="lt">按钮，<b>disabled=!currentTenantId</b>（未选商户禁用）；无输入。</td><td class="lt">点击打开「批量人工充值」弹窗（宽 min(1100px,95vw)），弹窗内所有批量态在弹窗内部维护，关闭即销毁</td><td class="lt">未选商户点击（理论上按钮已禁用）→ 兜底 Toast「请选择商户」</td><td class="lt">弹窗与「充值表单」互相独立，不共享会员查询态。</td></tr></table>
+
+  <h4>【Tab1 人工充值】会员信息展示 <span class="kind">仅展示 · 查到会员后显示，无输入</span></h4>
+  <p class="sd">左侧卡片按 5 行展示：会员账号 / 昵称、会员Id / 联系方式、平台余额 / 打码量 + 备注、账号类型 / 当日充值、会员分组 / 当日彩金充值；字段缺失一律显 <code>--</code>（getDisplayText 兜底）。查询前或未查到显示 <code>n-empty</code>「暂无数据，请查询!」。</p>
+
+  <h4>【Tab1 人工充值】充值表单 <span class="kind">7 项</span></h4>
+  <table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr>
+  <tr><td class="nm"><b>存款类型</b><span class="k">playType</span><div class="iw"><select class="iw-sel"><option>人工存款</option><option>彩金充值</option><option>USDT充值</option><option>提款</option><option>彩金扣除</option><option>提现退回</option></select></div></td><td>本次账变的业务类型</td><td class="lt">下拉单选，<b>必填</b>；6 项固定值：人工存款(0)/彩金充值(1)/USDT充值(3)/提款(4)/彩金扣除(5)/提现退回(6)（选项由后端下发 playTypeSelectList，非硬编码）。disabled=未查到会员。未选保存：红框 + 「请选择」。</td><td class="lt">切换即清空「打码量设置/指定倍数/金额」；决定金额正负方向（0/1/3/6 为正，4/5 为负）与是否需打码量（0/1/3 需要）</td><td class="lt">无单独 Toast</td><td class="lt">查到会员后默认取后端下拉第一项；类型 1/5（彩金充值/彩金扣除）金额实际写入 <code>bonus</code> 字段而非 <code>amount</code>。</td></tr>
+  <tr><td class="nm"><b>打码量设置</b><span class="k">mosaic</span><div class="iw"><select class="iw-sel"><option>0倍</option><option>1倍</option><option>2倍</option><option>指定倍数</option></select></div></td><td>本次充值要求的打码倍数</td><td class="lt">下拉单选，<b>仅存款类型=人工存款/彩金充值/USDT充值时显示且必填</b>（红星）；4 项：0倍/1倍/2倍/指定倍数（value 为空字符串）。disabled=未查到会员。未选保存：红框 + 「打码量不能为空」。</td><td class="lt">选「指定倍数」→ 显示「指定倍数」数字输入框；其余存款类型本控件整体隐藏、不参与校验</td><td class="lt">无单独 Toast</td><td class="lt">提现退回(6) 虽为正数金额但不需要打码量；提款/彩金扣除(4/5) 减存款同样不需要。</td></tr>
+  <tr><td class="nm"><b>指定倍数</b><span class="k">mosaicCustom</span><div class="iw"><input class="iw-num" placeholder="请输入"></div></td><td>手动指定的打码倍数数值</td><td class="lt">整数输入框（precision=0，隐藏步进按钮），min=0；<b>仅「打码量设置=指定倍数」时显示且必填</b>（红星）。disabled=未查到会员。为空保存：红框 + 「打码量不能为空」；小于 0：红框 + 「请输入」（沿用输入框占位文案作为错误提示，代码原样如此）。</td><td class="lt">随充值一起提交（转字符串传给 mosaic 字段）</td><td class="lt">无单独 Toast</td><td class="lt">仅「需要打码量」且选中「指定倍数」两条件同时成立才出现/校验，其余情况不显示、不参与提交。</td></tr>
+  <tr><td class="nm"><b>存款金额 / U数量</b><span class="k">amount</span><div class="iw"><input class="iw-num" placeholder="请输入存款金额，不能等于会员Id"></div></td><td>本次账变金额（USDT充值时label变为「U数量」）</td><td class="lt">数字输入框，隐藏步进按钮；<b>必填</b>。正数方向类型(0/1/3/6)：min=0 无 max；负数方向类型(4/5)：max=0 无 min。disabled=未查到会员。空/为0：红框 + 「存款金额不能为空」；符号与类型方向不符：红框 +「当前存款类型金额必须为正数/负数」；等于当前会员Id：红框 + 「存款金额不能等于用户ID」。</td><td class="lt">类型为彩金类(1/5) 时写入 <code>bonus</code>，否则写入 <code>amount</code>；提交前先跑 rules 全量校验</td><td class="lt">无单独 Toast（校验红框即时提示）</td><td class="lt">USDT充值(playType=3) 时 placeholder/label 均切为「U数量」，仍复用同一字段与同一批校验规则。</td></tr>
+  <tr><td class="nm"><b>备注:</b><span class="k">remark</span><div class="iw"><textarea class="iw-ta" placeholder="必填,不超过100字符"></textarea></div></td><td>本次充值说明</td><td class="lt">多行文本，4 行高，maxlength=100，show-count；字符集走 INPUT_PRESETS.remark（allowText）；<b>必填</b>。disabled=未查到会员。为空保存：红框 + 「备注和金额为必填项」，trigger=blur。</td><td class="lt">随充值一起提交</td><td class="lt">无单独 Toast</td><td class="lt">仅空格视为未填一样会触发必填（未 trim 前置拦截，靠 required 校验兜底）。</td></tr>
+  <tr><td class="nm"><b>充值</b><span class="k">handleSubmitRecharge</span><div class="iw"><button class="iw-btn">✓ 充值</button></div></td><td>提交本次人工充值</td><td class="lt">主按钮，<b>disabled = 未查到会员</b>（canSubmitRecharge 恒为 true，无额外权限位）；loading=submitting。</td><td class="lt">先跑整表单 rules 校验，通过后提交 submitManualRecharge；<b>业务约定：playType∈{0,1,3} 且 |amount|≥5000 → 进入待审核（needAudit=true）</b></td><td class="lt">needAudit=true → Toast「人工充值成功！（待审核）」；否则 Toast「人工充值成功！」；提交成功后表单与会员卡片全部重置（resetForm）</td><td class="lt">校验未过不提交、红框停留对应字段；提交中重复点击仅受 loading 视觉限制。</td></tr>
+  <tr><td class="nm"><b>重置</b><span class="k">resetForm</span><div class="iw"><button class="iw-btn sec">↻ 重置</button></div></td><td>清空表单与已查会员</td><td class="lt">按钮，无输入。</td><td class="lt">点击清空 formModel（含 userId）、rechargeUserInfo=null、memberQueried=false，会员卡片与充值表单一并回到初始态</td><td class="lt">不 Toast</td><td class="lt">提交成功后代码内部也会自动调用一次 resetForm。</td></tr></table>
+
+  <h4>保存校验枚举（充值表单）<span class="kind">点「充值」整单逐项校验 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>充值</td><td><b>存款类型</b>（playType）</td><td>必填 · 单选</td><td>红框 + 「请选择」</td></tr>
+    <tr><td>充值</td><td><b>打码量设置</b>（mosaic）</td><td>仅需打码量的类型(0/1/3)必填</td><td>红框 + 「打码量不能为空」</td></tr>
+    <tr><td>充值</td><td><b>指定倍数</b>（mosaicCustom）</td><td>仅「打码量=指定倍数」时必填 · ≥0</td><td>空：红框 + 「打码量不能为空」；负数：红框 + 「请输入」</td></tr>
+    <tr><td>充值</td><td><b>存款金额/U数量</b>（amount）</td><td>必填 · 非0 · 符号与类型方向一致 · 不等于会员Id</td><td>依次：「存款金额不能为空」/「当前存款类型金额必须为正数(负数)」/「存款金额不能等于用户ID」</td></tr>
+    <tr><td>充值</td><td><b>备注</b>（remark）</td><td>必填</td><td>红框 + 「备注和金额为必填项」</td></tr>
+  </table>
+
+  <h4>【Tab1】批量导入弹窗 <span class="kind">弹窗 · 4 控件 + 7 列预览表</span></h4>
+  <p class="sd">弹窗顶部蓝色提示三句拼接：「（单次导入限制不超过1万5千条，文件大小不超过4M）（充值类型支持彩金充值|默认|人工充值|彩金扣除）只支持单商户数据导入」。仅注入当前已选商户 tenantId，弹窗关闭即销毁全部批量态。</p>
+  <table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr>
+  <tr><td class="nm"><b>模板下载</b><span class="k">handleDownloadTemplate</span><div class="iw"><button class="iw-btn sec">⬇ 模板下载</button></div></td><td>下载批量充值 Excel 模板</td><td class="lt">按钮，无输入。走 useExcelTemplate 下载 MANUAL_RECHARGE_BATCH 模板。</td><td class="lt">点击触发浏览器下载</td><td class="lt">下载异常 Toast「下载失败」（common.downloadFailed）</td><td class="lt">下载不校验是否已选商户（模板与商户无关）。</td></tr>
+  <tr><td class="nm"><b>上传Excel</b><span class="k">triggerFileUpload</span><div class="iw"><button class="iw-btn">⬆ 上传Excel</button></div></td><td>上传待导入的充值 Excel</td><td class="lt">按钮触发隐藏 <code>&lt;input type=file accept=".xlsx,.xls"&gt;</code>；仅接受 xlsx/xls，无其它输入校验。</td><td class="lt">选中文件后调用 initBatchRechargeFile(file,{TenantId}) 做后端预校验，返回逐行数据回填批量表（含每行「校验信息」）</td><td class="lt">后端非成功 code → Toast（msg 优先，否则「批量充值受限，请稍后再试或减少提交数量」）；有校验失败行 → Toast「{errNum} 条数据校验失败」；上传异常 → Toast「上传失败」</td><td class="lt">同一文件可重复选（选完清空 input 值）；成功解析后覆盖之前的批量表数据。</td></tr>
+  <tr><td class="nm"><b>清除表格数据</b><span class="k">clearBatch</span><div class="iw"><button class="iw-btn sec">🗑 清除表格数据</button></div></td><td>清空当前批量预览表</td><td class="lt">按钮，<b>仅表内有数据时显示</b>（footer-left），无输入。</td><td class="lt">点击清空 batchRows，预览表回到空态</td><td class="lt">不 Toast</td><td class="lt">清空不可撤销，需重新上传 Excel。</td></tr>
+  <tr><td class="nm"><b>一键操作</b><span class="k">executeBatch</span><div class="iw"><button class="iw-btn">▶ 一键操作</button></div></td><td>提交批量表并执行充值</td><td class="lt">主按钮，<b>仅表内有数据时显示</b>（footer-right），loading=batchExecuting。空表点击 → Toast「暂无可操作数据!」。</td><td class="lt">先弹二次确认对话框（宽 860，标题「确认批量提交」）：展示「共 {total} 条数据将被提交，其中通过 {pass} 条，校验失败 {error} 条」+ 提示「请仔细核对以下数据，提交后将立即执行充值操作」+ 完整预览表；确认后调用 importBatchRechargeData 提交</td><td class="lt">提交成功且全部通过 → Toast「{message} (成功: N, 失败: 0)」（success）；存在失败 → 同文案走 warning；接口 result=false 且无 msg → 兜底 Toast「批量充值受限，请稍后再试或减少提交数量」</td><td class="lt">确认框「取消」不提交；提交后批量表数据被替换为返回的最终状态（含每行「成功/失败」Tag）。</td></tr></table>
+  <p class="sd">批量预览表列（#/会员Id/充值类型/充值金额/打码量倍数/校验信息/状态 共 7 列，均居中）：「校验信息」列有问题时红字显示具体原因、无问题显绿色「✓」；「状态」列执行前为空显 <code>--</code>，执行后按「成功/失败」渲染 success/error Tag。</p>
+
+  <!-- ============ Tab 2：人工充值审核列表 ============ -->
+  <h4>【Tab2 人工充值审核列表】搜索控件 <span class="kind">5 项</span></h4>
+  <table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr>
+  <tr><td class="nm"><b>商户</b><span class="k">tenantId</span></td><td>按所属商户过滤审核记录</td><td class="lt">标准商户筛选组件（merchantSearchColumn），可搜索多选，「全部」与具体商户互斥；无自由文本输入。</td><td class="lt">随查询过滤列表，同时决定「通过/拒绝/批量通过」提交时携带的 tenantId</td><td class="lt">无 Toast</td><td class="lt">不选=全部商户。</td></tr>
+  <tr><td class="nm"><b>会员ID</b><span class="k">userId</span><div class="iw"><input class="iw-inp" placeholder="请输入会员ID"></div></td><td>按会员ID精确过滤</td><td class="lt">数字输入框，precision=0，min=0，可清空。</td><td class="lt">点查询过滤；留空=不限</td><td class="lt">无 Toast</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>操作类型</b><span class="k">operationType（拆为 type / fundType）</span><div class="iw"><select class="iw-sel"><option>操作类型 › 子类型</option></select></div></td><td>按操作类型 + 子类型两级过滤（合并一个级联控件）</td><td class="lt">两级级联，跨 2 列宽（span=2）；选项源自字典 <code>manualRechargeTypeList</code>（一级 id/name，二级 list）。提交时 modelKeys 展平为独立 type / fundType 两个查询参数。</td><td class="lt">选中后随查询过滤；列表「操作类型/子类型」两列文案也复用同一份字典树翻译</td><td class="lt">无 Toast</td><td class="lt">未选=不限类型；字典缺项时对应级联无候选。</td></tr>
+  <tr><td class="nm"><b>操作时间</b><span class="k">createTimeRange（展平 beginCreateTime/endCreateTime）</span><div class="iw"><span class="iw-range"><input class="iw-date" type="date"><i>~</i><input class="iw-date" type="date"></span></div></td><td>按操作发生时间区间过滤</td><td class="lt">proDateRange，精确到秒（yyyy-MM-dd HH:mm:ss），跨 2 列宽；工具栏 quick-date 走本字段，面板内不重复显快捷按钮（shortcuts=false），默认快捷值 today。</td><td class="lt">随查询按区间过滤</td><td class="lt">无 Toast</td><td class="lt">清空=不限时间。</td></tr>
+  <tr><td class="nm"><b>操作员</b><span class="k">creator</span><div class="iw"><input class="iw-inp" placeholder="请输入操作员"></div></td><td>按提交人筛</td><td class="lt">文本输入，套用 name 输入约束（≤50 字，仅文本字符），可清空。</td><td class="lt">随查询过滤；留空=不限</td><td class="lt">无 Toast</td><td class="lt">—</td></tr></table>
+
+  <h4>【Tab2 人工充值审核列表】列表列（全部居中）<span class="kind">9 列 · 逐列明细见下表（R44 代码序）</span></h4>
+  <p class="sd">ID / 商户 / 会员账号 / 会员ID（蓝链跳详情）/ 操作类型 / 子类型 / 操作时间 / 操作人 / 操作内容；逐列明细见下表。</p>
+  <table class="ct"><tr><th class="h-nm">列名（key）</th><th width="220">渲染方式</th><th width="70">对齐</th><th>说明</th></tr>
+  <tr><td class="nm"><b>ID</b><span class="k">id</span></td><td class="lt">原值</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>商户</b><span class="k">tenantId</span></td><td class="lt">Tag「商户号(商户名)」</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>会员账号</b><span class="k">userName</span></td><td class="lt">原值（ellipsis 悬停）</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>会员ID</b><span class="k">userId</span></td><td class="lt">蓝色链接 → 会员详情弹窗（renderMemberIdLink）</td><td class="lt">居中</td><td class="lt">跳转类，同「资金账变」全站会员ID可点规范</td></tr>
+  <tr><td class="nm"><b>操作类型</b><span class="k">type</span></td><td class="lt">Tag info（字典翻译文案，空显 --）</td><td class="lt">居中</td><td class="lt">导出用现成文本字段 typeStr</td></tr>
+  <tr><td class="nm"><b>子类型</b><span class="k">fundType</span></td><td class="lt">Tag default（字典翻译文案，空显 --）</td><td class="lt">居中</td><td class="lt">导出用现成文本字段 fundTypeStr</td></tr>
+  <tr><td class="nm"><b>操作时间</b><span class="k">createTime</span></td><td class="lt">时间（按商户时区）</td><td class="lt">居中</td><td class="lt">导出用 createTimeStr</td></tr>
+  <tr><td class="nm"><b>操作人</b><span class="k">creator</span></td><td class="lt">原值（ellipsis 悬停）</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>操作内容</b><span class="k">content</span></td><td class="lt">原值（ellipsis 悬停，长文本一行描述本次充值明细）</td><td class="lt">居中</td><td class="lt">未按 R41 换行居左处理（代码原样居中）</td></tr></table>
+
+  <h4>【Tab2 人工充值审核列表】行操作 + 批量操作 <span class="kind">4 项（需先勾选行才能批量）</span></h4>
+  <table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr>
+  <tr><td class="nm"><b>通过</b><span class="k">handleApprove</span><div class="iw"><button class="iw-btn">通过</button></div></td><td>行操作 · 单条审核通过</td><td class="lt">行内主色按钮，无输入。点击先弹二次确认（资金敏感动作）。</td><td class="lt">确认框标题「通过」，内容「确认通过该笔人工充值申请？通过后将立即放款，不可撤销。」；确认后调用 manualRechargeApprove({ids:[id], tenantId})</td><td class="lt">成功 Toast「操作成功」并刷新列表</td><td class="lt">取消确认不提交；接口 result=false 时静默不刷新（无失败 Toast 分支）。</td></tr>
+  <tr><td class="nm"><b>拒绝</b><span class="k">openRejectModal</span><div class="iw"><button class="iw-btn error">拒绝</button></div></td><td>行操作 · 单条审核拒绝</td><td class="lt">行内危险色按钮，无输入。点击打开「拒绝」弹窗（宽 440，遮罩不可关闭）。</td><td class="lt">弹窗内「拒绝备注」为唯一字段，见下方弹窗节</td><td class="lt">见下方弹窗节</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>批量通过</b><span class="k">batchApprove</span></td><td>批量操作 · 需先勾选 ≥1 行</td><td class="lt">ProCrudTable 内置批量按钮，checkbox 行选择；点击打开「批量审核通过」弹窗（宽 440）</td><td class="lt">见下方弹窗节</td><td class="lt">见下方弹窗节</td><td class="lt">未勾选行时批量按钮不可用（无勾选则不会触发）。</td></tr>
+  <tr><td class="nm"><b>批量拒绝</b><span class="k">batchReject</span></td><td>批量操作 · 需先勾选 ≥1 行</td><td class="lt">同「拒绝」，<b>复用同一个 RejectModal 弹窗</b>（标题仍固定显示为「拒绝」，代码未区分批量/单条标题、亦未使用 i18n 中预留的 <code>batchRejectTitle</code>「批量审核拒绝」文案）</td><td class="lt">确认后对所有勾选 id 一次性调用 manualRechargeReject</td><td class="lt">成功 Toast「操作成功」并刷新列表、清空勾选</td><td class="lt">未勾选不会打开弹窗（ids.length 为 0 时函数直接 return）。</td></tr></table>
+
+  <h4>【Tab2】拒绝弹窗（单条/批量共用）<span class="kind">弹窗 440 · 1 项</span></h4>
+  <table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr>
+  <tr><td class="nm"><b>拒绝备注</b><span class="k">remark</span><div class="iw"><textarea class="iw-ta" placeholder="请输入拒绝原因（最多500字）"></textarea></div></td><td>本次拒绝的原因说明</td><td class="lt">多行文本，3 行高，maxlength=500，show-count，字符集走 remark 预设；<b>必填</b>（trim 非空）。留空点确认：红框 + 「请输入拒绝备注」。</td><td class="lt">校验通过后调用 manualRechargeReject({ids, remark, tenantId})</td><td class="lt">成功 Toast「操作成功」并刷新列表、关闭弹窗</td><td class="lt">「取消」按钮 disabled=提交中；确认按钮 loading=submitting 防重复点击；接口 result=false 时静默不关弹窗（无失败 Toast 分支）。</td></tr></table>
+
+  <h4>【Tab2】批量审核通过弹窗 <span class="kind">弹窗 440 · 2 项</span></h4>
+  <table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr>
+  <tr><td class="nm"><b>充值金额上限</b><span class="k">maxAmount</span><div class="iw"><input class="iw-num" placeholder="大于该金额的记录不审核，0 表示不审核，留空表示不过滤"></div></td><td>批量通过的金额上限阈值（非必填）</td><td class="lt">数字输入框，min=0，隐藏步进按钮；<b>选填</b>，无必填校验。</td><td class="lt"><b>业务约定：填 0 = 不审核</b>，前端直接跳过接口调用；留空=不按金额过滤（全部通过）；填正数=仅审核该金额以下的记录</td><td class="lt">填 0 → Toast「金额填写为 0，已跳过审核」（info，弹窗随即关闭）；正常提交成功 → Toast「操作成功」</td><td class="lt">该判断在前端拦截，不发请求即视为已处理完毕。</td></tr>
+  <tr><td class="nm"><b>排除相同会员ID</b><span class="k">excludeDuplicate</span><div class="iw"><label><input type="checkbox"> 排除相同会员ID</label></div></td><td>是否跳过同会员ID的重复申请</td><td class="lt">复选框，默认不勾；无输入校验。</td><td class="lt">勾选后随提交传 excludeDuplicateUserId=true</td><td class="lt">无单独 Toast</td><td class="lt">与「充值金额上限=0」组合时，金额=0 分支优先短路、复选框状态不会被提交。</td></tr></table>
+
+  <!-- ============ Tab 3：人工充值审核记录 ============ -->
+  <h4>【Tab3 人工充值审核记录】搜索控件（只读历史，无行操作）<span class="kind">8 项</span></h4>
+  <table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr>
+  <tr><td class="nm"><b>商户</b><span class="k">tenantId</span></td><td>按所属商户过滤</td><td class="lt">标准商户筛选组件，可搜索多选，「全部」互斥。</td><td class="lt">随查询过滤</td><td class="lt">无 Toast</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>会员ID</b><span class="k">userId</span><div class="iw"><input class="iw-inp" placeholder="请输入会员ID"></div></td><td>按会员ID精确过滤</td><td class="lt">数字输入框，precision=0，min=0，可清空。</td><td class="lt">随查询过滤</td><td class="lt">无 Toast</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>操作类型</b><span class="k">operationType（拆为 type/fundType）</span></td><td>操作类型 › 子类型两级过滤</td><td class="lt">两级级联，跨 2 列宽；字典同 Tab2 <code>manualRechargeTypeList</code>。</td><td class="lt">随查询过滤，列表「操作类型/子类型」两列同源翻译</td><td class="lt">无 Toast</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>审核状态</b><span class="k">state</span><div class="iw"><select class="iw-sel"><option>请选择审核状态</option></select></div></td><td>按审核结果过滤</td><td class="lt">字典下拉（dictSelect，dictKey=manualRechargeRecordStateList，source=v1），可清空。</td><td class="lt">随查询过滤</td><td class="lt">无 Toast</td><td class="lt">清空=不限状态。</td></tr>
+  <tr><td class="nm"><b>操作人</b><span class="k">creator</span><div class="iw"><input class="iw-inp" placeholder="请输入操作人"></div></td><td>按提交人筛</td><td class="lt">文本输入，name 预设约束，可清空。</td><td class="lt">随查询过滤</td><td class="lt">无 Toast</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>审核人</b><span class="k">auditor</span><div class="iw"><input class="iw-inp" placeholder="请输入审核人"></div></td><td>按审核操作人筛</td><td class="lt">文本输入，name 预设约束，可清空。</td><td class="lt">随查询过滤</td><td class="lt">无 Toast</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>操作时间</b><span class="k">createTimeRange</span></td><td>按提交时间区间过滤</td><td class="lt">proDateRange，精确到秒，跨 2 列宽；工具栏 quick-date 走本字段（面板内 shortcuts=false，默认 today）。</td><td class="lt">随查询过滤</td><td class="lt">无 Toast</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>审核时间</b><span class="k">auditTimeRange</span></td><td>按审核完成时间区间过滤</td><td class="lt">proDateRange，精确到秒，跨 2 列宽，面板内自带快捷按钮（shortcuts=true）。</td><td class="lt">随查询过滤</td><td class="lt">无 Toast</td><td class="lt">支持清空（quick-date-allow-clear）。</td></tr></table>
+
+  <h4>【Tab3 人工充值审核记录】列表列（全部居中·只读，无行操作/无导出）<span class="kind">14 列 · 逐列明细见下表（R44 代码序）</span></h4>
+  <p class="sd">ID / 商户 / 会员账号 / 会员ID（蓝链）/ 操作类型 / 子类型 / 金额 / 操作内容 / 审核状态 / 操作人 / 操作时间 / 审核人 / 审核时间 / 审核备注。<b>本 Tab 是历史记录，无行操作、无批量操作、无工具栏按钮</b>（index.vue 未传 action-column，亦未接出导出按钮，虽 data.ts 定义了 getManualRechargeRecordsPageListExport 但视图未消费）。逐列明细见下表。</p>
+  <table class="ct"><tr><th class="h-nm">列名（key）</th><th width="220">渲染方式</th><th width="70">对齐</th><th>说明</th></tr>
+  <tr><td class="nm"><b>ID</b><span class="k">id</span></td><td class="lt">原值</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>商户</b><span class="k">tenantId</span></td><td class="lt">Tag「商户号(商户名)」</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>会员账号</b><span class="k">userName</span></td><td class="lt">原值（ellipsis）</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>会员ID</b><span class="k">userId</span></td><td class="lt">蓝色链接 → 会员详情弹窗（renderMemberIdLink）</td><td class="lt">居中</td><td class="lt">跳转类，全站可点会员ID规范</td></tr>
+  <tr><td class="nm"><b>操作类型</b><span class="k">type</span></td><td class="lt">Tag info（字典翻译，导出用 typeStr）</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>子类型</b><span class="k">fundType</span></td><td class="lt">Tag default（字典翻译，导出用 fundTypeStr）</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>金额</b><span class="k">amount</span></td><td class="lt">原值</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>操作内容</b><span class="k">content</span></td><td class="lt">原值（ellipsis 悬停）</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>审核状态</b><span class="k">state</span></td><td class="lt">Tag（0=审核中·warning / 1=通过·success / 2=拒绝·error，固定映射，导出用 stateStr）</td><td class="lt">居中</td><td class="lt">与搜索区「审核状态」字典下拉的选项来源不同（列渲染用代码硬编码 3 态映射，非同一字典）</td></tr>
+  <tr><td class="nm"><b>操作人</b><span class="k">creator</span></td><td class="lt">原值（ellipsis）</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>操作时间</b><span class="k">createTimeStr</span></td><td class="lt">时间（按商户时区）</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>审核人</b><span class="k">auditor</span></td><td class="lt">原值（ellipsis，未审核时空显 --）</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>审核时间</b><span class="k">auditTimeStr</span></td><td class="lt">时间（按商户时区，未审核时空显 --）</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>审核备注</b><span class="k">auditorRemark</span></td><td class="lt">原值（ellipsis 悬停，空显 --）</td><td class="lt">居中</td><td class="lt">—</td></tr></table>
+</section>
+
 <section id="p-report-channelAlert">
   <h3>支代付通道预警 <span class="pill p-in">2.0 新增</span></h3>
   <p class="meta-line"><code>report/channelAlert</code> · 路由 <code>/report/channel-alert</code> · 角色：仅商户端（tenant） · 类型：混合（列表 + 统计卡 + 状态 Tab + 行/批量操作 + 两个配置弹窗）</p>
@@ -1382,6 +1504,57 @@
     <tr><td>确认导入</td><td><b>IP 列表（逗号 / 空格 / 换行分隔）</b>（batchText）</td><td>识别后合法 IPv4 条数 ≥ 1（识别为 0 则不能导入）</td><td>「确认导入」按钮置灰禁用；点击无有效 IP 时 Toast「未识别到有效 IP，无法导入」</td></tr>
   </table>
 </section>
+<section id="p-system-whiteIp">
+  <h3>后台IP白名单 <span class="pill p-in">2.0 新增</span></h3>
+  <p class="meta-line"><code>system/whiteIp</code> · 路由 <code>/system/whiteIp</code> · 类型：列表 + 新增/编辑弹窗（R13，双端 roles=[admin,tenant]）</p>
+  <p class="sd">维护允许访问后台管理系统的 IP 白名单。总控（isSuperAuthUser）可按「总控自身」或「指定集团」两种归属新增，并按「类型/所属集团」筛选、列表额外显示「类型/所属集团」两列；商户用户不展示归属维度，新增的 IP 由后端按当前所属集团自动归属。新增与编辑共用同一个弹窗组件，仅字段可编辑性不同。</p>
+  <div class="note">🆕 相对 V1：本期新增 section · 据源码补录。</div>
+
+  <h4>搜索控件 <span class="kind">总控 4 项 / 商户 2 项</span></h4>
+  <table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr>
+  <tr><td class="nm"><b>类型</b><span class="k">orgType</span><div class="iw"><select class="iw-sel"><option>全部</option><option>总控</option><option>集团</option></select></div></td><td>按归属类型筛（<b>仅总控可见</b>）</td><td class="lt">下拉单选，不可清空（clearable=false）；固定 3 项：全部(all)/总控(master)/集团(group)。无文本输入，不存在输错。</td><td class="lt">前端合成后端单参数 orgId：选「总控」→ orgId=0；选「集团」→ 启用下方「所属集团」并取其选中值；选「全部」→ orgId 不下发</td><td class="lt">无 Toast</td><td class="lt">默认「全部」（searchInitialValues 仅总控预置 orgType:'all'）；商户端用户完全不展示该字段。</td></tr>
+  <tr><td class="nm"><b>所属集团</b><span class="k">orgId</span><div class="iw"><select class="iw-sel"><option>请选择集团</option></select></div></td><td>指定具体集团（<b>仅总控可见</b>）</td><td class="lt">下拉单选，可搜索(filterable)、可清空；选项仅展示<b>启用(state=1)</b>的真实集团（不含总控/禁用集团）；<b>disabled=「类型」≠集团</b>。无自由文本输入。</td><td class="lt">随「类型=集团」联动启用；选中后叠加 orgType 合成最终 orgId 传给后端</td><td class="lt">无 Toast</td><td class="lt">类型非「集团」时本控件禁用且值不参与请求；下拉为空时占位「请选择集团」。</td></tr>
+  <tr><td class="nm"><b>IP地址</b><span class="k">ip</span><div class="iw"><input class="iw-inp" placeholder="请输入IP地址"></div></td><td>按 IP 模糊匹配</td><td class="lt">单行文本，套用 ip 输入预设（maxlength=45，仅数字/点/冒号/十六进制字符）；做 includes 子串匹配。无格式强校验、不报错。</td><td class="lt">点查询按输入子串过滤 ip 列；留空=不限</td><td class="lt">无 Toast</td><td class="lt">删除某条记录时若当前搜索 ip 恰好等于该记录 ip，删除成功后会自动清空该搜索条件并回第 1 页刷新（避免删完唯一命中项后页面停留空态）。</td></tr>
+  <tr><td class="nm"><b>备注</b><span class="k">remark</span><div class="iw"><input class="iw-inp" placeholder="请输入备注"></div></td><td>按备注关键字模糊搜</td><td class="lt">单行文本，套用 remark 输入预设（maxlength=200，仅文本字符）；不区分大小写子串匹配。无格式校验。</td><td class="lt">点查询按关键字过滤；留空=不限</td><td class="lt">无 Toast</td><td class="lt">—</td></tr></table>
+
+  <h4>列表列（全部居中）<span class="kind">总控 10 列 / 商户 8 列 · 逐列明细见下表（R44 代码序）</span></h4>
+  <p class="sd">ID / IP地址 / <b>类型 / 所属集团</b>（仅总控可见的 2 列）/ 备注 / 创建人 / 创建时间 / 最后修改人 / 最后修改时间；商户用户不展示「类型/所属集团」两列。逐列明细见下表。</p>
+  <table class="ct"><tr><th class="h-nm">列名（key）</th><th width="220">渲染方式</th><th width="70">对齐</th><th>说明</th></tr>
+  <tr><td class="nm"><b>ID</b><span class="k">id</span></td><td class="lt">原值</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>IP地址</b><span class="k">ip</span></td><td class="lt">原值</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>类型</b><span class="k">type（由 orgId 派生，仅总控可见）</span></td><td class="lt">Tag（orgId=0→「总控」info蓝 / orgId&gt;0→「集团」warning橙）</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>所属集团</b><span class="k">orgId（仅总控可见）</span></td><td class="lt">orgId=0 显「--」；否则按<b>全量集团（含禁用）</b>精确匹配显示集团名，查不到显「--」</td><td class="lt">居中</td><td class="lt">用全集团字典反查，即便该集团已禁用也能显示历史归属名称</td></tr>
+  <tr><td class="nm"><b>备注</b><span class="k">remark</span></td><td class="lt">原值（ellipsis 悬停看全）</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>创建人</b><span class="k">creator</span></td><td class="lt">原值</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>创建时间</b><span class="k">createTime</span></td><td class="lt">时间（按商户时区）</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>最后修改人</b><span class="k">lastUpdateMan</span></td><td class="lt">原值</td><td class="lt">居中</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>最后修改时间</b><span class="k">lastUpdateTime</span></td><td class="lt">时间（按商户时区）</td><td class="lt">居中</td><td class="lt">—</td></tr></table>
+
+  <h4>工具栏 + 行操作 <span class="kind">3 项</span></h4>
+  <table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr>
+  <tr><td class="nm"><b>新增白名单IP</b><span class="k">handleAdd</span><div class="iw"><button class="iw-btn">＋ 新增白名单IP</button></div></td><td>工具栏 · 打开新增弹窗</td><td class="lt">按钮（带加号图标），无输入。点击清空编辑态并打开弹窗（标题「新增白名单IP」）。</td><td class="lt">弹窗内字段见下方「新增/编辑弹窗」节</td><td class="lt">保存结果 Toast 见弹窗节</td><td class="lt">弹窗遮罩点击不关闭（mask-closable=false），未设 closable 时按组件默认可点右上角×关闭。</td></tr>
+  <tr><td class="nm"><b>编辑</b><span class="k">handleEdit</span><div class="iw"><button class="iw-btn">编辑</button></div></td><td>行操作 · 打开编辑弹窗（回填本行）</td><td class="lt">行内主色按钮，无输入。点击带当前行数据打开弹窗（标题「编辑白名单IP」）。</td><td class="lt">弹窗内 IP/归属/集团均只读展示、仅备注可改，见下方弹窗节</td><td class="lt">保存结果 Toast 见弹窗节</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>删除</b><span class="k">handleDelete</span><div class="iw"><button class="iw-btn danger">删除</button></div></td><td>行操作 · 删除该条白名单</td><td class="lt">行内危险按钮（type=delete），无输入；<b>自动弹气泡二次确认</b>（ProComponents 通用 Popconfirm，文案「你确定要删除吗？」+ 取消/确认）。</td><td class="lt">确认后按 {ip,id} 调用删除接口</td><td class="lt">成功 Toast「操作成功」并刷新列表（若当前 IP 搜索条件恰为被删 IP，删除后自动清空该条件重新查询第 1 页）；<b>接口失败无显式失败 Toast 分支（代码仅在 code===0 时提示与刷新）</b></td><td class="lt">取消气泡确认不执行任何操作。</td></tr></table>
+
+  <h4>新增/编辑白名单IP弹窗 <span class="kind">弹窗 600 · 4 项（新增/编辑共用同一组件）</span></h4>
+  <p class="sd">弹窗标题：新增=「新增白名单IP」、编辑=「编辑白名单IP」（isEdit = 是否带入 data.ip）。<b>编辑态下「归属」「集团」「IP地址」均只读/禁用，仅「备注」可改</b>（对应提交走 updateRemark 接口，只传 ip/remark/id）。</p>
+  <table class="ct"><tr><th class="h-nm">控件名称（key）</th><th width="140">名称定义</th><th>控件规范（能输什么 · 限制 · 输错怎么提醒）</th><th>控件逻辑</th><th>Toast 文案</th><th width="160">边界情况</th></tr>
+  <tr><td class="nm"><b>归属</b><span class="k">orgType</span><div class="iw"><label><input type="radio" name="orgType" checked> 总控</label> <label><input type="radio" name="orgType"> 集团</label></div></td><td>本条白名单归总控自身还是某集团（<b>仅总控展示</b>）</td><td class="lt">单选按钮组，2 项：总控(master)/集团(org)；<b>新增可选，编辑态 disabled 只读回显</b>。新增默认「集团」（若无回填数据）。非总控（商户端）用户不展示本项。仅点选，无输入错误。</td><td class="lt">新增下方展示提示「总控 = 总控后台自身白名单；集团 = 给指定集团的后台加白」（仅新增显示）；选「集团」时下方出现「集团」下拉</td><td class="lt">无单独 Toast</td><td class="lt">编辑态按回填行 orgId 判定初始值（0→总控，否则→集团），且不可再改。</td></tr>
+  <tr><td class="nm"><b>集团</b><span class="k">orgId</span><div class="iw"><select class="iw-sel"><option>请选择集团</option></select></div></td><td>归属的具体集团（<b>仅「归属=集团」时展示、仅总控可见</b>）</td><td class="lt">可搜索(filterable)可清空下拉；<b>新增</b>仅列出启用(state=1)集团、<b>必填</b>——未选保存：红框 + 「请选择集团」；<b>编辑</b>列出全部集团（含禁用，用于正确回显名称）且 disabled 只读、不参与必填校验。</td><td class="lt">新增：选中值随「归属=集团」一起决定提交的 orgId；编辑：仅展示不可改</td><td class="lt">无单独 Toast</td><td class="lt">新增下方提示「仅展示状态为「启用」的集团；选中后将写入该集团的 OrgId」（仅新增显示）。</td></tr>
+  <tr><td class="nm"><b>（新增提示）支持多 IP</b><span class="k">—</span><div class="iw"><span class="iw-tag">ℹ 支持输入多个 IP，使用英文逗号或中文逗号分隔。</span></div></td><td>仅新增态展示的顶部提示，非表单字段</td><td class="lt">静态提示条（n-alert info），<b>仅新增显示，编辑态不显示</b>。</td><td class="lt">—</td><td class="lt">—</td><td class="lt">—</td></tr>
+  <tr><td class="nm"><b>IP地址</b><span class="k">ip</span><div class="iw"><textarea class="iw-ta" placeholder="请输入IP地址"></textarea></div></td><td>要加白的 IP（支持 IPv4 与 IPv6）</td><td class="lt">多行文本，maxlength=1000，show-count；<b>新增</b>可填<b>多个</b> IP（英文逗号/中文逗号分隔，autosize 3~6 行）；<b>编辑</b>autosize 收窄为单行(1 行)展示、<b>disabled 只读不可改</b>，仅支持单个 IP。<b>必填</b>：空/全部无效 → 红框 + 「请输入IP」；编辑态若历史数据含多个 IP → 「编辑时仅支持填写一个IP」；含非法项 → 「请输入正确的IP: {该非法IP}」。合法性同时支持 <b>IPv4</b>（4 段 0~255）与 <b>IPv6</b>（含 :: 压缩、可嵌入 IPv4 尾段），与「会员IP黑名单」页仅支持 IPv4 不同。</td><td class="lt">新增：拆分逗号后取全部 IP 提交；编辑：仅取第一个 IP（ipList[0]）随 updateRemark 提交</td><td class="lt">无单独 Toast（红框 + 校验文案）</td><td class="lt">编辑态即使输入框内容被改也不会真正提交新 IP（disabled，UI 上无法输入）。</td></tr>
+  <tr><td class="nm"><b>备注</b><span class="k">remark</span><div class="iw"><textarea class="iw-ta" placeholder="请输入备注"></textarea></div></td><td>补充说明（非必填）</td><td class="lt">多行文本，autosize 3~5 行，maxlength=100，show-count；<b>选填</b>，无必填校验；新增/编辑均可改。</td><td class="lt">提交时 trim 后写入；新增走 ipWhitelistAdd，编辑走 updateRemark</td><td class="lt">无单独 Toast</td><td class="lt">默认回填原值（编辑）或空（新增），可清空。</td></tr></table>
+  <p class="sd">底部按钮：<b>取消</b>（关闭不保存）· <b>确认</b>（校验通过后提交：新增调用 <code>ipWhitelistAdd({ipList, remark, orgId})</code>，编辑调用 <code>updateRemark({ip, remark, id})</code>；<b>仅当返回 code===0 才提示 Toast「操作成功」并关闭弹窗回表刷新，异常/非0返回代码未做显式失败提示</b>）。</p>
+
+  <h4>保存校验枚举 <span class="kind">点「确认」逐项校验 · 全过才提交</span></h4>
+  <table class="ct">
+    <tr><th width="70">触发</th><th width="190">校验项（字段）</th><th>校验规则</th><th width="240">不通过提示</th></tr>
+    <tr><td>确认</td><td><b>集团</b>（orgId）</td><td>仅「总控 + 新增 + 归属=集团」时必填 · 单选</td><td>红框 + 「请选择集团」</td></tr>
+    <tr><td>确认</td><td><b>IP地址</b>（ip）</td><td>必填 · 新增可多个（逗号/中文逗号分隔）、编辑仅单个 · 每项须为合法 IPv4 或 IPv6</td><td>空/全无效：「请输入IP」；编辑态多个：「编辑时仅支持填写一个IP」；含非法项：「请输入正确的IP: {该非法IP}」</td></tr>
+  </table>
+  <p class="sd">「归属」（新增单选默认集团、编辑只读回显）与「备注」（选填 ≤100 字）均不参与必填校验。</p>
+</section>
+
 <section id="p-system-platformLog">
   <h3>系统日志（增强） <span class="pill p-in">2.0 新增</span></h3>
   <p class="meta-line"><code>system/platform-log</code> · 类型：列表（只读 + 详情弹窗）</p>
