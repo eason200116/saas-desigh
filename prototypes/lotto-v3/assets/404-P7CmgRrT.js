@@ -1,1 +1,0 @@
-import{Wn as e,kn as t,xn as n}from"./vendor-naive-DfOGXcbR.js";import{t as r}from"./ExceptionState-BWPSu0xM.js";var i=t({__name:`404`,setup(t){return(t,i)=>(e(),n(r,{code:`404`,title:`页面不存在`,description:`抱歉，你访问的页面不存在，可能是地址输入有误，或者页面已经被移动。`}))}});export{i as default};
