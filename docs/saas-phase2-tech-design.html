@@ -132,11 +132,12 @@
   details.doc-cl td:first-child{white-space:nowrap;color:#64748b}
   </style>
   <details class="doc-cl">
-    <summary>📝 修改日志 · 点击展开版本变更记录（共 7 个版本，最新 v1.7 · 2026-07-06）</summary>
+    <summary>📝 修改日志 · 点击展开版本变更记录（共 8 个版本，最新 v1.8 · 2026-07-09）</summary>
     <div class="cl-b">
       <p class="tip">本文档变更记录，最新在上。</p>
       <table>
         <tr><th width="110">日期</th><th>变更摘要</th></tr>
+        <tr><td><b>2026-07-09</b></td><td><b>v1.8</b>：据原型 v1.1.7 反补·R55——① <b>全站「商户」筛选统一单选必填</b>：21 页复用 <code>merchantSearchColumn({multiple:false})</code> + <code>showRequireMark</code> + <code>requiredRule</code>（R63·标杆 member/user）；② <b>配置中心新增「打码量配置」页</b> <code>config/wagerConfig/{index,data}.ts</code>（仅商户端 <code>meta.roles=['tenant']</code>·迁 V1 System/打码量配置 AmountOfCodConfig）：21 项来钱方式倍数 + 充值双值「打码量平0数」·4 分类卡片·行内编辑（共享 <code>InlineNumberCell</code> 加 <code>disabled</code> 属性支持「始终显示输入框·未编辑置灰·上限 20 位」）·配置项级「配置记录」；③ <b>会员分组配置弹窗 2 Tab→3 Tab</b> <code>DataDisplayConfigModal.vue</code>（功能使用 / 数据隐藏 / 数据隐藏天数·两数据 Tab 共享一份数据底部统一保存校验）；④ 会员列表「最后登录时间」统一 + 横竖版一致（<code>useUserPage.ts</code>）、会员详情 <code>buildDetailData.ts</code> 会员资金增 <code>currentBetMultiplier</code>「本次打码倍数」展示；⑤ 开关参数配置去迁移标注 + 补功能说明（56 开关 / 50 参数·<code>SysParamField</code> 描述由 tooltip 改可见注释）+ 汇率「交易所同步·最新同步时间」；⑥ VIP/返佣 <code>ConfigWorkspaceBar.vue</code> 模版货币只读锁定 + 模版行「应用其他商户配置」（emit <code>apply-merchant-to-template</code>）；⑦ 风控异常会员处理搜索（商户单选必填 / 会员ID / 注册时间）+ 批量操作 + 导入拆 3 名单（含「扣除金额」列）。</td></tr>
         <tr><td><b>2026-07-06</b></td><td><b>v1.7</b>：新增 <b>§3.5 财务资金账变类型单一数据源 + 人工充值 + 全站输入约束</b>——① <code>financialType.ts</code> 8 主 / 62 子·code 沿用 V1·级联展开 <code>expandFinancialTypeValue</code>·消费方 fundChange / MemberDetail·fund / api；② 人工充值 3 Tab 父壳 <code>useRouteTabs</code>·受 <code>manualRechargeSameAmountLimit</code> 约束；③ <code>inputConstraints.ts</code> 预设 + <code>formValidate</code> 校验红框基线（全站输入框套用）；④ 角色切换 <code>role.ts</code> 随财务页端归属联动。据原型 v1.1.2 / v1.1.3（commit 56eb589 / 927a9a5）反补·R55 原型为准。</td></tr>
         <tr><td><b>2026-06-30</b></td><td><b>v1.6</b>：运营 · 短信商配置列表/弹窗调整（§3.4②）——列表新增「自定义名称」(name)列、原「短信供应商名称」列改「短信供应商」(显示 provider 品牌)、「验证码」列改「短信类型」(固定值)；弹窗 name 字段标签改「自定义名称」(消除与品牌下拉重名)；删模板内容下「可用变量」提示。</td></tr>
         <tr><td><b>2026-06-30</b></td><td><b>v1.5</b>：配置中心 · 开关参数配置<b>删除「配置记录」Tab</b>（§3.4 删原 ② 小节、原 ③ 顺延为 ②，恢复为 开关配置 / 系统参数配置 两 Tab）+「活动与奖励」<b>删「充值等级」开关</b>；v1.3 新增的「配置记录」相关口径同步下线，历史条目保留备查。</td></tr>
