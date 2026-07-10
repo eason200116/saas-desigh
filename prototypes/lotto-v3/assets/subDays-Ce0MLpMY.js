@@ -1,1 +1,0 @@
-import{Ut as e}from"./vendor-naive-DvOjZDLH.js";function t(t,n,r){return e(t,-n,r)}export{t};

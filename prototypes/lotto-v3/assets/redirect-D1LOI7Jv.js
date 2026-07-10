@@ -1,1 +1,0 @@
-import{An as e,Bn as t,On as n,rn as r}from"./vendor-naive-DvOjZDLH.js";import{c as i,s as a}from"./index-CmqfYSTU.js";var o=e({name:`Redirect`,setup(){let e=a(),o=i();return t(()=>{let{params:t,query:n}=e,{path:r}=t;o.replace({path:`/`+(Array.isArray(r)?r.join(`/`):r),query:n})}),()=>n(r,null,null)}});export{o as default};
