@@ -1,1 +1,0 @@
-import{Dn as e,kn as t,nn as n,zn as r}from"./vendor-naive-DfOGXcbR.js";import{o as i,s as a}from"./vue-router-CnNbH257.js";var o=t({name:`Redirect`,setup(){let t=i(),o=a();return r(()=>{let{params:e,query:n}=t,{path:r}=e;o.replace({path:`/`+(Array.isArray(r)?r.join(`/`):r),query:n})}),()=>e(n,null,null)}});export{o as default};
