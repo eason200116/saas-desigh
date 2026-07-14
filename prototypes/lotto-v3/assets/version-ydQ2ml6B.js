@@ -1,0 +1,1 @@
+import{Wn as e,kn as t,xn as n}from"./vendor-naive-DfOGXcbR.js";import{t as r}from"./VersionTab-BAmHkLcX.js";var i=t({__name:`index`,setup(t){return(t,i)=>(e(),n(r))}});export{i as default};
