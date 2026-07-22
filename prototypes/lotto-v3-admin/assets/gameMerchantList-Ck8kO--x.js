@@ -1,1 +1,0 @@
-import{g as e}from"./main-DWegNz52.js";var t=e,n=t.map(e=>({label:e.name,value:e.id})),r={1050:`INR`,1048:`INR`,1052:`THB`,1054:`MMK`,1021:`INR`,1040:`IDR`,1038:`IDR`,1042:`BRL`,1070:`BDT`,1090:`PKR`,1030:`THB`,1036:`VND`,1072:`THB`,1080:`USD`,1082:`USD`,1099:`MXN`};function i(e){return r[e]??`INR`}export{n,i as r,t};

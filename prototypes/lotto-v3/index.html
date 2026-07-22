@@ -19,12 +19,8 @@
           if (!localStorage.getItem(__k)) {
             localStorage.setItem(__k, JSON.stringify({ value: 'prototype-demo', expire: null }));
           }
-          // 首次访问按部署目录给默认角色：/lotto-v3-admin/ → admin，其余(/lotto-v3/) → tenant；
-          // 只在无持久化选择时设默认值，不覆盖用户手动切换后的选择（右下角浮窗仍可切）
-          var __r = 'app:role';
-          if (!localStorage.getItem(__r)) {
-            localStorage.setItem(__r, location.pathname.indexOf('/lotto-v3-admin/') !== -1 ? 'admin' : 'tenant');
-          }
+          // 角色不再在此预设默认值——已改由 role.ts 的 lockedRole() 按部署路径强制锁定
+          // （/lotto-v3-admin/ → admin，/lotto-v3/ → tenant，不可通过浮窗互切，2026-07-22）
         }
       } catch (e) {}
     </script>
@@ -403,22 +399,22 @@
       })();
     </script>
     <title>AR 原型平台</title>
-    <script type="module" crossorigin src="/saas-desigh/prototypes/lotto-v3/assets/main-CpX_ij7w.js"></script>
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/_plugin-vue_export-helper-gFNv2Gru.js">
+    <script type="module" crossorigin src="/saas-desigh/prototypes/lotto-v3/assets/main-DFDN2ZO8.js"></script>
+    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/_plugin-vue_export-helper-BbECKVuF.js">
     <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/rolldown-runtime-CpWojdLp.js">
     <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/modulepreload-polyfill-Cf3xff8G.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/preload-helper-D3_fYpC1.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/vendor-codemirror-mREEmLzS.js">
+    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/preload-helper-BAi-n3Z7.js">
+    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/vendor-codemirror-GIS8tbcf.js">
     <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/vendor-lodash-Bt5EL6tn.js">
     <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/vendor-naive-DfOGXcbR.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/vue-router-D7BBc0Ub.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/role-BDUFq5Sb.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/main-CpX_ij7w.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/vendor-editor-DSOYH8vN.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/constants-DEC3GBSl.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/usePermission-CtNSYbwl.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/form-B57Hwv7_.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/components-BXAJQ_za.js">
+    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/vue-router-CZ51UOt1.js">
+    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/role-nHErXsBI.js">
+    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/main-DFDN2ZO8.js">
+    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/vendor-editor-QTs4vWhF.js">
+    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/constants-C_FKWF1x.js">
+    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/usePermission-BL3vtptu.js">
+    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/form-CJX84vFW.js">
+    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/components-D-D2gAeK.js">
     <link rel="stylesheet" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/components-BbOG1vGt.css">
     <link rel="stylesheet" crossorigin href="/saas-desigh/prototypes/lotto-v3/assets/main-C32EMHEy.css">
   </head>
