@@ -1,0 +1,1 @@
+var e=null;function t(t){let n=document.querySelector(`.h5-shell`)||document.body,r=n.querySelector(`.h5-toast`);r||(r=document.createElement(`div`),r.className=`h5-toast`,n.appendChild(r)),r.textContent=t,r.classList.add(`show`),e&&clearTimeout(e),e=setTimeout(()=>{r&&r.classList.remove(`show`)},1400)}export{t};

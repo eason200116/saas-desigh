@@ -1,0 +1,1 @@
+var e=e=>({required:!0,validator(t,n){return n==null||n===``||Array.isArray(n)&&n.length===0?Error(e):!0},message:e,trigger:[`blur`,`input`,`change`]});export{e as t};

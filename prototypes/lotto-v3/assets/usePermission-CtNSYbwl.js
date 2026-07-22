@@ -1,0 +1,1 @@
+function e(){function e(e){return!0}function t(e){return!0}function n(e){return!0}function r(e){return e?.[0]}return{hasPermission:e,hasEveryPermission:t,hasSomePermission:n,hasFirstPermission:r}}export{e as t};

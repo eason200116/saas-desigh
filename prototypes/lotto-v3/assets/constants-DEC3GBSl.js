@@ -1,0 +1,1 @@
+var e=`全部`;function t(e,t){let n=(Array.isArray(t)?t:t==null||t===``?[]:[t]).map(e=>Number(e)).filter(e=>Number.isFinite(e));return!n.length||n.includes(0)?!0:n.includes(Number(e))}export{t as n,e as t};

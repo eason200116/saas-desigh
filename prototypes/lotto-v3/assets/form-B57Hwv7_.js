@@ -1,0 +1,1 @@
+var e=e=>e===``||/^\d+$/.test(e),t=e=>e===``||/^[\d ]*$/.test(e);export{t as n,e as t};
