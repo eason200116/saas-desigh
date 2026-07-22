@@ -1,0 +1,1 @@
+import{t as e}from"./main-tkLWMDY7.js";import{t}from"./role-filter-BdIVAPWB.js";var n=t(e,`tenant`);export{n as tenantRoutes};
