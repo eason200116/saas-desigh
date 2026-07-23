@@ -1,1 +1,0 @@
-import{c as e}from"./vue-router-6zEl38I1.js";import{ft as t,mt as n}from"./main-DOI38hu5.js";import"./useRouteTabs-DLZ8kidt.js";function r(e){console.error(e)}function i(i){let a;i||(a=e());let{push:o,replace:s}=i||a;function c(e=n.BASE_HOME,i=!1){if(e)if(t(e))i?s(e).catch(r):o(e).catch(r);else{let t=e;i?s(t).catch(r):o(t).catch(r)}}return c}export{i as t};
