@@ -122,10 +122,14 @@
 
   <section id="changelog" style="margin:0 0 8px">
     <details class="changelog">
-      <summary>📝 修改日志 · 点击展开版本变更记录（共 218 个版本，最新 v2.0.018 · 2026-07-24）</summary>
+      <summary>📝 修改日志 · 点击展开版本变更记录（共 219 个版本，最新 v2.0.019 · 2026-07-25）</summary>
     <p class="sd">本 PRD 自创建起的版本变更记录，最新在上。</p>
     <table>
       <tr><th width="80">版本</th><th width="110">日期</th><th>变更摘要</th></tr>
+      <tr>
+        <td>v2.0.019</td><td>2026-07-25</td>
+        <td><b>财务管理 · 提现配置 · 代付三方银行「新增」弹窗加「确认→预览→发布」强制线性流程（总控端 admin，<code>/finance/withdrawConfig</code>（代付三方银行 Tab），R83 arv3-executor 执行）：</b>Eason 经 superpowers:brainstorming 2 轮可视化 mockup 逐轮确认（方案A+预览用独立弹窗）：仅新增模式（<code>!isEditMode</code>）加"确认→预览→发布"强制线性流程，编辑模式完全不变。新增 <code>isConfirmed</code>/<code>showPreview</code> 两个状态；footer 按 <code>isEditMode</code> 条件渲染——编辑模式保留原"取消+确定"2 按钮不动，新增模式换成"取消/确认/预览"3 按钮：取消一直可点；确认（<code>isConfirmed</code>=false 时可点）先跑 <code>formRef.value?.validate()</code>，通过才置 <code>isConfirmed=true</code> 并锁定 4 个字段（payCode/channelId/bankCode 三个 n-select + thirdCode 一个 n-input，各自 disabled 表达式追加 <code>|| isConfirmed</code>），失败保持 false（报错方式同原"确定"按钮）；预览（仅 <code>isConfirmed</code>=true 时可点）展开独立 <code>n-modal</code>（标题"预览"，叠加编辑弹窗上层、非原地替换）用 <code>n-descriptions</code> 展示 4 字段只读摘要（通道名称/银行名称从选项列表反查 label 展示，非裸 id/code），底部"关闭"（仅收起预览，字段仍锁着可重新打开）/"发布"（复用现有 <code>handleSave</code> 校验+提交逻辑，不重复发明校验，成功后两个弹窗一并关闭，效果等同原"确定"成功后的效果）。i18n 新增 <code>finance.withdrawConfig.bankMapping.confirm</code>("确认"，区别于 <code>common.confirm</code>="确定")/<code>preview</code>("预览"，兼作按钮文案与弹窗标题)，「关闭」「发布」复用既有共享 key <code>common.close</code>/<code>common.publish</code>，zh/en 同步。据实：任务原始描述称 payCode/bankCode 两个下拉"原本没有 disabled"，与实际代码不符——两者实际已有 <code>:disabled="props.isEditMode"</code>（channelId 同理已有 <code>props.isEditMode||!form.payCode</code>），已按实际代码在原表达式后追加 <code>|| isConfirmed</code>，未按误述覆盖重写，已告知 Eason。仅改 <code>BankMappingEditModal.vue</code> 1 个文件 + i18n JSON，未改父组件 <code>index.vue</code>/<code>useBankMappingPage.ts</code>。设计文档已单独 commit（<code>37c6c286</code>）。交互规则（<code>interaction-rules-2.0.html</code>）本页此前无任何章节，已补最简新章节；字段词典本次无新增业务字段（4 字段均为已有字段，仅新增交互控件），未新增词条。ChangeLogFab 记为 v2.0.116（该仓库独立版本序，与本 PRD 不同步，同 v2.0.002~v2.0.014 条目先例）。build/typecheck 与 git 提交合并由调用方（PM/协调窗口）统一执行，非本次范围。</td>
+      </tr>
       <tr>
         <td>v2.0.018</td><td>2026-07-24</td>
         <td><b>游戏管理 · 游戏映射管理 左栏选择商户下拉新增「所有商户」选项（总控端 admin，<code>/game/mapping</code>，R83 arv3-executor 执行）：</b>Eason 确认需求：左栏"选择商户"下拉第一位固定新增「所有商户」功能性选项（非真实商户，固定哨兵值 <code>__all_sites__</code>，与真实站点 id 不冲突）。选中它＝把当前所有尚未选中的商户一次性批量加入下方"已选商户"列表（等效于逐个选中的结果一次性达成），不会把"所有商户"本身当成一条商户数据加入已选列表；批量加入后这些商户按现有"已选则从下拉消失"逻辑退出下拉，但「所有商户」本身固定常驻第一位、不随选中状态消失（便于后续移出部分商户后再次批量加回）。改动仅在 <code>SiteSelectPanel.vue</code> 内部（<code>availableOptions</code> 计算属性 + <code>handlePick</code> 函数新增分支），未新增/修改 props，未改父组件 <code>index.vue</code>，未改样式布局。i18n 新增 <code>game.mapping.config.site.selectAll</code>（zh"所有商户" / en"All Merchants"），zh/en <code>game.json</code> 同步新增（R31）。功能说明书 PageManual(<code>gameMapping.ts</code>) 已同步更新"选择站点"条目描述。ChangeLogFab 记为 v2.0.107（该仓库独立版本序，与本 PRD 不同步，同 v2.0.002~v2.0.014 条目先例）。build/typecheck 与 git 提交合并由调用方（PM/协调窗口）统一执行，非本次范围。</td>

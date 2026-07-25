@@ -1295,6 +1295,12 @@
   <tr><td class="nm"><b>批量导入</b><span class="k">batchImport</span></td><td>Excel 批量新增银行字典</td><td class="lt">按钮打开弹窗：上传 .xlsx/.xls（单次≤1万条、≤4M、仅支持单商户导入），逐行预校验（重复编码/名称为空/非法币种/非法类型），失败行红字标注原因。</td><td class="lt">校验通过行点「一键执行」二次确认后批量创建；成功/失败行数汇总提示；关闭弹窗自动刷新列表</td><td class="lt">上传失败「上传失败」；校验未通过「N 条数据校验未通过」；执行完成「导入完成（成功：X，失败：Y）」</td><td class="lt">本次改动未涉及批量导入弹窗内部逻辑（弹窗内暂未同步新增币种/类型筛选项，维持原样，超出本次任务范围）</td></tr>
   </table>
 </section>
+<section id="p-finance-withdrawBankMapping">
+  <h3>代付三方银行 <span class="pill p-in">2.0 新增「确认→预览→发布」流程</span></h3>
+  <p class="meta-line"><code>finance/withdrawConfig</code>（代付三方银行 Tab，与「提现通道」Tab 同页） · 类型：列表+弹窗（总控端 roles=[admin]）</p>
+  <p class="sd">维护提现通道↔银行的映射关系（三方映射码/通道名称/银行名称/三方Code），供提现下单时按通道匹配代付银行。本次仅新增弹窗交互补强，列表与 4 个字段本身未变，暂未按全站统一模板补充完整搜索/列表控件表格（该页首次在本文档留痕，先补最简说明，不卡在这一步）。</p>
+  <div class="note">🆕 2026-07-25：新增弹窗（<code>BankMappingEditModal.vue</code>）由"取消+确定"改为强制线性流程"取消 / 确认 / 预览"——填完 4 字段(三方映射码/通道名称/银行名称/三方Code)点「确认」，校验通过后 4 字段全部锁定(disabled)且解锁「预览」按钮；点「预览」弹出独立 <code>n-modal</code>（标题"预览"，叠加在编辑弹窗上层，非原地替换）展示 4 字段只读摘要，底部「关闭」(仅收起预览、<code>isConfirmed</code> 不变、字段仍锁着可重新打开)/「发布」(复用现有 <code>handleSave</code> 校验+提交逻辑，不重复发明校验；成功后两个弹窗一并关闭，效果等同原"确定"成功后的效果)。<b>编辑模式（修改已有映射）的"取消+确定" footer 与字段可编辑性完全未变</b>。i18n 新增 <code>finance.withdrawConfig.bankMapping.confirm</code>("确认"，区别于 <code>common.confirm</code>="确定")/<code>preview</code>("预览")，「关闭」「发布」复用既有共享 key <code>common.close</code>/<code>common.publish</code>。</div>
+</section>
   <section id="g-report"><h2 class="sec">报表管理</h2></section>
 <section id="p-finance-manualRecharge">
   <h3>人工充值管理 <span class="pill p-in">2.0 新增</span></h3>
