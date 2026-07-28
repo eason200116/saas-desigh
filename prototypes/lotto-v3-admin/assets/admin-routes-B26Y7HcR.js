@@ -1,1 +1,0 @@
-import{t as e}from"./main-2U-t3Wyx.js";import{t}from"./role-filter-nBkfuIjQ.js";var n=[`game`,`finance`,`tenant`,`report`,`system`,`analytics`];function r(e){let t=e=>{let t=n.indexOf(e);return t===-1?n.length:t};return[...e].sort((e,n)=>t(e.name)-t(n.name))}var i=r(t(e,`admin`));export{i as adminRoutes};
