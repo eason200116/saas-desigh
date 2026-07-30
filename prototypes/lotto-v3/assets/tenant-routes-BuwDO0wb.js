@@ -1,1 +1,0 @@
-import{t as e}from"./main-y8FkL4KC.js";import{t}from"./role-filter-nBkfuIjQ.js";var n=t(e,`tenant`);export{n as tenantRoutes};
