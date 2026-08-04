@@ -1,0 +1,1 @@
+import{gr as e}from"./vendor-naive-TQ3W1CZJ.js";var t=e(0);function n(){t.value+=1}export{n,t};

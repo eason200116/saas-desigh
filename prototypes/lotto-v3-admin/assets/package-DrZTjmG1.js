@@ -1,0 +1,1 @@
+import{Cn as e,Kn as t,jn as n}from"./vendor-naive-TQ3W1CZJ.js";import{t as r}from"./PackageTab-Dnfs0Lna.js";var i=n({__name:`index`,setup(n){return(n,i)=>(t(),e(r))}});export{i as default};
