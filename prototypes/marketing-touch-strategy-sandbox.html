@@ -3,6 +3,42 @@
 <head>
   <meta charset="utf-8">
   <title>Bundled Page</title>
+  <!-- 商户端(3100)活动/任务真实mock数据种子：由 Ar_V3_LottoPlatformDesign/scripts/exportCendDemoSeed.mjs 生成，
+       写入 localStorage['mkt_activities_v3']，本页内置的 loadAdmin() 会读取并合并进活动列表展示。
+       重新运行该脚本、把输出内容替换进这段 <script> 即可用商户端最新mock数据刷新；此块本身不用手改。
+       生成时间: 2026-08-10T11:20:41.290Z -->
+  <script>
+  (function () {
+  var seed = {
+  "cats": [
+    { "key": "newbie", "label": "新人福利", "show": true },
+    { "key": "recharge", "label": "充值优惠", "show": true },
+    { "key": "lucky_draw", "label": "幸运抽奖", "show": true },
+    { "key": "jackpot", "label": "游戏大奖", "show": true },
+    { "key": "newbie_gift", "label": "新会员礼包", "show": true },
+    { "key": "neg_profit", "label": "neg_profit", "show": true },
+    { "key": "comeback", "label": "comeback", "show": true },
+    { "key": "newbie_game", "label": "newbie_game", "show": true }
+  ],
+  "activities": [
+    { "id": 1, "name": "首充奖励", "cat": "newbie", "status": "ongoing", "desc": "首次充值满额，按固定比例即时赠送彩金", "glyph": "首" },
+    { "id": 2, "name": "幸运大转盘", "cat": "lucky_draw", "status": "ongoing", "desc": "充值满额即送抽奖次数，奖池覆盖现金彩金与实物大奖", "glyph": "转" },
+    { "id": 5, "name": "新会员玩游戏送彩金", "cat": "newbie_gift", "status": "ongoing", "desc": "注册天数×累计存款×累计有效投注三门槛匹配最高档，达标发彩金", "glyph": "新" },
+    { "id": 11, "name": "新会员首充负盈利送彩金", "cat": "neg_profit", "status": "ongoing", "desc": "统计窗口内首充后出现负盈利，按负盈利额分档比例返还彩金，封顶保护", "glyph": "负" },
+    { "id": 12, "name": "回归奖励", "cat": "comeback", "status": "ongoing", "desc": "沉寂满一定天数的老会员回归后首次充值，固定奖金+比例奖金双重发放", "glyph": "归" },
+    { "id": 14, "name": "新会员玩游戏送彩金", "cat": "newbie_game", "status": "paused", "desc": "新会员注册满天数且累计存款达标后，按投注额多档发放彩金，运营已手动关闭", "glyph": "玩" },
+    { "id": 15, "name": "逐笔充值赠送·夏季版", "cat": "recharge", "status": "ongoing", "desc": "夏季限时逐笔充值赠送，比例高于常规版，来源于「充值赠送·常规版」模板并调高比例", "glyph": "充" },
+    { "id": 16, "name": "电子大奖·周末场", "cat": "jackpot", "status": "ongoing", "desc": "周末场次电子游戏投注命中倍数区间即送彩金，每日发放次数封顶", "glyph": "奖" },
+    { "id": 17, "name": "首充奖励·激进拉新版", "cat": "newbie", "status": "ongoing", "desc": "新商户XYZ拉新期试点，来源于「首充活动·激进版」模板，尚未到生效时间", "glyph": "首" }
+  ],
+  "tasks": []
+  };
+  try {
+    localStorage.setItem('mkt_activities_v3', JSON.stringify(seed));
+    window.dispatchEvent(new StorageEvent('storage', { key: 'mkt_activities_v3' }));
+  } catch (e) {}
+  })();
+  </script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #0B0E1A; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
