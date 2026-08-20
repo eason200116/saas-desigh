@@ -1,0 +1,1 @@
+import{rr as e}from"./vendor-naive-C62e2myp.js";import{Ct as t,Ot as n}from"./components-Cd9setku.js";function r(r){let{tenantId:i}=t(),{getTenantTimeZone:a}=n();e([r,i],()=>{let e=i.value;r.value?.setTimezoneId(e==null?null:a(e)||null)},{immediate:!0,flush:`post`})}export{r as t};
