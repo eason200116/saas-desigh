@@ -14,7 +14,7 @@
       })(window.location);
       // [部署兜底] 线上(github.io)注入演示 token 跳过登录；本地 dev 不受影响
       try {
-        if (location.hostname.endsWith('github.io')) {
+        if (location.hostname.endsWith('github.io') || location.hostname === 'v3-lottoplatform-backend.pages.dev') {
           var __k = 'ACCESS-TOKEN';
           if (!localStorage.getItem(__k)) {
             localStorage.setItem(__k, JSON.stringify({ value: 'prototype-demo', expire: null }));
@@ -399,25 +399,25 @@
       })();
     </script>
     <title>AR 原型平台</title>
-    <script type="module" crossorigin src="/saas-desigh/prototypes/lotto-v3-admin/assets/main-Dkt1SA6w.js"></script>
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3-admin/assets/_plugin-vue_export-helper-BbECKVuF.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3-admin/assets/rolldown-runtime-CpWojdLp.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3-admin/assets/modulepreload-polyfill-Cf3xff8G.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3-admin/assets/preload-helper-bfFZigQ-.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3-admin/assets/vendor-codemirror-zzx7gJKY.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3-admin/assets/vendor-lodash-Bt5EL6tn.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3-admin/assets/vendor-naive-CXOyFHnC.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3-admin/assets/vue-router-hnYNlEvX.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3-admin/assets/role-CbLvPY2f.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3-admin/assets/main-Dkt1SA6w.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3-admin/assets/vendor-editor-BsHriKhn.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3-admin/assets/sortable.esm-CsolTPrU.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3-admin/assets/constants-fwOHJiq0.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3-admin/assets/usePermission-CMPA4J7R.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3-admin/assets/form-CJX84vFW.js">
-    <link rel="modulepreload" crossorigin href="/saas-desigh/prototypes/lotto-v3-admin/assets/components-Bxhti-7Z.js">
-    <link rel="stylesheet" crossorigin href="/saas-desigh/prototypes/lotto-v3-admin/assets/components-S3G_pxqX.css">
-    <link rel="stylesheet" crossorigin href="/saas-desigh/prototypes/lotto-v3-admin/assets/main-D1HoZm3V.css">
+    <script type="module" crossorigin src="/assets/main-pEogqg33.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/_plugin-vue_export-helper-DGA9ry_j.js">
+    <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-CpWojdLp.js">
+    <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-Cf3xff8G.js">
+    <link rel="modulepreload" crossorigin href="/assets/preload-helper-ClBMtM1g.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-lodash-Bt5EL6tn.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-naive-C62e2myp.js">
+    <link rel="modulepreload" crossorigin href="/assets/vue-router-l9MK5SRq.js">
+    <link rel="modulepreload" crossorigin href="/assets/role-CvXT_RCB.js">
+    <link rel="modulepreload" crossorigin href="/assets/main-pEogqg33.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-codemirror-jHkO9AHC.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-editor-CwonVU-T.js">
+    <link rel="modulepreload" crossorigin href="/assets/sortable.esm-Dm09oO6z.js">
+    <link rel="modulepreload" crossorigin href="/assets/constants-D75toUS2.js">
+    <link rel="modulepreload" crossorigin href="/assets/usePermission-Cn6mIPgq.js">
+    <link rel="modulepreload" crossorigin href="/assets/form-BGlIgucl.js">
+    <link rel="modulepreload" crossorigin href="/assets/components-9rBElZN-.js">
+    <link rel="stylesheet" crossorigin href="/assets/components-B_a2-m8r.css">
+    <link rel="stylesheet" crossorigin href="/assets/main-CrdCyVaR.css">
   </head>
   <body>
     <div id="appProvider" style="display: none"></div>

@@ -1,0 +1,1 @@
+import{Ht as e}from"./vendor-naive-C62e2myp.js";function t(t,n,r){return e(t,-n,r)}export{t};

@@ -1,0 +1,1 @@
+var e=({layoutId:e,layoutName:t,layoutCode:n})=>`[${e||`—`}] ${n||`—`} → ${t||`—`}`;export{e as t};
