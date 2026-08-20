@@ -1,1 +1,0 @@
-import{Cn as e,Kn as t,jn as n}from"./vendor-naive-C62e2myp.js";import{t as r}from"./PackageTab-D_C7D5-1.js";var i=n({__name:`index`,setup(n){return(n,i)=>(t(),e(r))}});export{i as default};
