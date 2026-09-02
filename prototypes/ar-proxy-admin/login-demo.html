@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>代理后台登录页 Demo</title>
+  <style>
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,"PingFang SC","Microsoft YaHei",sans-serif;color:#101828;background:#f4f7fb} button,input,select{font:inherit}
+    .page{min-height:100vh;display:grid;place-items:center;padding:40px 24px;background:radial-gradient(circle at 15% 18%,rgba(0,150,136,.13),transparent 32%),radial-gradient(circle at 86% 78%,rgba(22,119,255,.09),transparent 28%),#f4f7fb;transition:.25s}
+    .theme{position:absolute;right:18px;top:18px;z-index:3;height:32px;padding:0 12px;border:1px solid #d0d5dd;border-radius:9px;background:rgba(255,255,255,.88);color:#344054;cursor:pointer;backdrop-filter:blur(10px)}
+    .shell{position:relative;width:min(940px,100%);min-height:560px;display:grid;grid-template-columns:minmax(300px,1.05fr) minmax(360px,.95fr);overflow:hidden;border:1px solid #e4e7ec;border-radius:24px;background:#fff;box-shadow:0 24px 70px rgba(16,24,40,.14)}
+    .brand{position:relative;display:flex;flex-direction:column;justify-content:center;padding:64px 56px;overflow:hidden;background:linear-gradient(145deg,#00695f,#00897b 54%,#0b5f79);color:#fff}
+    .brand:before,.brand:after{content:"";position:absolute;border:1px solid rgba(255,255,255,.14);border-radius:50%}.brand:before{width:320px;height:320px;right:-150px;top:-110px}.brand:after{width:220px;height:220px;left:-120px;bottom:-90px}
+    .mark{position:relative;width:58px;height:54px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.38);border-radius:16px;background:rgba(255,255,255,.14);font-size:20px;font-weight:800;letter-spacing:1px}.eyebrow{position:relative;margin-top:26px;font-size:11px;font-weight:700;letter-spacing:3px;color:rgba(255,255,255,.68)}
+    .brand h1{position:relative;margin:18px 0 10px;font-size:38px;line-height:1.2;letter-spacing:2px}.features{position:relative;display:grid;gap:12px;margin-top:48px;color:rgba(255,255,255,.86);font-size:13px}.features span{display:flex;align-items:center;gap:9px}.dot{width:24px;height:24px;display:grid;place-items:center;border-radius:7px;background:rgba(255,255,255,.12)}
+    .card{display:flex;flex-direction:column;justify-content:center;padding:58px 52px 42px;background:#fff}.card .welcome{color:#009688;font-size:11px;font-weight:700;letter-spacing:2px}.card h2{margin:8px 0 0;font-size:28px}.card .sub{margin:8px 0 30px;color:#667085;font-size:13px}.field{position:relative;margin-bottom:18px}.field i{position:absolute;left:14px;top:50%;width:17px;height:17px;transform:translateY(-50%);color:#98a2b3}.field i svg{display:block;width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.field input,.field select{width:100%;height:44px;padding:0 14px 0 42px;border:1px solid #d0d5dd;border-radius:10px;background:#fff;color:#101828;outline:none;transition:.18s}.field select{appearance:none}.field input:focus,.field select:focus{border-color:#009688;box-shadow:0 0 0 3px rgba(0,150,136,.12)}
+    .login{width:100%;height:44px;margin-top:6px;border:1px solid #009688;border-radius:10px;background:#009688;color:#fff;font-weight:600;cursor:pointer;box-shadow:0 8px 18px rgba(0,150,136,.2)}.login:hover{background:#00897b}
+    [data-theme=dark] body{color:#f2f4f7;background:#101828}[data-theme=dark] .page{background:radial-gradient(circle at 15% 18%,rgba(45,212,191,.1),transparent 32%),radial-gradient(circle at 86% 78%,rgba(22,119,255,.08),transparent 28%),#101828}[data-theme=dark] .shell{border-color:#344054;background:#182230;box-shadow:0 24px 70px rgba(0,0,0,.38)}[data-theme=dark] .brand{background:linear-gradient(145deg,#064e49,#076d66 55%,#123f5a)}[data-theme=dark] .card{background:#182230}[data-theme=dark] .card .sub{color:#98a2b3}[data-theme=dark] .field input,[data-theme=dark] .field select{background:#1f2937;border-color:#475467;color:#f2f4f7}[data-theme=dark] .field input::placeholder{color:#98a2b3}[data-theme=dark] .theme{background:#1f2937;border-color:#475467;color:#d0d5dd}
+    @media(max-width:760px){.page{padding:20px 14px}.shell{grid-template-columns:1fr;min-height:auto;border-radius:18px}.brand{padding:30px 28px}.brand h1{margin-top:12px;font-size:28px}.mark{width:44px;height:44px;border-radius:13px;font-size:21px}.eyebrow{margin-top:14px}.features{display:none}.card{padding:36px 28px 28px}.theme{right:12px;top:12px}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="shell">
+      <button class="theme" id="theme">切换夜间</button>
+      <section class="brand">
+        <div class="mark">AR</div><div class="eyebrow">AGENT CENTER</div><h1>代理后台</h1>
+        <div class="features"><span><b class="dot">✓</b>安全身份验证 / Secure authentication</span><span><b class="dot">◎</b>多语言工作台 / Multilingual workspace</span></div>
+      </section>
+      <section class="card">
+        <div class="welcome">WELCOME BACK</div><h2>登录代理后台</h2><p class="sub">请输入账号信息继续访问工作台</p>
+        <div class="field"><i><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></i><select aria-label="语言"><option>中文（简体）</option><option>English</option><option>Tiếng Việt</option></select></div>
+        <div class="field"><i><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg></i><input aria-label="登录账号" placeholder="请输入登录账号" /></div>
+        <div class="field"><i><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></svg></i><input aria-label="登录密码" type="password" placeholder="请输入登录密码" /></div>
+        <div class="field"><i><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.8 2.9 8.1 7 10 4.1-1.9 7-5.2 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></i><input aria-label="谷歌验证码" inputmode="numeric" placeholder="请输入谷歌验证码" /></div>
+        <button class="login" id="login">登录</button>
+      </section>
+    </div>
+  </main>
+  <script>
+    const root=document.documentElement,button=document.querySelector('#theme');button.onclick=()=>{const dark=root.dataset.theme!=='dark';root.dataset.theme=dark?'dark':'light';button.textContent=dark?'切换白天':'切换夜间'};
+    document.querySelector('#login').onclick=()=>{const b=document.querySelector('#login');b.textContent='登录中…';setTimeout(()=>b.textContent='登录',900)};
+  </script>
+</body>
+</html>
